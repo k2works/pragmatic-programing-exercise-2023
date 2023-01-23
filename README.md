@@ -34,11 +34,16 @@ npm install --save-dev npm-run-all watch foreman cpx rimraf marked@1.2.2
 npm install --save-dev webpack webpack-cli html-webpack-plugin webpack-dev-server
 touch Procfile
 npm install --save-dev jest
+npm i -g vercel
 ```
 
 **[⬆ back to top](#構成)**
 
 ### 配置
+
+```bash
+npm run deploy
+```
 
 **[⬆ back to top](#構成)**
 
@@ -56,3 +61,4 @@ npm start
 
 ## 参照
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
+- [Vercel](https://vercel.com/)
