@@ -1,4 +1,7 @@
-# プログラミング入門
+# プログラミング入門 2023
+
+[![Node.js CI](https://github.com/k2works/programing_introduce_2023/actions/workflows/node.js.yml/badge.svg)](https://github.com/k2works/programing_introduce_2023/actions/workflows/node.js.yml)
+
 ## 概要
 
 ### 目的
@@ -62,3 +65,4 @@ npm start
 ## 参照
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
 - [Vercel](https://vercel.com/)
+- [GitHub Actions](https://github.co.jp/features/actions)
