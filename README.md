@@ -11,7 +11,7 @@
 | ソフトウェア | バージョン | 備考 |
 | :----------- | :--------- | :--- |
 | nodejs       | 16.3.0    |      |
-| go           | 1.16.6    |      |
+| go           | 1.19.5    |      |
 
 ## 構成
 
@@ -77,3 +77,4 @@ npm start
 - [Vercel](https://vercel.com/)
 - [GitHub Actions](https://github.co.jp/features/actions)
 - [Tutorial: Get started with Go](https://go.dev/doc/tutorial/getting-started)
+- [はじめてのgo test](https://qiita.com/marnie_ms4/items/e51cc6d879cc9ad07af3)
