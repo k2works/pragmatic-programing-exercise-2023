@@ -11,6 +11,7 @@
 | ソフトウェア | バージョン | 備考 |
 | :----------- | :--------- | :--- |
 | nodejs       | 16.3.0    |      |
+| go           | 1.16.6    |      |
 
 ## 構成
 
@@ -40,6 +41,15 @@ npm install --save-dev jest
 npm i -g vercel
 ```
 
+[Go Install](https://go.dev/doc/install)
+
+```bash
+mkdir hello
+cd hello
+go mod init github.com/k2works/hello
+```
+
+
 **[⬆ back to top](#構成)**
 
 ### 配置
@@ -66,3 +76,4 @@ npm start
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
 - [Vercel](https://vercel.com/)
 - [GitHub Actions](https://github.co.jp/features/actions)
+- [Tutorial: Get started with Go](https://go.dev/doc/tutorial/getting-started)
