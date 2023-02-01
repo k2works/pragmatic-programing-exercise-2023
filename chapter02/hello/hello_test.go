@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func TestMain(t *testing.T) {
+func TestGreeting(t *testing.T) {
 	expected := "Hello, World!"
 	actual := greeting()
 	if actual != expected {
