@@ -1,3 +1,3 @@
-module github.com/k2works/hello
+module hello
 
-go 1.16
+go 1.19
