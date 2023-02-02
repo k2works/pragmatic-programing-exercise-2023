@@ -1,12 +1,12 @@
-package main
+package hello
 
 import "fmt"
 
 func main() {
-	result := greeting()
+	result := Greeting()
 	fmt.Println(result)
 }
 
-func greeting() string {
+func Greeting() string {
 	return "Hello, World!"
 }
