@@ -1,4 +1,4 @@
-package main
+package range_
 
 import "testing"
 

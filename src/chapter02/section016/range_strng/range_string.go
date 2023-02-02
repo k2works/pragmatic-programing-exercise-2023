@@ -1,4 +1,4 @@
-package main
+package range_string
 
 import "fmt"
 

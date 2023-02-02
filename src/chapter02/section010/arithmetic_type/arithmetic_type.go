@@ -1,4 +1,4 @@
-package main
+package arithmetic_type
 
 import "fmt"
 
