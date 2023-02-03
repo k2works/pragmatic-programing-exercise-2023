@@ -60,6 +60,8 @@ import (
 	"contens/chapter06/section032/slice"
 	"contens/chapter06/section032/slice_variadic"
 	"contens/chapter06/section032/string_slice"
+	_make "contens/chapter06/section033/make"
+	"contens/chapter06/section033/slice_literal"
 )
 
 func main() {
@@ -166,4 +168,9 @@ func main() {
 	_append.Exec()
 	_copy.Exec()
 	slice_variadic.Exec()
+
+	//Section033
+	_make.Exec()
+	slice_literal.Exec()
+
 }
