@@ -26,6 +26,7 @@ import (
 	"chapter02/section017/swithch"
 	"chapter02/section018/pointer"
 	"chapter02/section018/pointer_value"
+	"chapter02/section019/zero"
 )
 
 func main() {
@@ -72,4 +73,7 @@ func main() {
 	//Section018
 	pointer.Exec()
 	pointer_value.Exec()
+
+	//Section019
+	zero.Exec()
 }
