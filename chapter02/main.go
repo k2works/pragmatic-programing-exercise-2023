@@ -44,6 +44,8 @@ import (
 	"chapter02/section023/defer_close"
 	_struct "chapter02/section024/struct"
 	"chapter02/section025/embed"
+	"chapter02/section026/embed_literal"
+	"chapter02/section026/struct_init"
 )
 
 func main() {
@@ -122,4 +124,8 @@ func main() {
 
 	//Section025
 	embed.Exec()
+
+	//Section026
+	struct_init.Exec()
+	embed_literal.Exec()
 }
