@@ -67,8 +67,8 @@ import (
 	_error "contens/chapter07/section036/error"
 	_return2 "contens/chapter07/section036/return"
 	_recover "contens/chapter07/section037/recover"
-	"contens/chapter08/goroutine"
-	"contens/chapter08/gosched"
+	"contens/chapter08/section039/goroutine"
+	"contens/chapter08/section039/gosched"
 )
 
 func main() {
