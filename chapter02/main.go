@@ -23,6 +23,8 @@ import (
 	_ "chapter02/section017/if"
 	_ "chapter02/section017/swithc_true"
 	_ "chapter02/section017/swithch"
+	_ "chapter02/section018/pointer"
+	_ "chapter02/section018/pointer_value"
 )
 
 func main() {
