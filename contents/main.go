@@ -192,4 +192,7 @@ func main() {
 	//_panic.Exec()
 	//_defer2.Exec()
 	_recover.Exec()
+
+	//Section038
+	//runtime_panic.Exec()
 }
