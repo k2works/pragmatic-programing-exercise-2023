@@ -66,6 +66,7 @@ import (
 	"contens/chapter06/section035/map_literal"
 	_error "contens/chapter07/section036/error"
 	_return2 "contens/chapter07/section036/return"
+	_recover "contens/chapter07/section037/recover"
 )
 
 func main() {
@@ -186,4 +187,9 @@ func main() {
 	//Section036
 	_return2.Exec()
 	_error.Exec()
+
+	//Section037
+	//_panic.Exec()
+	//_defer2.Exec()
+	_recover.Exec()
 }
