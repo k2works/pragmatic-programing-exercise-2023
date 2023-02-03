@@ -62,6 +62,7 @@ import (
 	"contens/chapter06/section032/string_slice"
 	_make "contens/chapter06/section033/make"
 	"contens/chapter06/section033/slice_literal"
+	_map "contens/chapter06/section034/map"
 )
 
 func main() {
@@ -172,5 +173,8 @@ func main() {
 	//Section033
 	_make.Exec()
 	slice_literal.Exec()
+
+	//Section034
+	_map.Exec()
 
 }
