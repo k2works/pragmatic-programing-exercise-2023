@@ -37,6 +37,9 @@ import (
 	"chapter02/section021/multi_param"
 	_return "chapter02/section021/return"
 	"chapter02/section021/variadic"
+	"chapter02/section023/method"
+	"chapter02/section023/method_value"
+	"chapter02/section023/receiver_ptr"
 )
 
 func main() {
@@ -100,4 +103,9 @@ func main() {
 	_return.Exec()
 	function_literal.Exec()
 	function_type.Exec()
+
+	//Section023
+	method.Exec()
+	receiver_ptr.Exec()
+	method_value.Exec()
 }
