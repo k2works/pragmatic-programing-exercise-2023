@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func main() {
+func Exec() {
 	for day := time.Sunday; day <= time.Saturday; day++ {
 		switch day {
 		case time.Sunday:

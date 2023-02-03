@@ -2,7 +2,7 @@ package type_
 
 import "fmt"
 
-func main() {
+func Exec() {
 	i := myIntegerFunc()
 	fmt.Println(i)
 

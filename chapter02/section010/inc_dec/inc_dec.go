@@ -2,7 +2,7 @@ package inc_dec
 
 import "fmt"
 
-func main() {
+func Exec() {
 	var inc int = 0
 	var dec int = 0
 

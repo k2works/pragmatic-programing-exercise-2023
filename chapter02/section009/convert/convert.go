@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func main() {
+func Exec() {
 	i, u, f, s, b := convertVar()
 
 	fmt.Println(i)

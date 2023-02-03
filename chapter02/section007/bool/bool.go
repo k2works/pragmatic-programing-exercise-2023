@@ -2,7 +2,7 @@ package bool
 
 import "fmt"
 
-func main() {
+func Exec() {
 	b := check()
 	fmt.Println(b)
 }

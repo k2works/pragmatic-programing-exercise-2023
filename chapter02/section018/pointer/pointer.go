@@ -2,7 +2,7 @@ package pointer
 
 import "fmt"
 
-func main() {
+func Exec() {
 	var ptr *int
 	var i int = 12345
 	ptr = &i

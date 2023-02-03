@@ -2,7 +2,7 @@ package swithch
 
 import "fmt"
 
-func main() {
+func Exec() {
 	for i := 0; i < 5; i++ {
 		switch i % 2 {
 		case 0:

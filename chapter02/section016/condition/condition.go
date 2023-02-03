@@ -2,7 +2,7 @@ package condition
 
 import "fmt"
 
-func main() {
+func Exec() {
 	i := 0
 
 	for i < 5 {

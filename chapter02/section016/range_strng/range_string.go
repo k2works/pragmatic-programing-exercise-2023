@@ -2,7 +2,7 @@ package range_string
 
 import "fmt"
 
-func main() {
+func Exec() {
 	str := "abcあいう"
 
 	for i, u := range str {

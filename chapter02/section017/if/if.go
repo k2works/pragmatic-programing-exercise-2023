@@ -2,7 +2,7 @@ package if_
 
 import "fmt"
 
-func main() {
+func Exec() {
 	for i := 0; i < 5; i++ {
 		if i%2 == 0 {
 			fmt.Println(i, "は偶数")

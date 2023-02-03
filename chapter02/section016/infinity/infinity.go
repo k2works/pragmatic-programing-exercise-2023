@@ -2,7 +2,7 @@ package infinity
 
 import "fmt"
 
-func main() {
+func Exec() {
 	i := 0
 
 	for {

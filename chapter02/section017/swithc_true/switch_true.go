@@ -2,7 +2,7 @@ package swithc_true
 
 import "fmt"
 
-func main() {
+func Exec() {
 	for i := -2; i <= 2; i++ {
 		switch true {
 		case i > 0:

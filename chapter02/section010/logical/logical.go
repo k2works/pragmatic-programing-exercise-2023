@@ -2,7 +2,7 @@ package logical
 
 import "fmt"
 
-func main() {
+func Exec() {
 	fmt.Println("true && true =", true)
 	fmt.Println("true && false =", true && false)
 	fmt.Println("false && false =", false)

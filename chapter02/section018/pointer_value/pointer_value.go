@@ -2,7 +2,7 @@ package pointer_value
 
 import "fmt"
 
-func main() {
+func Exec() {
 	a, b := 1, 1
 
 	double(a, &b)

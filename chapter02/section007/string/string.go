@@ -5,7 +5,7 @@ import (
 	"unicode/utf8"
 )
 
-func main() {
+func Exec() {
 	str := concatString()
 	fmt.Println(str)
 

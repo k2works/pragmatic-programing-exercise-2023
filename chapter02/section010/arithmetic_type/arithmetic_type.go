@@ -6,7 +6,7 @@ const C1 = 12345
 
 const C2 = 34567
 
-func main() {
+func Exec() {
 	var x int = C1 * C2
 	fmt.Println("12345 * 34567 = ", x)
 

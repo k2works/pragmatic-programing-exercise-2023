@@ -2,7 +2,7 @@ package number
 
 import "fmt"
 
-func main() {
+func Exec() {
 	resutl := convert()
 	fmt.Println(resutl)
 }
