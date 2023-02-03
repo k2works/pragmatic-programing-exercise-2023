@@ -21,13 +21,13 @@ import (
 	"chapter02/section016/range"
 	"chapter02/section016/range_strng"
 	"chapter02/section017/falthrough"
-	"chapter02/section017/if"
+	_if "chapter02/section017/if"
 	"chapter02/section017/swithc_true"
 	"chapter02/section017/swithch"
 	"chapter02/section018/pointer"
 	"chapter02/section018/pointer_value"
 	"chapter02/section019/zero"
-	_goto "chapter02/section020/goto"
+	"chapter02/section020/goto"
 	"chapter02/section020/label_break"
 	"chapter02/section020/label_continue"
 )
@@ -43,7 +43,7 @@ func main() {
 	string.Exec()
 
 	//Section008
-	type_.Exec()
+	_type.Exec()
 
 	//Section009
 	convert.Exec()
@@ -59,17 +59,17 @@ func main() {
 	abbreviation.Exec()
 
 	//Section016
-	break_.Exec()
+	_break.Exec()
 	condition.Exec()
 	continue_.Exec()
-	for_.Exec()
+	_for.Exec()
 	infinity.Exec()
-	range_.Exec()
+	_range.Exec()
 	range_string.Exec()
 
 	//Section017
 	falthrough.Exec()
-	if_.Exec()
+	_if.Exec()
 	swithc_true.Exec()
 	swithch.Exec()
 

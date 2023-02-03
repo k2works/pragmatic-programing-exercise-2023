@@ -1,4 +1,4 @@
-package break_
+package _break
 
 import "testing"
 

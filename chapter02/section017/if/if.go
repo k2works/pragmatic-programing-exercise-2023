@@ -1,4 +1,4 @@
-package if_
+package _if
 
 import "fmt"
 

@@ -1,4 +1,4 @@
-package type_
+package _type
 
 import "testing"
 
