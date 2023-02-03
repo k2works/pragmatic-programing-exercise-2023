@@ -52,6 +52,7 @@ import (
 	"contens/chapter05/section029/type_switch"
 	"contens/chapter06/section030/index"
 	_len "contens/chapter06/section030/len"
+	"contens/chapter06/section031/literal"
 )
 
 func main() {
@@ -146,4 +147,7 @@ func main() {
 	//Section030
 	_len.Exec()
 	index.Exec()
+
+	//Section031
+	literal.Exec()
 }
