@@ -47,6 +47,9 @@ import (
 	"chapter02/section026/embed_literal"
 	"chapter02/section026/struct_init"
 	_interface "chapter02/section027/interface"
+	"chapter02/section029/assertion"
+	"chapter02/section029/assertion2"
+	"chapter02/section029/type_switch"
 )
 
 func main() {
@@ -132,4 +135,9 @@ func main() {
 
 	//Section027
 	_interface.Exec()
+
+	//Section029
+	assertion.Exec()
+	assertion2.Exec()
+	type_switch.Exec()
 }
