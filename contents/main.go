@@ -64,6 +64,8 @@ import (
 	"contens/chapter06/section033/slice_literal"
 	_map "contens/chapter06/section034/map"
 	"contens/chapter06/section035/map_literal"
+	_error "contens/chapter07/section036/error"
+	_return2 "contens/chapter07/section036/return"
 )
 
 func main() {
@@ -181,4 +183,7 @@ func main() {
 	//Section035
 	map_literal.Exec()
 
+	//Section036
+	_return2.Exec()
+	_error.Exec()
 }
