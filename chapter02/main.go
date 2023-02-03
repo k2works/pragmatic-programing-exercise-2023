@@ -42,6 +42,7 @@ import (
 	"chapter02/section022/receiver_ptr"
 	_defer "chapter02/section023/defer"
 	"chapter02/section023/defer_close"
+	_struct "chapter02/section024/struct"
 )
 
 func main() {
@@ -114,4 +115,7 @@ func main() {
 	//Section023
 	_defer.Exec()
 	defer_close.Exec()
+
+	//Section024
+	_struct.Exec()
 }
