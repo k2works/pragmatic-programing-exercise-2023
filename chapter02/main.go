@@ -27,6 +27,9 @@ import (
 	"chapter02/section018/pointer"
 	"chapter02/section018/pointer_value"
 	"chapter02/section019/zero"
+	_goto "chapter02/section020/goto"
+	"chapter02/section020/label_break"
+	"chapter02/section020/label_continue"
 )
 
 func main() {
@@ -76,4 +79,9 @@ func main() {
 
 	//Section019
 	zero.Exec()
+
+	//Section020
+	label_break.Exec()
+	label_continue.Exec()
+	_goto.Exec()
 }
