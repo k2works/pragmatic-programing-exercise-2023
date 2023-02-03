@@ -21,6 +21,7 @@ import (
 	_ "chapter02/section016/range_strng"
 	_ "chapter02/section017/falthrough"
 	_ "chapter02/section017/if"
+	_ "chapter02/section017/swithc_true"
 	_ "chapter02/section017/swithch"
 )
 
