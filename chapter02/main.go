@@ -30,6 +30,13 @@ import (
 	"chapter02/section020/goto"
 	"chapter02/section020/label_break"
 	"chapter02/section020/label_continue"
+	"chapter02/section021/function"
+	"chapter02/section021/function_literal"
+	"chapter02/section021/function_type"
+	"chapter02/section021/multi"
+	"chapter02/section021/multi_param"
+	_return "chapter02/section021/return"
+	"chapter02/section021/variadic"
 )
 
 func main() {
@@ -84,4 +91,13 @@ func main() {
 	label_break.Exec()
 	label_continue.Exec()
 	_goto.Exec()
+
+	//Section021
+	function.Exec()
+	multi.Exec()
+	multi_param.Exec()
+	variadic.Exec()
+	_return.Exec()
+	function_literal.Exec()
+	function_type.Exec()
 }
