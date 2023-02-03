@@ -46,6 +46,7 @@ import (
 	"chapter02/section025/embed"
 	"chapter02/section026/embed_literal"
 	"chapter02/section026/struct_init"
+	_interface "chapter02/section027/interface"
 )
 
 func main() {
@@ -128,4 +129,7 @@ func main() {
 	//Section026
 	struct_init.Exec()
 	embed_literal.Exec()
+
+	//Section027
+	_interface.Exec()
 }
