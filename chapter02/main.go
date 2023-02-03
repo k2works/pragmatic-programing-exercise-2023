@@ -19,6 +19,7 @@ import (
 	_ "chapter02/section016/infinity"
 	_ "chapter02/section016/range"
 	_ "chapter02/section016/range_strng"
+	_ "chapter02/section017/falthrough"
 	_ "chapter02/section017/if"
 	_ "chapter02/section017/swithch"
 )
