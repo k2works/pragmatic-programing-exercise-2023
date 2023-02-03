@@ -68,7 +68,11 @@ import (
 	_return2 "contens/chapter07/section036/return"
 	_recover "contens/chapter07/section037/recover"
 	"contens/chapter08/section039/goroutine"
-	"contens/chapter08/section039/gosched"
+	"contens/chapter08/section040/cap_len"
+	_channel "contens/chapter08/section040/channel"
+	"contens/chapter08/section040/semaphore"
+	"contens/chapter08/section040/share"
+	_sync "contens/chapter08/section040/sync"
 )
 
 func main() {
@@ -201,5 +205,12 @@ func main() {
 	//Section039
 	goroutine.Exec()
 	//_fail.Exec()
-	gosched.Exec()
+	//gosched.Exec()
+
+	//Section040
+	_channel.Exec()
+	cap_len.Exec()
+	_sync.Exec()
+	semaphore.Exec()
+	share.Exec()
 }
