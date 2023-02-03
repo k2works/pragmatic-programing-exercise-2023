@@ -50,6 +50,8 @@ import (
 	"contens/chapter05/section029/assertion"
 	"contens/chapter05/section029/assertion2"
 	"contens/chapter05/section029/type_switch"
+	"contens/chapter06/section030/index"
+	_len "contens/chapter06/section030/len"
 )
 
 func main() {
@@ -140,4 +142,8 @@ func main() {
 	assertion.Exec()
 	assertion2.Exec()
 	type_switch.Exec()
+
+	//Section030
+	_len.Exec()
+	index.Exec()
 }
