@@ -43,6 +43,7 @@ import (
 	_defer "chapter02/section023/defer"
 	"chapter02/section023/defer_close"
 	_struct "chapter02/section024/struct"
+	"chapter02/section025/embed"
 )
 
 func main() {
@@ -118,4 +119,7 @@ func main() {
 
 	//Section024
 	_struct.Exec()
+
+	//Section025
+	embed.Exec()
 }
