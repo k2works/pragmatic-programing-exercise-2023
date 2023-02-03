@@ -53,6 +53,13 @@ import (
 	"contens/chapter06/section030/index"
 	_len "contens/chapter06/section030/len"
 	"contens/chapter06/section031/literal"
+	_append "contens/chapter06/section032/append"
+	"contens/chapter06/section032/array_slice"
+	_cap "contens/chapter06/section032/cap"
+	_copy "contens/chapter06/section032/copy"
+	"contens/chapter06/section032/slice"
+	"contens/chapter06/section032/slice_variadic"
+	"contens/chapter06/section032/string_slice"
 )
 
 func main() {
@@ -150,4 +157,13 @@ func main() {
 
 	//Section031
 	literal.Exec()
+
+	//Section032
+	slice.Eexec()
+	array_slice.Exec()
+	_cap.Exec()
+	string_slice.Exec()
+	_append.Exec()
+	_copy.Exec()
+	slice_variadic.Exec()
 }
