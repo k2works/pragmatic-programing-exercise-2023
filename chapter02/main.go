@@ -40,6 +40,8 @@ import (
 	"chapter02/section022/method"
 	"chapter02/section022/method_value"
 	"chapter02/section022/receiver_ptr"
+	_defer "chapter02/section023/defer"
+	"chapter02/section023/defer_close"
 )
 
 func main() {
@@ -104,8 +106,12 @@ func main() {
 	function_literal.Exec()
 	function_type.Exec()
 
-	//Section023
+	//Section022
 	method.Exec()
 	receiver_ptr.Exec()
 	method_value.Exec()
+
+	//Section023
+	_defer.Exec()
+	defer_close.Exec()
 }
