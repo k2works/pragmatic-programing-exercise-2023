@@ -37,9 +37,9 @@ import (
 	"chapter02/section021/multi_param"
 	_return "chapter02/section021/return"
 	"chapter02/section021/variadic"
-	"chapter02/section023/method"
-	"chapter02/section023/method_value"
-	"chapter02/section023/receiver_ptr"
+	"chapter02/section022/method"
+	"chapter02/section022/method_value"
+	"chapter02/section022/receiver_ptr"
 )
 
 func main() {
