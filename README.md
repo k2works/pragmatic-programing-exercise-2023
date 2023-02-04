@@ -2,6 +2,8 @@
 
 [![Node.js CI](https://github.com/k2works/programing_introduce_2023/actions/workflows/node.js.yml/badge.svg)](https://github.com/k2works/programing_introduce_2023/actions/workflows/node.js.yml)
 
+[![Go CI](https://github.com/k2works/programing_introduce_2023/actions/workflows/go.yml/badge.svg)](https://github.com/k2works/programing_introduce_2023/actions/workflows/go.yml)
+
 ## 概要
 
 ### 目的
