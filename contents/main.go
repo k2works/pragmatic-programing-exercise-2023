@@ -71,8 +71,8 @@ import (
 	"contens/chapter08/section040/cap_len"
 	_channel "contens/chapter08/section040/channel"
 	"contens/chapter08/section040/semaphore"
-	"contens/chapter08/section040/share"
 	_sync "contens/chapter08/section040/sync"
+	_select "contens/chapter08/section041/select"
 )
 
 func main() {
@@ -212,5 +212,8 @@ func main() {
 	cap_len.Exec()
 	_sync.Exec()
 	semaphore.Exec()
-	share.Exec()
+	//share.Exec()
+
+	//Section041
+	_select.Exec()
 }
