@@ -73,6 +73,11 @@ import (
 	"contens/chapter08/section040/semaphore"
 	_sync "contens/chapter08/section040/sync"
 	_select "contens/chapter08/section041/select"
+	"contens/chapter09/section042/format"
+	"contens/chapter09/section042/format_stdout"
+  "contens/chapter09/section042/fileio"
+  "contens/chapter09/section042/csv_write"
+  "contens/chapter09/section042/csv_read"
 )
 
 func main() {
@@ -216,4 +221,11 @@ func main() {
 
 	//Section041
 	_select.Exec()
+
+	//Section042
+	format.Exec()
+	format_stdout.Exec()
+  fileio.Exec()
+  csv_write.Exec()
+  csv_read.Exec()
 }
