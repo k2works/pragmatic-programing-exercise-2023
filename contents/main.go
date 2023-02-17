@@ -78,6 +78,12 @@ import (
   "contens/chapter09/section042/fileio"
   "contens/chapter09/section042/csv_write"
   "contens/chapter09/section042/csv_read"
+  "contens/chapter09/section043/mkdir"
+  "contens/chapter09/section043/delete"
+  "contens/chapter09/section043/chdir"
+  "contens/chapter09/section043/rename"
+  "contens/chapter09/section043/temp"
+  "contens/chapter09/section043/dir_list"
 )
 
 func main() {
@@ -228,4 +234,12 @@ func main() {
   fileio.Exec()
   csv_write.Exec()
   csv_read.Exec()
+
+  //Section043
+  mkdir.Exec()
+  delete.Exec()
+  chdir.Exec()
+  rename.Exec()
+  temp.Exec()
+  dir_list.Exec()
 }
