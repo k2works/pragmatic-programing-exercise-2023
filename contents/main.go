@@ -51,7 +51,7 @@ import (
 	"contens/chapter05/section029/assertion2"
 	"contens/chapter05/section029/type_switch"
 	"contens/chapter06/section030/index"
-	_len "contens/chapter06/section030/len"
+  _len "contens/chapter06/section030/len"
 	"contens/chapter06/section031/literal"
 	_append "contens/chapter06/section032/append"
 	"contens/chapter06/section032/array_slice"
@@ -84,6 +84,12 @@ import (
   "contens/chapter09/section043/rename"
   "contens/chapter09/section043/temp"
   "contens/chapter09/section043/dir_list"
+  "contens/chapter09/section044/list"
+  "contens/chapter09/section044/list_len"
+  "contens/chapter09/section044/list_element"
+  "contens/chapter09/section044/list_add"
+  "contens/chapter09/section044/list_init"
+  "contens/chapter09/section044/_hash"
 )
 
 func main() {
@@ -242,4 +248,11 @@ func main() {
   rename.Exec()
   temp.Exec()
   dir_list.Exec()
+
+  //Section044
+  list.Exec()
+  list_len.Exec()
+  list_element.Exec()
+  list_add.Exec()
+  _hash.Exec()
 }
