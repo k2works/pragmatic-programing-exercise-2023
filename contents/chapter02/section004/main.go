@@ -5,6 +5,7 @@ import (
 )
 
 func main() {
+	//Section004
 	result := hello.Greeting()
 	println(result)
 }
