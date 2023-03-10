@@ -2,3 +2,7 @@ node_modules
 coverage
 public
 .vercel
+.idea
+*.exe
+test.txt
+newfile
