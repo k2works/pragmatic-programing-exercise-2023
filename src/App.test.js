@@ -66,5 +66,45 @@ describe('イテレータ', () => {
     const result = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(item => item > 6);
     expect(result).toEqual([7, 8, 9]);
   });
+});
 
+describe('関数を受ける関数の作成', () => {
+  test('関数を受け取れる関数の作成', () => {
+    function argOne(callback) {
+      return callback(1);
+    }
+
+    const result = argOne(x => x + 3);
+    expect(result).toBe(4);
+  });
+
+  test('関数を受け取れる関数でもう少し複雑な関数を作成', () => {
+    function argOneTwice(callback) {
+      return callback(1) + callback(2);
+    }
+
+    const result = argOneTwice(x => x + 3);
+    expect(result).toBe(9);
+  });
+
+  test('手続きオブジェクトとして関数を作成', () => {
+    const plusthree = x => x + 3;
+
+    const result = plusthree(1);
+    expect(result).toBe(4);
+  });
+
+  test('lambdaで関数を作成', () => {
+    const plusthree = function (x) { return x + 3; };
+
+    const result = plusthree(1);
+    expect(result).toBe(4);
+  });
+
+  test('引数の数の明確なチェック', function () {
+    expect(function () {
+      const plusthree = function (x) { return x + 3; };
+      plusthree.call(null, 1, 2);
+    }).not.toThrow();
+  });
 });
