@@ -5,19 +5,19 @@ export class App {
   }
 }
 
-export function lyricSegment() {
-  var lyrics = [];
+export function ビールの歌() {
+  let 歌詞 = [];
 
-  for (var bottles = 99; bottles > 0; bottles--) {
-    lyrics.push(bottles + " bottles of beer on the wall");
-    lyrics.push(bottles + " bottles of beer");
-    lyrics.push("Take one down, pass it around");
-    if (bottles > 1) {
-      lyrics.push((bottles - 1) + " bottles of beer on the wall.");
+  for (let 本数 = 99; 本数 > 0; 本数--) {
+    歌詞.push(本数 + " 本のビールが残っている");
+    歌詞.push(本数 + " 本のビール");
+    歌詞.push("ひとつ取って、隣に回せ");
+    if (本数 > 1) {
+      歌詞.push((本数 - 1) + " 本のビールが残っている");
     } else {
-      lyrics.push("No more bottles of beer on the wall!");
+      歌詞.push("もうビールは残っていない");
     }
   }
 
-  return lyrics;
+  return 歌詞;
 }
