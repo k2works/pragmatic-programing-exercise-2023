@@ -24,7 +24,7 @@
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "C:\\Users\\kakim\\scoop\\shims\\deno.EXE",
-      "runtimeArgs": ["test", "--inspect-brk", "./api/test.ts"],
+      "runtimeArgs": ["test", "--inspect-brk", "api/"],
       "attachSimplePort": 9229
     }
   ]
