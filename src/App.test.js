@@ -1,26 +1,30 @@
-import { lyricSegment } from "./App.js";
+import { ビールの歌 } from "./App.js";
 
 
-describe("lyricSegment", () => {
+describe("ビールの歌", () => {
   let result;
   beforeEach(() => {
-    result = lyricSegment();
+    result = ビールの歌();
   });
 
-  test("first line", () => {
-    expect(result[0]).toBe("99 bottles of beer on the wall");
+  test("最初の行", () => {
+    expect(result[0]).toBe("99 本のビールが残っている");
   });
 
-  test("second line", () => {
-    expect(result[1]).toBe("99 bottles of beer");
+  test("２行目", () => {
+    expect(result[1]).toBe("99 本のビール");
   });
 
-  test("third line", () => {
-    expect(result[2]).toBe("Take one down, pass it around");
+  test("３行目", () => {
+    expect(result[2]).toBe("ひとつ取って、隣に回せ");
   });
 
-  test("last line", () => {
-    expect(result[result.length - 1]).toBe("No more bottles of beer on the wall!");
+  test("４行目", () => {
+    expect(result[3]).toBe("98 本のビールが残っている");
+  });
+
+  test("最後の行", () => {
+    expect(result[result.length - 1]).toBe("もうビールは残っていない");
   });
 });
 
