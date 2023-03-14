@@ -5,10 +5,6 @@ export class App {
   }
 }
 
-export function sum(a, b) {
-  return a + b;
-}
-
 export function totalStructured() {
   let total = 0;
   const prices = [1, 5, 7];
