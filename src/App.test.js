@@ -1,30 +1,30 @@
-import { ビールの歌 } from "./App.js";
+import { ビールの歌, ビールの歌の歌詞 } from "./App.js";
 
 
 describe("ビールの歌", () => {
   let result;
   beforeEach(() => {
-    result = ビールの歌();
+    result = ビールの歌(99, 0, ビールの歌の歌詞);
   });
 
-  test("最初の行", () => {
-    expect(result[0]).toBe("99 本のビールが残っている");
+  test("最初の歌詞", () => {
+    const 最初の歌詞 = result[0].join(' ');
+    expect(最初の歌詞).toBe("99 本のビールが残っている 99 本のビール ひとつ取って、隣に回せ 98 本のビールが残っている");
   });
 
-  test("２行目", () => {
-    expect(result[1]).toBe("99 本のビール");
+  test("二番目の歌詞", () => {
+    const 二番目の歌詞 = result[1].join(' ');
+    expect(二番目の歌詞).toBe("98 本のビールが残っている 98 本のビール ひとつ取って、隣に回せ 97 本のビールが残っている");
   });
 
-  test("３行目", () => {
-    expect(result[2]).toBe("ひとつ取って、隣に回せ");
+  test("三番目の歌詞", () => {
+    const 三番目の歌詞 = result[2].join(' ');
+    expect(三番目の歌詞).toBe("97 本のビールが残っている 97 本のビール ひとつ取って、隣に回せ 96 本のビールが残っている");
   });
 
-  test("４行目", () => {
-    expect(result[3]).toBe("98 本のビールが残っている");
-  });
-
-  test("最後の行", () => {
-    expect(result[result.length - 1]).toBe("もうビールは残っていない");
+  test("最後の歌詞", () => {
+    const 最後の歌詞 = result[result.length - 1].join(' ');
+    expect(最後の歌詞).toBe("1 本のビールが残っている 1 本のビール ひとつ取って、隣に回せ もうビールは残っていない");
   });
 });
 

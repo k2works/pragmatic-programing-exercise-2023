@@ -5,19 +5,29 @@ export class App {
   }
 }
 
-export function ビールの歌() {
-  let 歌詞 = [];
+import * as _ from "lodash";
 
-  for (let 本数 = 99; 本数 > 0; 本数--) {
-    歌詞.push(本数 + " 本のビールが残っている");
-    歌詞.push(本数 + " 本のビール");
-    歌詞.push("ひとつ取って、隣に回せ");
+export function ビールの歌の歌詞(本数) {
+  return _.chain([])
+  .push(本数 + " 本のビールが残っている")
+  .push(本数 + " 本のビール")
+  .push("ひとつ取って、隣に回せ")
+  .tap(歌詞 => {
     if (本数 > 1) {
       歌詞.push((本数 - 1) + " 本のビールが残っている");
     } else {
       歌詞.push("もうビールは残っていない");
     }
-  }
+  })
+  .value();
+}
 
-  return 歌詞;
+export function ビールの歌(start, end, 歌詞) {
+  return _.reduce(
+    _.range(start, end, -1),
+    (acc, n) => {
+    return acc.concat([歌詞(n)]);
+    },
+    []
+  );
 }
