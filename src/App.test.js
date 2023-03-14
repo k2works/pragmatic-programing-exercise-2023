@@ -19,7 +19,7 @@ describe("lyricSegment", () => {
 
   test("last line", () => {
     const result = lyricSegment(99);
-    expect(result[result.length - 1]).toBe("");
+    expect(result[result.length - 1]).toBe("No more bottles of beer on the wall!");
   });
 });
 
