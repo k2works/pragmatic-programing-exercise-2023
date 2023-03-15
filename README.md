@@ -40,12 +40,21 @@ npm install --save-dev jest
 npm i -g vercel
 ```
 
+```bash
+npm install prisma --save-dev
+npx prisma init --datasource-provider mysql
+```
+
 **[⬆ back to top](#構成)**
 
 ### 配置
 
 ```bash
 npm run deploy
+```
+
+```bash
+
 ```
 
 **[⬆ back to top](#構成)**
