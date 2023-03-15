@@ -15,7 +15,9 @@
     "build:webpack": "webpack --config webpack.config.js",
     "clean": "rimraf ./public",
     "deploy:local": "vercel dev",
-    "deploy": "vercel"
+    "deploy": "vercel",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed"
   },
   "repository": {
     "type": "git",
