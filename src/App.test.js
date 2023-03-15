@@ -64,4 +64,71 @@ describe("SQL入門", () => {
       expect(result.length).toBe(4);
     })
   })
+
+  describe("LIKE演算子データ取得", () => {
+    let select_birthday_like = () => { };
+
+    beforeEach(() => {
+      const parseBirthday = (birthday) => {
+        const date = new Date(birthday);
+        return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+      }
+      select_birthday_like = (data, birthday) =>
+        data.filter((i) => parseBirthday(i.birthday).match("\\s*" + birthday + "\\s*"));
+    })
+
+    test("SELECT * FROM Student WHERE birthday LIKE '%2000-%'", () => {
+      const result = select_birthday_like(students, "2000-");
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    })
+
+    test("SELECT * FROM Student WHERE birthday LIKE '1998-%'", () => {
+      const result = select_birthday_like(students, "1998-");
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    })
+
+    test("SELECT * FROM Student WHERE name LIKE '%藤'", () => {
+      const select_name_like_before = (data, name) =>
+        data.filter((i) => i.name.match(new RegExp(name + ".*", "g")));
+
+      const result = select_name_like_before(students, "藤");
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    })
+
+    test("SELECT * FROM Student WHERE name LIKE '藤%'", () => {
+      const select_name_like_after = (data, name) =>
+        data.filter((i) => i.name.match(new RegExp("^" + name + ".*", "g")));
+
+      const result = select_name_like_after(students, "藤");
+
+      console.table(result);
+      expect(result.length).toBe(0);
+    })
+
+    test("SELECT * FROM Student WHERE test_score is NULL", () => {
+      const select_test_score_is_null = (data) =>
+        data.filter((i) => i.test_score === null);
+
+      const result = select_test_score_is_null(students);
+
+      console.table(result);
+      expect(result.length).toBe(0);
+    })
+
+    test("SELECT * FROM Student WHERE test_score is NOT NULL", () => {
+      const select_test_score_is_not_null = (data) =>
+        data.filter((i) => i.test_score !== null);
+
+      const result = select_test_score_is_not_null(students);
+
+      console.table(result);
+      expect(result.length).toBe(10);
+    })
+  })
 })
