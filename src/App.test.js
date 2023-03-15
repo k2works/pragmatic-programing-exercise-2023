@@ -131,4 +131,78 @@ describe("SQL入門", () => {
       expect(result.length).toBe(10);
     })
   })
+
+  describe("AND演算子 OR演算子", () => {
+    test("SELECT * FROM Student WHERE gender='男' AND age=12", () => {
+      const select_by_gender_and_age = (data, gender, age) =>
+        data.filter((i) => i.gender === gender && i.age === age);
+
+      const result = select_by_gender_and_age(students, "男", 12);
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    })
+
+    test("SELECT * FROM Student WHERE gender='男' AND age>10", () => {
+      const select_by_gender_and_age_grater = (data, gender, age) =>
+        data.filter((i) => i.gender === gender && i.age > age);
+
+      const result = select_by_gender_and_age_grater(students, "男", 10);
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    })
+
+    test("SELECT * FROM Student WHERE gener='女' AND birthday LIKE '%1998-%'", () => {
+      const parseBirthday = (birthday) => {
+        const date = new Date(birthday);
+        return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+      }
+
+      const select_by_gender_and_birthday_like = (data, gender, birthday) =>
+        data.filter(
+          (i) =>
+            i.gender === gender &&
+            parseBirthday(i.birthday).match(new RegExp("^" + birthday + ".*", "g"))
+        );
+
+      const result = select_by_gender_and_birthday_like(students, "女", "1998-");
+      expect(result.length).toBe(2);
+    })
+
+    test("SELECT * FROM Student WHERE gender='男' AND age=12 AND test_score>50", () => {
+      const select_by_gender_and_age_and_test_score_grater = (
+        data,
+        gender,
+        age,
+        test_score
+      ) =>
+        data.filter(
+          (i) => i.gender === gender && i.age === age && i.test_score > test_score
+        );
+
+      const result = select_by_gender_and_age_and_test_score_grater(students, "男", 12, 50);
+      expect(result.length).toBe(2);
+    })
+
+    test("SELECT * FROM Student WHERE age=10 OR age=12", () => {
+      const select_by_age = (data, agelist) =>
+        data.filter((i) => agelist.includes(i.age));
+
+      const result = select_by_age(students, [10, 12]);
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    })
+
+    test("SELECT * FROM Student WHERE age=10 OR age=12 OR name='渡辺'", () => {
+      const select_by_age_or_name = (data, agelist, name) =>
+        data.filter((i) => agelist.includes(i.age) || i.name === name);
+
+      const result = select_by_age_or_name(students, [10, 12], "渡辺");
+
+      console.table(result);
+      expect(result.length).toBe(6);
+    })
+  })
 })
