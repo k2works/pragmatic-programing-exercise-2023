@@ -7,6 +7,18 @@ beforeAll(async () => {
 })
 
 describe("SQL入門", () => {
+  let parseBirthday = () => { };
+  let select_birthday_like = () => { };
+
+  beforeEach(() => {
+    parseBirthday = (birthday) => {
+      const date = new Date(birthday);
+      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    }
+    select_birthday_like = (data, birthday) =>
+      data.filter((i) => parseBirthday(i.birthday).match("\\s*" + birthday + "\\s*"));
+  })
+
   describe("SQLのクエリの書き方", () => {
     test("SELECT id FROM Student", () => {
       const select = (data) => data.map((i) => i.id);
@@ -66,17 +78,6 @@ describe("SQL入門", () => {
   })
 
   describe("LIKE演算子データ取得", () => {
-    let select_birthday_like = () => { };
-
-    beforeEach(() => {
-      const parseBirthday = (birthday) => {
-        const date = new Date(birthday);
-        return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-      }
-      select_birthday_like = (data, birthday) =>
-        data.filter((i) => parseBirthday(i.birthday).match("\\s*" + birthday + "\\s*"));
-    })
-
     test("SELECT * FROM Student WHERE birthday LIKE '%2000-%'", () => {
       const result = select_birthday_like(students, "2000-");
 
@@ -154,11 +155,6 @@ describe("SQL入門", () => {
     })
 
     test("SELECT * FROM Student WHERE gener='女' AND birthday LIKE '%1998-%'", () => {
-      const parseBirthday = (birthday) => {
-        const date = new Date(birthday);
-        return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-      }
-
       const select_by_gender_and_birthday_like = (data, gender, birthday) =>
         data.filter(
           (i) =>
@@ -203,6 +199,81 @@ describe("SQL入門", () => {
 
       console.table(result);
       expect(result.length).toBe(6);
+    })
+  })
+
+  describe("ORDER BYで並び替え", () => {
+    test("SELECT name,age FROM Student ORDER BY age ASC", () => {
+      const select_name_and_age_order_by_age_asc = (data) =>
+        data.sort((a, b) => a.age - b.age).map((i) => ({ name: i.name, age: i.age }));
+
+      const result = select_name_and_age_order_by_age_asc(students);
+
+      console.table(result);
+      expect(result[0].age).toBe(8);
+    })
+
+    test("SELECT name,birthday FROM Student ORDER BY birthday ASC", () => {
+      const select_name_and_birthday_order_by_birthday_asc = (data) =>
+        data
+          .sort((a, b) => parseBirthday(a.birthday).localeCompare(parseBirthday(b.birthday)))
+          .map((i) => ({ name: i.name, birthday: i.birthday }));
+
+      const result = select_name_and_birthday_order_by_birthday_asc(students);
+
+      console.table(result);
+      expect(parseBirthday(result[0].birthday)).toBe("1996-2-14");
+    })
+
+    test("SELECT name,age FROM Student ORDER BY age DESC", () => {
+      const select_name_and_age_order_by_age_desc = (data) =>
+        data.sort((a, b) => b.age - a.age).map((i) => ({ name: i.name, age: i.age }));
+
+      const result = select_name_and_age_order_by_age_desc(students);
+
+      console.table(result);
+      expect(result[0].age).toBe(12);
+    })
+
+    test("SELECT age,id FROM Student ORDER BY age,id ASC", () => {
+      const select_age_and_id_order_by_age_asc_and_id_asc = (data) =>
+        data
+          .sort((a, b) => a.age - b.age || a.id - b.id)
+          .map((i) => ({ age: i.age, id: i.id }));
+
+      const result = select_age_and_id_order_by_age_asc_and_id_asc(students);
+
+      console.table(result);
+      expect(result[0].age).toBe(8);
+    })
+
+    test("SELECT name,age FROM Student WHERE age>=10 ORDER BY age ASC", () => {
+      const select_name_and_age_order_by_age_asc_by_age_grater = (data, age) =>
+        data
+          .filter((i) => i.age >= age)
+          .sort((a, b) => a.age - b.age)
+          .map((i) => ({ name: i.name, age: i.age }));
+
+      const result = select_name_and_age_order_by_age_asc_by_age_grater(students, 10);
+
+      console.table(result);
+      expect(result[0].age).toBe(10);
+    })
+
+    test("SELECT name,id,age,gender FROM Student WHERE gender='女' ORDER BY age,id ASC", () => {
+      const select_name_and_id_and_age_and_gender_order_by_age_id_asc_by_gender = (
+        data,
+        gender
+      ) =>
+        data
+          .filter((i) => i.gender === gender)
+          .sort((a, b) => a.age - b.age || a.id - b.id)
+          .map((i) => ({ name: i.name, id: i.id, age: i.age, gender: i.gender }));
+
+      const result = select_name_and_id_and_age_and_gender_order_by_age_id_asc_by_gender(students, "女");
+
+      console.table(result);
+      expect(result[0].age).toBe(8);
     })
   })
 })
