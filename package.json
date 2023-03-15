@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "プログラミング入門 2023",
   "main": "src/index.js",
+  "prisma": {
+  "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "start": "nf start -j Procfile",
     "app": "webpack server --config ./webpack.config.js --open",
@@ -42,5 +45,8 @@
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.11.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.11.0"
   }
 }

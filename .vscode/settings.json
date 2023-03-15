@@ -8,10 +8,10 @@
       "server": "localhost",
       "port": 3306,
       "driver": "MySQL",
-      "name": "mysql",
+      "name": "postgresql",
       "database": "test",
-      "username": "docker",
-      "password": "docker"
+      "username": "root",
+      "password": "root"
     },
     {
       "mysqlOptions": {
@@ -21,7 +21,7 @@
       "server": "localhost",
       "port": 3306,
       "driver": "MySQL",
-      "name": "postgresql",
+      "name": "mysql",
       "database": "test",
       "username": "root",
       "password": "root"

@@ -9,3 +9,12 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Student {
+  id         Int      @id @default(autoincrement())
+  name       String
+  age        Int
+  gender     String
+  test_score Int
+  birthday   DateTime
+}

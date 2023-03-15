@@ -43,6 +43,9 @@ npm i -g vercel
 ```bash
 npm install prisma --save-dev
 npx prisma init --datasource-provider mysql
+npx prisma migrate dev --name init
+npm install @prisma/client
+npx prisma generate
 ```
 
 **[⬆ back to top](#構成)**
@@ -51,10 +54,6 @@ npx prisma init --datasource-provider mysql
 
 ```bash
 npm run deploy
-```
-
-```bash
-
 ```
 
 **[⬆ back to top](#構成)**
@@ -69,9 +68,14 @@ npm run deploy
 npm start
 ```
 
+```bash
+npx prisma studio
+```
+
 **[⬆ back to top](#構成)**
 
 ## 参照
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
 - [Vercel](https://vercel.com/)
 - [GitHub Actions](https://github.co.jp/features/actions)
+- [SQL入門](https://www.canit.jp/category/intro/sql)
