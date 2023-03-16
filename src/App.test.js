@@ -416,4 +416,61 @@ describe("SQL入門", () => {
       expect(result).toBe(70.6);
     })
   })
+
+  describe("MAXやMINの使い方", () => {
+    test("SELECT MAX(age) FROM Student", () => {
+      const select_max_age = (data) =>
+        data.reduce((acc, cur) => (acc > cur.age ? acc : cur.age), 0);
+
+      const result = select_max_age(students);
+
+      console.table(result);
+      expect(result).toBe(12);
+    })
+
+    test("SELECT MAX(birthday) FROM Student", () => {
+      const select_max_birthday = (data) =>
+        data.reduce((acc, cur) => (acc > cur.birthday ? acc : cur.birthday), "");
+
+      const result = select_max_birthday(students);
+
+      console.table(result);
+      expect(result).toStrictEqual(new Date("2000-06-01"));
+    })
+
+    test("SELECT MAX(age) FROM Student WHERE test_score>=50", () => {
+      const select_max_age_by_test_score_grater = (data, test_score) =>
+        data
+          .filter((i) => i.test_score >= test_score)
+          .reduce((acc, cur) => (acc > cur.age ? acc : cur.age), 0);
+
+      const result = select_max_age_by_test_score_grater(students, 50);
+
+      console.table(result);
+      expect(result).toBe(12);
+    })
+
+    test("SELECT MIN(age) FROM Student", () => {
+      const select_min_age = (data) =>
+       data.map((i) => i.age).reduce((a, b) => Math.min(a, b));
+
+      const result = select_min_age(students);
+
+      console.table(result);
+      expect(result).toBe(8);
+    })
+
+    test("SELECT MIN(age) FROM Student WHERE test_score>=50", () => {
+      const select_min_age_by_test_score_grater = (data, test_score) =>
+        data
+          .filter((i) => i.test_score >= test_score)
+          .map((i) => i.age)
+          .reduce((a, b) => Math.min(a, b));
+
+      const result = select_min_age_by_test_score_grater(students, 50);
+
+      console.table(result);
+      expect(result).toBe(8);
+    })
+  })
 })
