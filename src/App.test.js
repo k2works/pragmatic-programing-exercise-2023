@@ -276,4 +276,79 @@ describe("SQL入門", () => {
       expect(result[0].age).toBe(8);
     })
   })
+
+  describe("LIMIでデータ数制限", () => {
+    test("SELECT name FROM Student LIMIT 5", () => {
+      const select_name_limit = (data, limit) =>
+        data
+          .sort((a, b) => a.id - b.id)
+          .map((i) => i.name)
+          .slice(0, -1 * limit);
+
+      const result = select_name_limit(students, 5);
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    })
+
+    test("SELECT name FROM Student WHERE age=12 LIMIT 1", () => {
+      const select_name_by_age_limit = (data, age, limit) => {
+        const result = data
+          .filter((i) => i.age === age)
+          .sort((a, b) => a.id - b.id)
+          .map((i) => i.name)
+          .slice(0, -1 * limit);
+        return result.length ? result[0] : null;
+      };
+
+      const result = select_name_by_age_limit(students, 12, 1);
+
+      console.table(result);
+      expect(result).toBe("佐藤");
+    })
+
+    test("SELECT name FROM Student WHERE birthday LIKE '2000-%' LIMIT 1", () => {
+      const select_name_by_birthday_like_limit = (data, birthday, limit) => {
+        const result = data
+          .filter((i) => parseBirthday(i.birthday).includes(birthday))
+          .sort((a, b) => a.id - b.id)
+          .map((i) => i.name)
+          .slice(0, -1 * limit);
+        return result.length ? result[0] : null;
+      };
+
+      const result = select_name_by_birthday_like_limit(students, "2000-", 1);
+
+      console.table(result);
+      expect(result).toBe("佐藤");
+    })
+
+    test("SELECT name FROM Student ORDER BY age ASC LIMIT 1", () => {
+      const select_name_order_by_age_asc_limit = (data, limit) => {
+        const result = data
+          .sort((a, b) => a.age - b.age)
+          .map((i) => i.name)
+          .slice(0, -1 * limit);
+        return result.length ? result[0] : null;
+      };
+
+      const result = select_name_order_by_age_asc_limit(students, 1);
+
+      console.table(result);
+      expect(result).toBe("高橋");
+    })
+
+    test("SELECT DISTINCT(age) FROM Student ORDER BY age ASC", () => {
+      const select_distinct_age_order_by_age_asc = (data) =>
+        data
+          .sort((a, b) => a.age - b.age)
+          .map((i) => i.age)
+          .filter((i, index, self) => self.indexOf(i) === index);
+
+      const result = select_distinct_age_order_by_age_asc(students);
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    })
+  })
 })
