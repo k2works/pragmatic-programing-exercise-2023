@@ -657,4 +657,166 @@ describe("SQL入門", () => {
       )
     })
   })
+
+  describe("GROUP BYとHAVING", () => {
+    test("SELECT name, test_score FROM Student HAVING test_score>=50", () => {
+      const select_name_test_score_by_name_and_grater_equal_test_score = (
+        data,
+        test_score
+      ) => {
+        const name_group = data
+          .sort((a, b) => a.name - b.name)
+          .map((i) => i.name)
+          .filter((i, index, self) => self.indexOf(i) === index);
+
+        return name_group
+          .map((name) => {
+            const list = data.filter(
+              (i) => i.name === name && i.test_score >= test_score
+            );
+            return list.map((i) => {
+              return {
+                name: i.name,
+                test_score: list.reduce((acc, cur) => acc + cur.test_score, 0),
+              };
+            })[0];
+          })
+          .filter((v) => v);
+      };
+
+      const result = select_name_test_score_by_name_and_grater_equal_test_score(students, 50);
+
+      console.table(result);
+      expect(result).toStrictEqual(
+        [
+          { "name": "高橋", "test_score": 90 },
+          { "name": "渡辺", "test_score": 50 },
+          { "name": "鈴木", "test_score": 64 },
+          { "name": "小林", "test_score": 99 },
+          { "name": "山本", "test_score": 55 },
+          { "name": "佐藤", "test_score": 89 },
+          { "name": "中村", "test_score": 100 }
+        ]
+      )
+    })
+
+    test.skip("SELECT age, SUM(test_score) AS test_score_by_age FROM Student GROUP BY age HAVING SUM(test_score)>=100", () => {
+      const select_age_sum_test_score_by_age_and_grater_equal_test_score = (
+        data,
+        test_score
+      ) => {
+        const age_group = data
+          .sort((a, b) => a.age - b.age)
+          .map((i) => i.age)
+          .filter((i, index, self) => self.indexOf(i) === index);
+
+        return age_group
+          .map((age) => {
+            const list = data.filter(
+              (i) => i.age === age && i.test_score >= test_score
+            );
+            return list.map((i) => {
+              return {
+                age: i.age,
+                test_score: list.reduce((acc, cur) => acc + cur.test_score, 0),
+              };
+            })[0];
+          })
+          .filter((v) => v);
+      };
+
+      const result = select_age_sum_test_score_by_age_and_grater_equal_test_score(students, 100);
+
+      console.table(result);
+      expect(result).toStrictEqual(
+        [
+          { "age": 11, "test_score": 100 },
+          { "age": 12, "test_score": 189 }
+        ]
+      )
+    })
+
+    test("SELECT age, SUM(test_score) AS test_score_by_age FROM Student GROUP BY age HAVING test_score_by_age >=100", () => {
+      const select_age_sum_test_score_by_age_having_grater_equal_test_score = (
+        data,
+        test_score
+      ) => {
+        const age_group = data
+          .sort((a, b) => a.age - b.age)
+          .map((i) => i.age)
+          .filter((i, index, self) => self.indexOf(i) === index);
+
+        const having = age_group.map((age) => {
+          const list = data.filter((i) => i.age === age);
+          return list.map((i) => {
+            return {
+              age: i.age,
+              test_score: list.reduce((acc, cur) => acc + cur.test_score, 0),
+            };
+          })[0];
+        });
+
+        return having
+          .map((i) => {
+            if (i.test_score >= test_score) {
+              return i;
+            }
+          })
+          .filter((v) => v);
+      };
+
+      const result = select_age_sum_test_score_by_age_having_grater_equal_test_score(students, 100);
+
+      console.table(result);
+      expect(result).toStrictEqual(
+        [
+          { "age": 8, "test_score": 140 },
+          { "age": 10, "test_score": 158 },
+          { "age": 12, "test_score": 189 }
+        ]
+      );
+    })
+
+    test("SELECT age, SUM(test_score) AS test_score_by_age FROM Student GROUP BY age HAVING test_score_by_age >=100 ORDER BY test_score_by_age", () => {
+      const select_age_sum_test_score_by_age_having_grater_equal_test_score_order_by_test_score =
+        (data, test_score) => {
+          const age_group = data
+            .sort((a, b) => a.age - b.age)
+            .map((i) => i.age)
+            .filter((i, index, self) => self.indexOf(i) === index);
+
+          const having = age_group.map((age) => {
+            const list = data.filter((i) => i.age === age);
+            return list.map((i) => {
+              return {
+                age: i.age,
+                test_score: list.reduce((acc, cur) => acc + cur.test_score, 0),
+              };
+            })[0];
+          });
+
+          return having
+            .map((i) => {
+              if (i.test_score >= test_score) {
+                return i;
+              }
+            })
+            .filter((v) => v)
+            .sort((a, b) => b.test_score + a.test_score);
+        };
+
+      const result = select_age_sum_test_score_by_age_having_grater_equal_test_score_order_by_test_score(
+        students,
+        100
+      );
+
+      console.table(result);
+      expect(result).toStrictEqual([
+        { "age": 8, "test_score": 140 },
+        { "age": 10, "test_score": 158 },
+        { "age": 12, "test_score": 189 }
+      ]
+      );
+    })
+  })
 })
