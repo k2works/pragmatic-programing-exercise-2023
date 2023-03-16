@@ -473,4 +473,188 @@ describe("SQL入門", () => {
       expect(result).toBe(8);
     })
   })
+
+  describe("GROUP BYの使い方", () => {
+    test("SELECT gender, SUM(test_score) AS test_score_by_gender FROM Student GROUP BY gender", () => {
+      const select_gender_sum_test_score_gourp_by_gender = (data) => {
+          const gender_group = data
+            .sort((a, b) => a.gender - b.gender)
+            .map((i) => i.gender)
+            .filter((i, index, self) => self.indexOf(i) === index);
+
+          return gender_group.map((gender) => {
+                const list = data.filter((i) => i.gender === gender);
+                return {
+                        gender,
+                        test_score_by_gender: list.reduce((acc, cur) => acc + cur.test_score, 0),
+                      };
+              });
+      };
+
+      const result = select_gender_sum_test_score_gourp_by_gender(students);
+
+      console.table(result);
+      expect(result).toStrictEqual(
+        [
+          {"gender": "男", "test_score_by_gender": 353},
+          {"gender": "女", "test_score_by_gender": 278}
+        ]
+      );
+    })
+
+   test("SELECT age, SUM(test_score) as test_score_by_age FROM Student GROUP BY age", () => {
+     const select_age_sum_test_score_gourp_by_age = (data) => {
+         const age_group = data
+           .sort((a, b) => a.age - b.age)
+           .map((i) => i.age)
+           .filter((i, index, self) => self.indexOf(i) === index);
+
+         return age_group.map((age) => {
+               const list = data.filter((i) => i.age === age);
+               return {
+                       age,
+                       test_score_by_age: list.reduce((acc, cur) => acc + cur.test_score, 0),
+                     };
+             });
+     };
+
+     const result = select_age_sum_test_score_gourp_by_age(students);
+
+     console.table(result);
+     expect(result).toStrictEqual(
+       [
+         {"age": 8, "test_score_by_age": 140},
+         {"age": 9, "test_score_by_age": 64},
+         {"age": 10, "test_score_by_age": 158},
+         {"age": 11, "test_score_by_age": 80},
+         {"age": 12, "test_score_by_age": 189}
+       ]
+     );
+   })
+
+    test("SELECT gender, AVG(test_score) AS test_score_avagrage_by_gender FROM Student GROUP BY gender", () => {
+      const select_gender_age_test_score_gourp_by_gender = (data) => {
+          const gender_group = data
+            .sort((a, b) => a.gender - b.gender)
+            .map((i) => i.gender)
+            .filter((i, index, self) => self.indexOf(i) === index);
+
+          return gender_group.map((gender) => {
+                const list = data.filter((i) => i.gender === gender);
+                return {
+                        gender,
+                        test_score_by_gender:
+                          list.reduce((acc, cur) => acc + cur.test_score, 0) / list.length,
+                      };
+              });
+      };
+
+      const result = select_gender_age_test_score_gourp_by_gender(students);
+
+      console.table(result);
+      expect(result).toStrictEqual(
+        [
+          {"gender": "男", "test_score_by_gender": 70.6},
+          {"gender": "女", "test_score_by_gender": 55.6}
+        ]
+      );
+    })
+
+    test("SELECT age, AVG(test_score) AS test_score_avarate_by_age FROM Student GROUP BY age ORDER BY AVG(test_score) ASC", () => {
+      const select_age_test_score_average_by_age_order_by_test_score_avarage = (
+          data
+      ) => {
+          const age_group = data
+            .sort((a, b) => a.age - b.age)
+            .map((i) => i.age)
+            .filter((i, index, self) => self.indexOf(i) === index);
+
+          return age_group
+            .map((age) => {
+                    const list = data.filter((i) => i.age === age);
+                    return {
+                              age,
+                              test_score_avarage_by_age:
+                                list.reduce((acc, cur) => acc + cur.test_score, 0) / list.length,
+                            };
+                  })
+            .sort((a, b) => a.test_score_avarage_by_age - b.test_score_avarage_by_age);
+      };
+
+      const result = select_age_test_score_average_by_age_order_by_test_score_avarage (students);
+
+      console.table(result);
+      expect(result).toStrictEqual(
+        [
+          {"age": 11, "test_score_avarage_by_age": 40},
+          {"age": 10, "test_score_avarage_by_age": 52.666666666666664},
+          {"age": 9, "test_score_avarage_by_age": 64},
+          {"age": 8, "test_score_avarage_by_age": 70},
+          {"age": 12, "test_score_avarage_by_age": 94.5}
+        ]
+      );
+    })
+
+    test("SELECT gender, SUM(test_score) AS test_sucore_by_gender_grater_equal_age FROM Student WHERE age>=10 GROUP BY gender", () => {
+      const select_gender_test_score_by_gender_and_grater_equal_age = (data, age) => {
+          const gender_group = data
+            .sort((a, b) => a.gender - b.gender)
+            .map((i) => i.gender)
+            .filter((i, index, self) => self.indexOf(i) === index);
+
+          return gender_group.map((gender) => {
+                const list = data.filter((i) => i.gender === gender && i.age >= age);
+                return {
+                        gender,
+                        test_score: list.reduce((acc, cur) => acc + cur.test_score, 0),
+                      };
+              });
+      };
+
+      const result = select_gender_test_score_by_gender_and_grater_equal_age(students, 10);
+
+      console.table(result);
+      expect(result).toStrictEqual(
+        [
+          {"gender": "男", "test_score": 289},
+          {"gender": "女", "test_score": 138}
+        ]
+      );
+    })
+
+    test("SELECT gender, SUM(test_score) as test_score_by_gender FROM Student GROUP BY gender WITH ROLLUP", () => {
+      const select_gender_sum_test_score_gourp_by_gender_with_rollup = (data) => {
+          const gender_group = data
+            .sort((a, b) => a.gender - b.gender)
+            .map((i) => i.gender)
+            .filter((i, index, self) => self.indexOf(i) === index);
+
+          const group_sum = gender_group.map((gender) => {
+                const list = data.filter((i) => i.gender === gender);
+                return {
+                        gender,
+                        test_score: list.reduce((acc, cur) => acc + cur.test_score, 0),
+                      };
+              });
+
+          group_sum.push({
+                gender: null,
+                test_score: group_sum.reduce((acc, cur) => acc + cur.test_score, 0),
+              });
+
+          return group_sum;
+      };
+
+      const result = select_gender_sum_test_score_gourp_by_gender_with_rollup(students);
+
+      console.table(result);
+      expect(result).toStrictEqual(
+        [
+          {"gender": "男", "test_score": 353},
+          {"gender": "女", "test_score": 278},
+          {"gender": null, "test_score": 631}
+        ]
+      )
+    })
+  })
 })
