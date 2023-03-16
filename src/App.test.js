@@ -351,4 +351,69 @@ describe("SQL入門", () => {
       expect(result.length).toBe(5);
     })
   })
+
+  describe("SUMなどの集計関数", () => {
+    test("SELECT SUM(test_score) FROM Student", () => {
+      const select_sum_test_score = (data) =>
+        data.reduce((acc, cur) => acc + cur.test_score, 0);
+
+      const result = select_sum_test_score(students);
+
+      console.table(result);
+      expect(result).toBe(631);
+    })
+
+    test("SELECT SUM(test_score) FROM Student WHERE test_score>=50", () => {
+      const select_sum_test_score_by_test_score_grater = (data, test_score) =>
+          data
+          .filter((i) => i.test_score >= test_score)
+          .reduce((acc, cur) => acc + cur.test_score, 0);
+
+      const result = select_sum_test_score_by_test_score_grater(students, 50);
+
+      console.table(result);
+      expect(result).toBe(547);
+    })
+
+    test("SELECT COUNT(test_score) FROM Student", () => {
+      const select_count_test_score = (data) => data.length;
+
+      const result = select_count_test_score(students);
+
+      console.table(result);
+      expect(result).toBe(10);
+    })
+
+    test("SELECT COUNT(test_score) FROM Student WHERE test_score>=50", () => {
+      const select_count_test_score_by_test_score_grater = (data, test_score) =>
+        data.filter((i) => i.test_score >= test_score).length;
+
+      const result = select_count_test_score_by_test_score_grater(students, 50);
+
+      console.table(result);
+      expect(result).toBe(7);
+    })
+
+    test("SELECT AVG(test_score) FROM Student", () => {
+      const select_avg_test_score = (data) =>
+        data.reduce((acc, cur) => acc + cur.test_score, 0) / data.length;
+
+      const result = select_avg_test_score(students);
+
+      console.table(result);
+      expect(result).toBe(63.1);
+    })
+
+    test("SELECT AVG(test_score) FROM Student WHERE gender='男'", () => {
+      const select_avg_test_score_by_gender = (data, gender) =>
+        data
+          .filter((i) => i.gender === gender)
+          .reduce((acc, cur) => acc + cur.test_score, 0) / data.filter((i) => i.gender === gender).length;
+
+      const result = select_avg_test_score_by_gender(students, "男");
+
+      console.table(result);
+      expect(result).toBe(70.6);
+    })
+  })
 })
