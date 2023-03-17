@@ -823,5 +823,77 @@ describe("SQL入門", () => {
   })
 
   describe("SQL初級編", () => {
-  })
+    describe("INSERTでデータ追加", () => {
+      test("INSERT INTO Student (id, name, age, gender, test_score, birthday) VALUE(11, '石田', 13, '女', 95, '2001/03/15'", () => {
+        const insert_student = (data, item) => {
+          const result = data.map((i) => i);
+          result.push(item);
+          return result;
+        };
+
+        const result = insert_student(students, {
+          id: 11,
+          name: "石田",
+          age: 13,
+          gender: "女",
+          test_score: 95,
+          birthday: "2001/03/15",
+        });
+
+        console.table(result);
+        expect(result[10].id).toStrictEqual(11);
+      })
+
+      test("INSERT INTO Student (id, name, age, gender, test_score, birthday)VALUES(13,'石井',13,'男',47,'2001/02/14'),(14,'上原',13,'女',50,'2001/01/01')", () => {
+        const insert_students = (data, items) => {
+          const result = data.map((i) => i);
+          items.map((i) => result.push(i));
+          return result;
+        };
+
+        const result = insert_students(students, [
+          {
+            id: 13,
+            name: "石田",
+            age: 13,
+            gender: "男",
+            test_score: 47,
+            birthday: "2001/02/14",
+          },
+          {
+            id: 14,
+            name: "上原",
+            age: 13,
+            gender: "女",
+            test_score: 50,
+            birthday: "2001/01/01",
+          },
+        ]).sort((a, b) => a.id - b.id);
+
+        console.table(result);
+        expect(result[11].id).toStrictEqual(14);
+      })
+
+      test("INSERT INTO Student (name, age, gender, test_score, birthday)VALUE('石田',13,'女',95,'2001/03/15'", () => {
+        const insert_student_auto_increment = (data, item) => {
+          const increment_id =
+            data.map((i) => i.id).reduce((a, b) => Math.max(a, b)) + 1;
+          const result = data.map((i) => i);
+          result.push({ ...item, id: increment_id });
+          return result;
+        };
+
+        const result = insert_student_auto_increment(students, {
+          name: "石田",
+          age: 13,
+          gender: "女",
+          test_score: 95,
+          birthday: "2001/03/15",
+        });
+
+        console.table(result.sort((a, b) => a.id - b.id));
+        expect(result[10].id).toStrictEqual(11);
+      })
+    })
+  });
 })
