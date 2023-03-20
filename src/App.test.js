@@ -894,58 +894,88 @@ describe("SQL入門", () => {
         console.table(result.sort((a, b) => a.id - b.id));
         expect(result[10].id).toStrictEqual(11);
       })
+    })
+    describe("UPDATEでデータ更新", () => {
+      test("UPDATE Student set test_score=80 WHERE id=10", () => {
+        const update_test_score = (data, id, test_score) =>
+          data.map((i) => (i.id === id ? {...i, test_score} : i));
 
-      describe("UPDATEでデータ更新", () => {
-        test("UPDATE Student set test_score=80 WHERE id=10", () => {
-          const update_test_score = (data, id, test_score) =>
-            data.map((i) => (i.id === id ? { ...i, test_score } : i));
+        const result = update_test_score(students, 10, 80);
 
-          const result = update_test_score(students, 10, 80);
+        console.table(result);
+        expect(result.filter((i) => i.id === 10)[0].test_score).toStrictEqual(80);
+      })
 
-          console.table(result);
-          expect(result.filter((i) => i.id === 10)[0].test_score).toStrictEqual(80);
-        })
+      test("UPDATE Student set name=80 WHERE id=10", () => {
+        const update_name = (data, id, name) =>
+          data.map((i) => (i.id === id ? {...i, name} : i));
 
-        test("UPDATE Student set name=80 WHERE id=10", () => {
-          const update_name = (data, id, name) =>
-            data.map((i) => (i.id === id ? { ...i, name } : i));
+        const result = update_name(students, 10, "石田");
 
-          const result = update_name(students, 10, "石田");
+        console.table(result);
+        expect(result.filter((i) => i.id === 10)[0].name).toStrictEqual("石田");
+      })
 
-          console.table(result);
-          expect(result.filter((i) => i.id === 10)[0].name).toStrictEqual("石田");
-        })
+      test("UPDATE Student set test_score=NULL WHERE id=10", () => {
+        const update_test_score_null = (data, id) =>
+          data.map((i) => (i.id === id ? {...i, test_score: null} : i));
 
-        test("UPDATE Student set test_score=NULL WHERE id=10", () => {
-          const update_test_score_null = (data, id) =>
-            data.map((i) => (i.id === id ? { ...i, test_score: null } : i));
+        const result = update_test_score_null(students, 10);
 
-          const result = update_test_score_null(students, 10);
+        console.table(result);
+        expect(result.filter((i) => i.id === 10)[0].test_score).toStrictEqual(null);
+      })
 
-          console.table(result);
-          expect(result.filter((i) => i.id === 10)[0].test_score).toStrictEqual(null);
-        })
+      test("UPDATE Student set birthday=NULL WHERE id=10", () => {
+        const update_birthday_null = (data, id) =>
+          data.map((i) => (i.id === id ? {...i, birthday: null} : i));
 
-        test("UPDATE Student set birthday=NULL WHERE id=10", () => {
-          const update_birthday_null = (data, id) =>
-            data.map((i) => (i.id === id ? { ...i, birthday: null } : i));
+        const result = update_birthday_null(students, 10);
 
-          const result = update_birthday_null(students, 10);
+        console.table(result);
+        expect(result.filter((i) => i.id === 10)[0].birthday).toStrictEqual(null);
+      })
 
-          console.table(result);
-          expect(result.filter((i) => i.id === 10)[0].birthday).toStrictEqual(null);
-        })
+      test("UPDATE Student set name='藤井', test_score=65 WHERE id=10", () => {
+        const update_name_test_score = (data, id, name, test_score) =>
+          data.map((i) => (i.id === id ? {...i, name, test_score} : i));
 
-        test("UPDATE Student set name='藤井', test_score=65 WHERE id=10", () => {
-          const update_name_test_score = (data, id, name, test_score) =>
-            data.map((i) => (i.id === id ? { ...i, name, test_score } : i));
+        const result = update_name_test_score(students, 10, "藤井", 65);
 
-          const result = update_name_test_score(students, 10, "藤井", 65);
+        console.table(result);
+        expect(result.filter((i) => i.id === 10)[0].name).toStrictEqual("藤井");
+        expect(result.filter((i) => i.id === 10)[0].test_score).toStrictEqual(65);
+      })
+    })
 
-          console.table(result);
-          expect(result.filter((i) => i.id === 10)[0].name).toStrictEqual("藤井");
-          expect(result.filter((i) => i.id === 10)[0].test_score).toStrictEqual(65);
-        })
+    describe("DELETEでデータ削除", () => {
+      test("DELETE FROM Student WHERE id=10", () => {
+        const delete_student = (data, id) => data.filter((i) => i.id !== id);
+
+        const result = delete_student(students, 10);
+
+        console.table(result);
+        expect(result.filter((i) => i.id === 10).length).toStrictEqual(0);
+      })
+
+      test("DELETE FROM Student WHERE id=9 or id=10", () => {
+        const delete_students = (data, ids) => data.filter((i) => !ids.includes(i.id));
+
+        const result = delete_students(students, [9, 10]);
+
+        console.table(result);
+        expect(result.filter((i) => i.id === 9).length).toStrictEqual(0);
+        expect(result.filter((i) => i.id === 10).length).toStrictEqual(0);
+      })
+
+      test("DELETE FROM Student ORDER BY id DESC LIMIT 1", () => {
+        const delete_student_order_desc_limit = (data, limit) =>
+          data.sort((a, b) => a.id - b.id).slice(0, -1 * limit);
+
+        const result = delete_student_order_desc_limit(students, 1);
+
+        console.table(result);
+        expect(result.length).toStrictEqual(9);
       })
     })
   });
