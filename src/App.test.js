@@ -978,5 +978,106 @@ describe("SQL入門", () => {
         expect(result.length).toStrictEqual(9);
       })
     })
+
+    describe("CONCATなどで計算", () => {
+      test("SELECT CONCAT('Hello', 'World')", () => {
+        const select_concat = (str1, str2) => `${str1}${str2}`;
+
+        const result = select_concat("Hello", "World");
+
+        console.table(result);
+        expect(result).toStrictEqual("HelloWorld");
+      })
+
+      test("SELECT UPPER('apple')", () => {
+        const select_upper = (str) => str.toUpperCase();
+
+        const result = select_upper("apple");
+
+        console.table(result);
+        expect(result).toStrictEqual("APPLE");
+      })
+
+      test("SELECT LOWER('APPLE')", () => {
+        const select_lower = (str) => str.toLowerCase();
+
+        const result = select_lower("APPLE");
+
+        console.table(result);
+        expect(result).toStrictEqual("apple");
+      })
+
+      test("SELECT 1 + 2", () => {
+        const select_add = (num1, num2) => num1 + num2;
+
+        const result = select_add(1, 2);
+
+        console.table(result);
+        expect(result).toStrictEqual(3);
+      });
+
+      test("SELECT 2 * 3", () => {
+        const select_mul = (num1, num2) => num1 * num2;
+
+        const result = select_mul(2, 3);
+
+        console.table(result);
+        expect(result).toStrictEqual(6);
+      });
+
+      test("SELECT MOD(5,3)", () => {
+        const select_mod = (num1, num2) => num1 % num2;
+
+        const result = select_mod(5, 3);
+
+        console.table(result);
+        expect(result).toStrictEqual(2);
+      });
+
+      test("SELECT SQRT(9)", () => {
+        const select_sqrt = (num) => Math.sqrt(num);
+
+        const result = select_sqrt(9);
+
+        console.table(result);
+        expect(result).toStrictEqual(3);
+      });
+
+      test("SELECT POW(2,3)", () => {
+        const select_pow = (num1, num2) => Math.pow(num1, num2);
+
+        const result = select_pow(2, 3);
+
+        console.table(result);
+        expect(result).toStrictEqual(8);
+      });
+
+      test("SELECT ABS(-2)", () => {
+        const select_abs = (num) => Math.abs(num);
+
+        const result = select_abs(-2);
+
+        console.table(result);
+        expect(result).toStrictEqual(2);
+      });
+
+      test("SELECT CURRENT_DATE", () => {
+        const select_current_date = () => new Date().toLocaleDateString();
+
+        const result = select_current_date();
+
+        console.table(result);
+        expect(result).toStrictEqual(new Date().toLocaleDateString());
+      });
+
+      test("SELECT CURRENT_TIME", () => {
+        const select_current_time = () => new Date().toLocaleTimeString();
+
+        const result = select_current_time();
+
+        console.table(result);
+        expect(result).toStrictEqual(new Date().toLocaleTimeString());
+      });
+    })
   });
 })
