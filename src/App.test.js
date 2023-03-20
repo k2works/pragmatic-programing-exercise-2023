@@ -1079,5 +1079,82 @@ describe("SQL入門", () => {
         expect(result).toStrictEqual(new Date().toLocaleTimeString());
       });
     })
+
+    describe("SQLのサブクエリ", () => {
+      test("SELECT name FROM Student WHERE test_score < (SELECT test_score FROM Student WHERE name = '渡辺')",  () => {
+        const select_name_from_test_score_where_name = (data, name) => {
+          const test_score = data.find((i) => i.name === name).test_score;
+          return data.filter((i) => i.test_score < test_score).map((i) => i.name);
+        };
+
+        const result = select_name_from_test_score_where_name(students, "渡辺");
+
+        console.table(result);
+        expect(result[0]).toStrictEqual("田中");
+      });
+
+      test("SELECT gender.AVG(test_score) AS 性別ごと, (SELECT AVG(test_score) FROM Student ) AS 全体 FROM Student GROUP BY gender", () => {
+        const select_by_gender_from_all_averate_test_score_by_gender = (data) => {
+          const gender_group = data
+            .sort((a, b) => a.gender - b.gender)
+            .map((i) => i.gender)
+            .filter((i, index, self) => self.indexOf(i) === index);
+
+          const group_avg = gender_group.map((gender) => {
+            const list = data.filter((i) => i.gender === gender);
+            return {
+              gender,
+              test_score:
+                list.reduce((acc, cur) => acc + cur.test_score, 0) / list.length,
+            };
+          });
+
+          group_avg.push({
+            gender: "全体",
+            test_score:
+              Math.round(
+                (group_avg.reduce((acc, cur) => acc + cur.test_score, 0) /
+                  group_avg.length) *
+                10
+              ) / 10,
+          });
+
+          return group_avg;
+        };
+
+
+        const result = select_by_gender_from_all_averate_test_score_by_gender(students);
+
+        console.table(result);
+        expect(result[2].test_score).toBe(63.1);
+      });
+
+      test("SELECT age,AVG(test_score) FROM Student GROUP BY age having AVG(test_score) > (SELECT AVG(test_score) FROM Student) ORDER BY age", () => {
+        const select_age_test_score_average_from_grater_than_all_average = (data) => {
+          const age_group = data
+            .sort((a, b) => a.age - b.age)
+            .map((i) => i.age)
+            .filter((i, index, self) => self.indexOf(i) === index);
+
+          const having_avg = age_group.map((age) => {
+            const list = data.filter((i) => i.age === age);
+            return {
+              age,
+              test_score:
+                list.reduce((acc, cur) => acc + cur.test_score, 0) / list.length,
+            };
+          });
+
+          const all_avg =
+            data.reduce((acc, cur) => acc + cur.test_score, 0) / data.length;
+          return having_avg.filter((i) => i.test_score > all_avg).map((i) => i);
+        };
+
+        const result = select_age_test_score_average_from_grater_than_all_average(students);
+
+        console.table(result);
+        expect(result[0].test_score).toBe(70);
+      })
+    })
   });
 })
