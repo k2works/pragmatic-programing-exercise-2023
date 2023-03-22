@@ -6,6 +6,59 @@
 
 # 配置
 
+## システムアーキテクチャ
+
+[plantuml]
+----
+@startuml
+actor 開発者
+actor 利用者
+
+cloud "Vercel" as vercel {
+    package "Production Environment" as ui_prd_env {
+      [UI] as ui_prd
+    }
+}
+
+cloud "Heroku" as heroku {
+    package "Production Environment" as api_prd_env {
+      [API] as api_prd
+      [DB] as db_prd
+    }
+}
+
+cloud "GitHub" as github {
+  package "Repository" as repository {
+    [Git] as git
+  }
+
+  package "Continuous Integration" as ci {
+    [GiHubAction] as github_action
+  }
+}
+
+開発者 --> repository
+repository --> heroku
+repository --> vercel
+api_prd -> db_prd
+api_prd <-- ui_prd
+git -> github_action
+ui_prd <-- 利用者
+@enduml
+----
+
+これは、ソフトウェア開発と展開の高レベルの概要を示すUMLダイアグラムです。開発者、本番環境、およびリポジトリの3つの主要なコンポーネントが示されています。
+
+開発者はアクターによって表され、利用者のアクターもあり、ダイアグラム上では「利用者」と表記されています。
+
+本番環境には、Webアプリケーションを展開するためのプラットフォームであるVercelとHerokuの2つのクラウドがあります。本番環境は、「Production Environment」のUIのためにUIコンポーネントのみを含むパッケージと、「Production Environment」のAPIとデータベースを含むパッケージの2つに分かれています。
+
+リポジトリは、Gitバージョン管理システム「Git Hub」と継続的インテグレーションシステムの「GitHub Action」という2つのパッケージを含むGitHubクラウドで表されています。
+
+このダイアグラムは、開発者がコードをリポジトリにプッシュすることで、GitHub Actionを使用した継続的インテグレーションプロセスがトリガーされることを示しています。継続的インテグレーションプロセスは、コードをビルドしてテストし、VercelとHerokuの本番環境の両方に展開します。
+
+最終的に、利用者はVercelのUIコンポーネントを介してアプリケーションとやり取りし、Herokuの本番環境のAPIとデータベースコンポーネントと通信します。
+
 ## GitHubとは
 GitHubは、GitリポジトリをホストするためのWebベースのホスティングサービスです。GitHubを使用すると、コードを共有し、他の人と協力してプロジェクトを管理できます。
 
