@@ -1121,6 +1121,32 @@ npm install --save-dev npm-run-all cpx rimraf
 ## Gulpとは
 Gulpは、JavaScriptアプリケーションの開発、テスト、ビルド、デプロイなどのタスクを自動化するためのJavaScriptタスクランナーです。Gulpは、プラグインを使用して、JavaScript、CSS、画像などのファイルを処理できます。Gulpは、gulpfile.jsファイルに定義されたタスクを実行することができます。
 
+Gulpは、JavaScriptアプリケーションの開発、テスト、ビルド、デプロイなどのタスクを自動化するためのJavaScriptタスクランナーです。Gulpは、プラグインを使用して、JavaScript、CSS、画像などのファイルを処理できます。Gulpは、gulpfile.jsファイルに定義されたタスクを実行することができます。
+
+1. Gulpをインストールします
+
+```
+npm install --save-dev gulp
+```
+
+2. Gulpタスクを作成します
+
+```javascript
+function defaultTask(cb) {
+  // place code for your default task here
+  cb();
+}
+
+exports.default = defaultTask
+```
+
+3. Gulpタスクを実行します
+
+```
+npx gulp --tasks
+npx gulp
+```
+
 ## Asciidocとは
 Asciidocは、テキストベースのドキュメントフォーマットであり、HTML、PDF、EPUBなどのフォーマットに変換できます。Asciidocは、ドキュメントの構造を定義するためのマークアップ言語であり、テキストエディタで編集できます。Asciidocは、Node.jsのパッケージマネージャであるnpmで提供されています。
 
@@ -1145,3 +1171,4 @@ Marpは、Markdownを使用してスライドを作成するためのJavaScript�
 
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
 - [@k2works/full-stack-lab](https://www.npmjs.com/package/@k2works/full-stack-lab)
+- [Gulp](https://gulpjs.com/docs/en/getting-started/quick-start)
