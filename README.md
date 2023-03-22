@@ -16,26 +16,10 @@ JavaScript の実践的な使い方を学ぶためのリポジトリです。
 
 ## 構成
 
-- [構築](#構築)
-- [配置](#配置)
-- [運用](#運用)
-- [開発](#開発)
-
-### [構築](./docs/build.adoc)
-
-**[⬆ back to top](#構成)**
-
-### [配置](./docs/ship.adoc)
-
-**[⬆ back to top](#構成)**
-
-### [運用](./docs/run.adoc)
-
-**[⬆ back to top](#構成)**
-
-### 開発
-
-**[⬆ back to top](#構成)**
+- [構築](./docs/build.adoc)
+- [配置](./docs/ship.adoc)
+- [運用](./docs/run.adoc)
+- 開発
 
 ## 参照
 
@@ -44,3 +28,4 @@ JavaScript の実践的な使い方を学ぶためのリポジトリです。
 - [Gulp](https://gulpjs.com/docs/en/getting-started/quick-start)
 - [Asciidoctor](https://asciidoctor.org/)
 - [Browsersync](https://browsersync.io/)
+- [Marp](https://marp.app/)
