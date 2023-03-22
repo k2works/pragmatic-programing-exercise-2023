@@ -1150,6 +1150,174 @@ npx gulp
 ## Asciidocとは
 Asciidocは、テキストベースのドキュメントフォーマットであり、HTML、PDF、EPUBなどのフォーマットに変換できます。Asciidocは、ドキュメントの構造を定義するためのマークアップ言語であり、テキストエディタで編集できます。Asciidocは、Node.jsのパッケージマネージャであるnpmで提供されています。
 
+1. Asciidocをインストールします
+
+```
+npm install --save-dev asciidoctor asciidoctor-kroki
+```
+
+2. Asciidocファイルを作成します
+
+`docs` ディレクトリに `index.adoc` と `sample.adoc` ファイルを作成し、以下の内容を記述します。
+
+```asciidoc
+:toc: left
+:toclevels: 5
+:sectnums:
+
+= Asciidoc
+
+== 目的
+
+== 前提
+
+== 構成
+
+=== link:./sample.html[サンプル^][[anchor-1]]
+
+== 参照
+
+* link:/docs/sample.html[サンプル^]
+```
+
+```asciidoc
+:toc: left
+:toclevels: 5
+:sectnums:
+:stem:
+:source-highlighter: coderay
+
+= AppTemplate
+
+== 仕様
+
+== 設計
+
+=== TODOリスト
+* [ ] TODO
+* [x] [line-through]#TODO DONE#
+
+=== ユースケース図
+[plantuml]
+----
+left to right direction
+skinparam packageStyle rectangle
+actor customer
+actor clerk
+rectangle checkout {
+  customer -- (checkout)
+  (checkout) .> (payment) : include
+  (help) .> (checkout) : extends
+  (checkout) -- clerk
+}
+----
+
+=== クラス図
+[plantuml]
+----
+class Car
+Driver - Car : drives >
+Car *- Wheel : have 4 >
+Car -- Person : < owns
+----
+
+=== シーケンス図
+[plantuml]
+----
+participant User
+User -> A: DoWork
+activate A
+A -> B: << createRequest >>
+activate B
+B -> C: DoWork
+activate C
+C --> B: WorkDone
+destroy C
+B --> A: RequestCreated
+deactivate B
+A -> User: Done
+deactivate A
+----
+
+=== 数式
+
+https://asciidoctor.org/docs/user-manual/#activating-stem-support[Using Multiple Stem Interpreters^]
+
+stem:[sqrt(4) = 2]
+
+Water (stem:[H_2O]) is a critical component.
+
+[stem]
+++++
+sqrt(4) = 2
+++++
+
+latexmath:[C = \alpha + \beta Y^{\gamma} + \epsilon]
+
+== 開発
+
+== 参照
+```
+
+3. Gulpタスクを作成します
+
+```js
+const { series } = require("gulp");
+const { default: rimraf } = require("rimraf");
+
+const asciidoctor = {
+  clean: async (cb) => {
+    await rimraf("./public/docs");
+    cb();
+  },
+  build: (cb) => {
+    const fs = require("fs");
+    const asciidoctor = require("@asciidoctor/core")();
+    const kroki = require("asciidoctor-kroki");
+
+    const krokiRegister = () => {
+      const registry = asciidoctor.Extensions.create();
+      kroki.register(registry);
+      return registry;
+    };
+
+    const inputRootDir = "./docs";
+    const outputRootDir = "./public/docs";
+    const fileNameList = fs.readdirSync(inputRootDir);
+    const docs = fileNameList.filter(RegExp.prototype.test, /.*\.adoc$/);
+
+    docs.map((input) => {
+      const file = `${inputRootDir}/${input}`;
+      asciidoctor.convertFile(file, {
+        safe: "safe",
+        extension_registry: krokiRegister(),
+        to_dir: outputRootDir,
+        mkdirs: true,
+      });
+    });
+    cb();
+  },
+  watch: (cb) => {
+    watch("./docs/**/*.adoc", asciidoctor.build);
+    cb();
+  },
+}
+
+exports.docs = series(asciidoctor.clean, asciidoctor.build);
+```
+
+4. Gulpタスクを実行します
+
+```
+npx gulp docs
+```
+
+`public` ディレクトリはgit管理対象外にするため.gitignoreに以下を追加します。
+
+```
+/public
+```
+
 ## BrowserSyncとは
 BrowserSyncは、ブラウザーの自動リロード、CSSのインジェクション、デバイス同期などの機能を提供するJavaScriptライブラリです。BrowserSyncは、gulpfile.jsファイルに定義されたタスクを実行することができます。
 
@@ -1172,3 +1340,4 @@ Marpは、Markdownを使用してスライドを作成するためのJavaScript�
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
 - [@k2works/full-stack-lab](https://www.npmjs.com/package/@k2works/full-stack-lab)
 - [Gulp](https://gulpjs.com/docs/en/getting-started/quick-start)
+- [Asciidoctor](https://asciidoctor.org/)
