@@ -4,7 +4,7 @@
   "description": "JavaScriptの実践的な使い方を学ぶためのリポジトリです。",
   "main": "index.js",
   "scripts": {
-    "build": "babel src -d dist",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +21,9 @@
   "devDependencies": {
     "@babel/cli": "^7.21.0",
     "@babel/core": "^7.21.3",
-    "@babel/preset-env": "^7.20.2"
+    "@babel/preset-env": "^7.20.2",
+    "babel-loader": "^9.1.2",
+    "webpack": "^5.76.2",
+    "webpack-cli": "^5.0.1"
   }
 }

@@ -209,7 +209,10 @@ var Person = /*#__PURE__*/function () {
 
 ```bash
 npm install --save-dev webpack webpack-cli
+npx webpack --version
 ```
+
+npx コマンドは、npmパッケージを実行するためのコマンドです。npxコマンドを使用することで、ローカルにインストールされているnpmパッケージを実行することができます。
 
 2. webpack.config.jsファイルを作成します。以下のコマンドを実行して、webpack.config.jsファイルを作成してください。
 
@@ -220,6 +223,149 @@ touch webpack.config.js
 3. webpack.config.jsファイルに以下の内容を記述してください。
 
 ```javascript
+module.exports = {
+  mode: 'development',
+  entry: './src/index.js',
+  output: {
+    path: __dirname + '/dist',
+    filename: 'bundle.js'
+  }
+};
+```
+
+4. package.jsonファイルに以下の内容に変更してください。
+
+```json
+{
+  "scripts": {
+    "build": "webpack"
+  }
+}
+```
+
+#### モジュールバンドラーの実行
+
+1. ./src/sample_es5.jsファイルを作成してください。
+
+```JavaScript
+function greeting(name) {
+  return 'Hello ' + name;
+}
+
+module.exports = greeting;
+```
+
+2. ./src/index.jsファイルを変更してください。
+
+```JavaScript
+var greeting = require('./sample_es5');
+
+console.log(greeting('ES5'));
+```
+
+3. 以下のコマンドを実行して、モジュールバンドラーを実行してください。
+
+```bash
+npm run build
+```
+
+4. ./dist/bundle.jsファイルが作成されていることを確認してください。
+
+5. ./dist/bundle.jsファイルを実行してください。
+
+```bash
+node ./dist/bundle.js
+```
+
+#### モジュールバンドラーの設定
+
+1. ./src/sample_es6.jsファイルを作成してください。
+
+```JavaScript
+class Greeting {
+  constructor(name) {
+    this.name = name;
+  }
+  say() {
+    console.log(`Hello ${this.name}`);
+  }
+}
+
+export default Greeting;
+```
+
+2. ./src/index.jsファイルを変更してください。
+
+```JavaScript
+var greeting = require('./sample_es5');
+console.log(greeting('ES5'));
+
+var greet = require('./sample_es6');
+var g = new greet.default('ES6');
+g.say();
+```
+
+3. 以下のコマンドを実行して、モジュールバンドラーを実行してください。
+
+```bash
+npm run build
+```
+
+4. ./dist/bundle.jsファイルが作成されていることを確認してください。
+
+5. ./dist/bundle.jsファイルを実行してください。
+
+```bash
+node ./dist/bundle.js
+```
+
+6. 現状ではES6のコードをそのまま出力しています。ES5に変換するためには、babel-loaderを使用します。 パッケージをインストールしてwebpack.config.js に以下のコードを変更してください。
+
+```bash
+npm install --save-dev babel-loader
+```
+
+```javascript
+module.exports = {
+  mode: 'development',
+  entry: './src/index.js',
+  output: {
+    path: __dirname + '/dist',
+    filename: 'bundle.js'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              presets: [
+                "@babel/preset-env",
+              ],
+            },
+          },
+        ],
+      },
+    ],
+  },
+  target: ["web", "es5"],
+};
+```
+
+7. 以下のコマンドを実行して、モジュールバンドラーを実行してください。
+
+```bash
+npm run build
+```
+
+8. ./dist/bundle.jsファイルが作成されていることを確認してください。
+
+9. ./dist/bundle.jsファイルを実行してください。
+
+```bash
+node ./dist/bundle.js
 ```
 
 ### TypeScript
