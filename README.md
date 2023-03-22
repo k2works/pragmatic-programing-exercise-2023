@@ -786,6 +786,16 @@ npm install --save-dev prettier
 npx prettier --write .
 ```
 
+2. package.jsonファイルを開き、以下の内容を追加してください。
+
+```json
+{
+  "scripts": {
+    "format": "prettier --write ."
+  }
+}
+```
+
 ### 開発ツールのセットアップ
 
 開発ツールを使用することで、開発効率を向上させることができます。以下の手順で開発ツールをセットアップしてください。
