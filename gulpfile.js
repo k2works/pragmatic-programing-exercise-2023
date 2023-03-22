@@ -166,6 +166,7 @@ exports.default = series(
   webpackBuildTasks(),
   asciidoctorBuildTasks(),
   marpBuildTasks(),
+  prettier.format,
   series(
     parallel(webpack.server, asciidoctor.server),
     parallel(webpack.watch, asciidoctor.watch, marp.watch),
