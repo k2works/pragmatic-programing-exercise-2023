@@ -1156,5 +1156,63 @@ describe("SQL入門", () => {
         expect(result[0].test_score).toBe(70);
       })
     })
+
+    describe("UNIONで結合", () => {
+      test("SELECT name FROM Student WHERE name = '佐藤' UNION SELECT name FROM Student WHERE name = '鈴木'", () => {
+        const select_name_from_student_where_name_union_select_name_from_student_where_name =
+        (data, name1, name2) => {
+              const list1 = data.filter((i) => i.name === name1);
+              const list2 = data.filter((i) => i.name === name2);
+              return list1.concat(list2).map((i) => i.name);
+            };
+
+        const result = select_name_from_student_where_name_union_select_name_from_student_where_name(students, "佐藤", "鈴木");
+
+        console.table(result);
+        expect(result[0]).toStrictEqual("佐藤");
+      });
+
+      test("SELECT name FROM Student WHERE age = 9 UNION ALL SELECT name FROM Student WHERE name = '鈴木'", () => {
+        const select_name_from_student_where_age_union_all_select_name_from_student_where_name =
+            (data, age, name) => {
+                  const list1 = data.filter((i) => i.age === age);
+                  const list2 = data.filter((i) => i.name === name);
+                  return list1.concat(list2).map((i) => i.name);
+                };
+
+        const result = select_name_from_student_where_age_union_all_select_name_from_student_where_name(students, 9, "鈴木");
+
+        console.table(result);
+        expect(result[0]).toStrictEqual("鈴木");
+      });
+
+      test("SELECT name FROM Student WHERE gender = '女' INTERSECT SELECT name FROM Student WHERE id = 3", () => {
+        const select_name_from_student_where_gender_intersect_select_name_from_student_where_id =
+            (data, gender, id) => {
+                  const list1 = data.filter((i) => i.gender === gender);
+                  const list2 = data.filter((i) => i.id === id);
+                  return list1.filter((value) => list2.includes(value));
+                };
+
+        const result = select_name_from_student_where_gender_intersect_select_name_from_student_where_id(students, "女", 3);
+
+        console.table(result);
+        expect(result[0].name).toStrictEqual("高橋");
+      });
+
+      test("SELECT name FROM Student WHERE gender = '女' EXCEPT SELECT name FROM Student WHERE id = 3", () => {
+        const select_name_from_student_where_gender_except_select_name_from_student_where_id =
+            (data, gender, id) => {
+                  const list1 = data.filter((i) => i.gender === gender);
+                  const list2 = data.filter((i) => i.id === id);
+                  return list1.filter((value) => !list2.includes(value));
+                };
+
+        const result = select_name_from_student_where_gender_except_select_name_from_student_where_id(students, "女", 3);
+
+        console.table(result);
+        expect(result[0].name).toStrictEqual("渡辺");
+      });
+    })
   });
 })
