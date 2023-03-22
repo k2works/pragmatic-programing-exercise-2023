@@ -1,0 +1,26 @@
+{
+  "name": "javascript-in-practice",
+  "version": "1.0.0",
+  "description": "JavaScriptの実践的な使い方を学ぶためのリポジトリです。",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src -d dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hiroshima-arc/javascript-in-practice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hiroshima-arc/javascript-in-practice/issues"
+  },
+  "homepage": "https://github.com/hiroshima-arc/javascript-in-practice#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.21.0",
+    "@babel/core": "^7.21.3",
+    "@babel/preset-env": "^7.20.2"
+  }
+}
