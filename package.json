@@ -11,6 +11,9 @@
     "slides": "npx gulp slides",
     "docs": "npx gulp docs",
     "watch": "npx gulp watch",
+    "deploy": "vercel",
+    "deploy:local": "vercel dev",
+    "deploy:heroku": "git push heroku wip/episode/00:master ",
     "heroku-postbuild": "webpack --config ./webpack.config.js --progress"
   },
   "repository": {
