@@ -2,7 +2,7 @@
 
 ## 概要
 
-JavaScriptの実践的な使い方を学ぶためのリポジトリです。
+JavaScript の実践的な使い方を学ぶためのリポジトリです。
 
 ### 目的
 
@@ -22,19 +22,22 @@ JavaScriptの実践的な使い方を学ぶためのリポジトリです。
 ### 構築
 
 ## 開発環境の構築
-JavaScript開発環境を構築するためには、以下の手順を実行してください。
+
+JavaScript 開発環境を構築するためには、以下の手順を実行してください。
 
 ### バージョンマネージャー
-バージョンマネージャーを使用することで、異なるバージョンのNode.jsを簡単に切り替えることができます。以下の手順でバージョンマネージャーをセットアップしてください。
+
+バージョンマネージャーを使用することで、異なるバージョンの Node.js を簡単に切り替えることができます。以下の手順でバージョンマネージャーをセットアップしてください。
 
 #### バージョンマネージャーのセットアップ
-1. NVMをインストールします。NVMは、Node.jsのバージョンを管理するためのツールです。以下のコマンドを実行して、NVMをインストールしてください。
+
+1. NVM をインストールします。NVM は、Node.js のバージョンを管理するためのツールです。以下のコマンドを実行して、NVM をインストールしてください。
 
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 ```
 
-2. npmをインストールします。npmは、Node.jsのパッケージマネージャーです。以下のコマンドを実行して、npmをインストールしてください。
+2. npm をインストールします。npm は、Node.js のパッケージマネージャーです。以下のコマンドを実行して、npm をインストールしてください。
 
 ```bash
 nvm list
@@ -42,7 +45,7 @@ nvm install 16.10.1
 npm -v
 ```
 
-3. yarnをインストールします。yarnは、npmの代替となるパッケージマネージャーです。以下のコマンドを実行して、yarnをインストールしてください。
+3. yarn をインストールします。yarn は、npm の代替となるパッケージマネージャーです。以下のコマンドを実行して、yarn をインストールしてください。
 
 ```bash
 npm install -g yarn
@@ -52,32 +55,34 @@ yarn -v
 4. ターミナルを再起動します。
 
 #### トランスパイラ
-トランスパイラを使用することで、ES6以降の構文をES5に変換することができます。以下の手順でトランスパイラをセットアップしてください。
+
+トランスパイラを使用することで、ES6 以降の構文を ES5 に変換することができます。以下の手順でトランスパイラをセットアップしてください。
 
 #### トランスパイラのセットアップ
-1. package.jsonファイルを作成します。以下のコマンドを実行して、package.jsonファイルを作成してください。
+
+1. package.json ファイルを作成します。以下のコマンドを実行して、package.json ファイルを作成してください。
 
 ```bash
 npm init -y
 ```
 
--y オプションを指定することで、package.jsonファイルの内容をデフォルト値で作成することができます。
+-y オプションを指定することで、package.json ファイルの内容をデフォルト値で作成することができます。
 
-1. Babelをインストールします。Babelは、トランスパイラの一つです。以下のコマンドを実行して、Babelをインストールしてください。
+1. Babel をインストールします。Babel は、トランスパイラの一つです。以下のコマンドを実行して、Babel をインストールしてください。
 
 ```bash
 npm install --save-dev @babel/core @babel/cli @babel/preset-env
 ```
 
---save-dev オプションを指定することで、package.jsonファイルのdevDependenciesにパッケージを追加することができます。
+--save-dev オプションを指定することで、package.json ファイルの devDependencies にパッケージを追加することができます。
 
-2. .babelrcファイルを作成します。以下のコマンドを実行して、.babelrcファイルを作成してください。
+2. .babelrc ファイルを作成します。以下のコマンドを実行して、.babelrc ファイルを作成してください。
 
 ```bash
 touch .babelrc
 ```
 
-3. .babelrcファイルに以下の内容を記述してください。
+3. .babelrc ファイルに以下の内容を記述してください。
 
 ```json
 {
@@ -86,7 +91,8 @@ touch .babelrc
 ```
 
 #### トランスパイラの設定
-1. package.jsonファイルを開き、以下の内容を追加してください。
+
+1. package.json ファイルを開き、以下の内容を追加してください。
 
 ```json
 {
@@ -96,11 +102,11 @@ touch .babelrc
 }
 ```
 
-scripts には、npmコマンドを登録することができます。今回は、buildコマンドを登録しています。buildコマンドは、srcディレクトリのJavaScriptファイルをトランスパイルして、distディレクトリに出力するコマンドです。
+scripts には、npm コマンドを登録することができます。今回は、build コマンドを登録しています。build コマンドは、src ディレクトリの JavaScript ファイルをトランスパイルして、dist ディレクトリに出力するコマンドです。
 
 #### トランスパイラの実行
 
-1. srcディレクトリを作成して、index.jsファイルを作成します。
+1. src ディレクトリを作成して、index.js ファイルを作成します。
 
 ```JavaScript
 // テンプレートリテラル
@@ -146,7 +152,7 @@ class Person {
 npm run build
 ```
 
-3. ES6以降の構文がES5に変換されていることを確認してください。
+3. ES6 以降の構文が ES5 に変換されていることを確認してください。
 
 ```JavaScript
 "use strict";
@@ -202,25 +208,27 @@ var Person = /*#__PURE__*/function () {
 ```
 
 ### モジュールバンドラー
-モジュールバンドラーを使用することで、複数のJavaScriptファイルを一つのファイルにまとめることができます。以下の手順でモジュールバンドラーをセットアップしてください。
+
+モジュールバンドラーを使用することで、複数の JavaScript ファイルを一つのファイルにまとめることができます。以下の手順でモジュールバンドラーをセットアップしてください。
 
 #### モジュールバンドラーのセットアップ
-1. Webpackをインストールします。Webpackは、モジュールバンドラーの一つです。以下のコマンドを実行して、Webpackをインストールしてください。
+
+1. Webpack をインストールします。Webpack は、モジュールバンドラーの一つです。以下のコマンドを実行して、Webpack をインストールしてください。
 
 ```bash
 npm install --save-dev webpack webpack-cli
 npx webpack --version
 ```
 
-npx コマンドは、npmパッケージを実行するためのコマンドです。npxコマンドを使用することで、ローカルにインストールされているnpmパッケージを実行することができます。
+npx コマンドは、npm パッケージを実行するためのコマンドです。npx コマンドを使用することで、ローカルにインストールされている npm パッケージを実行することができます。
 
-2. webpack.config.jsファイルを作成します。以下のコマンドを実行して、webpack.config.jsファイルを作成してください。
+2. webpack.config.js ファイルを作成します。以下のコマンドを実行して、webpack.config.js ファイルを作成してください。
 
 ```bash
 touch webpack.config.js
 ```
 
-3. webpack.config.jsファイルに以下の内容を記述してください。
+3. webpack.config.js ファイルに以下の内容を記述してください。
 
 ```javascript
 module.exports = {
@@ -228,12 +236,12 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: __dirname + '/dist',
-    filename: 'bundle.js'
-  }
+    filename: 'bundle.js',
+  },
 };
 ```
 
-4. package.jsonファイルに以下の内容に変更してください。
+4. package.json ファイルに以下の内容に変更してください。
 
 ```json
 {
@@ -245,7 +253,7 @@ module.exports = {
 
 #### モジュールバンドラーの実行
 
-1. ./src/sample_es5.jsファイルを作成してください。
+1. ./src/sample_es5.js ファイルを作成してください。
 
 ```JavaScript
 function greeting(name) {
@@ -255,7 +263,7 @@ function greeting(name) {
 module.exports = greeting;
 ```
 
-2. ./src/index.jsファイルを変更してください。
+2. ./src/index.js ファイルを変更してください。
 
 ```JavaScript
 var greeting = require('./sample_es5');
@@ -269,9 +277,9 @@ console.log(greeting('ES5'));
 npm run build
 ```
 
-4. ./dist/bundle.jsファイルが作成されていることを確認してください。
+4. ./dist/bundle.js ファイルが作成されていることを確認してください。
 
-5. ./dist/bundle.jsファイルを実行してください。
+5. ./dist/bundle.js ファイルを実行してください。
 
 ```bash
 node ./dist/bundle.js
@@ -279,7 +287,7 @@ node ./dist/bundle.js
 
 #### モジュールバンドラーの設定
 
-1. ./src/sample_es6.jsファイルを作成してください。
+1. ./src/sample_es6.js ファイルを作成してください。
 
 ```JavaScript
 class Greeting {
@@ -294,7 +302,7 @@ class Greeting {
 export default Greeting;
 ```
 
-2. ./src/index.jsファイルを変更してください。
+2. ./src/index.js ファイルを変更してください。
 
 ```JavaScript
 var greeting = require('./sample_es5');
@@ -311,15 +319,15 @@ g.say();
 npm run build
 ```
 
-4. ./dist/bundle.jsファイルが作成されていることを確認してください。
+4. ./dist/bundle.js ファイルが作成されていることを確認してください。
 
-5. ./dist/bundle.jsファイルを実行してください。
+5. ./dist/bundle.js ファイルを実行してください。
 
 ```bash
 node ./dist/bundle.js
 ```
 
-6. 現状ではES6のコードをそのまま出力しています。ES5に変換するためには、babel-loaderを使用します。 パッケージをインストールしてwebpack.config.js に以下のコードを変更してください。
+6. 現状では ES6 のコードをそのまま出力しています。ES5 に変換するためには、babel-loader を使用します。 パッケージをインストールして webpack.config.js に以下のコードを変更してください。
 
 ```bash
 npm install --save-dev babel-loader
@@ -331,7 +339,7 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: __dirname + '/dist',
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   module: {
     rules: [
@@ -339,18 +347,16 @@ module.exports = {
         test: /\.js$/,
         use: [
           {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
-              presets: [
-                "@babel/preset-env",
-              ],
+              presets: ['@babel/preset-env'],
             },
           },
         ],
       },
     ],
   },
-  target: ["web", "es5"],
+  target: ['web', 'es5'],
 };
 ```
 
@@ -360,9 +366,9 @@ module.exports = {
 npm run build
 ```
 
-8. ./dist/bundle.jsファイルが作成されていることを確認してください。
+8. ./dist/bundle.js ファイルが作成されていることを確認してください。
 
-9. ./dist/bundle.jsファイルを実行してください。
+9. ./dist/bundle.js ファイルを実行してください。
 
 ```bash
 node ./dist/bundle.js
@@ -370,17 +376,17 @@ node ./dist/bundle.js
 
 ### TypeScript
 
-TypeScriptを使用することで、JavaScriptに型を導入することができます。以下の手順でTypeScriptをセットアップしてください。
+TypeScript を使用することで、JavaScript に型を導入することができます。以下の手順で TypeScript をセットアップしてください。
 
-#### TypeScriptのセットアップ
+#### TypeScript のセットアップ
 
-1. TypeScriptをインストールします。以下のコマンドを実行して、TypeScriptをインストールしてください。
+1. TypeScript をインストールします。以下のコマンドを実行して、TypeScript をインストールしてください。
 
 ```bash
 npm install --save-dev typescript
 ```
 
-2. tsconfig.jsonファイルを作成します。以下のコマンドを実行して、tsconfig.jsonファイルを作成してください。
+2. tsconfig.json ファイルを作成します。以下のコマンドを実行して、tsconfig.json ファイルを作成してください。
 
 ```bash
 npx tsc --init
@@ -394,7 +400,7 @@ npx tsc --init
 npm install --save-dev @babel/preset-typescript @babel/plugin-proposal-class-properties typescript
 ```
 
-2. .babelrcファイルを変更します。
+2. .babelrc ファイルを変更します。
 
 ```bash
 {
@@ -406,10 +412,9 @@ npm install --save-dev @babel/preset-typescript @babel/plugin-proposal-class-pro
 }
 ```
 
-
 #### トランスパイラの実行
 
-1. ./src/sample.tsファイルを作成してください。
+1. ./src/sample.ts ファイルを作成してください。
 
 ```TypeScript
 class Greeting {
@@ -420,7 +425,7 @@ class Greeting {
 }
 ```
 
-2. ./src/index.tsファイルを変更してください。
+2. ./src/index.ts ファイルを変更してください。
 
 ```TypeScript
 import { Greeting } from "./sample";
@@ -435,9 +440,9 @@ greeting.say();
 npx babel src --extensions '.ts,.tsx' --out-dir dist
 ```
 
-4. ./dist/sample.jsファイルが作成されていることを確認してください。
+4. ./dist/sample.js ファイルが作成されていることを確認してください。
 
-5. ./dist/sample.jsファイルを実行してください。
+5. ./dist/sample.js ファイルを実行してください。
 
 ```bash
 node ./dist/index.js
@@ -451,7 +456,7 @@ node ./dist/index.js
 npm install --save-dev ts-loader
 ```
 
-2. webpack.config.jsファイルを開き、以下の内容を追加してください。
+2. webpack.config.js ファイルを開き、以下の内容を追加してください。
 
 ```javascript
 module.exports = {
@@ -459,10 +464,10 @@ module.exports = {
   entry: './src/index.ts',
   output: {
     path: __dirname + '/dist',
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
   },
   module: {
     rules: [
@@ -470,22 +475,20 @@ module.exports = {
         test: /\.js$/,
         use: [
           {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
-              presets: [
-                "@babel/preset-env",
-              ],
+              presets: ['@babel/preset-env'],
             },
           },
         ],
       },
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader'
+        loader: 'ts-loader',
       },
     ],
   },
-  target: ["web", "es5"],
+  target: ['web', 'es5'],
 };
 ```
 
@@ -495,15 +498,15 @@ module.exports = {
 npm run build
 ```
 
-4. ./dist/bundle.jsファイルが作成されていることを確認してください。
+4. ./dist/bundle.js ファイルが作成されていることを確認してください。
 
-5. ./dist/bundle.jsファイルを実行してください。
+5. ./dist/bundle.js ファイルを実行してください。
 
 ```bash
 node ./dist/bundle.js
 ```
 
-TypeScriptファイルをそのまま実行したい場合は、ts-nodeを使用します。
+TypeScript ファイルをそのまま実行したい場合は、ts-node を使用します。
 
 ```bash
 npm install --save-dev ts-node
@@ -515,21 +518,21 @@ npm install --save-dev ts-node
 npx ts-node src/index.ts
 ```
 
-### webpack-dev-serverのセットアップ
+### webpack-dev-server のセットアップ
 
-webpack-dev-serverを使用することで、開発中に自動的にビルドを実行し、ブラウザをリロードすることができます。以下の手順でwebpack-dev-serverをセットアップしてください。
+webpack-dev-server を使用することで、開発中に自動的にビルドを実行し、ブラウザをリロードすることができます。以下の手順で webpack-dev-server をセットアップしてください。
 
-#### webpack-dev-serverのインストール
+#### webpack-dev-server のインストール
 
-1. 以下のコマンドを実行して、webpack-dev-serverをインストールしてください。
+1. 以下のコマンドを実行して、webpack-dev-server をインストールしてください。
 
 ```bash
 npm install --save-dev webpack-dev-server
 ```
 
-#### webpack-dev-serverの設定
+#### webpack-dev-server の設定
 
-1. webpack.config.jsファイルを開き、以下の内容を追加してください。
+1. webpack.config.js ファイルを開き、以下の内容を追加してください。
 
 ```javascript
 const path = require('path');
@@ -546,17 +549,17 @@ module.exports = {
 };
 ```
 
-#### webpack-dev-serverの実行
+#### webpack-dev-server の実行
 
-1. 以下のコマンドを実行して、webpack-dev-serverを実行してください。
+1. 以下のコマンドを実行して、webpack-dev-server を実行してください。
 
 ```bash
 npx webpack serve
 ```
 
-終了する場合は、Ctrl + Cを押してください。
+終了する場合は、Ctrl + C を押してください。
 
-2. HTMLWebpackPluginプラグインを使用してjsファイルに自動的にバンドルされたscriptタグを生成し、index.htmlに挿入できるようにします。
+2. HTMLWebpackPlugin プラグインを使用して js ファイルに自動的にバンドルされた script タグを生成し、index.html に挿入できるようにします。
 
 ```bash
 npm install --save-dev html-webpack-plugin
@@ -577,7 +580,7 @@ npm install --save-dev html-webpack-plugin
 </html>
 ```
 
-4. webpack.config.jsファイルを開き、以下の内容を追加してください。
+4. webpack.config.js ファイルを開き、以下の内容を追加してください。
 
 ```javascript
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -587,13 +590,13 @@ module.exports = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'index.html'
-    })
-  ]
+      template: 'index.html',
+    }),
+  ],
 };
 ```
 
-5. package.jsonファイルを開き、以下の内容を追加してください。
+5. package.json ファイルを開き、以下の内容を追加してください。
 
 ```json
 {
@@ -604,7 +607,7 @@ module.exports = {
 }
 ```
 
-6. 以下のコマンドを実行して、webpack-dev-serverを実行してください。
+6. 以下のコマンドを実行して、webpack-dev-server を実行してください。
 
 ```bash
 npm start
@@ -624,7 +627,7 @@ module.exports = {
   devtool: isDevelopment ? "source-map" : false,
 ```
 
-8. TypeScriptの型チェックを実行するために、tsconfig.jsonに以下の設定を追加してください。
+8. TypeScript の型チェックを実行するために、tsconfig.json に以下の設定を追加してください。
 
 ```json
 {
@@ -638,21 +641,21 @@ module.exports = {
 
 テストを自動化することで、開発中に問題を早期に発見し、品質を向上させることができます。以下の手順でテスティングフレームワークをセットアップしてください。
 
-#### Jestとは
+#### Jest とは
 
-Jestは、JavaScriptのテスティングフレームワークです。以下の手順でJestをセットアップしてください。
+Jest は、JavaScript のテスティングフレームワークです。以下の手順で Jest をセットアップしてください。
 
-#### Jestのインストール
+#### Jest のインストール
 
-1. 以下のコマンドを実行して、Jestをインストールしてください。
+1. 以下のコマンドを実行して、Jest をインストールしてください。
 
 ```bash
 npm install --save-dev jest
 ```
 
-#### Jestの設定
+#### Jest の設定
 
-1. package.jsonファイルを開き、以下の内容を追加してください。
+1. package.json ファイルを開き、以下の内容を追加してください。
 
 ```json
 {
@@ -662,7 +665,7 @@ npm install --save-dev jest
 }
 ```
 
-2. ES Modulesを私用している場合はテストが失敗するので以下の設定をpackage.jsonに追加する
+2. ES Modules を私用している場合はテストが失敗するので以下の設定を package.json に追加する
 
 ```json
 ...
@@ -679,7 +682,7 @@ npm install --save-dev jest
 }
 ```
 
-#### TypeScript対応
+#### TypeScript 対応
 
 1. 以下のコマンドを実行して、必要なパッケージをインストールしてください。
 
@@ -687,7 +690,7 @@ npm install --save-dev jest
 npm install --save-dev @types/jest ts-jest
 ```
 
-2. tsconfig.jsonファイルを開き、以下の内容を追加してください。
+2. tsconfig.json ファイルを開き、以下の内容を追加してください。
 
 ```json
 "module": "es2020",
@@ -697,8 +700,8 @@ npm install --save-dev @types/jest ts-jest
 
 1. テストファイルを作成してください。
 
-
 `src/app.js`
+
 ```javascript
 export function sum(a, b) {
   return a + b;
@@ -717,6 +720,7 @@ test('adds 1 + 2 to equal 3', () => {
 ```
 
 `src/app.ts`
+
 ```typescript
 export function sum(a: number, b: number): number {
   return a + b;
@@ -752,13 +756,13 @@ npm test
 
 フォーマッタを使用することで、コードのスタイルを統一し、読みやすくすることができます。以下の手順でフォーマッタをセットアップしてください。
 
-#### Prettierとは
+#### Prettier とは
 
-Prettierは、コードのフォーマットを自動化するツールです。以下の手順でPrettierをセットアップしてください。
+Prettier は、コードのフォーマットを自動化するツールです。以下の手順で Prettier をセットアップしてください。
 
 #### パッケージのインストール
 
-1. 以下のコマンドを実行して、Prettierをインストールしてください。
+1. 以下のコマンドを実行して、Prettier をインストールしてください。
 
 ```bash
 npm install --save-dev prettier
@@ -766,7 +770,7 @@ npm install --save-dev prettier
 
 #### パッケージの設定
 
-1. .prettierrcファイルを作成し、以下の内容を記述してください。
+1. .prettierrc ファイルを作成し、以下の内容を記述してください。
 
 ```json
 {
@@ -786,7 +790,7 @@ npm install --save-dev prettier
 npx prettier --write .
 ```
 
-2. package.jsonファイルを開き、以下の内容を追加してください。
+2. package.json ファイルを開き、以下の内容を追加してください。
 
 ```json
 {
@@ -805,10 +809,10 @@ npx prettier --write .
 1. 以下のコマンドを実行して、開発ツールをインストールしてください。
 
 ```bash
+
 ```
 
 #### 開発ツールの設定
-
 
 **[⬆ back to top](#構成)**
 
@@ -825,4 +829,5 @@ npx prettier --write .
 **[⬆ back to top](#構成)**
 
 ## 参照
+
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)

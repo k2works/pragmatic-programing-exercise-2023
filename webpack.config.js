@@ -1,12 +1,12 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const env = process.env.NODE_ENV || "development";
-const isDevelopment = env === "development";
+const env = process.env.NODE_ENV || 'development';
+const isDevelopment = env === 'development';
 
 module.exports = {
   mode: env,
-  devtool: isDevelopment ? "source-map" : false,
+  devtool: isDevelopment ? 'source-map' : false,
   devServer: {
     static: {
       directory: path.join(__dirname, 'public'),
@@ -17,10 +17,10 @@ module.exports = {
   entry: './src/index.ts',
   output: {
     path: __dirname + '/dist',
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
   },
   module: {
     rules: [
@@ -28,25 +28,23 @@ module.exports = {
         test: /\.js$/,
         use: [
           {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
-              presets: [
-                "@babel/preset-env",
-              ],
+              presets: ['@babel/preset-env'],
             },
           },
         ],
       },
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader'
+        loader: 'ts-loader',
       },
     ],
   },
-  target: ["web", "es5"],
+  target: ['web', 'es5'],
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'index.html'
-    })
-  ]
+      template: 'index.html',
+    }),
+  ],
 };

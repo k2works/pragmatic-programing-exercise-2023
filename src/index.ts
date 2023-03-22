@@ -1,4 +1,4 @@
-import { Greeting } from "./sample";
+import { Greeting } from './sample';
 
-const greeting = new Greeting("TypeScript");
+const greeting = new Greeting('TypeScript');
 greeting.say();
