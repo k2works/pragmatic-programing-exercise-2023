@@ -1005,13 +1005,43 @@ Herokuは、クラウドプラットフォームであり、開発者がアプ�
 1. Herokuにログインします。
 2. `heroku create`コマンドを実行して、新しいアプリケーションを作成します。
 
+```bash
+heroku create jip-episode00
+```
+
+3. HTTPサーバーを起動するために、パッケージをインストールして`Procfile`ファイルを作成します。
+
+```bash
+npm install http-server
+```
+
+```bash
+web: npx http-server -p $PORT
+```
+
+package.jsonに以下の内容を追加します。
+
+```json
+"scripts": {
+  ...
+  "heroku-postbuild": "webpack --config ./webpack.config.js --progress"
+  ...
+},
+```
+
 #### アプリケーションのデプロイ
-1. `git push heroku master`コマンドを実行して、アプリケーションをデプロイします。
+1. `git add .`コマンドを実行して、変更をステージングします。
+2. `git commit -m "Initial commit"`コマンドを実行して、変更をコミットします。
+3. `git push heroku master`コマンドを実行して、アプリケーションをデプロイします。
+
+```bash
+git push heroku episode/00:master
+```
+
+ここではmasterブランチ以外にもデプロイしています。
 
 #### アプリケーションの起動
 1. `heroku open`コマンドを実行して、アプリケーションを起動します。
-
-以上が、JavaScriptアプリケーションの配置手順書です。もし、他に何かお探しの情報があれば、お知らせください。
 
 ## Vercelとは
 Vercelは、サーバーレスのプラットフォームで、フロントエンドの開発者が簡単にWebサイトやアプリケーションをデプロイできるようにするものです。
