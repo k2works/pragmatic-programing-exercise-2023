@@ -1,5 +1,7 @@
 # 実践 JavaScript
 
+[![Node.js CI](https://github.com/hiroshima-arc/javascript-in-practice/actions/workflows/node.js.yml/badge.svg)](https://github.com/hiroshima-arc/javascript-in-practice/actions/workflows/node.js.yml)
+
 ## 概要
 
 JavaScript の実践的な使い方を学ぶためのリポジトリです。
@@ -933,46 +935,6 @@ npm start
 **[⬆ back to top](#構成)**
 
 ### 配置
-# 命令書:
-
-あなたは、プロのテクニカルライターです。
-以下の制約条件と構成をもとに、 最高のJavaScriptアプリケーション配置手順書を出力してください。
-
-# 制約条件:
-
-- 一般ユーザーにもわかりやすく。
-- 重要なキーワードを取り残さない。
-- 文章を簡潔に。
-- 具体的な例を挿入する。
-- もし、最適な情報を提供できない場合は、その旨を伝える。
-
-# 構成:
-
-## GitHubとは
-### GitHubのセットアップ
-## GitHub Actionsとは
-### GitHub Actionsのセットアップ
-## Herokuとは
-### Herokuにアプリをデプロイする手順
-#### Heroku アカウントの作成
-#### Heroku CLI のインストール
-#### Heroku アプリケーションの作成
-#### アプリケーションのデプロイ
-#### アプリケーションの起動
-## Vercelとは
-### Vercelにデプロイする手順
-#### Vercelのサインアップ
-#### ビルドコマンドの入力
-#### 環境変数の設定(必要な場合)
-#### デプロイするブランチの選択
-#### デプロイの開始
-#### デプロイの確認
-### VercelにCLIでデプロイする手順
-
-# 出力文:
-
-こんにちは。JavaScriptアプリケーションの配置手順書を作成するために、以下の手順を提供できます。
-
 ## GitHubとは
 GitHubは、GitリポジトリをホストするためのWebベースのホスティングサービスです。GitHubを使用すると、コードを共有し、他の人と協力してプロジェクトを管理できます。
 
@@ -986,8 +948,48 @@ GitHub Actionsは、GitHubでホストされる継続的インテグレーショ
 
 ### GitHub Actionsのセットアップ
 1. リポジトリに`.github/workflows`ディレクトリを作成します。
+
 2. ワークフローファイルを作成します。
-3. ワークフローを有効にします。
+
+`node.js.yml`を作成します。
+
+```yml
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
+```
+
+3. レポジトリにコミット・プッシュしてワークフローを有効にします。
+
+4. READMEにバッジを追加します。
 
 ## Herokuとは
 Herokuは、クラウドプラットフォームであり、開発者がアプリケーションを構築、実行、スケールするためのツールを提供します。
