@@ -14,6 +14,13 @@ JavaScript の実践的な使い方を学ぶためのリポジトリです。
 | :----------- | :--------- | :--- |
 | nodejs       | 16.x       |      |
 
+### Quick Start
+
+```bash
+npm install
+npm start
+```
+
 ## 構成
 
 - [構築](./docs/build.adoc)
