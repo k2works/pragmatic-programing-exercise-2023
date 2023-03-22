@@ -1501,7 +1501,184 @@ npx gulp slides
 ## 既存のnpmタスクを統合する
 既存のnpmタスクを統合するには、gulpfile.jsファイルにタスクを定義し、npmスクリプトを使用してタスクを実行します。タスクは、JavaScript関数として定義され、gulpプラグインを使用して、JavaScript、CSS、画像などのファイルを処理できます。
 
-以上が、最高のJavaScriptアプリケーション運用手順書を提供するための手順です。もし、最適な情報を提供できない場合は、お知らせください。
+1. webpackのタスクを追加します
+
+```js
+const webpack = {
+  clean: async (cb) => {
+    await rimraf("./public");
+    cb();
+  },
+  build: (cb) => {
+    const webpack = require("webpack");
+    const webpackConfig = require("./webpack.config.js");
+    webpack(webpackConfig, (err, stats) => {
+      if (err || stats.hasErrors()) {
+        console.error(err);
+      }
+      cb();
+    });
+  },
+  watch: (cb) => {
+    const webpack = require("webpack");
+    const webpackConfig = require("./webpack.config.js");
+    const compiler = webpack(webpackConfig);
+    compiler.watch({}, (err, stats) => {
+      if (err || stats.hasErrors()) {
+        console.error(err);
+      }
+    });
+    cb();
+  },
+  server: (cb) => {
+    const webpack = require("webpack");
+    const webpackConfig = require("./webpack.config.js");
+    const compiler = webpack(webpackConfig);
+    const WebpackDevServer = require("webpack-dev-server");
+    const devServerOptions = Object.assign({}, webpackConfig.devServer, {
+      open: false,
+    });
+    const server = new WebpackDevServer(compiler, devServerOptions);
+    server.start(devServerOptions.port, devServerOptions.host, () => {
+      console.log("Starting server on http://localhost:8080");
+    });
+    cb();
+  },
+}
+```
+
+2. jestのタスクを追加します
+
+```js
+const jest = {
+  test: (cb) => {
+    const jest = require("jest");
+    jest.run(["--coverage"]);
+    cb();
+  },
+  watch: (cb) => {
+    const jest = require("jest");
+    jest.run(["--watch"]);
+    cb();
+  },
+}
+```
+
+3. prettierのタスクを追加します
+
+```bash
+npm install gulp-prettier --save-dev
+```
+
+```js
+const prettier = {
+  format: (cb) => {
+    const prettier = require('gulp-prettier');
+    return src("./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}")
+      .pipe(prettier({ singleQuote: true }))
+      .pipe(dest('src'));
+  },
+  watch: (cb) => {
+    watch("./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}", prettier.format);
+    cb();
+  },
+};
+```
+
+4. 既存のタスクと統合します
+
+```js
+const { series, parallel, watch } = require("gulp");
+
+....
+
+const webpackBuildTasks = () => {
+  return series(webpack.clean, webpack.build);
+}
+
+const asciidoctorBuildTasks = () => {
+  return series(asciidoctor.clean, asciidoctor.build);
+}
+
+const marpBuildTasks = () => {
+  return series(marp.clean, marp.build);
+}
+
+exports.default = series(
+  webpackBuildTasks(),
+  asciidoctorBuildTasks(),
+  marpBuildTasks(),
+  series(
+    parallel(webpack.server, asciidoctor.server),
+    parallel(webpack.watch, asciidoctor.watch, marp.watch),
+    parallel(jest.watch)
+  )
+);
+
+exports.build = series(
+  webpackBuildTasks(),
+  asciidoctorBuildTasks(),
+  marpBuildTasks(),
+  prettier.format
+);
+
+exports.test = series(jest.test);
+
+exports.format = series(prettier.format);
+
+exports.slides = series(marp.build);
+
+exports.docs = series(
+  asciidoctorBuildTasks(),
+  marpBuildTasks(),
+  parallel(asciidoctor.server, asciidoctor.watch, marp.watch),
+);
+
+exports.watch = parallel(webpack.watch, asciidoctor.watch, marp.watch, jest.watch);
+```
+
+5. package.jsonのscriptsを更新します
+
+```json
+{
+  "scripts": {
+    "start": "npx gulp",
+    "build": "npx gulp build",
+    "test": "npx gulp test",
+    "format": "npx gulp format",
+    "slides": "npx gulp slides",
+    "docs": "npx gulp docs",
+    "watch": "npx gulp watch",
+    "heroku-postbuild": "webpack --config ./webpack.config.js --progress"
+  },
+}
+```
+
+6. デプロイタスクを追加します
+
+```json
+{
+  "scripts": {
+    "start": "npx gulp",
+    "build": "npx gulp build",
+    "test": "npx gulp test",
+    "format": "npx gulp format",
+    "slides": "npx gulp slides",
+    "docs": "npx gulp docs",
+    "watch": "npx gulp watch",
+    "deploy": "vercel",
+    "deploy:local": "vercel dev",
+    "deploy:heroku": "git push heroku wip/episode/00:master ",
+    "heroku-postbuild": "webpack --config ./webpack.config.js --progress"
+  },
+}
+```
+
+7. npmタスクからgulpのdefaultタスクを実行します。
+
+```bash
+npm start
+```
 
 **[⬆ back to top](#構成)**
 

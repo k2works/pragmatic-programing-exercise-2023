@@ -1,11 +1,4 @@
-function defaultTask(cb) {
-  // place code for your default task here
-  cb();
-}
-
-exports.default = defaultTask
-
-const { series, watch } = require("gulp");
+const { series, parallel, watch, src, dest } = require("gulp");
 const { default: rimraf } = require("rimraf");
 const browserSync = require('browser-sync').create();
 
@@ -56,8 +49,6 @@ const asciidoctor = {
   },
 }
 
-exports.docs = series(asciidoctor.clean, asciidoctor.build, asciidoctor.watch, asciidoctor.server);
-
 marp = {
   build: (cb) => {
     const { marpCli } = require('@marp-team/marp-cli')
@@ -83,4 +74,122 @@ marp = {
   }
 }
 
+const webpack = {
+  clean: async (cb) => {
+    await rimraf("./public");
+    cb();
+  },
+  build: (cb) => {
+    const webpack = require("webpack");
+    const webpackConfig = require("./webpack.config.js");
+    webpack(webpackConfig, (err, stats) => {
+      if (err || stats.hasErrors()) {
+        console.error(err);
+      }
+      cb();
+    });
+  },
+  watch: (cb) => {
+    const webpack = require("webpack");
+    const webpackConfig = require("./webpack.config.js");
+    const compiler = webpack(webpackConfig);
+    compiler.watch({}, (err, stats) => {
+      if (err || stats.hasErrors()) {
+        console.error(err);
+      }
+    });
+    cb();
+  },
+  server: (cb) => {
+    const webpack = require("webpack");
+    const webpackConfig = require("./webpack.config.js");
+    const compiler = webpack(webpackConfig);
+    const WebpackDevServer = require("webpack-dev-server");
+    const devServerOptions = Object.assign({}, webpackConfig.devServer, {
+      open: false,
+    });
+    const server = new WebpackDevServer(compiler, devServerOptions);
+    server.start(devServerOptions.port, devServerOptions.host, () => {
+      console.log("Starting server on http://localhost:8080");
+    });
+    cb();
+  },
+}
+
+const jest = {
+  test: (cb) => {
+    const jest = require("jest");
+    jest.run(["--coverage"]);
+    cb();
+  },
+  watch: (cb) => {
+    const jest = require("jest");
+    jest.run(["--watch"]);
+    cb();
+  },
+}
+
+const prettier = {
+  format: (cb) => {
+    const prettier = require('gulp-prettier');
+    return src("./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}")
+      .pipe(prettier(
+        {
+          "semi": true,
+          "trailingComma": "all",
+          "singleQuote": true,
+          "printWidth": 80,
+          "tabWidth": 2
+        }
+      ))
+      .pipe(dest('src'));
+  },
+  watch: (cb) => {
+    watch("./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}", prettier.format);
+    cb();
+  },
+};
+
+const webpackBuildTasks = () => {
+  return series(webpack.clean, webpack.build);
+}
+
+const asciidoctorBuildTasks = () => {
+  return series(asciidoctor.clean, asciidoctor.build);
+}
+
+const marpBuildTasks = () => {
+  return series(marp.clean, marp.build);
+}
+
+exports.default = series(
+  webpackBuildTasks(),
+  asciidoctorBuildTasks(),
+  marpBuildTasks(),
+  series(
+    parallel(webpack.server, asciidoctor.server),
+    parallel(webpack.watch, asciidoctor.watch, marp.watch),
+    parallel(jest.watch)
+  )
+);
+
+exports.build = series(
+  webpackBuildTasks(),
+  asciidoctorBuildTasks(),
+  marpBuildTasks(),
+  prettier.format
+);
+
+exports.test = series(jest.test);
+
+exports.format = series(prettier.format);
+
 exports.slides = series(marp.build);
+
+exports.docs = series(
+  asciidoctorBuildTasks(),
+  marpBuildTasks(),
+  parallel(asciidoctor.server, asciidoctor.watch, marp.watch),
+);
+
+exports.watch = parallel(webpack.watch, asciidoctor.watch, marp.watch, jest.watch);
