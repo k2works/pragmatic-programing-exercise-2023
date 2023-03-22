@@ -809,10 +809,127 @@ npx prettier --write .
 1. 以下のコマンドを実行して、開発ツールをインストールしてください。
 
 ```bash
-
+npm install --save-dev @k2works/full-stack-lab
 ```
 
+`./index.html` を以下の内容に変更します。
+
+```html
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>App</title>
+  </head>
+  <body>
+    <h1>アプリケーション</h1>
+      <div id="app"></div>
+      <div id="app-dev"></div>
+  </body>
+</html>
+```
+
+
+`./src/app.js` を以下の内容に変更します。
+
+```javascript
+console.log('app.js: loaded');
+export class App {
+  constructor() {
+    console.log('App initialized');
+  }
+}
+
+export function sum(a, b) {
+  return a + b;
+}
+```
+
+`./src/index.js` をルート直下に移動して以下の内容変更します。
+
+```javascript
+import { App } from "./src/app.js";
+const app = new App();
+
+import { render } from "@k2works/full-stack-lab";
+const contents = `
+## 機能名
+## 仕様
+## TODOリスト
+`;
+
+const uml = `
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+class ArrayList {
+  Object[] elementData
+  size()
+}
+enum TimeUnit {
+  DAYS
+  HOURS
+  MINUTES
+}
+annotation SuppressWarnings
+`;
+
+const erd = `
+' hide the spot
+hide circle
+' avoid problems with angled crows feet
+skinparam linetype ortho
+entity "Entity01" as e01 {
+  *e1_id : number <<generated>>
+  --
+  *name : text
+  description : text
+}
+entity "Entity02" as e02 {
+  *e2_id : number <<generated>>
+  --
+  *e1_id : number <<FK>>
+  other_details : text
+}
+entity "Entity03" as e03 {
+  *e3_id : number <<generated>>
+  --
+  e1_id : number <<FK>>
+  other_details : text
+}
+e01 ||..o{ e02
+e01 |o..o{ e03
+`;
+render({ contents, uml, erd });
+```
+
+2. TypScriptも同様に変更してください。
+
+3. 最後に不要なファイルを削除します。
+
 #### 開発ツールの設定
+
+1. webpack.config.js を以下の内容に変更します。
+
+```javascript
+...
+  entry: './index.js',
+...
+```
+
+#### 開発ツールの実行
+
+1. 以下のコマンドを実行して、開発ツールを実行してください。
+
+```bash
+npm start
+```
 
 **[⬆ back to top](#構成)**
 
@@ -831,3 +948,4 @@ npx prettier --write .
 ## 参照
 
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
+- [@k2works/full-stack-lab](https://www.npmjs.com/package/@k2works/full-stack-lab)
