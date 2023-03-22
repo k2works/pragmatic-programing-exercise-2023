@@ -2,7 +2,7 @@
 :toclevels: 5
 :sectnums:
 
-= Asciidoc
+= ドキュメント
 
 == 目的
 

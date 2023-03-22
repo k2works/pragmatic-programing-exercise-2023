@@ -1321,6 +1321,84 @@ npx gulp docs
 ## BrowserSyncとは
 BrowserSyncは、ブラウザーの自動リロード、CSSのインジェクション、デバイス同期などの機能を提供するJavaScriptライブラリです。BrowserSyncは、gulpfile.jsファイルに定義されたタスクを実行することができます。
 
+1. BrowserSyncをインストールします
+
+```
+npm install --save-dev browser-sync
+```
+
+2. Gulpタスクを変更します
+
+```js
+function defaultTask(cb) {
+  // place code for your default task here
+  cb();
+}
+
+exports.default = defaultTask
+
+const { series, watch } = require("gulp");
+const { default: rimraf } = require("rimraf");
+const browserSync = require('browser-sync').create();
+
+const asciidoctor = {
+  clean: async (cb) => {
+    await rimraf("./public/docs");
+    cb();
+  },
+  build: (cb) => {
+    const fs = require("fs");
+    const asciidoctor = require("@asciidoctor/core")();
+    const kroki = require("asciidoctor-kroki");
+
+    const krokiRegister = () => {
+      const registry = asciidoctor.Extensions.create();
+      kroki.register(registry);
+      return registry;
+    };
+
+    const inputRootDir = "./docs";
+    const outputRootDir = "./public/docs";
+    const fileNameList = fs.readdirSync(inputRootDir);
+    const docs = fileNameList.filter(RegExp.prototype.test, /.*\.adoc$/);
+
+    docs.map((input) => {
+      const file = `${inputRootDir}/${input}`;
+      asciidoctor.convertFile(file, {
+        safe: "safe",
+        extension_registry: krokiRegister(),
+        to_dir: outputRootDir,
+        mkdirs: true,
+      });
+    });
+    cb();
+  },
+  watch: (cb) => {
+    watch("./docs/**/*.adoc", asciidoctor.build);
+    cb();
+  },
+  server: (cb) => {
+    browserSync.init({
+      server: {
+        baseDir: "./public",
+      },
+    });
+    watch("./public/**/*.html").on("change", browserSync.reload);
+    cb();
+  },
+}
+
+exports.docs = series(asciidoctor.clean, asciidoctor.build, asciidoctor.watch, asciidoctor.server)
+```
+
+3. Gulpタスクを実行します
+
+```
+npx gulp docs
+```
+
+これで、adocファイルを編集するたびにドキュメントがビルドされブラウザが自動でリロードされます。
+
 ## Marpとは
 Marpは、Markdownを使用してスライドを作成するためのJavaScriptアプリケーションです。Marpは、スライドのデザインをカスタマイズするためのテーマを提供し、PDF、HTML、PNGなどのフォーマットにエクスポートできます。Marpは、Node.jsのパッケージマネージャであるnpmで提供されています。
 
@@ -1341,3 +1419,4 @@ Marpは、Markdownを使用してスライドを作成するためのJavaScript�
 - [@k2works/full-stack-lab](https://www.npmjs.com/package/@k2works/full-stack-lab)
 - [Gulp](https://gulpjs.com/docs/en/getting-started/quick-start)
 - [Asciidoctor](https://asciidoctor.org/)
+- [Browsersync](https://browsersync.io/)

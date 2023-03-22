@@ -5,8 +5,9 @@ function defaultTask(cb) {
 
 exports.default = defaultTask
 
-const { series } = require("gulp");
+const { series, watch } = require("gulp");
 const { default: rimraf } = require("rimraf");
+const browserSync = require('browser-sync').create();
 
 const asciidoctor = {
   clean: async (cb) => {
@@ -44,6 +45,15 @@ const asciidoctor = {
     watch("./docs/**/*.adoc", asciidoctor.build);
     cb();
   },
+  server: (cb) => {
+    browserSync.init({
+      server: {
+        baseDir: "./public",
+      },
+    });
+    watch("./public/**/*.html").on("change", browserSync.reload);
+    cb();
+  },
 }
 
-exports.docs = series(asciidoctor.clean, asciidoctor.build);
+exports.docs = series(asciidoctor.clean, asciidoctor.build, asciidoctor.watch, asciidoctor.server);
