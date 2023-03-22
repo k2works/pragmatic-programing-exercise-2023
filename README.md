@@ -532,10 +532,16 @@ npm install --save-dev webpack-dev-server
 1. webpack.config.jsファイルを開き、以下の内容を追加してください。
 
 ```javascript
+const path = require('path');
+
 module.exports = {
-  // ...
+  //...
   devServer: {
-    contentBase: './dist',
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
+    compress: true,
+    port: 9000,
   },
 };
 ```
@@ -546,6 +552,86 @@ module.exports = {
 
 ```bash
 npx webpack serve
+```
+
+終了する場合は、Ctrl + Cを押してください。
+
+2. HTMLWebpackPluginプラグインを使用してjsファイルに自動的にバンドルされたscriptタグを生成し、index.htmlに挿入できるようにします。
+
+```bash
+npm install --save-dev html-webpack-plugin
+```
+
+3. プロジェクト直下に index.html を作成してください。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>App</title>
+  </head>
+  <body>
+    <h1>アプリケーション</h1>
+  </body>
+</html>
+```
+
+4. webpack.config.jsファイルを開き、以下の内容を追加してください。
+
+```javascript
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = {
+  // ...他のWebpack設定
+
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'index.html'
+    })
+  ]
+};
+```
+
+5. package.jsonファイルを開き、以下の内容を追加してください。
+
+```json
+{
+  // ...他の設定
+  "scripts": {
+    "start": "webpack server --config ./webpack.config.js --open"
+  }
+}
+```
+
+6. 以下のコマンドを実行して、webpack-dev-serverを実行してください。
+
+```bash
+npm start
+```
+
+7. ソースマップを有効にすることで、開発中にエラーが発生した場合に、エラーが発生したファイル名と行数を表示することができます。
+
+```javascript
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+const env = process.env.NODE_ENV || "development";
+const isDevelopment = env === "development";
+
+module.exports = {
+  mode: env,
+  devtool: isDevelopment ? "source-map" : false,
+```
+
+8. TypeScriptの型チェックを実行するために、tsconfig.jsonに以下の設定を追加してください。
+
+```json
+{
+  "compilerOptions": {
+    "sourceMap": true
+  }
+}
 ```
 
 ### テスティングフレームワークのセットアップ
