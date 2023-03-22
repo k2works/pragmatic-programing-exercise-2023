@@ -1402,6 +1402,102 @@ npx gulp docs
 ## Marpとは
 Marpは、Markdownを使用してスライドを作成するためのJavaScriptアプリケーションです。Marpは、スライドのデザインをカスタマイズするためのテーマを提供し、PDF、HTML、PNGなどのフォーマットにエクスポートできます。Marpは、Node.jsのパッケージマネージャであるnpmで提供されています。
 
+1. Marpをインストールします
+
+```
+npm install --save-dev @marp-team/marp-cli
+```
+
+2. スライドを作成します
+
+`./docs/slides/PITCHME.md`
+
+```md
+---
+marp: true
+---
+
+### タイトル
+
+---
+
+### 構成
+
+- 自己紹介
+- トピック 1
+- トピック 2
+- トピック 3
+
+---
+
+### 自己紹介
+
+---
+
+### トピック 1
+
+---
+
+### トピック 2
+
+---
+
+### トピック 3
+
+---
+
+### おわり
+
+---
+
+### 参照
+
+---
+```
+
+3. スライドをビルドします
+
+```
+npx marp --html --pdf ./docs/slides/PITCHME.md
+```
+
+4. Gulpタスクを追加します
+
+```js
+marp = {
+  build: (cb) => {
+    const { marpCli } = require('@marp-team/marp-cli')
+
+    marpCli(['./docs/slides/PITCHME.md', '--html', '--output', './public/slides/index.html'])
+      .then((exitStatus) => {
+        if (exitStatus > 0) {
+          console.error(`Failure (Exit status: ${exitStatus})`)
+        } else {
+          console.log('Success')
+        }
+      })
+      .catch(console.error)
+    cb();
+  },
+  clean: async (cb) => {
+    await rimraf("./public/slides");
+    cb();
+  },
+  watch: (cb) => {
+    watch("./docs/slides/**/*.md", marp.build);
+    cb();
+  }
+}
+
+exports.slides = series(marp.build);
+```
+
+5. Gulpタスクを実行します
+
+```
+npx gulp slides
+```
+
 ## 既存のnpmタスクを統合する
 既存のnpmタスクを統合するには、gulpfile.jsファイルにタスクを定義し、npmスクリプトを使用してタスクを実行します。タスクは、JavaScript関数として定義され、gulpプラグインを使用して、JavaScript、CSS、画像などのファイルを処理できます。
 

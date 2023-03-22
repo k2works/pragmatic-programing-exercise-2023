@@ -57,3 +57,30 @@ const asciidoctor = {
 }
 
 exports.docs = series(asciidoctor.clean, asciidoctor.build, asciidoctor.watch, asciidoctor.server);
+
+marp = {
+  build: (cb) => {
+    const { marpCli } = require('@marp-team/marp-cli')
+
+    marpCli(['./docs/slides/PITCHME.md', '--html', '--output', './public/slides/index.html'])
+      .then((exitStatus) => {
+        if (exitStatus > 0) {
+          console.error(`Failure (Exit status: ${exitStatus})`)
+        } else {
+          console.log('Success')
+        }
+      })
+      .catch(console.error)
+    cb();
+  },
+  clean: async (cb) => {
+    await rimraf("./public/slides");
+    cb();
+  },
+  watch: (cb) => {
+    watch("./docs/slides/**/*.md", marp.build);
+    cb();
+  }
+}
+
+exports.slides = series(marp.build);

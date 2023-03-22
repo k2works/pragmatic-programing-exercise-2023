@@ -28,6 +28,7 @@
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-typescript": "^7.21.0",
     "@k2works/full-stack-lab": "^1.0.1",
+    "@marp-team/marp-cli": "^2.4.0",
     "@types/jest": "^29.5.0",
     "asciidoctor": "^2.2.6",
     "asciidoctor-kroki": "^0.17.0",
