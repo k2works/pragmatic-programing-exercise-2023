@@ -662,13 +662,21 @@ npm install --save-dev jest
 }
 ```
 
-2. jest.config.jsファイルを作成し、以下の内容を記述してください。
+2. ES Modulesを私用している場合はテストが失敗するので以下の設定をpackage.jsonに追加する
 
-```javascript
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-};
+```json
+...
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
+    "testMatch": [
+      "**/**/*.test.js",
+      "**/**/*.test.ts"
+    ]
+  }
+}
 ```
 
 #### TypeScript対応
@@ -679,31 +687,50 @@ module.exports = {
 npm install --save-dev @types/jest ts-jest
 ```
 
-2. jest.config.jsファイルを開き、以下の内容を追加してください。
+2. tsconfig.jsonファイルを開き、以下の内容を追加してください。
 
-```javascript
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-};
+```json
+"module": "es2020",
 ```
 
 #### テストの作成
 
-1. testsディレクトリを作成し、テストファイルを作成してください。
+1. テストファイルを作成してください。
 
-```bash
-mkdir tests
-touch tests/index.test.ts
+
+`src/app.js`
+```javascript
+export function sum(a, b) {
+  return a + b;
+}
 ```
 
-2. 以下の内容を記述してください。
+`src/app.test.js`
+
+```javascript
+import { sum } from './app.js';
+
+test('adds 1 + 2 to equal 3', () => {
+  const result = sum(1, 2);
+  expect(result).toBe(3);
+});
+```
+
+`src/app.ts`
+```typescript
+export function sum(a: number, b: number): number {
+  return a + b;
+}
+```
+
+`src/app.test.ts`
 
 ```typescript
-describe('example', () => {
-  it('should return true', () => {
-    expect(true).toBe(true);
-  });
+import { sum } from './app';
+
+test('adds 1 + 2 to equal 3', () => {
+  const result = sum(1, 2);
+  expect(result).toBe(3);
 });
 ```
 
@@ -713,6 +740,12 @@ describe('example', () => {
 
 ```bash
 npm test
+```
+
+2. テストカバレッジを計測することで、テストがどの程度の範囲をカバーしているかを確認することができます。
+
+```json
+    "test": "jest --coverage"
 ```
 
 ### フォーマッタのセットアップ
