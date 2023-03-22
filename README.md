@@ -823,12 +823,11 @@ npm install --save-dev @k2works/full-stack-lab
   </head>
   <body>
     <h1>アプリケーション</h1>
-      <div id="app"></div>
-      <div id="app-dev"></div>
+    <div id="app"></div>
+    <div id="app-dev"></div>
   </body>
 </html>
 ```
-
 
 `./src/app.js` を以下の内容に変更します。
 
@@ -848,10 +847,10 @@ export function sum(a, b) {
 `./src/index.js` をルート直下に移動して以下の内容変更します。
 
 ```javascript
-import { App } from "./src/app.js";
+import { App } from './src/app.js';
 const app = new App();
 
-import { render } from "@k2works/full-stack-lab";
+import { render } from '@k2works/full-stack-lab';
 const contents = `
 ## 機能名
 ## 仕様
@@ -909,7 +908,7 @@ e01 |o..o{ e03
 render({ contents, uml, erd });
 ```
 
-2. TypScriptも同様に変更してください。
+2. TypScript も同様に変更してください。
 
 3. 最後に不要なファイルを削除します。
 

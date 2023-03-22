@@ -1,7 +1,7 @@
-import { App } from "./src/app";
+import { App } from './src/app';
 const app = new App();
 
-const dev = require("@k2works/full-stack-lab")
+const dev = require('@k2works/full-stack-lab');
 const contents = `
 ## 機能名
 ## 仕様

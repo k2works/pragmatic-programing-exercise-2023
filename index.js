@@ -1,7 +1,7 @@
-import { App } from "./src/app.js";
+import { App } from './src/app.js';
 const app = new App();
 
-import { render } from "@k2works/full-stack-lab";
+import { render } from '@k2works/full-stack-lab';
 const contents = `
 ## 機能名
 ## 仕様
