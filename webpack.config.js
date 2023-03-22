@@ -1,9 +1,12 @@
 module.exports = {
   mode: 'development',
-  entry: './src/index.js',
+  entry: './src/index.ts',
   output: {
     path: __dirname + '/dist',
     filename: 'bundle.js'
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js']
   },
   module: {
     rules: [
@@ -19,6 +22,10 @@ module.exports = {
             },
           },
         ],
+      },
+      {
+        test: /\.tsx?$/,
+        loader: 'ts-loader'
       },
     ],
   },

@@ -383,62 +383,136 @@ npm install --save-dev typescript
 2. tsconfig.jsonファイルを作成します。以下のコマンドを実行して、tsconfig.jsonファイルを作成してください。
 
 ```bash
-touch tsconfig.json
-```
-
-3. tsconfig.jsonファイルに以下の内容を記述してください。
-
-```json
-{
-  "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "outDir": "dist",
-    "strict": true,
-    "esModuleInterop": true
-  }
-}
+npx tsc --init
 ```
 
 #### トランスパイラの設定
 
-1. package.jsonファイルを開き、以下の内容を追加してください。
+1. 必要なパッケージをインストールします。
 
-```json
+```bash
+npm install --save-dev @babel/preset-typescript @babel/plugin-proposal-class-properties typescript
+```
+
+2. .babelrcファイルを変更します。
+
+```bash
 {
-  "scripts": {
-    "build": "tsc"
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-typescript"
+  ],
+  "plugins": ["@babel/plugin-proposal-class-properties"]
+}
+```
+
+
+#### トランスパイラの実行
+
+1. ./src/sample.tsファイルを作成してください。
+
+```TypeScript
+class Greeting {
+  constructor(public name: string) {}
+  say() {
+    console.log(`Hello ${this.name}`);
   }
 }
 ```
 
-#### トランスパイラの実行
+2. ./src/index.tsファイルを変更してください。
 
-1. 以下のコマンドを実行して、トランスパイルを実行してください。
+```TypeScript
+import { Greeting } from "./sample";
+
+const greeting = new Greeting("TypeScript");
+greeting.say();
+```
+
+3. 以下のコマンドを実行して、トランスパイルを実行してください。
+
+```bash
+npx babel src --extensions '.ts,.tsx' --out-dir dist
+```
+
+4. ./dist/sample.jsファイルが作成されていることを確認してください。
+
+5. ./dist/sample.jsファイルを実行してください。
+
+```bash
+node ./dist/index.js
+```
+
+#### モジュールバンドラーの設定
+
+1. 必要なパッケージをインストールします。
+
+```bash
+npm install --save-dev ts-loader
+```
+
+2. webpack.config.jsファイルを開き、以下の内容を追加してください。
+
+```javascript
+module.exports = {
+  mode: 'development',
+  entry: './src/index.ts',
+  output: {
+    path: __dirname + '/dist',
+    filename: 'bundle.js'
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js']
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              presets: [
+                "@babel/preset-env",
+              ],
+            },
+          },
+        ],
+      },
+      {
+        test: /\.tsx?$/,
+        loader: 'ts-loader'
+      },
+    ],
+  },
+  target: ["web", "es5"],
+};
+```
+
+3. 以下のコマンドを実行して、モジュールバンドラーを実行してください。
 
 ```bash
 npm run build
 ```
 
-#### モジュールバンドラーの設定
+4. ./dist/bundle.jsファイルが作成されていることを確認してください。
 
-1. webpack.config.jsファイルを開き、以下の内容を追加してください。
+5. ./dist/bundle.jsファイルを実行してください。
 
-```javascript
-module.exports = {
-  resolve: {
-    extensions: ['.ts', '.js'],
-  },
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
-      },
-    ],
-  },
-};
+```bash
+node ./dist/bundle.js
+```
+
+TypeScriptファイルをそのまま実行したい場合は、ts-nodeを使用します。
+
+```bash
+npm install --save-dev ts-node
+```
+
+動かし方は以下の通りです。
+
+```bash
+npx ts-node src/index.ts
 ```
 
 ### webpack-dev-serverのセットアップ
