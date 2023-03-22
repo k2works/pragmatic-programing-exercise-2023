@@ -1084,13 +1084,20 @@ vercel login
 ```
 
 3. プロジェクトをデプロイする
+webpack.config.jsのビルドファイルの出力先をpublicに変更します。
+
+```javascript
+ output: {
+    path: __dirname + '/public',
+    filename: 'bundle.js'
+  },
+```
+
 Vercel CLIを使用して、プロジェクトをデプロイするには、以下のコマンドを実行します。
 
 ```
 vercel
 ```
-
-以上、参考になれば幸いです。もし、最適な情報を提供できない場合は、その旨を伝えます。
 
 **[⬆ back to top](#構成)**
 
