@@ -84,12 +84,66 @@ const student = [
   },
 ];
 
+const student2 = [
+  {
+    id: 1,
+    name: "佐藤",
+    from_id: 3,
+  },
+  {
+    id: 2,
+    name: "鈴木",
+    from_id: 1,
+  },
+  {
+    id: 3,
+    name: "高橋",
+    from_id: 2,
+  },
+  {
+    id: 4,
+    name: "田中",
+    from_id: 4,
+  },
+]
+
+const from = [
+  {
+    id: 1,
+    syussin: "東京",
+  },
+  {
+    id: 2,
+    syussin: "大阪",
+  },
+  {
+    id: 3,
+    syussin: "北海道",
+  }
+]
+
 async function main() {
   for (const s of student) {
     await prisma.student.upsert({
       where: { id: s.id },
       update: {},
       create: s
+    })
+  }
+
+  for (const f of from) {
+    await prisma.from.upsert({
+      where: { id: f.id },
+      update: {},
+      create: f
+    })
+  }
+
+  for (const s2 of student2) {
+    await prisma.student2.upsert({
+      where: { id: s2.id },
+      update: {},
+      create: s2
     })
   }
 }
