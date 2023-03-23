@@ -3,11 +3,11 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient()
 let students = [];
 let students2 = [];
-let from = [];
+let froms = [];
 beforeAll(async () => {
   students = await prisma.student.findMany();
   students2 = await prisma.student2.findMany();
-  from = await prisma.from.findMany();
+  froms = await prisma.from.findMany();
 })
 
 describe("SQL入門", () => {
@@ -1217,6 +1217,65 @@ describe("SQL入門", () => {
         console.table(result);
         expect(result[0].name).toStrictEqual("渡辺");
       });
+    })
+
+    describe("INNER JOIN 内部結合", () => {
+      test("SELECT * FROM Student INNER JOIN From ON from_id = From.id", () => {
+        const select_from_student_inner_join_from_on_student_id_from_id = (
+          data,
+          joinData
+        ) => {
+          const list = data.map((i) => {
+            const f = joinData.filter((j) => j.id === i.from_id);
+            return {...i, ...f[0]};
+          });
+          return list.map((i) => i).filter((i) => i.syussin !== undefined);
+        };
+
+        const result = select_from_student_inner_join_from_on_student_id_from_id(students2, froms);
+
+        console.table(result);
+        expect(result[0].name).toStrictEqual("佐藤");
+        expect(result[0].syussin).toStrictEqual("北海道");
+      })
+
+      test("SELECT name,syussin FROM Student INNER JOIN From ON from_id = From.id", () => {
+        const select_name_syussin_from_student_inner_join_from_on_student_id_from_id = (
+            data,
+            joinData
+        ) => {
+            const list = data.map((i) => {
+                  const f = joinData.filter((j) => j.id === i.from_id);
+                  return { ...i, ...f[0] };
+                });
+            return list
+              .map((i) => ({ name: i.name, syussin: i.syussin }))
+              .filter((j) => j.syussin !== undefined);
+        };
+
+        const result = select_name_syussin_from_student_inner_join_from_on_student_id_from_id(students2, froms);
+
+        console.table(result);
+        expect(result[0].name).toStrictEqual("佐藤");
+        expect(result[0].syussin).toStrictEqual("北海道");
+      })
+
+      test("SELECT * FROM Student LEFT JOIN From ON from_id = From.d WHERE syussin='大阪'", () => {
+        const select_from_student_left_join_from_on_student_id_from_id_where_syussin_is_osaka =
+            (data, joinData) => {
+                  const list = data.map((i) => {
+                          const f = joinData.filter((j) => j.id === i.from_id);
+                          return { ...i, ...f[0] };
+                        });
+                  return list.filter((i) => i.syussin === "大阪");
+                };
+
+        const result = select_from_student_left_join_from_on_student_id_from_id_where_syussin_is_osaka(students2, froms);
+
+        console.table(result);
+        expect(result[0].name).toStrictEqual("高橋");
+        expect(result[0].syussin).toStrictEqual("大阪");
+      })
     })
   });
 })
