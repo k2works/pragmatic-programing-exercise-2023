@@ -2,8 +2,12 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient()
 let students = [];
+let students2 = [];
+let from = [];
 beforeAll(async () => {
   students = await prisma.student.findMany();
+  students2 = await prisma.student2.findMany();
+  from = await prisma.from.findMany();
 })
 
 describe("SQL入門", () => {
@@ -898,7 +902,7 @@ describe("SQL入門", () => {
     describe("UPDATEでデータ更新", () => {
       test("UPDATE Student set test_score=80 WHERE id=10", () => {
         const update_test_score = (data, id, test_score) =>
-          data.map((i) => (i.id === id ? {...i, test_score} : i));
+          data.map((i) => (i.id === id ? { ...i, test_score } : i));
 
         const result = update_test_score(students, 10, 80);
 
@@ -908,7 +912,7 @@ describe("SQL入門", () => {
 
       test("UPDATE Student set name=80 WHERE id=10", () => {
         const update_name = (data, id, name) =>
-          data.map((i) => (i.id === id ? {...i, name} : i));
+          data.map((i) => (i.id === id ? { ...i, name } : i));
 
         const result = update_name(students, 10, "石田");
 
@@ -918,7 +922,7 @@ describe("SQL入門", () => {
 
       test("UPDATE Student set test_score=NULL WHERE id=10", () => {
         const update_test_score_null = (data, id) =>
-          data.map((i) => (i.id === id ? {...i, test_score: null} : i));
+          data.map((i) => (i.id === id ? { ...i, test_score: null } : i));
 
         const result = update_test_score_null(students, 10);
 
@@ -928,7 +932,7 @@ describe("SQL入門", () => {
 
       test("UPDATE Student set birthday=NULL WHERE id=10", () => {
         const update_birthday_null = (data, id) =>
-          data.map((i) => (i.id === id ? {...i, birthday: null} : i));
+          data.map((i) => (i.id === id ? { ...i, birthday: null } : i));
 
         const result = update_birthday_null(students, 10);
 
@@ -938,7 +942,7 @@ describe("SQL入門", () => {
 
       test("UPDATE Student set name='藤井', test_score=65 WHERE id=10", () => {
         const update_name_test_score = (data, id, name, test_score) =>
-          data.map((i) => (i.id === id ? {...i, name, test_score} : i));
+          data.map((i) => (i.id === id ? { ...i, name, test_score } : i));
 
         const result = update_name_test_score(students, 10, "藤井", 65);
 
@@ -1081,7 +1085,7 @@ describe("SQL入門", () => {
     })
 
     describe("SQLのサブクエリ", () => {
-      test("SELECT name FROM Student WHERE test_score < (SELECT test_score FROM Student WHERE name = '渡辺')",  () => {
+      test("SELECT name FROM Student WHERE test_score < (SELECT test_score FROM Student WHERE name = '渡辺')", () => {
         const select_name_from_test_score_where_name = (data, name) => {
           const test_score = data.find((i) => i.name === name).test_score;
           return data.filter((i) => i.test_score < test_score).map((i) => i.name);
@@ -1160,11 +1164,11 @@ describe("SQL入門", () => {
     describe("UNIONで結合", () => {
       test("SELECT name FROM Student WHERE name = '佐藤' UNION SELECT name FROM Student WHERE name = '鈴木'", () => {
         const select_name_from_student_where_name_union_select_name_from_student_where_name =
-        (data, name1, name2) => {
-              const list1 = data.filter((i) => i.name === name1);
-              const list2 = data.filter((i) => i.name === name2);
-              return list1.concat(list2).map((i) => i.name);
-            };
+          (data, name1, name2) => {
+            const list1 = data.filter((i) => i.name === name1);
+            const list2 = data.filter((i) => i.name === name2);
+            return list1.concat(list2).map((i) => i.name);
+          };
 
         const result = select_name_from_student_where_name_union_select_name_from_student_where_name(students, "佐藤", "鈴木");
 
@@ -1174,11 +1178,11 @@ describe("SQL入門", () => {
 
       test("SELECT name FROM Student WHERE age = 9 UNION ALL SELECT name FROM Student WHERE name = '鈴木'", () => {
         const select_name_from_student_where_age_union_all_select_name_from_student_where_name =
-            (data, age, name) => {
-                  const list1 = data.filter((i) => i.age === age);
-                  const list2 = data.filter((i) => i.name === name);
-                  return list1.concat(list2).map((i) => i.name);
-                };
+          (data, age, name) => {
+            const list1 = data.filter((i) => i.age === age);
+            const list2 = data.filter((i) => i.name === name);
+            return list1.concat(list2).map((i) => i.name);
+          };
 
         const result = select_name_from_student_where_age_union_all_select_name_from_student_where_name(students, 9, "鈴木");
 
@@ -1188,11 +1192,11 @@ describe("SQL入門", () => {
 
       test("SELECT name FROM Student WHERE gender = '女' INTERSECT SELECT name FROM Student WHERE id = 3", () => {
         const select_name_from_student_where_gender_intersect_select_name_from_student_where_id =
-            (data, gender, id) => {
-                  const list1 = data.filter((i) => i.gender === gender);
-                  const list2 = data.filter((i) => i.id === id);
-                  return list1.filter((value) => list2.includes(value));
-                };
+          (data, gender, id) => {
+            const list1 = data.filter((i) => i.gender === gender);
+            const list2 = data.filter((i) => i.id === id);
+            return list1.filter((value) => list2.includes(value));
+          };
 
         const result = select_name_from_student_where_gender_intersect_select_name_from_student_where_id(students, "女", 3);
 
@@ -1202,11 +1206,11 @@ describe("SQL入門", () => {
 
       test("SELECT name FROM Student WHERE gender = '女' EXCEPT SELECT name FROM Student WHERE id = 3", () => {
         const select_name_from_student_where_gender_except_select_name_from_student_where_id =
-            (data, gender, id) => {
-                  const list1 = data.filter((i) => i.gender === gender);
-                  const list2 = data.filter((i) => i.id === id);
-                  return list1.filter((value) => !list2.includes(value));
-                };
+          (data, gender, id) => {
+            const list1 = data.filter((i) => i.gender === gender);
+            const list2 = data.filter((i) => i.id === id);
+            return list1.filter((value) => !list2.includes(value));
+          };
 
         const result = select_name_from_student_where_gender_except_select_name_from_student_where_id(students, "女", 3);
 
