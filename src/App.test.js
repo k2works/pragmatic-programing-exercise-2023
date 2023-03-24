@@ -4,10 +4,12 @@ const prisma = new PrismaClient()
 let students = [];
 let students2 = [];
 let froms = [];
+let classRooms = [];
 beforeAll(async () => {
   students = await prisma.student.findMany();
   students2 = await prisma.student2.findMany();
   froms = await prisma.from.findMany();
+  classRooms = await prisma.classRoom.findMany();
 })
 
 describe("SQL入門", () => {
@@ -1276,6 +1278,62 @@ describe("SQL入門", () => {
         expect(result[0].name).toStrictEqual("高橋");
         expect(result[0].syussin).toStrictEqual("大阪");
       })
+    })
+
+    describe("OUTER JOIN 外部結合", () => {
+      test("SELECT * FROM Student LEFT JOIN From ON from_id = From.id", () => {
+        const select_from_student_left_join_from_on_student_id_from_id = (
+          data,
+          joinData
+        ) => {
+          const list = data.map((i) => {
+            const f = joinData.filter((j) => j.id === i.from_id);
+            return {...i, ...f[0]};
+          });
+          return list;
+        };
+
+        const result = select_from_student_left_join_from_on_student_id_from_id(students2, froms);
+
+        console.table(result);
+        expect(result[0].name).toStrictEqual("佐藤");
+        expect(result[0].syussin).toStrictEqual("北海道");
+      })
+
+      test("SELECT * FROM From RIGHT JOIN Student ON From.id = from_id", () => {
+        const select_from_from_right_join_student_on_from_id_from_id = (
+          data,
+          joinData
+        ) => {
+          const list = data.map((i) => {
+            const f = joinData.filter((j) => j.id === i.from_id);
+            return {...i, ...f[0]};
+          });
+          return list;
+        };
+
+        const result = select_from_from_right_join_student_on_from_id_from_id(froms, students2);
+
+        console.table(result);
+        expect(result[0].syussin).toStrictEqual("東京");
+      })
+
+      test("SELECT name,syussin,teacher FROM Student JOIN From ON from_id = From.id JOIN ClassRoom ON class_id = ClassRomm.id", () => {
+        const select_name_syussin_teacher_from_student_join_from_on_student_id_from_id_join_class_room_on_class_id_class_room_id =
+          (data, joinData1, joinData2) => {
+            const list = data.map((i) => {
+              const f = joinData1.filter((j) => j.id === i.from_id);
+              const g = joinData2.filter((j) => j.id === i.class_id);
+              return {...i, ...f[0], ...g[0]};
+            });
+            return list.filter((i) => i.class_id !== undefined);
+          };
+
+        const result = select_name_syussin_teacher_from_student_join_from_on_student_id_from_id_join_class_room_on_class_id_class_room_id(students2, froms, classRooms);
+
+        console.table(result);
+        expect(result[0].teacher).toStrictEqual("近藤");
+      });
     })
   });
 })
