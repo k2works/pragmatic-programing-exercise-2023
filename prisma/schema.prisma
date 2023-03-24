@@ -23,9 +23,17 @@ model Student2 {
   id        Int      @id @default(autoincrement())
   name      String
   from_id   Int
+  class_id  Int?
 }
 
 model From {
   id         Int      @id @default(autoincrement())
   syussin    String
+}
+
+model ClassRoom {
+  id        Int      @id @default(autoincrement())
+  teacher   String
+
+  @@map("Class")
 }

@@ -89,16 +89,19 @@ const student2 = [
     id: 1,
     name: "佐藤",
     from_id: 3,
+    class_id: 2,
   },
   {
     id: 2,
     name: "鈴木",
     from_id: 1,
+    class_id: 3,
   },
   {
     id: 3,
     name: "高橋",
     from_id: 2,
+    class_id: 4,
   },
   {
     id: 4,
@@ -120,6 +123,25 @@ const from = [
     id: 3,
     syussin: "北海道",
   }
+]
+
+const classRoom = [
+  {
+    id: 1,
+    teacher: "木村",
+  },
+  {
+    id: 2,
+    teacher: "近藤",
+  },
+  {
+    id: 3,
+    teacher: "桐山",
+  },
+  {
+    id: 4,
+    teacher: "高崎",
+  },
 ]
 
 async function main() {
@@ -144,6 +166,14 @@ async function main() {
       where: { id: s2.id },
       update: {},
       create: s2
+    })
+  }
+
+  for ( const c of classRoom) {
+    await prisma.classRoom.upsert({
+      where: { id: c.id },
+      update: {},
+      create: c
     })
   }
 }
