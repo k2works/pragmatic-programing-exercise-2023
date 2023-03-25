@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "start": "npx gulp",
     "build": "npx gulp build",
@@ -68,6 +71,7 @@
     ]
   },
   "dependencies": {
+    "@prisma/client": "^4.11.0",
     "http-server": "^14.1.1"
   }
 }
