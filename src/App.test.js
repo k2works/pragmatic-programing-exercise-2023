@@ -1434,7 +1434,128 @@ describe("SQL入門", () => {
 
         console.table(result);
         expect(result[0].name_string).toStrictEqual("「藤」なし");
-      }) 
+      })
+    })
+
+    describe("SUBSTRで文字列操作", () => {
+      test("SELECT SUBSTR('abcabc',3)", () => {
+        const select_substr_abcabc_3 = (data) => {
+          return data.map((i) => {
+            return {...i, substr: i.substr(3)};
+          });
+        };
+
+        const result = select_substr_abcabc_3(["abcabc"]);
+
+        console.table(result);
+        expect(result[0].substr).toStrictEqual("abc");
+      })
+
+      test("SELECT SUBSTR('476831', 2, 3)", () => {
+        const select_substr_476831_2_3 = (data) => {
+          return data.map((i) => {
+            return {...i, substr: i.substr(1, 3)};
+          });
+        };
+
+        const result = select_substr_476831_2_3(["476831"]);
+
+        console.table(result);
+        expect(result[0].substr).toStrictEqual("768");
+      })
+
+      test("SELECT REPLACE('東京出身です', '東京', '大阪')", () => {
+        const select_replace_東京出身です_東京_大阪 = (data) => {
+          return data.map((i) => {
+            return {...i, replace: i.replace("東京", "大阪")};
+          });
+        }
+
+        const result = select_replace_東京出身です_東京_大阪(["東京出身です"]);
+
+        console.table(result);
+        expect(result[0].replace).toStrictEqual("大阪出身です");
+      })
+
+      test("SELECT REVERSE('123456789')", () => {
+        const select_reverse_123456789 = (data) => {
+          return data.map((i) => {
+            return {reverse: i.split("").reverse().join("")};
+          });
+        }
+
+        const result = select_reverse_123456789(["123456789"]);
+
+        console.table(result);
+        expect(result[0].reverse).toStrictEqual("987654321");
+      })
+
+      test("SELECT TRIM(' apple ')", () => {
+        const select_trim_apple = (data) => {
+          return data.map((i) => {
+            return {trim: i.trim()};
+          });
+        }
+
+        const result = select_trim_apple([" apple "]);
+
+        console.table(result);
+        expect(result[0].trim).toStrictEqual("apple");
+      })
+
+      test("SELECT RTRIM(' apple ')", () => {
+        const select_rtrim_apple = (data) => {
+          return data.map((i) => {
+            return {rtrim: i.trimRight()};
+          });
+        }
+
+        const result = select_rtrim_apple([" apple "]);
+
+        console.table(result);
+        expect(result[0].rtrim).toStrictEqual(" apple");
+      })
+
+      test("SELECT ASCII('A')", () => {
+        const select_ascii_A = (data) => {
+          return data.map((i) => {
+            return {ascii: i.charCodeAt(0)};
+          });
+        }
+
+        const result = select_ascii_A(["A"]);
+
+        console.table(result);
+        expect(result[0].ascii).toStrictEqual(65);
+      })
+
+      test("SELECT FORMAT(111111, '#,###')", () => {
+        const select_format_111111_format_number_number_number_number_number_number = (
+          data
+        ) => {
+        return data.map((i) => {
+          return {format: new Intl.NumberFormat('ja-JP').format(i)};
+        });
+      }
+
+        const result = select_format_111111_format_number_number_number_number_number_number([111111]);
+
+        console.table(result);
+        expect(result[0].format).toStrictEqual("111,111");
+      })
+
+      test("SELECT SPACE(3)", () => {
+        const select_space_3 = (data) => {
+          return data.map((i) => {
+            return {space: i.repeat(3)};
+          });
+        }
+
+        const result = select_space_3([" "]);
+
+        console.table(result);
+        expect(result[0].space).toStrictEqual("   ");
+      })
     })
   });
 })
