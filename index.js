@@ -4,75 +4,46 @@ const app = new App();
 import render from "@k2works/full-stack-lab";
 const contents = `
 ## 機能名
+
+SQLドリル
+
 ## 仕様
+
+- すっきりわかるSQL入門 第3版
+
 ## TODOリスト
+- [ ] [銀行データベース](https://flair.link/BS3F1)
+  - [ ] 基本文法と四大命令
+  - [ ] 操作する行の絞り込み
+  - [ ] 検索結果の加工
+  - [ ] 式と関数
+  - [ ] 集計とグループ化
+  - [ ] 副問い合わせ
+  - [ ] 複数テーブルの結合
+- [ ] [商品データベース](https://flair.link/BS3F2)
+  - [ ] 基本文法と四大命令
+  - [ ] 操作する行の絞り込み
+  - [ ] 検索結果の加工
+  - [ ] 式と関数
+  - [ ] 集計とグループ化
+  - [ ] 副問い合わせ
+  - [ ] 複数テーブルの結合
+- [ ] [RPGデータベース](https://flair.link/BS3F3)
+  - [ ] 基本文法と四大命令
+  - [ ] 操作する行の絞り込み
+  - [ ] 検索結果の加工
+  - [ ] 式と関数
+  - [ ] 集計とグループ化
+  - [ ] 副問い合わせ
+  - [ ] 複数テーブルの結合
 `;
 
 const usecase = `
-@startuml
-left to right direction
-actor "Actor" as ac
-rectangle Application {
-  usecase "UseCase1" as UC1
-  usecase "UseCase2" as UC2
-  usecase "UseCase3" as UC3
-}
-ac --> UC1
-ac --> UC2
-ac --> UC3
-@enduml
 `;
 
 const uml = `
-@startuml
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-class ArrayList {
-  Object[] elementData
-  size()
-}
-enum TimeUnit {
-  DAYS
-  HOURS
-  MINUTES
-}
-annotation SuppressWarnings
-@enduml
 `;
 
 const erd = `
-@startuml
-' hide the spot
-hide circle
-' avoid problems with angled crows feet
-skinparam linetype ortho
-entity "Entity01" as e01 {
-  *e1_id : number <<generated>>
-  --
-  *name : text
-  description : text
-}
-entity "Entity02" as e02 {
-  *e2_id : number <<generated>>
-  --
-  *e1_id : number <<FK>>
-  other_details : text
-}
-entity "Entity03" as e03 {
-  *e3_id : number <<generated>>
-  --
-  e1_id : number <<FK>>
-  other_details : text
-}
-e01 ||..o{ e02
-e01 |o..o{ e03
-@enduml
 `;
 render({ contents, usecase, uml, erd });
