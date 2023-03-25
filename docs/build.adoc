@@ -943,3 +943,73 @@ dev.render({ contents, usecase, uml, erd });
 ```bash
 npm start
 ```
+
+## アプリケーションコンポーネントのセットアップ
+
+### Prisma のセットアップ
+
+Prisma を使用することで、データベースの操作を簡単に行うことができます。以下の手順で Prisma をセットアップしてください。
+
+#### パッケージのインストール
+
+1. 以下のコマンドを実行して、Prisma をインストールしてください。
+
+```bash
+npm install --save-dev prisma
+```
+
+#### パッケージの設定
+
+1. データベースドライバにはpostgresqlを使用します。以下のコマンドを実行して、データベースドライバをインストールしてください。
+
+```bash
+npx prisma init --datasource-provider postgresql
+```
+
+#### データベースのセットアップ
+
+1. `prisma/schema.prisma` ファイルを編集してモデルを作成してください。
+
+2. 以下のコマンドを実行して、データベースをセットアップしてください。
+
+```bash
+npx prisma migrate dev --name init
+npm install @prisma/client
+npx prisma generate
+```
+
+3. データを生成するシードファイルを作成します。
+
+`prisma/seed.js` を作成します。
+
+package.jsonに以下の内容を追加します。
+
+```json
+{
+  ...
+  "prisma": {
+  "seed": "node prisma/seed.js"
+  },
+  ...
+}
+```
+
+4. シードコマンドを実行します。
+
+```bash
+npm run prisma db seed
+```
+
+5. npm スクリプトにマイグレーションタスクを追加します。
+
+```json
+{
+  ...
+  "scripts": {
+    ...
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed"
+  },
+  ...
+}
+```
