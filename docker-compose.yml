@@ -25,3 +25,27 @@ services:
       POSTGRES_DB: test
     hostname: postgres
     user: root
+
+  schemaspy_mysql:
+    build:
+      context: ops
+      dockerfile: ./build/docker/schemaspy/Dockerfile
+    volumes:
+      - ./ops/build/docker/schemaspy/output/mysql:/output
+      - ./ops/build/docker/schemaspy/config:/config
+    container_name: "schemaspy_local_mysql"
+    command: [ "-all", "-configFile", "/config/mysql/schemaspy.properties" ]
+    links:
+      - db_mysql
+
+  schemaspy_postgresql:
+    build:
+      context: ops
+      dockerfile: ./build/docker/schemaspy/Dockerfile
+    volumes:
+      - ./ops/build/docker/schemaspy/output/postgresql:/output
+      - ./ops/build/docker/schemaspy/config:/config
+    container_name: "schemaspy_local_postgresql"
+    command: [ "-all", "-configFile", "/config/postgresql/schemaspy.properties" ]
+    links:
+      - db_postgresql

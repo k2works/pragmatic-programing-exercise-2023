@@ -105,3 +105,4 @@ dist
 .vercel
 
 /public
+ops/build/docker/schemaspy/output
