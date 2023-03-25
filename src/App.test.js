@@ -1335,5 +1335,106 @@ describe("SQL入門", () => {
         expect(result[0].teacher).toStrictEqual("近藤");
       });
     })
+
+    describe("CASEで条件分岐", () => {
+      test("SELECT name, test_score CASE WHEN 50 <= test_score THEN '合格' ELSE '不合格' END FROM Student", () => {
+        const select_name_test_score_case_when_50_test_score_is_less_than_or_equal_to_then_is_pass_else_is_fail_from_student =
+          (data) => {
+            const list = data.map((i) => {
+              return {...i, test_result: i.test_score >= 50 ? "合格" : "不合格"};
+            });
+            return list.map((i) => ({
+              name: i.name,
+              test_score: i.test_score,
+              test_result: i.test_result,
+            }));
+          };
+
+        const result = select_name_test_score_case_when_50_test_score_is_less_than_or_equal_to_then_is_pass_else_is_fail_from_student(students);
+
+        console.table(result);
+        expect(result[0].test_result).toStrictEqual("合格");
+      })
+
+      test("SELECT name, test_score CASE WHEN 50 <= test_score THEN '合格' WHEN test_score 40 <= test_score THEN 'もう少し' ELSE '不合格' END AS 合否", () => {
+       const select_name_test_score_case_when_50_test_score_is_less_than_or_equal_to_then_is_pass_when_test_score_40_test_score_is_less_than_or_equal_to_then_is_pass_else_is_fail_as_is_pass_from_student =
+        (data) => {
+            const list = data.map((i) => {
+                  return {
+                          ...i,
+                          test_result:
+                            i.test_score >= 50
+                              ? "合格"
+                              : i.test_score >= 40
+                              ? "もう少し"
+                              : "不合格",
+                        };
+                });
+            return list.map((i) => ({
+                  name: i.name,
+                  test_score: i.test_score,
+                  test_result: i.test_result,
+                }));
+          };
+
+        const result = select_name_test_score_case_when_50_test_score_is_less_than_or_equal_to_then_is_pass_when_test_score_40_test_score_is_less_than_or_equal_to_then_is_pass_else_is_fail_as_is_pass_from_student(students);
+
+        console.table(result);
+        expect(result[0].test_result).toStrictEqual("合格");
+      })
+
+      test("SELECT name, test_score CASE WHEN 80 <= test_score THEN 'ランクA' WHEN 60 <= test_score THEN 'ランクB' WHEN 40 <= test_score THEN 'ランクC' WHEN 20 <= test_score THEN 'ランクD' ELSE 'ランクF' END AS ランク FROM Student", ()  => {
+      const select_name_test_score_case_when_80_test_score_is_less_than_or_equal_to_then_is_rank_a_when_60_test_score_is_less_than_or_equal_to_then_is_rank_b_when_40_test_score_is_less_than_or_equal_to_then_is_rank_c_when_20_test_score_is_less_than_or_equal_to_then_is_rank_d_else_is_rank_f_from_student =
+        (data) => {
+          const list = data.map((i) => {
+            return {
+              ...i,
+              ranke:
+                i.test_score >= 80
+                  ? "ランクA"
+                  : i.test_score >= 60
+                  ? "ランクB"
+                  : i.test_score >= 40
+                  ? "ランクC"
+                  : i.test_score >= 20
+                  ? "ランクD"
+                  : "ランクF",
+            };
+          });
+          return list.map((i) => ({
+            name: i.name,
+            test_score: i.test_score,
+            ranke: i.ranke,
+          }));
+        };
+
+        const result = select_name_test_score_case_when_80_test_score_is_less_than_or_equal_to_then_is_rank_a_when_60_test_score_is_less_than_or_equal_to_then_is_rank_b_when_40_test_score_is_less_than_or_equal_to_then_is_rank_c_when_20_test_score_is_less_than_or_equal_to_then_is_rank_d_else_is_rank_f_from_student(students);
+
+        console.table(result);
+        expect(result[0].ranke).toStrictEqual("ランクA");
+      })
+
+      test("SELECT name, test_score, CASE WHEN name LIKE '%藤' THEN '「藤」あり' ELSE '「藤」なし' END AS 名前の文字列 FROM Student", () => {
+            const select_name_test_score_case_when_name_like_f_then_is_f_a_else_is_f_n_from_student =
+      (data) => {
+        const list = data.map((i) => {
+          return {
+            ...i,
+            name_string: i.name.includes("藤") ? "「藤」あり" : "「藤」なし",
+          };
+        });
+        return list.map((i) => ({
+          name: i.name,
+          test_score: i.test_score,
+          name_string: i.name_string,
+        }));
+      };
+
+        const result = select_name_test_score_case_when_name_like_f_then_is_f_a_else_is_f_n_from_student(students);
+
+        console.table(result);
+        expect(result[0].name_string).toStrictEqual("「藤」なし");
+      }) 
+    })
   });
 })
