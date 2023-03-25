@@ -9,7 +9,7 @@ const contents = `
 
 ## 仕様
 
-[データベース定義](http://localhost:3000/erd/public/index.html)
+[データベース定義](./erd/public/index.html)
 
 以下のER図は、以下のようなテーブル間の関係を表しています。
 
