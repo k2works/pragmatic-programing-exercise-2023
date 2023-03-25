@@ -6,3 +6,4 @@ public
 *.exe
 test.txt
 newfile
+*.swp
