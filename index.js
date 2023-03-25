@@ -5,11 +5,27 @@ import render from "@k2works/full-stack-lab";
 const contents = `
 ## 機能名
 
-SQLドリル
+すっきりわかるSQL入門 第3版 SQLドリル
 
 ## 仕様
 
-- すっきりわかるSQL入門 第3版
+以上のER図は、以下のようなテーブル間の関係を表しています。
+
+* 「口座」と「取引」は1対多の関係になります。
+
+* 「廃止口座」と「取引」は1対多の関係になります。
+
+* 「取引」と「取引事由」は1対1の関係になります。
+
+また、ER図の表現方法については以下の通りです。
+
+- entity：テーブルを表します。
+- PK：プライマリキーを表します。
+- FK：外部キーを表します。
+- "--"：フィールドを表します。
+- "|"：1の関係を表します。
+- "*"：多数の関係を表します。
+- "o"：必須の関係を表します。
 
 ## TODOリスト
 - [ ] [銀行データベース](https://flair.link/BS3F1)
@@ -45,5 +61,51 @@ const uml = `
 `;
 
 const erd = `
+@startuml
+
+' hide the spot
+hide circle
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "口座" as account {
+  * 口座番号 : text <<PK>>
+  --
+  * 名義 : text
+  * 種別 : text
+  * 残高 : integer
+  更新日 : timestamp
+}
+
+entity "廃止口座" as closed_account {
+  * 口座番号 : text <<PK>>
+  --
+  * 名義 : text
+  * 種別 : text
+  * 解約時残高 : integer
+  解約日 : timestamp
+}
+
+entity "取引" as transaction {
+  * 取引番号 : integer <<PK>>
+  --
+  口座番号 : text
+  入金額 : integer
+  出金額 : integer
+  日付 : timestamp
+  取引事由ID : integer <<FK>>
+}
+
+entity "取引事由" as transaction_reason {
+  * 取引事由ID : integer <<PK>>
+  --
+  * 取引事由名 : text
+}
+
+transaction_reason }o..|| transaction : "1" -up- "1" 取引事由ID
+account }|..|| transaction : "1" -up- "*" 口座番号
+closed_account }|..|| transaction : "1" -up- "*" 口座番号
+
+@enduml
 `;
 render({ contents, usecase, uml, erd });
