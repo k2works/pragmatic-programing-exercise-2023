@@ -150,6 +150,28 @@ const prettier = {
   },
 };
 
+const schemaspy = {
+  clean: async (cb) => {
+    await rimraf("./public/erd");
+    cb();
+  },
+  build: (cb) => {
+    const { exec } = require("child_process");
+    exec("docker compose   up -d --build schemaspy_postgresql", (err, stdout, stderr) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      console.log(stdout);
+    });
+    cb();
+  },
+  docs: (cb) => {
+    return src("./ops/build/docker/schemaspy/output/postgresql/**")
+      .pipe(dest("./public/erd"));
+  },
+}
+
 const webpackBuildTasks = () => {
   return series(webpack.clean, webpack.build);
 }
@@ -162,16 +184,21 @@ const marpBuildTasks = () => {
   return series(marp.clean, marp.build);
 }
 
+const schemaspyTasks = () => {
+  return series(schemaspy.clean, schemaspy.build, schemaspy.docs);
+}
+
 exports.default = series(
   webpackBuildTasks(),
   asciidoctorBuildTasks(),
   marpBuildTasks(),
+  schemaspyTasks(),
   prettier.format,
   series(
     parallel(webpack.server, asciidoctor.server),
     parallel(webpack.watch, asciidoctor.watch, marp.watch),
     parallel(jest.watch)
-  )
+  ),
 );
 
 exports.build = series(
@@ -190,6 +217,7 @@ exports.slides = series(marp.build);
 exports.docs = series(
   asciidoctorBuildTasks(),
   marpBuildTasks(),
+  schemaspyTasks(),
   parallel(asciidoctor.server, asciidoctor.watch, marp.watch),
 );
 
