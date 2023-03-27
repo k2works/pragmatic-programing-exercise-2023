@@ -1,4 +1,4 @@
-import { App } from './src/app.js';
+import { App } from "./src/app.js";
 const app = new App();
 
 import render from "@k2works/full-stack-lab";
@@ -31,7 +31,7 @@ const contents = `
 
 ## TODOリスト
 - [ ] [銀行データベース](https://flair.link/BS3F1)
-  - [ ] 基本文法と四大命令
+  - [x] 基本文法と四大命令
   - [ ] 操作する行の絞り込み
   - [ ] 検索結果の加工
   - [ ] 式と関数
