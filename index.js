@@ -13,11 +13,7 @@ const contents = `
 
 以下のER図は、以下のようなテーブル間の関係を表しています。
 
-* 「口座」と「取引」は1対多の関係になります。
-
-* 「廃止口座」と「取引」は1対多の関係になります。
-
-* 「取引」と「取引事由」は1対1の関係になります。
+* 「取引」と「取引事由」は1対多の関係になります。
 
 また、ER図の表現方法については以下の通りです。
 
@@ -104,9 +100,7 @@ entity "取引事由" as transaction_reason {
   * 取引事由名 : text
 }
 
-transaction_reason }o..|| transaction : "1" -up- "1" 取引事由ID
-account }|..|| transaction : "1" -up- "*" 口座番号
-closed_account }|..|| transaction : "1" -up- "*" 口座番号
+transaction }o..|| transaction_reason : "n" -up- "1" 取引事由ID
 
 @enduml
 `;
