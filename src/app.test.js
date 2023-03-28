@@ -439,7 +439,6 @@ describe("銀行口座データベース", () => {
         balance: 8136406,
         updatedAt: new Date("2022-03-13"),
       });
-
     });
 
     // SELECT * FROM account ORDER BY balance DESC;
@@ -462,7 +461,6 @@ describe("銀行口座データベース", () => {
         name: "ワダ　アキヒコ",
       });
     });
-
 
     // SELECT * FROM account ORDER BY balance DESC, number ASC;
     test("口座テーブルから、残高の大きい順にすべてのデータを抽出する。残高が同額の場合には口座番号の昇順にし、並び替えには列番号を指定すること。", async () => {
@@ -492,7 +490,7 @@ describe("銀行口座データベース", () => {
         balance: 0,
         updatedAt: new Date("2022-01-10"),
       });
-    })
+    });
 
     test("口座テーブルから、更新日を過去の日付順に10件抽出する。ただし、更新日の設定がないデータは除くこと。", async () => {
       const result = await prisma.account.findMany({
@@ -647,7 +645,9 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      const allResult = result.map((x) => x.name).filter((x) => retiredResult.map((y) => y.name).includes(x));
+      const allResult = result
+        .map((x) => x.name)
+        .filter((x) => retiredResult.map((y) => y.name).includes(x));
 
       console.table(allResult);
       expect(allResult.length).toBe(2);
@@ -695,6 +695,5 @@ describe("銀行口座データベース", () => {
         balance: 130040,
       });
     });
-
   });
 });
