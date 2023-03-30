@@ -1,16 +1,28 @@
 module RLE where
 
+import Data.List(group)
+
 -- | ランレングス圧縮
 -- >>> rle ""
 -- ""
+-- >>> rle "A"
+-- "A1"
 -- >>> rle "AAABBCCCAAA"
 -- "A3B2C3A3"
 rle :: String -> String
-rle "" = ""
-rle (h:t) = aux 1 h t h where
-  aux :: Int -> Char -> String -> Char -> String
-  aux runLength prevChar "" currentChar = prevChar : show runLength
-  aux runLength prevChar (c:s) currentChar
-    | c == prevChar = aux (runLength + 1) prevChar s currentChar
-    | otherwise = prevChar : show runLength ++ aux 1 c s c
+rle = fromCharAndRunLength . toCharAndRunLength
 
+-- | 文字とその連長の組のリストを出力文字列へ変換する
+fromCharAndRunLength :: [(Char, Int)] -> String
+fromCharAndRunLength = concat . map rl2str
+
+rl2str :: (Char, Int) -> String
+rl2str (c, n) = c : show n -- nを文字列にして文字cを先頭に付ける
+
+-- | 入力文字列とその連長の組のリストへ変換する
+toCharAndRunLength :: String -> [(Char, Int)]
+toCharAndRunLength [] = []
+toCharAndRunLength xs = map toPair $ group xs
+
+toPair :: [a] -> (a, Int)
+toPair xs = (head xs, length xs)
