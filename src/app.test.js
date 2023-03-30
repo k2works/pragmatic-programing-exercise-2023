@@ -813,14 +813,14 @@ describe("銀行口座データベース", () => {
           type: x.type,
           balance: x.balance + 3000,
           updatedAt: x.updatedAt,
-        }))
+        })),
       });
 
       const allResult = await prisma.account.findMany({
         where: {
           number: {
             in: data.map((x) => x.number),
-          }
+          },
         },
       });
 
@@ -879,8 +879,8 @@ describe("銀行口座データベース", () => {
             number: x.number,
           },
           data: {
-            balance: (x.balance - 3000) + Math.floor((x.balance - 3000) * 0.003),
-          }
+            balance: x.balance - 3000 + Math.floor((x.balance - 3000) * 0.003),
+          },
         });
       }
 
@@ -888,7 +888,7 @@ describe("銀行口座データベース", () => {
         where: {
           number: {
             in: data.map((x) => x.number),
-          }
+          },
         },
       });
 
@@ -932,7 +932,9 @@ describe("銀行口座データベース", () => {
       const allResult = result.map((x) => ({
         口座番号: x.number,
         更新日: x.updatedAt,
-        通帳期限日: new Date(new Date(x.updatedAt).setDate(x.updatedAt.getDate() + 180)),
+        通帳期限日: new Date(
+          new Date(x.updatedAt).setDate(x.updatedAt.getDate() + 180),
+        ),
       }));
 
       console.table(allResult);
@@ -984,7 +986,7 @@ describe("銀行口座データベース", () => {
           default:
             return "";
         }
-      }
+      };
       const allResult = result.map((x) => ({
         種別コード: x.type,
         種別名: typeName(x.type),
@@ -1035,7 +1037,7 @@ describe("銀行口座データベース", () => {
         名義: "キタムラ　ユウコ",
         残高ランク: "A",
       });
-    })
+    });
 
     test("口座テーブルから、口座番号、名義、残高の文字数を抽出する。ただし、名義の姓目の間の全角スペースは除外すること。", async () => {
       const result = await prisma.account.findMany({
@@ -1064,7 +1066,7 @@ describe("銀行口座データベース", () => {
         名義文字数: 7,
         残高文字数: 7,
       });
-    })
+    });
 
     test("口座テーブルから、名義の1～5文字目に「カワ」が含まれるデータを抽出する。", async () => {
       const result = await prisma.account.findMany({
@@ -1101,13 +1103,15 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      const allResult = result.map((x) => ({
-        口座番号: x.number,
-        名義: x.name,
-        残高: x.balance,
-      })).filter((x) => {
-        return x.残高.toString().length >= 4 && x.残高 % 1000 === 0;
-      });
+      const allResult = result
+        .map((x) => ({
+          口座番号: x.number,
+          名義: x.name,
+          残高: x.balance,
+        }))
+        .filter((x) => {
+          return x.残高.toString().length >= 4 && x.残高 % 1000 === 0;
+        });
 
       console.table(allResult);
       expect(allResult[0]).toStrictEqual({
@@ -1115,7 +1119,7 @@ describe("銀行口座データベース", () => {
         名義: "アキタ　サトル",
         残高: 10000,
       });
-    })
+    });
 
     test("口座テーブルから、口座番号、残高、利息を残高の降順に抽出する。利息は、残高に普通預金利息0.02%を掛けて求め、1円未満を切り捨てること。", async () => {
       const result = await prisma.account.findMany({
@@ -1125,13 +1129,15 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      const allResult = result.map((x) => ({
-        口座番号: x.number,
-        残高: x.balance,
-        利息: Math.floor(x.balance * 0.02),
-      })).sort((a, b) => {
-        return b.残高 - a.残高;
-      });
+      const allResult = result
+        .map((x) => ({
+          口座番号: x.number,
+          残高: x.balance,
+          利息: Math.floor(x.balance * 0.02),
+        }))
+        .sort((a, b) => {
+          return b.残高 - a.残高;
+        });
 
       console.table(allResult);
       expect(allResult[30]).toStrictEqual({
@@ -1149,13 +1155,18 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      const allResult = result.map((x) => ({
-        口座番号: x.number,
-        残高: x.balance,
-        残高別利息: Math.floor(x.balance * (x.balance < 500000 ? 0.01 : x.balance < 2000000 ? 0.02 : 0.03)),
-      })).sort((a, b) => {
-        return b.残高別利息 - a.残高別利息 || a.口座番号 - b.口座番号;
-      });
+      const allResult = result
+        .map((x) => ({
+          口座番号: x.number,
+          残高: x.balance,
+          残高別利息: Math.floor(
+            x.balance *
+            (x.balance < 500000 ? 0.01 : x.balance < 2000000 ? 0.02 : 0.03),
+          ),
+        }))
+        .sort((a, b) => {
+          return b.残高別利息 - a.残高別利息 || a.口座番号 - b.口座番号;
+        });
 
       console.table(allResult);
       expect(allResult[0]).toStrictEqual({
@@ -1197,12 +1208,12 @@ describe("銀行口座データベース", () => {
           updatedAt: {
             equals: today,
           },
-        }
+        },
       });
 
       console.table(result);
       expect(result.length).toBe(3);
-    })
+    });
 
     test("口座テーブルから更新日が2022年以降のデータを抽出する。その際、更新日は「2022年01月01日」のような形式で抽出すること。", async () => {
       const result = await prisma.account.findMany({
@@ -1221,7 +1232,8 @@ describe("銀行口座データベース", () => {
       const allResult = result.map((x) => ({
         口座番号: x.number,
         名義: x.name,
-        更新日: `${x.updatedAt.getFullYear()}年${x.updatedAt.getMonth() + 1}月${x.updatedAt.getDate()}日`,
+        更新日: `${x.updatedAt.getFullYear()}年${x.updatedAt.getMonth() + 1
+          }月${x.updatedAt.getDate()}日`,
       }));
 
       console.table(allResult);
@@ -1254,6 +1266,350 @@ describe("銀行口座データベース", () => {
         更新日: "設定なし",
       });
     });
+  });
+
+  describe("第６章 集計とグループ化", () => {
+    beforeAll(async () => {
+      await prisma.account.deleteMany({});
+      await prisma.account.createMany({ data: account });
+      await prisma.retiredAccount.deleteMany({});
+      await prisma.retiredAccount.createMany({ data: retiredAccount });
+    });
+
+    // SELECT SUM(balance), MAX(balance), MIN(balance), AVG(balance), COUNT(*) FROM account;
+    test("口座テーブルから、残高の合計、最大、最小、平均、登録データ件数を求める。", async () => {
+      const result = await prisma.account.aggregate({
+        _sum: {
+          balance: true,
+        },
+        _max: {
+          balance: true,
+        },
+        _min: {
+          balance: true,
+        },
+        _avg: {
+          balance: true,
+        },
+        _count: true,
+      });
+
+      console.table(result);
+      expect(result).toStrictEqual({
+        _sum: {
+          balance: 34336415,
+        },
+        _max: {
+          balance: 8136406,
+        },
+        _min: {
+          balance: 0,
+        },
+        _avg: {
+          balance: 1144547.1666666667,
+        },
+        _count: 30,
+      });
+    });
+
+    // SELECT COUNT(*) FROM account WHERE type <> '1' AND balance >= 1000000 AND updated_at <= '2021-12-31';
+    test("口座テーブルから、種別が「普通」以外、残高が100万円以上、更新日が2021年以前のデータ件数を求める。", async () => {
+      const result = await prisma.account.aggregate({
+        _count: true,
+        where: {
+          type: {
+            not: "1",
+          },
+          balance: {
+            gte: 1000000,
+          },
+          updatedAt: {
+            lte: new Date("2021-12-31"),
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result).toStrictEqual({
+        _count: 1,
+      });
+    })
+
+    // SELECT COUNT(*) FROM account WHERE updated_at IS NULL;
+    test("口座テーブルから、更新日が登録されていないデータ件数を求める。ただし、条件式は用いないこと。", async () => {
+      const result = await prisma.account.aggregate({
+        _count: true,
+        where: {
+          updatedAt: null,
+        },
+      });
+
+      console.table(result);
+      expect(result).toStrictEqual({
+        _count: 1,
+      });
+    })
+
+    test("口座テーブルから、名義の最大値と最小値を求める。", async () => {
+      const result = await prisma.account.aggregate({
+        _max: {
+          name: true,
+        },
+        _min: {
+          name: true,
+        },
+      });
+
+      console.table(result);
+      expect(result).toStrictEqual({
+        _max: {
+          name: "ワダ　アキヒコ",
+        },
+        _min: {
+          name: "アイダ　ミユ",
+        },
+      });
+    });
+
+    // SELECT type, SUM(balance), MAX(balance), MIN(balance), AVG(balance), COUNT(*) FROM account GROUP BY type;
+    test("口座テーブルから、種別ごとの残高の合計、最大、最小、平均、および登録されているデータ件数を求める。", async () => {
+      const result = await prisma.account.groupBy({
+        by: ["type"],
+        _sum: {
+          balance: true,
+        },
+        _max: {
+          balance: true,
+        },
+        _min: {
+          balance: true,
+        },
+        _avg: {
+          balance: true,
+        },
+        _count: true,
+      });
+
+      console.table(result);
+      expect(result).toStrictEqual([
+        {
+          type: "3",
+          _sum: {
+            balance: 1074497,
+          },
+          _max: {
+            balance: 1064497,
+          },
+          _min: {
+            balance: 10000,
+          },
+          _avg: {
+            balance: 537248.5,
+          },
+          _count: 2,
+        },
+        {
+          type: "2",
+          _sum: {
+            balance: 13547246,
+          },
+          _max: {
+            balance: 8136406,
+          },
+          _min: {
+            balance: 0,
+          },
+          _avg: {
+            balance: 3386811.5,
+          },
+          _count: 4,
+        },
+        {
+          type: "1",
+          _sum: {
+            balance: 19714672,
+          },
+          _max: {
+            balance: 4397010,
+          },
+          _min: {
+            balance: 0,
+          },
+          _avg: {
+            balance: 821444.6666666666,
+          },
+          _count: 24,
+        },
+      ]);
+    });
+
+    // SELECT number, COUNT(*) FROM account GROUP BY number ORDER BY COUNT(*) DESC;
+    test("口座テーブルから、口座番号の下１桁が同じ数字であるものを同じグループとし、それぞれのデータ件数を求める。ただし、件数の多い順に並べること。", async () => {
+      const result = await prisma.account.findMany({
+        select: {
+          number: true,
+        },
+      })
+
+      const numberList = result.map((item) => item.number);
+      const numberCountList = numberList.map((item) => {
+        return {
+          number: item,
+          lastNumber: item.substring(item.length - 1),
+          _count: numberList.filter((number) => number.substring(number.length - 1) === item.substring(item.length - 1)).length,
+        };
+      }).sort((a, b) => b._count - a._count);
+
+      console.table(numberCountList);
+      expect(numberCountList[0]).toStrictEqual(
+        {
+          number: "0311240",
+          lastNumber: "0",
+          _count: 7,
+        },
+      );
+    })
+
+    // SELECT type, SUM(balance), MAX(balance), MIN(balance), AVG(balance), COUNT(*) FROM account GROUP BY type;
+    test("口座テーブルから、更新日の年ごとの残高の合計、最大、最小、平均、登録データ件数を求める。ただし、更新日の登録がないデータは、「XXXXX年」として集計する。", async () => {
+      const result = await prisma.account.findMany({
+        select: {
+          balance: true,
+          updatedAt: true,
+        },
+      });
+
+      const yearList = result.map((item) => {
+        return {
+          balance: item.balance,
+          year: item.updatedAt ? item.updatedAt.getFullYear() : "XXXXX",
+        };
+      });
+
+      const yearGroupList = yearList.map((item) => {
+        return {
+          year: item.year,
+          balance: item.balance,
+        };
+      }).reduce((acc, cur) => {
+        const key = cur.year;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(cur.balance);
+        return acc;
+      }, {});
+
+      const yearGroupCountList = Object.keys(yearGroupList).map((key) => {
+        return {
+          year: key,
+          _sum: {
+            balance: yearGroupList[key].reduce((a, b) => a + b, 0),
+          },
+          _max: {
+            balance: Math.max(...yearGroupList[key]),
+          },
+          _min: {
+            balance: Math.min(...yearGroupList[key]),
+          },
+          _avg: {
+            balance: yearGroupList[key].reduce((a, b) => a + b, 0) / yearGroupList[key].length,
+          },
+          _count: yearGroupList[key].length,
+        };
+      }).sort((a, b) => a.year - b.year);
+
+      console.table(yearGroupCountList);
+      expect(yearGroupCountList[3]).toStrictEqual({
+        year: "XXXXX",
+        _sum: {
+          balance: 678044,
+        },
+        _max: {
+          balance: 678044,
+        },
+        _min: {
+          balance: 678044,
+        },
+        _avg: {
+          balance: 678044,
+        },
+        _count: 1,
+      });
+    });
+
+    // SELECT type, SUM(balance), COUNT(*) FROM account GROUP BY type;
+    test("口座テーブルから、種別ごとの残高の合計とデータ件数を求める。ただし、合計が300万円以下のものは一覧から取り除く。", async () => {
+      const result = await prisma.account.groupBy({
+        by: ["type"],
+        _sum: {
+          balance: true,
+        },
+        _count: true,
+      });
+
+      const resultList = result.filter((item) => item._sum.balance > 3000000);
+
+      console.table(resultList);
+      expect(resultList).toStrictEqual([
+        {
+          type: "2",
+          _sum: {
+            balance: 13547246,
+          },
+          _count: 4,
+        },
+        {
+          type: "1",
+          _sum: {
+            balance: 19714672,
+          },
+          _count: 24,
+        },
+      ]);
+    })
+
+    test("口座テーブルから、名義の1文字目が同じグループごとに、データ件数と名義文字数の平均を求める。ただし、件数が10件以上、または文字数の平均が5文字より多いものを抽出の対象とする。なお、名義の全角スペースは文字数に含めない。", async () => {
+      const result = await prisma.account.findMany({
+        select: {
+          name: true,
+        },
+      });
+
+      const nameList = result.map((item) => item.name);
+      const nameGroupList = nameList.map((item) => {
+        return {
+          name: item,
+          firstCharacter: item.substring(0, 1),
+          _count: nameList.filter((name) => name.substring(0, 1) === item.substring(0, 1)).length,
+          _avg: nameList.reduce((a, b) => a + b.length, 0) / nameList.length,
+        };
+      }).reduce((acc, cur) => {
+        const key = cur.firstCharacter;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(cur);
+        return acc;
+      }, {});
+
+      const nameGroupCountList = Object.keys(nameGroupList).map((key) => {
+        return {
+          firstCharacter: key,
+          _count: nameGroupList[key].length,
+          _avg: nameGroupList[key].reduce((a, b) => a + b._avg, 0) / nameGroupList[key].length,
+        };
+      })
+      //.filter((item) => item._count >= 10 || item._avg > 5);
+
+      console.table(nameGroupCountList);
+      expect(nameGroupCountList[0]).toStrictEqual({
+        firstCharacter: "キ",
+        _count: 2,
+        _avg: 7.733333333333333
+      });
+    });
 
   });
+
 });
