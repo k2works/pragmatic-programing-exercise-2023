@@ -12,6 +12,7 @@ module DoctestSample where
 -- 4
 --
 -- prop> countSpace s == sum [1 | c <- s, c == ' ']
+-- Add QuickCheck to your cabal dependencies to run this test.
 --
 countSpace :: String -> Int
 countSpace = length . filter (' ' ==)
