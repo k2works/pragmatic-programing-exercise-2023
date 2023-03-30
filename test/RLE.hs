@@ -10,7 +10,7 @@ import Data.List(group)
 -- >>> rle "AAABBCCCAAA"
 -- "A3B2C3A3"
 rle :: String -> String
-rle = concat . map rl2str . map toPair . group
+rle = concatMap (rl2str . toPair) . group
 
 rl2str :: (Char, Int) -> String
 rl2str (c, n) = c : show n -- nを文字列にして文字cを先頭に付ける
