@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import account from "../prisma/data/account";
 import retiredAccount from "../prisma/data/retiredAccount";
+import transaction from "../prisma/data/transaction";
 
 const prisma = new PrismaClient();
 
@@ -1333,7 +1334,7 @@ describe("銀行口座データベース", () => {
       expect(result).toStrictEqual({
         _count: 1,
       });
-    })
+    });
 
     // SELECT COUNT(*) FROM account WHERE updated_at IS NULL;
     test("口座テーブルから、更新日が登録されていないデータ件数を求める。ただし、条件式は用いないこと。", async () => {
@@ -1348,7 +1349,7 @@ describe("銀行口座データベース", () => {
       expect(result).toStrictEqual({
         _count: 1,
       });
-    })
+    });
 
     test("口座テーブルから、名義の最大値と最小値を求める。", async () => {
       const result = await prisma.account.aggregate({
@@ -1449,26 +1450,30 @@ describe("銀行口座データベース", () => {
         select: {
           number: true,
         },
-      })
+      });
 
       const numberList = result.map((item) => item.number);
-      const numberCountList = numberList.map((item) => {
-        return {
-          number: item,
-          lastNumber: item.substring(item.length - 1),
-          _count: numberList.filter((number) => number.substring(number.length - 1) === item.substring(item.length - 1)).length,
-        };
-      }).sort((a, b) => b._count - a._count);
+      const numberCountList = numberList
+        .map((item) => {
+          return {
+            number: item,
+            lastNumber: item.substring(item.length - 1),
+            _count: numberList.filter(
+              (number) =>
+                number.substring(number.length - 1) ===
+                item.substring(item.length - 1),
+            ).length,
+          };
+        })
+        .sort((a, b) => b._count - a._count);
 
       console.table(numberCountList);
-      expect(numberCountList[0]).toStrictEqual(
-        {
-          number: "0311240",
-          lastNumber: "0",
-          _count: 7,
-        },
-      );
-    })
+      expect(numberCountList[0]).toStrictEqual({
+        number: "0311240",
+        lastNumber: "0",
+        _count: 7,
+      });
+    });
 
     // SELECT type, SUM(balance), MAX(balance), MIN(balance), AVG(balance), COUNT(*) FROM account GROUP BY type;
     test("口座テーブルから、更新日の年ごとの残高の合計、最大、最小、平均、登録データ件数を求める。ただし、更新日の登録がないデータは、「XXXXX年」として集計する。", async () => {
@@ -1486,38 +1491,44 @@ describe("銀行口座データベース", () => {
         };
       });
 
-      const yearGroupList = yearList.map((item) => {
-        return {
-          year: item.year,
-          balance: item.balance,
-        };
-      }).reduce((acc, cur) => {
-        const key = cur.year;
-        if (!acc[key]) {
-          acc[key] = [];
-        }
-        acc[key].push(cur.balance);
-        return acc;
-      }, {});
+      const yearGroupList = yearList
+        .map((item) => {
+          return {
+            year: item.year,
+            balance: item.balance,
+          };
+        })
+        .reduce((acc, cur) => {
+          const key = cur.year;
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(cur.balance);
+          return acc;
+        }, {});
 
-      const yearGroupCountList = Object.keys(yearGroupList).map((key) => {
-        return {
-          year: key,
-          _sum: {
-            balance: yearGroupList[key].reduce((a, b) => a + b, 0),
-          },
-          _max: {
-            balance: Math.max(...yearGroupList[key]),
-          },
-          _min: {
-            balance: Math.min(...yearGroupList[key]),
-          },
-          _avg: {
-            balance: yearGroupList[key].reduce((a, b) => a + b, 0) / yearGroupList[key].length,
-          },
-          _count: yearGroupList[key].length,
-        };
-      }).sort((a, b) => a.year - b.year);
+      const yearGroupCountList = Object.keys(yearGroupList)
+        .map((key) => {
+          return {
+            year: key,
+            _sum: {
+              balance: yearGroupList[key].reduce((a, b) => a + b, 0),
+            },
+            _max: {
+              balance: Math.max(...yearGroupList[key]),
+            },
+            _min: {
+              balance: Math.min(...yearGroupList[key]),
+            },
+            _avg: {
+              balance:
+                yearGroupList[key].reduce((a, b) => a + b, 0) /
+                yearGroupList[key].length,
+            },
+            _count: yearGroupList[key].length,
+          };
+        })
+        .sort((a, b) => a.year - b.year);
 
       console.table(yearGroupCountList);
       expect(yearGroupCountList[3]).toStrictEqual({
@@ -1567,7 +1578,7 @@ describe("銀行口座データベース", () => {
           _count: 24,
         },
       ]);
-    })
+    });
 
     test("口座テーブルから、名義の1文字目が同じグループごとに、データ件数と名義文字数の平均を求める。ただし、件数が10件以上、または文字数の平均が5文字より多いものを抽出の対象とする。なお、名義の全角スペースは文字数に含めない。", async () => {
       const result = await prisma.account.findMany({
@@ -1577,39 +1588,273 @@ describe("銀行口座データベース", () => {
       });
 
       const nameList = result.map((item) => item.name);
-      const nameGroupList = nameList.map((item) => {
-        return {
-          name: item,
-          firstCharacter: item.substring(0, 1),
-          _count: nameList.filter((name) => name.substring(0, 1) === item.substring(0, 1)).length,
-          _avg: nameList.reduce((a, b) => a + b.length, 0) / nameList.length,
-        };
-      }).reduce((acc, cur) => {
-        const key = cur.firstCharacter;
-        if (!acc[key]) {
-          acc[key] = [];
-        }
-        acc[key].push(cur);
-        return acc;
-      }, {});
+      const nameGroupList = nameList
+        .map((item) => {
+          return {
+            name: item,
+            firstCharacter: item.substring(0, 1),
+            _count: nameList.filter(
+              (name) => name.substring(0, 1) === item.substring(0, 1),
+            ).length,
+            _avg: nameList.reduce((a, b) => a + b.length, 0) / nameList.length,
+          };
+        })
+        .reduce((acc, cur) => {
+          const key = cur.firstCharacter;
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(cur);
+          return acc;
+        }, {});
 
       const nameGroupCountList = Object.keys(nameGroupList).map((key) => {
         return {
           firstCharacter: key,
           _count: nameGroupList[key].length,
-          _avg: nameGroupList[key].reduce((a, b) => a + b._avg, 0) / nameGroupList[key].length,
+          _avg:
+            nameGroupList[key].reduce((a, b) => a + b._avg, 0) /
+            nameGroupList[key].length,
         };
-      })
+      });
       //.filter((item) => item._count >= 10 || item._avg > 5);
 
       console.table(nameGroupCountList);
       expect(nameGroupCountList[0]).toStrictEqual({
         firstCharacter: "キ",
         _count: 2,
-        _avg: 7.733333333333333
+        _avg: 7.733333333333333,
       });
+    });
+  });
+
+  describe("第７章 副問い合わせ", () => {
+    beforeAll(async () => {
+      await prisma.account.deleteMany({});
+      await prisma.account.createMany({ data: account });
+      await prisma.retiredAccount.deleteMany({});
+      await prisma.retiredAccount.createMany({ data: retiredAccount });
+      await prisma.transaction.deleteMany({});
+      await prisma.transaction.createMany({ data: transaction });
+    });
+
+    // UPDATE account SET balance = (SELECT SUM(income) - SUM(outcome) FROM transaction WHERE account_number = account.number AND day = '2022-01-11') WHERE number = '0351333';
+    test("次の口座について、取引日の取引結果を口座テーブルの残高に反映する。更新には、SET句にて取引テーブルを副問い合わせするUPDATE文を用いること。", async () => {
+      // 口座番号: 0351333, 取引日: 2022-01-11
+      const transactionData = await prisma.transaction.findMany({
+        where: {
+          accountNumber: "0351333",
+          day: new Date("2022-01-11"),
+        },
+        select: {
+          income: true,
+          outcome: true,
+        },
+      });
+
+      const transactionBalance = transactionData.reduce(
+        (a, b) => a + b.income - b.outcome,
+        0,
+      );
+      await prisma.account.update({
+        where: {
+          number: "0351333",
+        },
+        data: {
+          balance: transactionBalance,
+        },
+      });
+
+      const result = await prisma.account.findMany({
+        where: {
+          number: "0351333",
+        },
+        select: {
+          balance: true,
+        },
+      });
+
+      console.table(result);
+      expect(result[0].balance).toBe(transactionBalance);
+    });
+
+    // SELECT account_number, SUM(income) AS income, SUM(outcome) AS outcome FROM transaction WHERE day = '2021-12-28' GROUP BY account_number;
+    test("次の口座について、現在の残高と、取引日に発生した取引による入出金額それぞれの合計金額を取得する。取得には、選択列リストにて取引テーブルを副問い合わせするSELECT文を用いること。", async () => {
+      // 口座番号: 1115600, 取引日: 2021-12-28
+      const transactionData = await prisma.transaction.findMany({
+        where: {
+          accountNumber: "1115600",
+          day: new Date("2021-12-28"),
+        },
+        select: {
+          income: true,
+          outcome: true,
+        },
+      });
+
+      const transactionBalance = transactionData.reduce(
+        (a, b) => a + b.income - b.outcome,
+        0,
+      );
+
+      const accountBalance = await prisma.account.findMany({
+        where: {
+          number: "1115600",
+        },
+        select: {
+          balance: true,
+        },
+      });
+
+      const result = { '現在の残高': accountBalance[0].balance, '取引日に発生した取引による入出金額それぞれの合計金額': transactionBalance }
+
+      console.table(result);
+      expect(result.取引日に発生した取引による入出金額それぞれの合計金額).toBe(transactionBalance);
+    })
+
+    // SELECT number, name, balance FROM account WHERE number IN (SELECT account_number FROM transaction WHERE income >= 1000000);
+    test("これまで1回の取引で100万円以上の入金があった口座について、口座番号、名義、残高を取得する。ただし、WHERE句でIN演算子を利用した副問い合わせを用いること。", async () => {
+      const transactionData = await prisma.transaction.findMany({
+        where: {
+          income: {
+            gte: 1000000,
+          },
+        },
+        select: {
+          accountNumber: true,
+        },
+      });
+
+      const result = await prisma.account.findMany({
+        where: {
+          number: {
+            in: [...new Set(transactionData.map((item) => item.accountNumber))],
+          },
+        },
+        select: {
+          number: true,
+          name: true,
+          balance: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    });
+
+    test("取引テーブルの日付よりも未来の更新日を持つ口座テーブルのデータを抽出する。ただし、WHERE句でALL演算子を利用した副問い合わせを用いること。", async () => {
+      const transactionData = await prisma.transaction.findMany({
+        select: {
+          day: true,
+        },
+      });
+
+      const maxDay = transactionData.reduce((a, b) => {
+        return a.day > b.day ? a : b;
+      });
+
+      const result = await prisma.account.findMany({
+        where: {
+          updatedAt: {
+            gt: transactionData.reduce((a, b) => {
+              return a.day > b.day ? a : b;
+            }).day,
+          },
+        },
+        select: {
+          number: true,
+          name: true,
+          balance: true,
+        },
+      });
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        number: "1106405",
+        name: "センカワ　シゲル",
+        balance: 5310840,
+      });
+    })
+
+    // SELECT account_number, SUM(income) AS income, SUM(outcome) AS outcome FROM transaction WHERE day = '2021-12-28' GROUP BY account_number;
+    test("次の口座について、入金と出金の両方が発生した日付を抽出する。また、これまでの入金と出金それぞれの最大額もあわせて抽出する。FROM句で副問い合わせを用いること。", async () => {
+      // 口座番号: 3104451
+      const result = await prisma.transaction.groupBy({
+        by: ["income", "outcome", "accountNumber", "day"],
+        where: {
+          accountNumber: "3104451",
+          income: {
+            gt: 0,
+          },
+          outcome: {
+            gt: 0,
+          },
+        },
+        select: {
+          accountNumber: true,
+          day: true,
+          income: {
+            max: true,
+          },
+          outcome: {
+            max: true,
+          },
+        },
+      });
+      console.table(result);
+      expect(result.length).toBe(0);
+    });
+
+    test("次の口座について解約の申し出があった。副問い合わせを使って口座テーブルから廃止口座テーブルにデータを登録する。また、口座テーブルの該当データを削除する。ただし、データの整合性を保つことについては考慮しなくてよい。", async () => {
+      // 口座番号: 2761055
+      const retairedAccountNumber = "2761055";
+      const result = await prisma.account.findMany({
+        where: {
+          number: retairedAccountNumber,
+        },
+        select: {
+          number: true,
+          name: true,
+          type: true,
+          balance: true,
+        },
+      });
+
+
+      await prisma.$transaction([
+        prisma.account.deleteMany({
+          where: {
+            number: retairedAccountNumber,
+          },
+        }),
+
+        prisma.retiredAccount.create({
+          data: {
+            number: result[0].number,
+            name: result[0].name,
+            type: result[0].type,
+            balance: result[0].balance,
+            retiredAt: new Date(),
+          },
+        }),
+      ]);
+
+      const accountData = await prisma.account.findMany({
+        where: {
+          number: retairedAccountNumber,
+        },
+      });
+      const retiredAccount = await prisma.retiredAccount.findMany({
+        where: {
+          number: retairedAccountNumber,
+        },
+      });
+
+      console.table(accountData);
+      console.table(retiredAccount);
+      expect(accountData.length).toBe(0);
+      expect(retiredAccount.length).toBe(1);
     });
 
   });
-
 });
