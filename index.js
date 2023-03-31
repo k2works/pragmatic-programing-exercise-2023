@@ -1,3 +1,4 @@
+import "./src/style.css";
 import { App } from './src/app.js';
 const app = new App();
 
@@ -22,6 +23,23 @@ ac --> UC2
 ac --> UC3
 @enduml
 `;
+
+const ui = `
+@startsalt
+{+
+{* File | Edit | Source | Refactor
+ Refactor | New | Open File | - | Close | Close All }
+{/ General | Fullscreen | Behavior | Saving }
+{
+{ Open image in: | ^Smart Mode^ }
+[X] Smooth images when zoomed
+[X] Confirm image deletion
+[ ] Show hidden images
+}
+[Close]
+}
+@endsalt
+`
 
 const uml = `
 @startuml
@@ -75,4 +93,4 @@ e01 ||..o{ e02
 e01 |o..o{ e03
 @enduml
 `;
-render({ contents, usecase, uml, erd });
+render({ contents, ui, usecase, uml, erd });

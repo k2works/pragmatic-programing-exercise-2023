@@ -1,8 +1,10 @@
-# プログラミング入門 2023
+# intercept-booster
 
-[![Node.js CI](https://github.com/k2works/programing_introduce_2023/actions/workflows/node.js.yml/badge.svg)](https://github.com/k2works/programing_introduce_2023/actions/workflows/node.js.yml)
+[![Node.js CI](https://github.com/k2works/intercept-booster-sample/actions/workflows/node.js.yml/badge.svg)](https://github.com/k2works/intercept-booster-sample/actions/workflows/node.js.yml)
 
 ## 概要
+
+intercept-boosterのサンプルです。
 
 ### 目的
 
@@ -10,7 +12,7 @@
 
 | ソフトウェア | バージョン | 備考 |
 | :----------- | :--------- | :--- |
-| nodejs       | 16.x       |      |
+| nodejs       | 18.x       |      |
 
 ### Quick Start
 
