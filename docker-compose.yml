@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  db_mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password 
+    hostname: mysql
+    ports:
+      - 3306:3306
+
+  db_postgresql:
+    image: postgres:15
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      POSTGRES_DB: test
+    hostname: postgres
+    user: root
+
+  schemaspy_mysql:
+    build:
+      context: ops
+      dockerfile: ./build/docker/schemaspy/Dockerfile
+    volumes:
+      - ./ops/build/docker/schemaspy/output/mysql:/output
+      - ./ops/build/docker/schemaspy/config:/config
+    container_name: "schemaspy_local_mysql"
+    command: [ "-all", "-configFile", "/config/mysql/schemaspy.properties" ]
+    links:
+      - db_mysql
+
+  schemaspy_postgresql:
+    build:
+      context: ops
+      dockerfile: ./build/docker/schemaspy/Dockerfile
+    volumes:
+      - ./ops/build/docker/schemaspy/output/postgresql:/output
+      - ./ops/build/docker/schemaspy/config:/config
+    container_name: "schemaspy_local_postgresql"
+    command: [ "-all", "-configFile", "/config/postgresql/schemaspy.properties" ]
+    links:
+      - db_postgresql

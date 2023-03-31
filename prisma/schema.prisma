@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  number    String    @id @default(cuid()) @map("口座番号")
+  name      String    @map("名義")
+  type      String    @map("種別")
+  balance   Int       @map("残高")
+  updatedAt DateTime? @map("更新日")
+
+  @@map("口座")
+}
+
+model RetiredAccount {
+  number    String    @id @default(cuid()) @map("口座番号")
+  name      String    @map("名義")
+  type      String    @map("種別")
+  balance   Int       @map("解約時残高")
+  retiredAt DateTime? @map("解約日")
+
+  @@map("廃止口座")
+}
+
+model Transaction {
+  number              Int               @id @default(autoincrement()) @map("取引番号")
+  transactionReasonId Int               @map("取引事由ID")
+  day                 DateTime          @map("日付")
+  accountNumber       String            @map("口座番号")
+  income              Int?              @map("入金額")
+  outcome             Int?              @map("出金額")
+  transactionReason   TransactionReason @relation(fields: [transactionReasonId], references: [id])
+
+  @@map("取引")
+}
+
+model TransactionReason {
+  id          Int           @id @default(autoincrement()) @map("取引事由ID")
+  name        String        @map("取引事由名")
+  transaction Transaction[]
+
+  @@map("取引事由")
+}

@@ -1,6 +1,6 @@
 const { series, parallel, watch, src, dest } = require("gulp");
 const { default: rimraf } = require("rimraf");
-const browserSync = require('browser-sync').create();
+const browserSync = require("browser-sync").create();
 
 const asciidoctor = {
   clean: async (cb) => {
@@ -47,21 +47,26 @@ const asciidoctor = {
     watch("./public/**/*.html").on("change", browserSync.reload);
     cb();
   },
-}
+};
 
 marp = {
   build: (cb) => {
-    const { marpCli } = require('@marp-team/marp-cli')
+    const { marpCli } = require("@marp-team/marp-cli");
 
-    marpCli(['./docs/slides/PITCHME.md', '--html', '--output', './public/slides/index.html'])
+    marpCli([
+      "./docs/slides/PITCHME.md",
+      "--html",
+      "--output",
+      "./public/slides/index.html",
+    ])
       .then((exitStatus) => {
         if (exitStatus > 0) {
-          console.error(`Failure (Exit status: ${exitStatus})`)
+          console.error(`Failure (Exit status: ${exitStatus})`);
         } else {
-          console.log('Success')
+          console.log("Success");
         }
       })
-      .catch(console.error)
+      .catch(console.error);
     cb();
   },
   clean: async (cb) => {
@@ -71,8 +76,8 @@ marp = {
   watch: (cb) => {
     watch("./docs/slides/**/*.md", marp.build);
     cb();
-  }
-}
+  },
+};
 
 const webpack = {
   clean: async (cb) => {
@@ -114,7 +119,7 @@ const webpack = {
     });
     cb();
   },
-}
+};
 
 const jest = {
   test: (cb) => {
@@ -127,22 +132,22 @@ const jest = {
     jest.run(["--watchAll"]);
     cb();
   },
-}
+};
 
 const prettier = {
   format: (cb) => {
-    const prettier = require('gulp-prettier');
+    const prettier = require("gulp-prettier");
     return src("./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}")
-      .pipe(prettier(
-        {
-          "semi": true,
-          "trailingComma": "all",
-          "singleQuote": true,
-          "printWidth": 80,
-          "tabWidth": 2
-        }
-      ))
-      .pipe(dest('src'));
+      .pipe(
+        prettier({
+          semi: true,
+          trailingComma: "all",
+          singleQuote: false,
+          printWidth: 80,
+          tabWidth: 2,
+        })
+      )
+      .pipe(dest("src"));
   },
   watch: (cb) => {
     watch("./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}", prettier.format);
@@ -150,22 +155,53 @@ const prettier = {
   },
 };
 
+const schemaspy = {
+  clean: async (cb) => {
+    await rimraf("./public/erd");
+    cb();
+  },
+  build: (cb) => {
+    const { exec } = require("child_process");
+    exec(
+      "docker compose   up -d --build schemaspy_postgresql",
+      (err, stdout, stderr) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        console.log(stdout);
+      }
+    );
+    cb();
+  },
+  docs: (cb) => {
+    return src("./ops/build/docker/schemaspy/output/postgresql/**").pipe(
+      dest("./public/erd")
+    );
+  },
+};
+
 const webpackBuildTasks = () => {
   return series(webpack.clean, webpack.build);
-}
+};
 
 const asciidoctorBuildTasks = () => {
   return series(asciidoctor.clean, asciidoctor.build);
-}
+};
 
 const marpBuildTasks = () => {
   return series(marp.clean, marp.build);
-}
+};
+
+const schemaspyTasks = () => {
+  return series(schemaspy.clean, schemaspy.build, schemaspy.docs);
+};
 
 exports.default = series(
   webpackBuildTasks(),
   asciidoctorBuildTasks(),
   marpBuildTasks(),
+  schemaspyTasks(),
   prettier.format,
   series(
     parallel(webpack.server, asciidoctor.server),
@@ -190,7 +226,13 @@ exports.slides = series(marp.build);
 exports.docs = series(
   asciidoctorBuildTasks(),
   marpBuildTasks(),
-  parallel(asciidoctor.server, asciidoctor.watch, marp.watch),
+  schemaspyTasks(),
+  parallel(asciidoctor.server, asciidoctor.watch, marp.watch)
 );
 
-exports.watch = parallel(webpack.watch, asciidoctor.watch, marp.watch, jest.watch);
+exports.watch = parallel(
+  webpack.watch,
+  asciidoctor.watch,
+  marp.watch,
+  jest.watch
+);

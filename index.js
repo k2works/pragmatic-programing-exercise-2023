@@ -1,78 +1,107 @@
-import { App } from './src/app.js';
+import { App } from "./src/app.js";
 const app = new App();
 
 import render from "@k2works/full-stack-lab";
 const contents = `
 ## 機能名
+
+すっきりわかるSQL入門 第3版 SQLドリル
+
 ## 仕様
+
+[データベース定義](./erd/public/index.html)
+
+以下のER図は、以下のようなテーブル間の関係を表しています。
+
+* 「取引」と「取引事由」は1対多の関係になります。
+
+また、ER図の表現方法については以下の通りです。
+
+- entity：テーブルを表します。
+- PK：プライマリキーを表します。
+- FK：外部キーを表します。
+- "--"：フィールドを表します。
+- "|"：1の関係を表します。
+- "*"：多数の関係を表します。
+- "o"：必須の関係を表します。
+
 ## TODOリスト
+- [ ] [銀行データベース](https://flair.link/BS3F1)
+  - [x] 基本文法と四大命令
+  - [x] 操作する行の絞り込み
+  - [x] 検索結果の加工
+  - [x] 式と関数
+  - [x] 集計とグループ化
+  - [x] 副問い合わせ
+  - [ ] 複数テーブルの結合
+- [ ] [商品データベース](https://flair.link/BS3F2)
+  - [ ] 基本文法と四大命令
+  - [ ] 操作する行の絞り込み
+  - [ ] 検索結果の加工
+  - [ ] 式と関数
+  - [ ] 集計とグループ化
+  - [ ] 副問い合わせ
+  - [ ] 複数テーブルの結合
+- [ ] [RPGデータベース](https://flair.link/BS3F3)
+  - [ ] 基本文法と四大命令
+  - [ ] 操作する行の絞り込み
+  - [ ] 検索結果の加工
+  - [ ] 式と関数
+  - [ ] 集計とグループ化
+  - [ ] 副問い合わせ
+  - [ ] 複数テーブルの結合
 `;
 
 const usecase = `
-@startuml
-left to right direction
-actor "Actor" as ac
-rectangle Application {
-  usecase "UseCase1" as UC1
-  usecase "UseCase2" as UC2
-  usecase "UseCase3" as UC3
-}
-ac --> UC1
-ac --> UC2
-ac --> UC3
-@enduml
 `;
 
 const uml = `
-@startuml
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-class ArrayList {
-  Object[] elementData
-  size()
-}
-enum TimeUnit {
-  DAYS
-  HOURS
-  MINUTES
-}
-annotation SuppressWarnings
-@enduml
 `;
 
 const erd = `
 @startuml
+
 ' hide the spot
 hide circle
 ' avoid problems with angled crows feet
 skinparam linetype ortho
-entity "Entity01" as e01 {
-  *e1_id : number <<generated>>
+
+entity "口座" as account {
+  * 口座番号 : text <<PK>>
   --
-  *name : text
-  description : text
+  * 名義 : text
+  * 種別 : text
+  * 残高 : integer
+  更新日 : timestamp
 }
-entity "Entity02" as e02 {
-  *e2_id : number <<generated>>
+
+entity "廃止口座" as closed_account {
+  * 口座番号 : text <<PK>>
   --
-  *e1_id : number <<FK>>
-  other_details : text
+  * 名義 : text
+  * 種別 : text
+  * 解約時残高 : integer
+  解約日 : timestamp
 }
-entity "Entity03" as e03 {
-  *e3_id : number <<generated>>
+
+entity "取引" as transaction {
+  * 取引番号 : integer <<PK>>
   --
-  e1_id : number <<FK>>
-  other_details : text
+  口座番号 : text
+  入金額 : integer
+  出金額 : integer
+  日付 : timestamp
+  取引事由ID : integer <<FK>>
 }
-e01 ||..o{ e02
-e01 |o..o{ e03
+
+entity "取引事由" as transaction_reason {
+  * 取引事由ID : integer <<PK>>
+  --
+  * 取引事由名 : text
+}
+
+transaction }o..|| transaction_reason : "n" -up- "1" 取引事由ID
+
 @enduml
 `;
 render({ contents, usecase, uml, erd });
