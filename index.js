@@ -5,18 +5,27 @@ const app = new App();
 import render from "@k2works/full-stack-lab";
 const contents = `
 ## 機能名
+
+オブジェクト志向UI設計の実践
+
 ## 仕様
+
 ## TODOリスト
+
+- [ ] ステップ1 オブジェクトの抽出
+- [ ] ステップ2 ビューとナビゲーションの検討
+- [ ] ステップ3 レイアウトパターンの適用
+
 `;
 
 const usecase = `
 @startuml
 left to right direction
-actor "Actor" as ac
-rectangle Application {
-  usecase "UseCase1" as UC1
-  usecase "UseCase2" as UC2
-  usecase "UseCase3" as UC3
+actor "生徒" as ac
+rectangle 学校名後アプリケーション {
+  usecase "一覧" as UC1
+  usecase "登録" as UC2
+  usecase "編集" as UC3
 }
 ac --> UC1
 ac --> UC2
@@ -27,70 +36,74 @@ ac --> UC3
 const ui = `
 @startsalt
 {+
-{* File | Edit | Source | Refactor
- Refactor | New | Open File | - | Close | Close All }
-{/ General | Fullscreen | Behavior | Saving }
-{
-{ Open image in: | ^Smart Mode^ }
-[X] Smooth images when zoomed
-[X] Confirm image deletion
-[ ] Show hidden images
-}
-[Close]
+  コレクション画面
+  {+
+  {
+  生徒
+  教員
+  組
+  部
+  イベント 
+  } |
+  {
+    == 生徒
+    { + <&zoom-in> (          )}
+    {T#
+    + 田尻　智裕  | 3年B組    | 野球部 写真部
+    + 山田　太郎  | 3年A組    | 野球部
+    + 鈴木　花子  | 3年A組    | 写真部
+    }
+  }
+  }
+----------------
+  シングル画面
+  {+
+  {
+  生徒
+  教員
+  組
+  部
+  イベント 
+  } |
+  {
+    {
+      <&person> <b>田尻 智裕
+    }
+    {
+      名前
+      田尻　智裕
+      組
+      3年B組
+      部
+      野球部 写真部
+      関連する生徒
+      田尻　智裕 山田　太郎　鈴木　花子
+    }
+  }
+  }
 }
 @endsalt
+
 `
 
 const uml = `
 @startuml
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-class ArrayList {
-  Object[] elementData
-  size()
+package "モデル" {
+  class 生徒 {
+    氏名
+    成績
+    印刷する()
+  }
 }
-enum TimeUnit {
-  DAYS
-  HOURS
-  MINUTES
+
+package "インタラクション" {
+  生徒_コレクション -> 生徒_シングル
 }
-annotation SuppressWarnings
 @enduml
 `;
 
 const erd = `
 @startuml
-' hide the spot
-hide circle
-' avoid problems with angled crows feet
-skinparam linetype ortho
-entity "Entity01" as e01 {
-  *e1_id : number <<generated>>
-  --
-  *name : text
-  description : text
-}
-entity "Entity02" as e02 {
-  *e2_id : number <<generated>>
-  --
-  *e1_id : number <<FK>>
-  other_details : text
-}
-entity "Entity03" as e03 {
-  *e3_id : number <<generated>>
-  --
-  e1_id : number <<FK>>
-  other_details : text
-}
-e01 ||..o{ e02
-e01 |o..o{ e03
 @enduml
 `;
 render({ contents, ui, usecase, uml, erd });
