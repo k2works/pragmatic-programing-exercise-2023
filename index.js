@@ -6,7 +6,7 @@ import render from "@k2works/full-stack-lab";
 const contents = `
 ## 機能名
 
-オブジェクト志向UI設計の実践
+オブジェクト指向UI設計の実践
 
 ## 仕様
 
@@ -43,7 +43,7 @@ const ui = `
   教員
   組
   部
-  イベント 
+  イベント
   } |
   {
     == 生徒
@@ -63,7 +63,7 @@ const ui = `
   教員
   組
   部
-  イベント 
+  イベント
   } |
   {
     {
