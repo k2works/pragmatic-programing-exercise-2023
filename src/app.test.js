@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import account from "../prisma/data/account";
 import retiredAccount from "../prisma/data/retiredAccount";
 import transaction from "../prisma/data/transaction";
+import transactionReason from "../prisma/data/transactionReason";
 
 const prisma = new PrismaClient();
 
@@ -1706,11 +1707,17 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      const result = { '現在の残高': accountBalance[0].balance, '取引日に発生した取引による入出金額それぞれの合計金額': transactionBalance }
+      const result = {
+        現在の残高: accountBalance[0].balance,
+        取引日に発生した取引による入出金額それぞれの合計金額:
+          transactionBalance,
+      };
 
       console.table(result);
-      expect(result.取引日に発生した取引による入出金額それぞれの合計金額).toBe(transactionBalance);
-    })
+      expect(result.取引日に発生した取引による入出金額それぞれの合計金額).toBe(
+        transactionBalance,
+      );
+    });
 
     // SELECT number, name, balance FROM account WHERE number IN (SELECT account_number FROM transaction WHERE income >= 1000000);
     test("これまで1回の取引で100万円以上の入金があった口座について、口座番号、名義、残高を取得する。ただし、WHERE句でIN演算子を利用した副問い合わせを用いること。", async () => {
@@ -1774,7 +1781,7 @@ describe("銀行口座データベース", () => {
         name: "センカワ　シゲル",
         balance: 5310840,
       });
-    })
+    });
 
     // SELECT account_number, SUM(income) AS income, SUM(outcome) AS outcome FROM transaction WHERE day = '2021-12-28' GROUP BY account_number;
     test("次の口座について、入金と出金の両方が発生した日付を抽出する。また、これまでの入金と出金それぞれの最大額もあわせて抽出する。FROM句で副問い合わせを用いること。", async () => {
@@ -1820,7 +1827,6 @@ describe("銀行口座データベース", () => {
         },
       });
 
-
       await prisma.$transaction([
         prisma.account.deleteMany({
           where: {
@@ -1854,6 +1860,471 @@ describe("銀行口座データベース", () => {
       console.table(retiredAccount);
       expect(accountData.length).toBe(0);
       expect(retiredAccount.length).toBe(1);
+    });
+  });
+
+  describe("第8章 複数テーブルの結合", () => {
+    beforeAll(async () => {
+      await prisma.account.deleteMany({});
+      await prisma.account.createMany({ data: account });
+      await prisma.retiredAccount.deleteMany({});
+      await prisma.retiredAccount.createMany({ data: retiredAccount });
+      await prisma.$transaction([
+        prisma.transaction.deleteMany({}),
+        prisma.transactionReason.deleteMany({}),
+        prisma.transactionReason.createMany({ data: transactionReason }),
+        prisma.transaction.createMany({ data: transaction }),
+      ]);
+    });
+
+    test("次の口座について、これまでの取引の記録を取引テーブルから抽出する。抽出する項目は口座番号、日付、取引事由、取引金額とする。口座番号ごとに取引番号順で表示し、取引事由名については取引事由テーブルから日本語名を取得する。取引金額には、取引に応じて入金額か出金額のいずれか適切な方を表示すること。", async () => {
+      // 口座番号: 0311240, 1234161, 2750902
+      const accountNumbers = ["0311240", "1234161", "2750902"];
+      const result = await prisma.transaction.findMany({
+        where: {
+          accountNumber: {
+            in: accountNumbers,
+          },
+        },
+        select: {
+          accountNumber: true,
+          day: true,
+          transactionReason: {
+            select: {
+              name: true,
+            },
+          },
+          income: true,
+          outcome: true,
+        },
+        orderBy: {
+          number: "asc",
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("次の口座について、口座情報（口座番号、名義、残高）とこれまでの取引情報（日付、入金額、出金額）を一覧として抽出する。一覧は、取引の古い順に表示すること。", async () => {
+      // 口座番号: 0887132
+      const accountNumber = "0887132";
+      const account = await prisma.account.findUnique({
+        where: {
+          number: accountNumber,
+        },
+        select: {
+          number: true,
+          name: true,
+          balance: true,
+        },
+      });
+
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          accountNumber: accountNumber,
+        },
+        select: {
+          day: true,
+          income: true,
+          outcome: true,
+        },
+        orderBy: {
+          day: "asc",
+        },
+      });
+
+      const result = transactions.map((transaction) => {
+        return {
+          ...account, ...transaction
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(4);
+    });
+
+    test("2020年3月1日に取引のあった口座番号の一覧を取得する。一覧には、口座テーブルより名義と残高も表示すること。ただし、解約された口座については考慮しなくてもよい。", async () => {
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          day: new Date("2020-03-01"),
+        },
+        select: {
+          accountNumber: true,
+        },
+      });
+
+      const accounts = await prisma.account.findMany({
+        where: {
+          number: {
+            in: transactions.map((transaction) => transaction.accountNumber),
+          },
+        },
+        select: {
+          number: true,
+          name: true,
+          balance: true,
+        },
+      });
+
+      const result = accounts.map((account) => ({
+        ...account,
+        ...transactions.find(transaction => account.number === transaction.accountNumber),
+      }));
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("問題67では、すでに解約された口座については、該当の日付に取引があったにも関わらず抽出されなかった。解約された口座ももれなく一覧に記載されるよう、SQL文を変更する。なお、解約口座については、名義に「解約済み」、残高に0を表示すること", async () => {
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          day: new Date("2020-03-01"),
+        },
+        select: {
+          accountNumber: true,
+        },
+      });
+
+      const accounts = await prisma.account.findMany({
+        where: {
+          number: {
+            in: transactions.map((transaction) => transaction.accountNumber),
+          },
+        },
+        select: {
+          number: true,
+          name: true,
+          balance: true,
+        },
+      });
+
+      const retiredAccounts = await prisma.retiredAccount.findMany({
+        where: {
+          number: {
+            in: transactions.map((transaction) => transaction.accountNumber),
+          },
+        },
+        select: {
+          number: true,
+          name: true,
+          balance: true,
+        },
+      });
+
+      const result = accounts.map((account) => ({
+        ...account,
+        ...transactions.find(transaction => account.number === transaction.accountNumber),
+      })).concat(
+        retiredAccounts.map((retiredAccount) => ({
+          number: retiredAccount.number,
+          name: "解約済み",
+          balance: 0,
+          ...transactions.find(transaction => retiredAccount.number === transaction.accountNumber),
+        }))
+      );
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    });
+
+    test("取引テーブルのデータを抽出する。取引事由は「取引事由ID:取引事由名」の形式で表示し、これまでに発生しなかった取引事由についても併せて記載されるようにすること。", async () => {
+      const transactions = await prisma.transaction.findMany({
+        select: {
+          number: true,
+          day: true,
+          accountNumber: true,
+          income: true,
+          outcome: true,
+          transactionReason: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      const result = transactions.map((transaction) => ({
+        ...transaction,
+        transactionReason: `${transaction.transactionReason.id}:${transaction.transactionReason.name}`,
+      }));
+
+      console.table(result);
+      expect(result.length).toBe(29);
+    });
+
+    test("取引テーブルと取引事由テーブルから、取引事由の一覧を抽出する。一覧には、取引事由IDと取引事由名を記載する。なお、取引事由テーブルに存在しない理由で取引されている可能性、および取引の実績のない事由が存在する可能性を考慮すること。", async () => {
+      const transactionReasons = await prisma.transactionReason.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+
+      const transactions = await prisma.transaction.findMany({
+        select: {
+          transactionReason: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      const result = transactionReasons.map((transactionReason) => ({
+        ...transactionReason,
+      })).concat(
+        transactions.map((transaction) => ({
+          id: transaction.transactionReason.id,
+          name: transaction.transactionReason.name,
+        }))
+      );
+
+      console.table(result);
+      expect(result.length).toBe(36);
+    });
+
+    test("問題66について、取引事由名についても一覧に表示するよう、SQL文を変更する。取引事由名は取引情報（日付、取引事由名、入金額、出金額）に表示する。", async () => {
+      const transactions = await prisma.transaction.findMany({
+        select: {
+          day: true,
+          income: true,
+          outcome: true,
+          transactionReason: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      const result = transactions.map((transaction) => ({
+        day: transaction.day,
+        transactionReason: transaction.transactionReason.name,
+        income: transaction.income,
+        outcome: transaction.outcome,
+      }));
+
+      console.table(result);
+      expect(result.length).toBe(29);
+    });
+
+    test("現在の残高が500万円以上の口座について、2022年以降に1回の取引で100万円以上の金額が入出金された実績を抽出する。抽出する項目は、口座番号、名義、残高、取引の日付、取引事由ID、入金額、出金額とする。ただし副問い合わせは用いないこと。", async () => {
+      const accounts = await prisma.account.findMany({
+        where: {
+          balance: {
+            gte: 5000000,
+          },
+        },
+        select: {
+          number: true,
+          name: true,
+          balance: true,
+        },
+      });
+
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          day: {
+            gte: new Date("2022-01-01"),
+          },
+          OR: [
+            {
+              income: {
+                gte: 1000000,
+              },
+            },
+            {
+              outcome: {
+                gte: 1000000,
+              },
+            },
+          ],
+        },
+        select: {
+          day: true,
+          income: true,
+          outcome: true,
+          transactionReason: {
+            select: {
+              id: true,
+            },
+          },
+          accountNumber: true,
+        },
+      });
+
+      const wip = accounts.map((account) => ({
+        ...account,
+        ...transactions.find(transaction => account.number === transaction.accountNumber),
+      }));
+
+      const result = wip.map((wip) => ({
+        number: wip.number,
+        name: wip.name,
+        balance: wip.balance,
+        day: wip.day,
+        transactionReasonId: wip.transactionReason ? wip.transactionReason.id : null,
+        income: wip.income,
+        outcome: wip.outcome,
+      }));
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("問題72で作成したSQL文について、結合相手に副問い合わせを利用するようSQL文を変更する。", async () => {
+      const accounts = await prisma.account.findMany({
+        where: {
+          balance: {
+            gte: 5000000,
+          },
+        },
+        select: {
+          number: true,
+          name: true,
+          balance: true,
+        },
+      });
+
+      const transactions = await prisma.transaction.findMany({
+        where: {
+          day: {
+            gte: new Date("2022-01-01"),
+          },
+          OR: [
+            {
+              income: {
+                gte: 1000000,
+              },
+            },
+            {
+              outcome: {
+                gte: 1000000,
+              },
+            },
+          ],
+        },
+        select: {
+          day: true,
+          income: true,
+          outcome: true,
+          transactionReason: {
+            select: {
+              id: true,
+            },
+          },
+          accountNumber: true,
+        },
+      });
+
+      const wip = accounts.map((account) => ({
+        ...account,
+        ...transactions.find(transaction => account.number === transaction.accountNumber),
+      }));
+
+      const result = wip.map((wip) => ({
+        number: wip.number,
+        name: wip.name,
+        balance: wip.balance,
+        day: wip.day,
+        transactionReasonId: wip.transactionReason ? wip.transactionReason.id : null,
+        income: wip.income,
+        outcome: wip.outcome,
+      }));
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("取引テーブルから、同一の口座で同じ日に3回以上取引された実績のある口座番号とその回数を抽出する。併せて、口座テーブルから名義を表示すること。", async () => {
+      const transactions = await prisma.transaction.findMany({
+        select: {
+          accountNumber: true,
+          day: true,
+        },
+      });
+
+      const wip = transactions.map((transaction) => ({
+        ...transaction,
+        count: transactions.filter(t => t.accountNumber === transaction.accountNumber && t.day === transaction.day).length,
+      }));
+
+      const wip2 = wip.filter(w => w.count >= 3).map(w => ({
+        accountNumber: w.accountNumber,
+        day: w.day,
+        count: w.count,
+      }));
+
+      const accounts = await prisma.account.findMany({
+        where: {
+          number: {
+            in: wip2.map(w => w.accountNumber),
+          },
+        },
+        select: {
+          number: true,
+          name: true,
+        },
+      });
+
+      const wip3 = wip2.map((wip2) => ({
+        ...wip2,
+        ...accounts.find(account => account.number === wip2.accountNumber),
+      }));
+
+      const result = wip3.map((wip3) => ({
+        accountNumber: wip3.accountNumber,
+        day: wip3.day,
+        name: wip3.name,
+        count: wip3.count,
+      }));
+
+      console.table(result);
+      expect(result.length).toBe(0);
+    });
+
+    test("この銀行では、口座テーブルの名寄せを行うことになった。同じ名義で複数の口座番号を持つ顧客について、次の項目を持つ一覧を取得する。", async () => {
+      // 名義、口座番号、種別、残高、更新日
+      // 一覧は名義のアイウエオ順、口座番号の小さい順に並べること。
+      const accounts = await prisma.account.findMany({
+        select: {
+          name: true,
+          number: true,
+          type: true,
+          balance: true,
+          updatedAt: true,
+        },
+      });
+
+      const wip = accounts.map((account) => ({
+        ...account,
+        count: accounts.filter(a => a.name === account.name).length,
+      }));
+
+      const wip2 = wip.filter(w => w.count >= 2).map(w => ({
+        name: w.name,
+        number: w.number,
+        type: w.type,
+        balance: w.balance,
+        updatedAt: w.updatedAt,
+      }))
+
+      const result = wip2.sort((a, b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+      }).sort((a, b) => {
+        if (a.number < b.number) {
+          return -1;
+        }
+      });
+
+      console.table(result);
+      expect(result.length).toBe(3);
     });
 
   });
