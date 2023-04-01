@@ -16,6 +16,7 @@
     "watch": "npx gulp watch",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
+    "db:show": "prisma studio",
     "deploy": "vercel",
     "deploy:local": "vercel dev",
     "deploy:heroku": "git push heroku wip/episode/00:master ",
