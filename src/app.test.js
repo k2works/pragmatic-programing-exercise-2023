@@ -3,6 +3,9 @@ import account from "../prisma/data/account";
 import retiredAccount from "../prisma/data/retiredAccount";
 import transaction from "../prisma/data/transaction";
 import transactionReason from "../prisma/data/transactionReason";
+import product from "../prisma/data/product";
+import retiredProduct from "../prisma/data/retiredProduct";
+import order from "../prisma/data/order";
 
 const prisma = new PrismaClient();
 
@@ -2328,4 +2331,157 @@ describe("銀行口座データベース", () => {
     });
 
   });
+});
+
+describe("商品データベース", () => {
+  describe("第２章 基本文法と四大命令", () => {
+    beforeAll(async () => {
+      await prisma.product.deleteMany({});
+      for (const p of product) {
+        await prisma.product.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        })
+      }
+
+      await prisma.retiredProduct.deleteMany({});
+      for (const p of retiredProduct) {
+        await prisma.retiredProduct.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        })
+      }
+
+      await prisma.order.deleteMany({});
+      await prisma.order.createMany({ data: order });
+    })
+
+    test("商品テーブルのすべてのデータを「*」を用いずに抽出する。", async () => {
+      const result = await prisma.product.findMany({
+        select: {
+          code: true,
+          name: true,
+          price: true,
+          type: true,
+          product: true,
+        }
+      });
+
+      console.table(result);
+      expect(result.length).toBe(42);
+      expect(result[34]).toEqual({
+        code: "A0100",
+        name: "手編みのてぶくろ",
+        price: 2500,
+        type: "3",
+        product: {
+          code: "A0101",
+          name: "手編みのマフラー",
+          price: 3900,
+          relatedCode: "A0100",
+          type: "3",
+        },
+      });
+    });
+
+    test("商品テーブルのすべての商品名を抽出する。", async () => {
+      const result = await prisma.product.findMany({
+        select: {
+          name: true,
+        }
+      });
+
+      console.table(result);
+      expect(result.length).toBe(42);
+      expect(result[34]).toEqual({
+        name: "手編みのてぶくろ",
+      });
+    });
+
+    test("注文テーブルのすべてのデータを「*」を用いずに抽出する。", async () => {
+      const result = await prisma.order.findMany({
+        select: {
+          day: true,
+          orderNumber: true,
+          orderSubNumber: true,
+          productCode: true,
+          quantity: true,
+          couponDiscount: true,
+        }
+      });
+
+      console.table(result);
+      expect(result.length).toBe(68);
+      expect(result[0]).toEqual({
+        day: new Date("2020-04-12T00:00:00.000Z"),
+        orderNumber: "202004120003",
+        orderSubNumber: 1,
+        productCode: "S0604",
+        quantity: 1,
+        couponDiscount: null,
+      });
+    });
+
+    test("注文テーブルのすべての注文番号、注文枝番、商品コードを抽出する。", async () => {
+      const result = await prisma.order.findMany({
+        select: {
+          orderNumber: true,
+          orderSubNumber: true,
+          productCode: true,
+        }
+      });
+
+      console.table(result);
+      expect(result.length).toBe(68);
+      expect(result[0]).toEqual({
+        orderNumber: "202004120003",
+        orderSubNumber: 1,
+        productCode: "S0604",
+      });
+    });
+
+    test("商品テーブルに次の3つのデータを1回の実行ごとに1つずつ追加する。", async () => {
+      const data = [
+        {
+          code: "W0461",
+          name: "冬のあったかコート",
+          price: 12800,
+          type: "1",
+          relatedCode: null,
+        },
+        {
+          code: "S0331",
+          name: "春のさわやかコート",
+          price: 6800,
+          type: "1",
+          relatedCode: null,
+        },
+        {
+          code: "A0582",
+          name: "秋のシックなコート",
+          price: 9800,
+          type: "1",
+          relatedCode: null,
+        }
+      ]
+
+      for (const d of data) {
+        await prisma.product.create({
+          data: d,
+        });
+      }
+      const result = await prisma.product.findMany({
+        where: {
+          code: {
+            in: data.map(d => d.code),
+          }
+        },
+      });
+
+      console.table(result);
+      expect(result[0]).toEqual(data[0]);
+    });
+  })
 });
