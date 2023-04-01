@@ -49,3 +49,39 @@ model TransactionReason {
 
   @@map("取引事由")
 }
+
+model Product {
+  code        String  @id @default(cuid()) @map("商品コード")
+  name        String  @map("商品名")
+  price       Int     @map("単価")
+  type        String  @map("商品区分")
+  relatedCode String? @map("関連商品コード")
+
+  product       Product?  @relation(name: "ChildProducts", fields: [relatedCode], references: [code])
+  ChildProducts Product[] @relation(name: "ChildProducts")
+
+  @@map("商品")
+}
+
+model RetiredProduct {
+  code      String    @id @default(cuid()) @map("商品コード")
+  name      String    @map("商品名")
+  price     Int       @map("単価")
+  type      String    @map("商品区分")
+  retiredAt DateTime? @map("廃番日")
+  quantity  Int       @map("売上個数")
+
+  @@map("廃番商品")
+}
+
+model Order {
+  day            DateTime @map("日付")
+  orderNumber    String   @map("受注番号")
+  orderSubNumber Int      @map("受注枝番")
+  productCode    String   @map("商品コード")
+  quantity       Int      @map("数量")
+  couponDiscount Int?     @map("クーポン割引料")
+
+  @@unique([orderNumber, orderSubNumber])
+  @@map("注文")
+}

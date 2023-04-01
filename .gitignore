@@ -106,3 +106,4 @@ dist
 
 /public
 ops/build/docker/schemaspy/output
+*.pdf
