@@ -66,41 +66,77 @@ hide circle
 ' avoid problems with angled crows feet
 skinparam linetype ortho
 
-entity "口座" as account {
-  * 口座番号 : text <<PK>>
-  --
-  * 名義 : text
-  * 種別 : text
-  * 残高 : integer
-  更新日 : timestamp
+package "銀行口座データベース" {
+  entity "口座" as account {
+    * 口座番号 : text <<PK>>
+    --
+    * 名義 : text
+    * 種別 : text
+    * 残高 : integer
+    更新日 : timestamp
+  }
+
+  entity "廃止口座" as closed_account {
+    * 口座番号 : text <<PK>>
+    --
+    * 名義 : text
+    * 種別 : text
+    * 解約時残高 : integer
+    解約日 : timestamp
+  }
+
+  entity "取引" as transaction {
+    * 取引番号 : integer <<PK>>
+    --
+    口座番号 : text
+    入金額 : integer
+    出金額 : integer
+    日付 : timestamp
+    取引事由ID : integer <<FK>>
+  }
+
+  entity "取引事由" as transaction_reason {
+    * 取引事由ID : integer <<PK>>
+    --
+    * 取引事由名 : text
+  }
+  transaction }o..|| transaction_reason : "n" -up- "1" 取引事由ID
 }
 
-entity "廃止口座" as closed_account {
-  * 口座番号 : text <<PK>>
+package "商品データベース" {
+  entity "商品" as product {
+
+  商品コード : text <<PK>>
   --
-  * 名義 : text
-  * 種別 : text
-  * 解約時残高 : integer
-  解約日 : timestamp
+  商品名 : text
+  単価 : integer
+  商品区分 : text
+  関連商品コード : text
+  }
+  entity "廃番商品" as retired_product {
+
+  商品コード : text <<PK>>
+  --
+  商品名 : text
+  単価 : integer
+  商品区分 : text
+  廃番日 : timestamp
+  売上個数 : integer
+  }
+  entity "注文" as order {
+
+  日付 : timestamp <<PK>>
+  受注番号 : text <<PK>>
+  受注枝番 : integer <<PK>>
+  --
+  商品コード : text
+  数量 : integer
+  クーポン割引料 : integer
+  }
+
+  product ||..o{ product : "n" -up- "1" 関連商品コード
 }
 
-entity "取引" as transaction {
-  * 取引番号 : integer <<PK>>
-  --
-  口座番号 : text
-  入金額 : integer
-  出金額 : integer
-  日付 : timestamp
-  取引事由ID : integer <<FK>>
-}
-
-entity "取引事由" as transaction_reason {
-  * 取引事由ID : integer <<PK>>
-  --
-  * 取引事由名 : text
-}
-
-transaction }o..|| transaction_reason : "n" -up- "1" 取引事由ID
 
 @enduml
 `;
