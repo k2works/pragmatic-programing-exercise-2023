@@ -2608,7 +2608,6 @@ describe("商品データベース", () => {
       expect(result.length).toBe(20);
     });
 
-
     test("注文テーブルから、2021年11月以前の注文データを抽出する。", async () => {
       const result = await prisma.order.findMany({
         where: {
@@ -2741,7 +2740,7 @@ describe("商品データベース", () => {
 
       console.table(result);
       expect(result.length).toBe(4);
-    })
+    });
 
     test("商品テーブルから、「雑貨」で商品名に「水玉」含まれる商品データを抽出する。", async () => {
       const result = await prisma.product.findMany({
@@ -2889,12 +2888,10 @@ describe("商品データベース", () => {
       });
 
       console.table(result);
-      expect(result[0]).toStrictEqual(
-        {
-          code: "Z6511",
-          name: "丈夫な靴下",
-        },
-      )
+      expect(result[0]).toStrictEqual({
+        code: "Z6511",
+        name: "丈夫な靴下",
+      });
     });
 
     test("注文テーブルから、主キーの昇順に2022年3月以降の注文一覧を取得する。取得する項目は、注文日、注文番号、注文枝番、商品コード、数量とする。", async () => {
@@ -2910,7 +2907,7 @@ describe("商品データベース", () => {
           },
           {
             orderSubNumber: "asc",
-          }
+          },
         ],
         select: {
           day: true,
@@ -3052,10 +3049,7 @@ describe("商品データベース", () => {
       const result = await prisma.product.findMany({
         where: {
           type: "9",
-          OR: [
-            { price: { lte: 1000 } },
-            { price: { gte: 10000 } },
-          ],
+          OR: [{ price: { lte: 1000 } }, { price: { gte: 10000 } }],
         },
         orderBy: [
           {
@@ -3075,6 +3069,379 @@ describe("商品データベース", () => {
       console.table(result);
       expect(result.length).toBe(5);
     });
-
   });
+
+  describe("第5章 式と関数", () => {
+    beforeAll(async () => {
+      await prisma.product.deleteMany({});
+      for (const p of product) {
+        await prisma.product.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        });
+      }
+      await prisma.retiredProduct.deleteMany({});
+      for (const p of retiredProduct) {
+        await prisma.retiredProduct.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        });
+      }
+    });
+
+    test("商品テーブルの商品区分「未分類」の商品について、商品コード、単価、キャンペーン価格の一覧を取得する。キャンペーン価格は単価の5%引きであり、1円未満の端数は考慮しなくてよい。一覧は商品コード順に並べること", async () => {
+      const campaignProducts = await prisma.product.findMany({
+        where: {
+          type: "9",
+        },
+        select: {
+          code: true,
+          price: true,
+        },
+        orderBy: {
+          code: "asc",
+        },
+      });
+
+      const result = campaignProducts.map((p) => ({
+        code: p.code,
+        price: p.price,
+        campaignPrice: Math.floor(p.price * 0.95),
+      }));
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        code: "N0119",
+        price: 1350,
+        campaignPrice: 1282,
+      });
+    });
+
+    test("注文日が2022年3月12～14日で、同じ商品を2個以上注文し、すでにクーポン割引を利用している注文について、さらに300円を割引することになった。該当データのクーポン割引料を更新する。", async () => {
+      const before = await prisma.order.findMany({
+        where: {
+          AND: [
+            {
+              day: {
+                gte: new Date("2022-03-12"),
+                lte: new Date("2022-03-14"),
+              },
+            },
+            {
+              quantity: {
+                gt: 2,
+              },
+            },
+          ],
+        },
+      });
+
+      await prisma.order.updateMany({
+        where: {
+          AND: [
+            {
+              day: {
+                gte: new Date("2022-03-12"),
+                lte: new Date("2022-03-14"),
+              },
+            },
+            {
+              quantity: {
+                gt: 2,
+              },
+            },
+            {
+              couponDiscount: {
+                gt: 0,
+              },
+            },
+          ],
+        },
+        data: {
+          couponDiscount: {
+            increment: 300,
+          },
+        },
+      });
+
+      const result = await prisma.order.findMany({
+        where: {
+          AND: [
+            {
+              day: {
+                gte: new Date("2022-03-12"),
+                lte: new Date("2022-03-14"),
+              },
+            },
+            {
+              quantity: {
+                gt: 2,
+              },
+            },
+          ],
+        },
+      });
+
+
+      console.table(before);
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("注文番号「202202250126」について、商品コード「W0156」の注文数を1つ減らすよう更新する。", async () => {
+      const before = await prisma.order.findFirst({
+        where: {
+          orderNumber: "202202250126",
+          productCode: "W0156",
+        },
+      });
+
+      await prisma.order.update({
+        where: {
+          orderNumber_orderSubNumber: {
+            orderNumber: before.orderNumber,
+            orderSubNumber: before.orderSubNumber,
+          },
+        },
+        data: {
+          quantity: {
+            decrement: 1,
+          },
+        },
+      });
+
+      const result = await prisma.order.findFirst({
+        where: {
+          orderNumber: "202202250126",
+          productCode: "W0156",
+        },
+      });
+
+      console.table(before);
+      console.table(result);
+      expect(result.quantity).toBe(1);
+    });
+
+    test("注文テーブルから、注文番号「202110010001」～「2021103199999」の注文データを抽出する。注文番号と枝番は「-」でつなげて1つの項目として抽出する。", async () => {
+      const orders = await prisma.order.findMany({
+        where: {
+          orderNumber: {
+            gte: "202110010001",
+            lte: "2021103199999",
+          },
+        },
+      });
+
+      const result = orders.map((o) => ({
+        orderNumber: `${o.orderNumber}-${o.orderSubNumber}`,
+        day: o.day,
+        productCode: o.productCode,
+        quantity: o.quantity,
+        couponDiscount: o.couponDiscount,
+      }));
+
+      console.table(result);
+      expect(result[0].orderNumber).toBe("202110010171-1");
+    });
+
+    test("商品テーブルから、商品コード、商品名、単価、販売価格ランク、商品区分を抽出する。販売価格ランクは、3千円未満を「S」、3千円以上1万円未満を「M」、1万円以上を「L」とする。また、商品区分はコードと日本語名称を「:」で連結して表記する。一覧は、単価の昇順に並べ、同額の場合は商品コードの昇順に並べること。", async () => {
+      const products = await prisma.product.findMany({
+        select: {
+          code: true,
+          name: true,
+          price: true,
+          type: true,
+        },
+        orderBy: [
+          {
+            price: "asc",
+          },
+          {
+            code: "asc",
+          },
+        ],
+      });
+
+      const productType = {
+        1: "衣類",
+        2: "靴",
+        3: "雑貨",
+        9: "未分類",
+      };
+
+      const result = products.map((p) => ({
+        code: p.code,
+        name: p.name,
+        price: p.price,
+        rank: p.price < 3000 ? "S" : p.price < 10000 ? "M" : "L",
+        type: `${p.type}:${productType[p.type]}`,
+      }));
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        code: "Z2323",
+        name: "ハンカチ（水玉）",
+        price: 300,
+        rank: 'S',
+        type: "3:雑貨",
+      })
+    });
+
+    test("商品テーブルから、商品名が10文字を超過する商品名とその文字数を抽出する。文字数は昇順に並べること。", async () => {
+      const products = await prisma.product.findMany({
+        select: {
+          name: true,
+        },
+      });
+
+      const result = products.map((p) => ({
+        name: p.name,
+        length: p.name.length,
+      })).sort((a, b) => a.length - b.length).filter((p) => p.length > 10);
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        name: "雨の日も安心防水ブーツ",
+        length: 11,
+      });
+    });
+
+    test("注文テーブルから、注文日と注文番号の一覧を抽出する。注文番号は日付の部分を取り除き、4桁の連番部部だけを表記すること。", async () => {
+      const orders = await prisma.order.findMany({
+        select: {
+          day: true,
+          orderNumber: true,
+        },
+        orderBy: {
+          day: "asc",
+        },
+      });
+
+      const result = orders.map((o) => ({
+        day: o.day,
+        orderNumber: o.orderNumber.slice(8),
+      }));
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        day: new Date("2020-04-12"),
+        orderNumber: "0003",
+      });
+    });
+
+    test("注文テーブルについて、商品コードの1文字目が「M」の商品の商品コードを「E」で始まるよう更新する。", async () => {
+      const before = await prisma.order.findMany({
+        where: {
+          productCode: {
+            startsWith: "M",
+          },
+        },
+      });
+
+      const replace = before.map((o) => ({
+        day: o.day,
+        orderNumber: o.orderNumber,
+        orderSubNumber: o.orderSubNumber,
+        productCode: o.productCode.replace("M", "E"),
+        quantity: o.quantity,
+        couponDiscount: o.couponDiscount,
+      }));
+
+      for (const o of replace) {
+        await prisma.order.update({
+          where: {
+            orderNumber_orderSubNumber: {
+              orderNumber: o.orderNumber,
+              orderSubNumber: o.orderSubNumber,
+            }
+          },
+          data: {
+            productCode: o.productCode,
+          },
+        });
+      }
+
+      const result = await prisma.order.findMany({
+        where: {
+          productCode: {
+            startsWith: "E",
+          },
+        },
+      });
+
+      console.table(before);
+      console.table(result);
+      expect(result.length).toBe(4);
+    });
+
+    test("注文番号の連番部分が「1000」～「2000」の注文番号を抽出する。連番部分4桁を昇順で抽出すること。", async () => {
+      const orders = await prisma.order.findMany({
+        select: {
+          orderNumber: true,
+        },
+      });
+
+      const result = orders.map((o) => o.orderNumber.slice(8)).filter((o) => o >= 1000 && o <= 2000).sort((a, b) => a - b);
+
+      console.table(result);
+      expect(result.length).toBe(4);
+    });
+
+    test("商品コード「S1990」の廃版日を、関数を使って本日の日付に修正する。", async () => {
+      const today = new Date();
+      const before = await prisma.retiredProduct.findUnique({
+        where: {
+          code: "S1990",
+        },
+      });
+
+      await prisma.retiredProduct.update({
+        where: {
+          code: "S1990",
+        },
+        data: {
+          retiredAt: today,
+        },
+      });
+
+      const result = await prisma.retiredProduct.findUnique({
+        where: {
+          code: "S1990",
+        },
+      });
+
+      console.table(before);
+      console.table(result);
+      expect(result.retiredAt).toStrictEqual(today);
+    });
+
+    test("1万円以上の商品の一覧を取得する。ただし、30%値下げしたときの単価を、商品コード、商品名、現在の単価と併せて取得する。値下げ後の単価の見出しは、「値下げした単価」とし、1円未満は切り捨てること。", async () => {
+      const products = await prisma.product.findMany({
+        where: {
+          price: {
+            gte: 10000,
+          },
+        },
+        select: {
+          code: true,
+          name: true,
+          price: true,
+        },
+      });
+
+      const result = products.filter((p) => p.price >= 10000).map((p) => ({
+        "商品コード": p.code,
+        "商品名": p.name,
+        "現在の単価": p.price,
+        "値下げした単価": Math.floor(p.price * 0.7),
+      }));
+
+      console.table(result);
+      expect(result.length).toBe(7);
+    });
+  });
+
+
 });
