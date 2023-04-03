@@ -1939,7 +1939,8 @@ describe("銀行口座データベース", () => {
 
       const result = transactions.map((transaction) => {
         return {
-          ...account, ...transaction
+          ...account,
+          ...transaction,
         };
       });
 
@@ -1972,7 +1973,9 @@ describe("銀行口座データベース", () => {
 
       const result = accounts.map((account) => ({
         ...account,
-        ...transactions.find(transaction => account.number === transaction.accountNumber),
+        ...transactions.find(
+          (transaction) => account.number === transaction.accountNumber,
+        ),
       }));
 
       console.table(result);
@@ -2015,17 +2018,24 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      const result = accounts.map((account) => ({
-        ...account,
-        ...transactions.find(transaction => account.number === transaction.accountNumber),
-      })).concat(
-        retiredAccounts.map((retiredAccount) => ({
-          number: retiredAccount.number,
-          name: "解約済み",
-          balance: 0,
-          ...transactions.find(transaction => retiredAccount.number === transaction.accountNumber),
+      const result = accounts
+        .map((account) => ({
+          ...account,
+          ...transactions.find(
+            (transaction) => account.number === transaction.accountNumber,
+          ),
         }))
-      );
+        .concat(
+          retiredAccounts.map((retiredAccount) => ({
+            number: retiredAccount.number,
+            name: "解約済み",
+            balance: 0,
+            ...transactions.find(
+              (transaction) =>
+                retiredAccount.number === transaction.accountNumber,
+            ),
+          })),
+        );
 
       console.table(result);
       expect(result.length).toBe(3);
@@ -2076,14 +2086,16 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      const result = transactionReasons.map((transactionReason) => ({
-        ...transactionReason,
-      })).concat(
-        transactions.map((transaction) => ({
-          id: transaction.transactionReason.id,
-          name: transaction.transactionReason.name,
+      const result = transactionReasons
+        .map((transactionReason) => ({
+          ...transactionReason,
         }))
-      );
+        .concat(
+          transactions.map((transaction) => ({
+            id: transaction.transactionReason.id,
+            name: transaction.transactionReason.name,
+          })),
+        );
 
       console.table(result);
       expect(result.length).toBe(36);
@@ -2162,7 +2174,9 @@ describe("銀行口座データベース", () => {
 
       const wip = accounts.map((account) => ({
         ...account,
-        ...transactions.find(transaction => account.number === transaction.accountNumber),
+        ...transactions.find(
+          (transaction) => account.number === transaction.accountNumber,
+        ),
       }));
 
       const result = wip.map((wip) => ({
@@ -2170,7 +2184,9 @@ describe("銀行口座データベース", () => {
         name: wip.name,
         balance: wip.balance,
         day: wip.day,
-        transactionReasonId: wip.transactionReason ? wip.transactionReason.id : null,
+        transactionReasonId: wip.transactionReason
+          ? wip.transactionReason.id
+          : null,
         income: wip.income,
         outcome: wip.outcome,
       }));
@@ -2226,7 +2242,9 @@ describe("銀行口座データベース", () => {
 
       const wip = accounts.map((account) => ({
         ...account,
-        ...transactions.find(transaction => account.number === transaction.accountNumber),
+        ...transactions.find(
+          (transaction) => account.number === transaction.accountNumber,
+        ),
       }));
 
       const result = wip.map((wip) => ({
@@ -2234,7 +2252,9 @@ describe("銀行口座データベース", () => {
         name: wip.name,
         balance: wip.balance,
         day: wip.day,
-        transactionReasonId: wip.transactionReason ? wip.transactionReason.id : null,
+        transactionReasonId: wip.transactionReason
+          ? wip.transactionReason.id
+          : null,
         income: wip.income,
         outcome: wip.outcome,
       }));
@@ -2253,19 +2273,25 @@ describe("銀行口座データベース", () => {
 
       const wip = transactions.map((transaction) => ({
         ...transaction,
-        count: transactions.filter(t => t.accountNumber === transaction.accountNumber && t.day === transaction.day).length,
+        count: transactions.filter(
+          (t) =>
+            t.accountNumber === transaction.accountNumber &&
+            t.day === transaction.day,
+        ).length,
       }));
 
-      const wip2 = wip.filter(w => w.count >= 3).map(w => ({
-        accountNumber: w.accountNumber,
-        day: w.day,
-        count: w.count,
-      }));
+      const wip2 = wip
+        .filter((w) => w.count >= 3)
+        .map((w) => ({
+          accountNumber: w.accountNumber,
+          day: w.day,
+          count: w.count,
+        }));
 
       const accounts = await prisma.account.findMany({
         where: {
           number: {
-            in: wip2.map(w => w.accountNumber),
+            in: wip2.map((w) => w.accountNumber),
           },
         },
         select: {
@@ -2276,7 +2302,7 @@ describe("銀行口座データベース", () => {
 
       const wip3 = wip2.map((wip2) => ({
         ...wip2,
-        ...accounts.find(account => account.number === wip2.accountNumber),
+        ...accounts.find((account) => account.number === wip2.accountNumber),
       }));
 
       const result = wip3.map((wip3) => ({
@@ -2305,31 +2331,34 @@ describe("銀行口座データベース", () => {
 
       const wip = accounts.map((account) => ({
         ...account,
-        count: accounts.filter(a => a.name === account.name).length,
+        count: accounts.filter((a) => a.name === account.name).length,
       }));
 
-      const wip2 = wip.filter(w => w.count >= 2).map(w => ({
-        name: w.name,
-        number: w.number,
-        type: w.type,
-        balance: w.balance,
-        updatedAt: w.updatedAt,
-      }))
+      const wip2 = wip
+        .filter((w) => w.count >= 2)
+        .map((w) => ({
+          name: w.name,
+          number: w.number,
+          type: w.type,
+          balance: w.balance,
+          updatedAt: w.updatedAt,
+        }));
 
-      const result = wip2.sort((a, b) => {
-        if (a.name < b.name) {
-          return -1;
-        }
-      }).sort((a, b) => {
-        if (a.number < b.number) {
-          return -1;
-        }
-      });
+      const result = wip2
+        .sort((a, b) => {
+          if (a.name < b.name) {
+            return -1;
+          }
+        })
+        .sort((a, b) => {
+          if (a.number < b.number) {
+            return -1;
+          }
+        });
 
       console.table(result);
       expect(result.length).toBe(3);
     });
-
   });
 });
 
@@ -2342,7 +2371,7 @@ describe("商品データベース", () => {
           where: { code: p.code },
           update: p,
           create: p,
-        })
+        });
       }
 
       await prisma.retiredProduct.deleteMany({});
@@ -2351,12 +2380,12 @@ describe("商品データベース", () => {
           where: { code: p.code },
           update: p,
           create: p,
-        })
+        });
       }
 
       await prisma.order.deleteMany({});
       await prisma.order.createMany({ data: order });
-    })
+    });
 
     test("商品テーブルのすべてのデータを「*」を用いずに抽出する。", async () => {
       const result = await prisma.product.findMany({
@@ -2366,7 +2395,7 @@ describe("商品データベース", () => {
           price: true,
           type: true,
           product: true,
-        }
+        },
       });
 
       console.table(result);
@@ -2390,7 +2419,7 @@ describe("商品データベース", () => {
       const result = await prisma.product.findMany({
         select: {
           name: true,
-        }
+        },
       });
 
       console.table(result);
@@ -2409,7 +2438,7 @@ describe("商品データベース", () => {
           productCode: true,
           quantity: true,
           couponDiscount: true,
-        }
+        },
       });
 
       console.table(result);
@@ -2430,7 +2459,7 @@ describe("商品データベース", () => {
           orderNumber: true,
           orderSubNumber: true,
           productCode: true,
-        }
+        },
       });
 
       console.table(result);
@@ -2464,8 +2493,8 @@ describe("商品データベース", () => {
           price: 9800,
           type: "1",
           relatedCode: null,
-        }
-      ]
+        },
+      ];
 
       for (const d of data) {
         await prisma.product.create({
@@ -2475,13 +2504,354 @@ describe("商品データベース", () => {
       const result = await prisma.product.findMany({
         where: {
           code: {
-            in: data.map(d => d.code),
-          }
+            in: data.map((d) => d.code),
+          },
         },
       });
 
       console.table(result);
       expect(result[0]).toEqual(data[0]);
     });
-  })
+  });
+
+  describe("第3章 操作する行の絞り込み", () => {
+    beforeAll(async () => {
+      await prisma.product.deleteMany({});
+      for (const p of product) {
+        await prisma.product.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        });
+      }
+    });
+
+    test("商品テーブルから、商品コード「W1252」のデータを抽出する。", async () => {
+      const result = await prisma.product.findUnique({
+        where: {
+          code: "W1252",
+        },
+      });
+
+      console.table(result);
+      expect(result).toEqual({
+        code: "W1252",
+        name: "薄くて軽いダウンジャケット",
+        price: 5200,
+        type: "1",
+        relatedCode: null,
+      });
+    });
+
+    test("商品コード「S0023」の商品について、商品テーブルの単価を500円に変更する。", async () => {
+      await prisma.product.update({
+        where: {
+          code: "S0023",
+        },
+        data: {
+          price: 500,
+        },
+      });
+
+      const result = await prisma.product.findUnique({
+        where: {
+          code: "S0023",
+        },
+      });
+
+      console.table(result);
+      expect(result).toEqual({
+        code: "S0023",
+        name: "チュールのコサージュ",
+        price: 500,
+        type: "3",
+        relatedCode: null,
+      });
+    });
+
+    test("商品テーブルから、単価が千円以下の商品データを抽出する。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          price: {
+            lte: 1000,
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(11);
+    });
+
+    test("商品テーブルから、単価が5万円以上の商品データを抽出する。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          price: {
+            gte: 50000,
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    });
+
+    test("注文テーブルから、2022年以降の注文データを抽出する。", async () => {
+      const result = await prisma.order.findMany({
+        where: {
+          day: {
+            gte: new Date("2022-01-01T00:00:00.000Z"),
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(20);
+    });
+
+
+    test("注文テーブルから、2021年11月以前の注文データを抽出する。", async () => {
+      const result = await prisma.order.findMany({
+        where: {
+          day: {
+            lte: new Date("2021-11-01T00:00:00.000Z"),
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(34);
+    });
+
+    test("商品テーブルから、「衣類」でない商品データを抽出する。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          type: {
+            not: "1",
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(22);
+    });
+
+    test("注文テーブルから、クーポン割引を利用していない注文データを抽出する。", async () => {
+      const result = await prisma.order.findMany({
+        where: {
+          couponDiscount: null,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(52);
+    });
+
+    test("商品テーブルから、商品コードが「N」で始まる商品を削除する。", async () => {
+      await prisma.product.deleteMany({
+        where: {
+          code: {
+            startsWith: "N",
+          },
+        },
+      });
+
+      const result = await prisma.product.findMany({
+        where: {
+          code: {
+            startsWith: "N",
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(0);
+    });
+
+    test("商品テーブルから、商品名に「コート」が含まれる商品について、商品コード、商品名、単価を抽出する。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          name: {
+            contains: "コート",
+          },
+        },
+        select: {
+          code: true,
+          name: true,
+          price: true,
+        },
+      });
+
+      console.table(result);
+      expect(result).toStrictEqual([
+        {
+          code: "W0960",
+          name: "毛皮のコート",
+          price: 58000,
+        },
+      ]);
+    });
+
+    test("「靴」または「雑貨」もしくは「未分類」の商品について、商品コード、商品区分を抽出する。ただし、記述する条件式は1つであること。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          OR: [
+            {
+              type: "2",
+            },
+            {
+              type: "3",
+            },
+            {
+              type: "9",
+            },
+          ],
+        },
+        select: {
+          code: true,
+          type: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(16);
+    });
+
+    test("商品テーブルから、商品コードが「A0100」～「A0500」に当てはまる商品データを抽出する。記述する条件式は1つであること。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          code: {
+            gte: "A0100",
+            lte: "A0500",
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    });
+
+    test("注文テーブルから、商品コードが「N0501」「N1021」「N0223」のいずれかを注文した注文データを抽出する。", async () => {
+      const result = await prisma.order.findMany({
+        where: {
+          productCode: {
+            in: ["N0501", "N1021", "N0223"],
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(4);
+    })
+
+    test("商品テーブルから、「雑貨」で商品名に「水玉」含まれる商品データを抽出する。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          type: "3",
+          name: {
+            contains: "水玉",
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result).toStrictEqual([
+        {
+          code: "Z2323",
+          name: "ハンカチ（水玉）",
+          type: "3",
+          price: 300,
+          relatedCode: null,
+        },
+      ]);
+    });
+
+    test("商品テーブルから、商品名に「軽い」または「ゆるふわ」のどちらかが含まれる商品データを抽出する。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: "軽い",
+              },
+            },
+            {
+              name: {
+                contains: "ゆるふわ",
+              },
+            },
+          ],
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("商品テーブルから、「衣類」で単価が3千円以下、または「雑貨」で単位が1万円以上の商品データを抽出する。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          OR: [
+            {
+              type: "1",
+              price: {
+                lte: 3000,
+              },
+            },
+            {
+              type: "3",
+              price: {
+                gte: 10000,
+              },
+            },
+          ],
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(14);
+    });
+
+    test("注文テーブルから、2022年3月中に、一度の注文で数量3個以上の注文があった商品コードを抽出する。", async () => {
+      const result = await prisma.order.findMany({
+        where: {
+          day: {
+            gte: new Date("2022-03-01"),
+            lte: new Date("2022-03-31"),
+          },
+          quantity: {
+            gte: 3,
+          },
+        },
+        select: {
+          productCode: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    });
+
+    test("注文テーブルから、一度の注文で数量10個以上を注文したか、クーポン割引を利用した注文データを抽出する。", async () => {
+      const result = await prisma.order.findMany({
+        where: {
+          OR: [
+            {
+              quantity: {
+                gte: 10,
+              },
+            },
+            {
+              couponDiscount: {
+                gt: 0,
+              },
+            },
+          ],
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(20);
+    });
+
+  });
 });
