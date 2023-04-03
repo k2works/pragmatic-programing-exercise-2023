@@ -2852,6 +2852,229 @@ describe("商品データベース", () => {
       console.table(result);
       expect(result.length).toBe(20);
     });
+  });
+
+  describe("第4章 検索結果の加工", () => {
+    beforeAll(async () => {
+      await prisma.product.deleteMany({});
+      for (const p of product) {
+        await prisma.product.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        });
+      }
+      await prisma.retiredProduct.deleteMany({});
+      for (const p of retiredProduct) {
+        await prisma.retiredProduct.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        });
+      }
+    });
+
+    test("商品区分「衣類」の商品について、商品コードの降順に商品コードと商品名の一覧を取得する。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          type: "1",
+        },
+        orderBy: {
+          code: "desc",
+        },
+        select: {
+          code: true,
+          name: true,
+        },
+      });
+
+      console.table(result);
+      expect(result[0]).toStrictEqual(
+        {
+          code: "Z6511",
+          name: "丈夫な靴下",
+        },
+      )
+    });
+
+    test("注文テーブルから、主キーの昇順に2022年3月以降の注文一覧を取得する。取得する項目は、注文日、注文番号、注文枝番、商品コード、数量とする。", async () => {
+      const result = await prisma.order.findMany({
+        where: {
+          day: {
+            gte: new Date("2022-03-01"),
+          },
+        },
+        orderBy: [
+          {
+            orderNumber: "asc",
+          },
+          {
+            orderSubNumber: "asc",
+          }
+        ],
+        select: {
+          day: true,
+          orderNumber: true,
+          orderSubNumber: true,
+          productCode: true,
+          quantity: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(12);
+    });
+
+    test("注文テーブルから、これまででに注文のあった商品コードを抽出する。重複は除外し、商品コードの昇順に抽出すること。", async () => {
+      const result = await prisma.order.findMany({
+        select: {
+          productCode: true,
+        },
+        distinct: ["productCode"],
+        orderBy: {
+          productCode: "asc",
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(36);
+    });
+
+    test("注文テーブルから、これまでに注文のあった日付を新しい順に10行抽出する（同一日付が複数回登場してもよい）。", async () => {
+      const result = await prisma.order.findMany({
+        orderBy: {
+          day: "desc",
+        },
+        select: {
+          day: true,
+        },
+        take: 10,
+      });
+
+      console.table(result);
+      expect(result.length).toBe(10);
+    });
+
+    test("商品テーブルから、単価の低い順に並べて6～20行目に当たる商品データを抽出する。同一の単価の場合は、商品区分、商品コードの昇順に並ぶように抽出すること。", async () => {
+      const result = await prisma.product.findMany({
+        orderBy: [
+          {
+            price: "asc",
+          },
+          {
+            type: "asc",
+          },
+          {
+            code: "asc",
+          },
+        ],
+        skip: 5,
+        take: 15,
+      });
+
+      console.table(result);
+      expect(result.length).toBe(15);
+    });
+
+    test("廃版商品テーブルから、2020年12月に廃版されたものと、売上個数が100を超えるものを併せて抽出する。一覧は、売上個数の多い順に並べること。", async () => {
+      const result = await prisma.retiredProduct.findMany({
+        where: {
+          OR: [
+            {
+              retiredAt: {
+                gte: new Date("2020-12-01"),
+                lte: new Date("2020-12-31"),
+              },
+            },
+            {
+              quantity: {
+                gt: 100,
+              },
+            },
+          ],
+        },
+        orderBy: {
+          quantity: "desc",
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("商品テーブルから、これまでに注文されたことのない商品コードを昇順に抽出する。", async () => {
+      const orderedProductCode = await prisma.order.findMany({
+        select: {
+          productCode: true,
+        },
+        distinct: ["productCode"],
+      });
+
+      const result = await prisma.product.findMany({
+        where: {
+          code: {
+            notIn: orderedProductCode.map((p) => p.productCode),
+          },
+        },
+        orderBy: {
+          code: "asc",
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(9);
+    });
+
+    test("商品テーブルから、これまでに注文された実績のある商品コードを降順に抽出する。", async () => {
+      const orderedProductCode = await prisma.order.findMany({
+        select: {
+          productCode: true,
+        },
+        distinct: ["productCode"],
+      });
+
+      const result = await prisma.product.findMany({
+        where: {
+          code: {
+            in: orderedProductCode.map((p) => p.productCode),
+          },
+        },
+        orderBy: {
+          code: "desc",
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(30);
+    });
+
+    test("商品区分が「未分類」で、単価が千円以下と1万円を超える商品について、商品コード、商品名、単価を抽出する。単価の低い順に並べ、同額の場合は商品コードの昇順とする。", async () => {
+      const result = await prisma.product.findMany({
+        where: {
+          type: "9",
+          OR: [
+            { price: { lte: 1000 } },
+            { price: { gte: 10000 } },
+          ],
+        },
+        orderBy: [
+          {
+            price: "asc",
+          },
+          {
+            code: "asc",
+          },
+        ],
+        select: {
+          code: true,
+          name: true,
+          price: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
 
   });
 });
