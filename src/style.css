@@ -141,3 +141,9 @@ body {
   text-decoration: none;
   display: inline-block;
 }
+
+.single-view-related-title {
+  margin: 0px;
+  font-size: 16px;
+  padding: 8px 16px;
+}
