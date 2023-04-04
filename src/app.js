@@ -23,11 +23,8 @@ const students = [
 ]
 
 export const App = () => {
-  const Student = studentComponet();
-  const Root = rootComponent({ student: Student });
-
   const render = () => {
-    Root.render();
+    Root({ student: Student() }).render();
   }
 
   return {
@@ -35,7 +32,7 @@ export const App = () => {
   }
 }
 
-const rootComponent = (components) => {
+const Root = (components) => {
   const render = () => {
     rootNavigation();
     components.student.render();
@@ -70,7 +67,7 @@ const rootComponent = (components) => {
   }
 }
 
-const studentComponet = () => {
+const Student = () => {
 
   const render = () => {
     studentCollection();
@@ -232,8 +229,8 @@ const studentComponet = () => {
   }
 
   return {
-    render: render,
-    studentCollection: studentCollection,
-    studentSingle: studentSingle
+    render,
+    studentCollection,
+    studentSingle
   }
 }
