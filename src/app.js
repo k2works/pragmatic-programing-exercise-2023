@@ -4,8 +4,7 @@ export class App {
   }
 
   render() {
-    studentCollection();
-    studentSingle();
+    init();
   }
 }
 
@@ -33,6 +32,22 @@ const students = [
   }
 ]
 
+const init = () => {
+  studentCollection();
+}
+
+const deleteCallBack = (e) => {
+  const id = e.currentTarget.getAttribute("data");
+  const confirmed = confirm(`${id}:削除しますか？`);
+  if (confirmed) {
+    const index = students.findIndex((student) => student.id === Number(id));
+    if (index !== -1) {
+      students.splice(index, 1);
+      init();
+    }
+  }
+}
+
 const rootNavigation = () => {
   const container = document.getElementById("app");
   container.innerHTML = `
@@ -53,7 +68,7 @@ const rootNavigation = () => {
 
   const studentNav = document.getElementById("student-nav");
   studentNav.addEventListener("click", () => {
-    studentCollection();
+    init();
   });
 
 }
@@ -62,13 +77,12 @@ const studentCollection = () => {
   const record = students.map((student) => {
     return `
       <li class="main-object-item">
-        <div class="main-object-item-content">
+        <div class="main-object-item-content" data="${student.id}">
           <div class="main-object-item-name">${student.name}</div>
           <div class="main-object-item-details">${student.class} ${student.clubs.join(" ")}</div>
         </div>
         <div class="main-object-item-actions">
           <button class="action-button" id="delete" data=${student.id}>削除</button>
-          <button class="action-button" id="edit" data=${student.id}>編集</button>
         </div>
       </li>
     `
@@ -79,8 +93,6 @@ const studentCollection = () => {
         <button class="action-button" id="create">新規</button>
         <div class="main-object-container">
           <ul class="main-object-list">
-            ` + record.join("") + `
-            ` + record.join("") + `
             ` + record.join("") + `
           </div>
         </div>     
@@ -93,15 +105,13 @@ const studentCollection = () => {
 
   const deleteButtons = document.querySelectorAll("#delete");
   deleteButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      alert("削除しますか？")
-    });
+    button.addEventListener("click", deleteCallBack);
   });
 
-  const editButtons = document.querySelectorAll("#edit");
-  editButtons.forEach((button) => {
-    button.addEventListener("click", (evnt) => {
-      const id = evnt.target.getAttribute("data");
+  const selectButtons = document.querySelectorAll(".main-object-item-content");
+  selectButtons.forEach((button) => {
+    button.addEventListener("click", (e) => {
+      const id = e.currentTarget.getAttribute("data");
       const student = students.find((student) => {
         return student.id === Number(id);
       });
@@ -117,8 +127,8 @@ const studentSingle = (student) => {
       <p class="single-view-subtitle">${student.class}</p>
     </div>
     <div class="single-view-header-right">
-      <button class="single-view-action-button" id="edit">編集</button>
-      <button class="single-view-action-button" id="delete">削除</button>
+      <button class="single-view-action-button" id="edit" data=${student.id}>編集</button>
+      <button class="single-view-action-button" id="delete" data=${student.id}>削除</button>
     </div>
   ` : `
     <div class="single-view-header-left">
@@ -202,8 +212,6 @@ const studentSingle = (student) => {
 
   const deleteButton = document.getElementById("delete");
   if (deleteButton) {
-    deleteButton.addEventListener("click", () => {
-      alert("削除しますか？")
-    });
+    deleteButton.addEventListener("click", deleteCallBack);
   }
 }
