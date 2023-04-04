@@ -1,10 +1,12 @@
-export class App {
-  constructor() {
-    rootNavigation();
+export const App = () => {
+  const render = () => {
+    init();
   }
 
-  render() {
-    init();
+  rootNavigation();
+
+  return {
+    render
   }
 }
 
