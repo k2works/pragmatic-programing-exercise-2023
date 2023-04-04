@@ -1,15 +1,3 @@
-export const App = () => {
-  const render = () => {
-    init();
-  }
-
-  rootNavigation();
-
-  return {
-    render
-  }
-}
-
 const students = [
   {
     id: 1,
@@ -34,25 +22,28 @@ const students = [
   }
 ]
 
-const init = () => {
-  studentCollection();
-}
+export const App = () => {
+  const Student = studentComponet();
+  const Root = rootComponent({ student: Student });
 
-const deleteCallBack = (e) => {
-  const id = e.currentTarget.getAttribute("data");
-  const confirmed = confirm(`${id}:削除しますか？`);
-  if (confirmed) {
-    const index = students.findIndex((student) => student.id === Number(id));
-    if (index !== -1) {
-      students.splice(index, 1);
-      init();
-    }
+  const render = () => {
+    Root.render();
+  }
+
+  return {
+    render
   }
 }
 
-const rootNavigation = () => {
-  const container = document.getElementById("app");
-  container.innerHTML = `
+const rootComponent = (components) => {
+  const render = () => {
+    rootNavigation();
+    components.student.render();
+  }
+
+  const rootNavigation = () => {
+    const container = document.getElementById("app");
+    container.innerHTML = `
     <div class="root-container">
       <div class="nav-container">
         <ul class="nav-list">
@@ -68,16 +59,38 @@ const rootNavigation = () => {
     </div>
   `
 
-  const studentNav = document.getElementById("student-nav");
-  studentNav.addEventListener("click", () => {
-    init();
-  });
+    const studentNav = document.getElementById("student-nav");
+    studentNav.addEventListener("click", () => {
+      components.student.render();
+    });
+  }
 
+  return {
+    render
+  }
 }
 
-const studentCollection = () => {
-  const record = students.map((student) => {
-    return `
+const studentComponet = () => {
+
+  const render = () => {
+    studentCollection();
+  };
+
+  const deleteCallBack = (e) => {
+    const id = e.currentTarget.getAttribute("data");
+    const confirmed = confirm(`${id}:削除しますか？`);
+    if (confirmed) {
+      const index = students.findIndex((student) => student.id === Number(id));
+      if (index !== -1) {
+        students.splice(index, 1);
+        render();
+      }
+    }
+  }
+
+  const studentCollection = () => {
+    const record = students.map((student) => {
+      return `
       <li class="main-object-item">
         <div class="main-object-item-content" data="${student.id}">
           <div class="main-object-item-name">${student.name}</div>
@@ -88,10 +101,10 @@ const studentCollection = () => {
         </div>
       </li>
     `
-  });
+    });
 
-  const container = document.getElementById("contents");
-  container.innerHTML = `
+    const container = document.getElementById("contents");
+    container.innerHTML = `
         <button class="action-button" id="create">新規</button>
         <div class="main-object-container">
           <ul class="main-object-list">
@@ -100,30 +113,30 @@ const studentCollection = () => {
         </div>     
   `;
 
-  const createButton = document.getElementById("create");
-  createButton.addEventListener("click", () => {
-    studentSingle();
-  });
-
-  const deleteButtons = document.querySelectorAll("#delete");
-  deleteButtons.forEach((button) => {
-    button.addEventListener("click", deleteCallBack);
-  });
-
-  const selectButtons = document.querySelectorAll(".main-object-item-content");
-  selectButtons.forEach((button) => {
-    button.addEventListener("click", (e) => {
-      const id = e.currentTarget.getAttribute("data");
-      const student = students.find((student) => {
-        return student.id === Number(id);
-      });
-      studentSingle(student);
+    const createButton = document.getElementById("create");
+    createButton.addEventListener("click", () => {
+      studentSingle();
     });
-  });
-}
 
-const studentSingle = (student) => {
-  const header = student ? `
+    const deleteButtons = document.querySelectorAll("#delete");
+    deleteButtons.forEach((button) => {
+      button.addEventListener("click", deleteCallBack);
+    });
+
+    const selectButtons = document.querySelectorAll(".main-object-item-content");
+    selectButtons.forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const id = e.currentTarget.getAttribute("data");
+        const student = students.find((student) => {
+          return student.id === Number(id);
+        });
+        studentSingle(student);
+      });
+    });
+  }
+
+  const studentSingle = (student) => {
+    const header = student ? `
     <div class="single-view-header-left">
       <h1 class="single-view-title">${student.name}</h1>
       <p class="single-view-subtitle">${student.class}</p>
@@ -139,7 +152,7 @@ const studentSingle = (student) => {
     </div>
   `;
 
-  const main = student ? `
+    const main = student ? `
     <div class="single-view-body-left">
       <ul class="single-view-property-list">
         <li class="single-view-property-item">
@@ -167,20 +180,20 @@ const studentSingle = (student) => {
     </div>
   `;
 
-  const clubs = student ? student.clubs.map((club) => {
-    return `
+    const clubs = student ? student.clubs.map((club) => {
+      return `
       <li class="single-view-related-item">${club}</li>
     `
-  }) : [];
+    }) : [];
 
-  const relatedStudents = student ? student.relatedStudents.map((relatedStudent) => {
-    return `
+    const relatedStudents = student ? student.relatedStudents.map((relatedStudent) => {
+      return `
       <li class="single-view-related-item">${relatedStudent}</li>
     `
-  }) : [];
+    }) : [];
 
-  const container = document.getElementById("contents");
-  container.innerHTML = `
+    const container = document.getElementById("contents");
+    container.innerHTML = `
         <div class=".main-single-view-object-container">
           <div class="single-view-container">
             <div class="single-view-header">
@@ -205,15 +218,22 @@ const studentSingle = (student) => {
         </div>     
   `;
 
-  const editButton = document.getElementById("edit");
-  if (editButton) {
-    editButton.addEventListener("click", () => {
-      studentSingle(student);
-    });
+    const editButton = document.getElementById("edit");
+    if (editButton) {
+      editButton.addEventListener("click", () => {
+        studentSingle(student);
+      });
+    }
+
+    const deleteButton = document.getElementById("delete");
+    if (deleteButton) {
+      deleteButton.addEventListener("click", deleteCallBack);
+    }
   }
 
-  const deleteButton = document.getElementById("delete");
-  if (deleteButton) {
-    deleteButton.addEventListener("click", deleteCallBack);
+  return {
+    render: render,
+    studentCollection: studentCollection,
+    studentSingle: studentSingle
   }
 }
