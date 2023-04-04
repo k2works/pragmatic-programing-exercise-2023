@@ -1,4 +1,4 @@
-import { sum } from "./app";
+import { sum } from "./app.ts";
 
 test("adds 1 + 2 to equal 3", () => {
   const result = sum(1, 2);
