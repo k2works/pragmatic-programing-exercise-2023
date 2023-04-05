@@ -3184,7 +3184,6 @@ describe("商品データベース", () => {
         },
       });
 
-
       console.table(before);
       console.table(result);
       expect(result.length).toBe(2);
@@ -3284,9 +3283,9 @@ describe("商品データベース", () => {
         code: "Z2323",
         name: "ハンカチ（水玉）",
         price: 300,
-        rank: 'S',
+        rank: "S",
         type: "3:雑貨",
-      })
+      });
     });
 
     test("商品テーブルから、商品名が10文字を超過する商品名とその文字数を抽出する。文字数は昇順に並べること。", async () => {
@@ -3296,10 +3295,13 @@ describe("商品データベース", () => {
         },
       });
 
-      const result = products.map((p) => ({
-        name: p.name,
-        length: p.name.length,
-      })).sort((a, b) => a.length - b.length).filter((p) => p.length > 10);
+      const result = products
+        .map((p) => ({
+          name: p.name,
+          length: p.name.length,
+        }))
+        .sort((a, b) => a.length - b.length)
+        .filter((p) => p.length > 10);
 
       console.table(result);
       expect(result[0]).toStrictEqual({
@@ -3355,7 +3357,7 @@ describe("商品データベース", () => {
             orderNumber_orderSubNumber: {
               orderNumber: o.orderNumber,
               orderSubNumber: o.orderSubNumber,
-            }
+            },
           },
           data: {
             productCode: o.productCode,
@@ -3383,7 +3385,10 @@ describe("商品データベース", () => {
         },
       });
 
-      const result = orders.map((o) => o.orderNumber.slice(8)).filter((o) => o >= 1000 && o <= 2000).sort((a, b) => a - b);
+      const result = orders
+        .map((o) => o.orderNumber.slice(8))
+        .filter((o) => o >= 1000 && o <= 2000)
+        .sort((a, b) => a - b);
 
       console.table(result);
       expect(result.length).toBe(4);
@@ -3431,17 +3436,215 @@ describe("商品データベース", () => {
         },
       });
 
-      const result = products.filter((p) => p.price >= 10000).map((p) => ({
-        "商品コード": p.code,
-        "商品名": p.name,
-        "現在の単価": p.price,
-        "値下げした単価": Math.floor(p.price * 0.7),
-      }));
+      const result = products
+        .filter((p) => p.price >= 10000)
+        .map((p) => ({
+          商品コード: p.code,
+          商品名: p.name,
+          現在の単価: p.price,
+          値下げした単価: Math.floor(p.price * 0.7),
+        }));
 
       console.table(result);
       expect(result.length).toBe(7);
     });
   });
 
+  describe("第6章 集計とグループ化", () => {
+    beforeAll(async () => {
+      await prisma.product.deleteMany({});
+      for (const p of product) {
+        await prisma.product.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        });
+      }
+      await prisma.retiredProduct.deleteMany({});
+      for (const p of retiredProduct) {
+        await prisma.retiredProduct.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        });
+      }
+    });
 
+    test("これまでに注文された数量の合計を求める", async () => {
+      const result = await prisma.order.aggregate({
+        _sum: {
+          quantity: true,
+        },
+      });
+
+      console.log(result);
+      expect(result._sum.quantity).toBe(449);
+    });
+
+    test("注文日順に、注文日ごとの数量の合計を求める。", async () => {
+      const result = await prisma.order.groupBy({
+        by: ["day"],
+        _sum: {
+          quantity: true,
+        },
+        orderBy: {
+          day: "asc",
+        },
+      });
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        day: new Date("2020-04-12"),
+        _sum: {
+          quantity: 1,
+        },
+      });
+    });
+
+    test("商品区分順に、商品区分ごとの単価の最小額と最高額を求める。", async () => {
+      const result = await prisma.product.groupBy({
+        by: ["type"],
+        _min: {
+          price: true,
+        },
+        _max: {
+          price: true,
+        },
+        orderBy: {
+          type: "asc",
+        },
+      });
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        type: "1",
+        _min: {
+          price: 500,
+        },
+        _max: {
+          price: 58000,
+        },
+      });
+    });
+
+    test("これまでに最もよく売れた商品を10位まで抽出する。商品コードと販売した数量の多い順に並べ、数量が同じ商品については、商品コードを昇順にすること。", async () => {
+      const result = await prisma.order.groupBy({
+        by: ["productCode"],
+        _sum: {
+          quantity: true,
+        },
+        orderBy: {
+          _sum: {
+            quantity: "desc",
+          },
+        },
+        take: 10,
+      });
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        productCode: "Z6511",
+        _sum: {
+          quantity: 160,
+        },
+      });
+    });
+
+    test("これまでに売れた数量が5個未案の商品コードとその数量を抽出する。", async () => {
+      const result = await prisma.order.groupBy({
+        by: ["productCode"],
+        _sum: {
+          quantity: true,
+        },
+        having: {
+          quantity: {
+            _sum: {
+              lt: 5,
+            },
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        productCode: "A1055",
+        _sum: {
+          quantity: 2,
+        },
+      });
+    });
+
+    test("これまでにクーポン割引をした注文件数と、割引件数の合計を求める。ただし、WHERE句による絞り込み条件を指定しないこと。", async () => {
+      const result = await prisma.order.aggregate({
+        _count: {
+          orderNumber: true,
+        },
+        _sum: {
+          couponDiscount: true,
+        },
+      });
+
+      console.table(result);
+      expect(result._count.orderNumber).toBe(68);
+      expect(result._sum.couponDiscount).toBe(8300);
+    });
+
+    test("月ごとの注文件数を求める。抽出する列の名前は「年月」と「注文件数」とし、年月列の内容は「202201」のような形式で、日付の新しい順で抽出すること。なお、1件の注文には、必ず注文枝番「1」の注文明細が含まれることが保証されている、", async () => {
+      const orders = await prisma.order.groupBy({
+        by: ["day"],
+        _count: {
+          orderNumber: true,
+        },
+        orderBy: {
+          day: "desc",
+        },
+      });
+
+      const result = orders.map((o) => ({
+        year: {
+          month: o.day.getFullYear() * 100 + o.day.getMonth() + 1,
+        },
+        _count: {
+          orderNumber: o._count.orderNumber,
+        },
+      }));
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        year: {
+          month: 202203,
+        },
+        _count: {
+          orderNumber: 2,
+        },
+      });
+    });
+
+    test("注文テーブルから、「Z」から始まる商品コードのうち、これまでに売れた数量が100個以上の商品コードを抽出する。", async () => {
+      const orders = await prisma.order.groupBy({
+        by: ["productCode"],
+        _sum: {
+          quantity: true,
+        },
+        having: {
+          quantity: {
+            _sum: {
+              gte: 100,
+            },
+          },
+        },
+      });
+
+      const result = orders.filter((o) => o.productCode.startsWith("Z"));
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        productCode: "Z2323",
+        _sum: {
+          quantity: 150,
+        },
+      });
+    });
+
+  });
 });
