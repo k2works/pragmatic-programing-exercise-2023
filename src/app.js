@@ -84,20 +84,39 @@ const Student = () => {
     }
   };
 
+  const saveCallBack = (e) => {
+    const name = document.getElementById("name-input").value;
+    let selectElement = document.querySelector('.single-view-property-value');
+    const classValue = selectElement.value;
+
+    if (!name) {
+      alert("名前を入力してください");
+      return;
+    }
+
+    const student = {
+      id: students.length + 1,
+      name,
+      class: classValue,
+      clubs: [],
+      relatedStudents: [],
+    };
+    students.push(student);
+    render();
+  };
+
   const studentCollection = () => {
     const record = students.map((student) => {
       return `
       <li class="main-object-item">
         <div class="main-object-item-content" data="${student.id}">
           <div class="main-object-item-name">${student.name}</div>
-          <div class="main-object-item-details">${
-            student.class
-          } ${student.clubs.join(" ")}</div>
+          <div class="main-object-item-details">${student.class
+        } ${student.clubs.join(" ")}</div>
         </div>
         <div class="main-object-item-actions">
-          <button class="action-button" id="delete" data=${
-            student.id
-          }>削除</button>
+          <button class="action-button" id="delete" data=${student.id
+        }>削除</button>
         </div>
       </li>
     `;
@@ -157,6 +176,9 @@ const Student = () => {
       <h1 class="single-view-title"></h1>
       <p class="single-view-subtitle"></p>
     </div>
+    <div class="single-view-header-right">
+      <button class="single-view-action-button" id="save">保存</button>
+    </div>
   `;
 
     const main = student
@@ -175,34 +197,42 @@ const Student = () => {
     </div>
     `
       : `
-    <div class="single-view-body-left">
-      <ul class="single-view-property-list">
-        <li class="single-view-property-item">
-          <span class="single-view-property-label">名前:</span>
-          <span class="single-view-property-value"></span>
-        </li>
-        <li class="single-view-property-item">
+      <div class="single-view-body-left">
+      <form class="single-view-property-form">
+        <ul class="single-view-property-list">
+          <li class="single-view-property-item">
+            <label for="name-input" class="single-view-property-label">名前:</label>
+            <input id="name-input" name="name" class="single-view-property-input" type="text" required>
+          </li>
+          <li class="single-view-property-item">
           <span class="single-view-property-label">組:</span>
-          <span class="single-view-property-value"></span>
-        </li>
-      </ul>
+          <select class="single-view-property-value">
+            <option value="3年A組">3年A組</option>
+            <option value="3年B組">3年B組</option>
+            <option value="3年C組">3年C組</option>
+            <option value="3年D組">3年D組</option>
+          </select>
+        </li> 
+        </ul>
+      </form>
     </div>
+    
   `;
 
     const clubs = student
       ? student.clubs.map((club) => {
-          return `
+        return `
       <li class="single-view-related-item">${club}</li>
     `;
-        })
+      })
       : [];
 
     const relatedStudents = student
       ? student.relatedStudents.map((relatedStudent) => {
-          return `
+        return `
       <li class="single-view-related-item">${relatedStudent}</li>
     `;
-        })
+      })
       : [];
 
     const container = document.getElementById("contents");
@@ -250,6 +280,11 @@ const Student = () => {
     const deleteButton = document.getElementById("delete");
     if (deleteButton) {
       deleteButton.addEventListener("click", deleteCallBack);
+    }
+
+    const saveButton = document.getElementById("save");
+    if (saveButton) {
+      saveButton.addEventListener("click", saveCallBack);
     }
   };
 
