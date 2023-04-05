@@ -22,6 +22,8 @@ const students = [
   },
 ];
 
+const classes = ["3年A組", "3年B組", "3年C組", "3年D組"];
+
 export const App = () => {
   const render = () => {
     Root({ student: Student() }).render();
@@ -68,6 +70,13 @@ const Root = (components) => {
 };
 
 const Student = () => {
+  const mode = {
+    READ: 1,
+    CREATE: 2,
+    EDIT: 3,
+    DELETE: 4,
+  };
+
   const render = () => {
     studentCollection();
   };
@@ -103,6 +112,25 @@ const Student = () => {
     };
     students.push(student);
     render();
+  };
+
+  const updateCallBack = (e) => {
+    const id = e.currentTarget.getAttribute("data");
+    const name = document.getElementById("name-input").value;
+    let selectElement = document.querySelector('.single-view-property-value');
+    const classValue = selectElement.value;
+
+    if (!name) {
+      alert("名前を入力してください");
+      return;
+    }
+
+    const index = students.findIndex((student) => student.id === Number(id));
+    if (index !== -1) {
+      students[index].name = name;
+      students[index].class = classValue;
+      render();
+    }
   };
 
   const studentCollection = () => {
@@ -159,30 +187,59 @@ const Student = () => {
     });
   };
 
-  const studentSingle = (student) => {
-    const header = student
+  const studentSingle = (student, action) => {
+    const header = action === mode.EDIT
       ? `
-    <div class="single-view-header-left">
-      <h1 class="single-view-title">${student.name}</h1>
-      <p class="single-view-subtitle">${student.class}</p>
-    </div>
-    <div class="single-view-header-right">
-      <button class="single-view-action-button" id="edit" data=${student.id}>編集</button>
-      <button class="single-view-action-button" id="delete" data=${student.id}>削除</button>
-    </div>
-  `
-      : `
-    <div class="single-view-header-left">
-      <h1 class="single-view-title"></h1>
-      <p class="single-view-subtitle"></p>
-    </div>
-    <div class="single-view-header-right">
-      <button class="single-view-action-button" id="save">保存</button>
-    </div>
-  `;
-
-    const main = student
+      <div class="single-view-header-left">
+        <h1 class="single-view-title">${student.name}</h1>
+        <p class="single-view-subtitle">${student.class}</p>
+      </div>
+      <div class="single-view-header-right">
+        <button class="single-view-action-button" id="cancel">キャンセル</button>
+        <button class="single-view-action-button" id="update" data=${student.id}>更新</button>
+      </div>
+    `
+      : student
+        ? `
+      <div class="single-view-header-left">
+        <h1 class="single-view-title">${student.name}</h1>
+        <p class="single-view-subtitle">${student.class}</p>
+      </div>
+      <div class="single-view-header-right">
+        <button class="single-view-action-button" id="edit" data=${student.id}>編集</button>
+        <button class="single-view-action-button" id="delete" data=${student.id}>削除</button>
+      </div>
+    `
+        : `
+      <div class="single-view-header-left">
+        <h1 class="single-view-title"></h1>
+        <p class="single-view-subtitle"></p>
+      </div>
+      <div class="single-view-header-right">
+        <button class="single-view-action-button" id="save">保存</button>
+      </div>
+    `;
+    const main = action === mode.EDIT
       ? `
+      <div class="single-view-body-left">
+      <form class="single-view-property-form">
+        <ul class="single-view-property-list">
+          <li class="single-view-property-item">
+            <label for="name-input" class="single-view-property-label">名前:</label>
+            <input id="name-input" name="name" class="single-view-property-input" type="text" value="${student.name}" required>
+          </li>
+          <li class="single-view-property-item">
+          <span class="single-view-property-label">組:</span>
+          <select class="single-view-property-value">
+          ${classes.map((c) => (c === student.class ? `<option value="${c}" selected>${c}</option>` : `<option value="${c}">${c}</option>`)).join('')}
+          </select>
+        </li> 
+        </ul>
+      </form>
+    </div>    
+    `
+      : student
+        ? `
     <div class="single-view-body-left">
       <ul class="single-view-property-list">
         <li class="single-view-property-item">
@@ -196,7 +253,7 @@ const Student = () => {
       </ul>
     </div>
     `
-      : `
+        : `
       <div class="single-view-body-left">
       <form class="single-view-property-form">
         <ul class="single-view-property-list">
@@ -207,10 +264,7 @@ const Student = () => {
           <li class="single-view-property-item">
           <span class="single-view-property-label">組:</span>
           <select class="single-view-property-value">
-            <option value="3年A組">3年A組</option>
-            <option value="3年B組">3年B組</option>
-            <option value="3年C組">3年C組</option>
-            <option value="3年D組">3年D組</option>
+          ${classes.map((c) => `<option value="${c}">${c}</option>`).join('')}
           </select>
         </li> 
         </ul>
@@ -219,21 +273,37 @@ const Student = () => {
     
   `;
 
-    const clubs = student
+    const clubs = action === mode.EDIT
       ? student.clubs.map((club) => {
         return `
+      <li class="single-view-related-item">
+        <input class="single-view-related-input" type="text" value="${club}">
+      </li>
+      `;
+      })
+      : student
+        ? student.clubs.map((club) => {
+          return `
       <li class="single-view-related-item">${club}</li>
     `;
-      })
-      : [];
+        })
+        : [];
 
-    const relatedStudents = student
+    const relatedStudents = action === mode.EDIT
       ? student.relatedStudents.map((relatedStudent) => {
         return `
-      <li class="single-view-related-item">${relatedStudent}</li>
+      <li class="single-view-related-item">
+        <input class="single-view-related-input" type="text" value="${relatedStudent}">
+      </li>
     `;
       })
-      : [];
+      : student
+        ? student.relatedStudents.map((relatedStudent) => {
+          return `
+      <li class="single-view-related-item">${relatedStudent}</li>
+    `;
+        })
+        : [];
 
     const container = document.getElementById("contents");
     container.innerHTML =
@@ -273,8 +343,20 @@ const Student = () => {
     const editButton = document.getElementById("edit");
     if (editButton) {
       editButton.addEventListener("click", () => {
-        studentSingle(student);
+        studentSingle(student, mode.EDIT);
       });
+    }
+
+    const cancelButton = document.getElementById("cancel");
+    if (cancelButton) {
+      cancelButton.addEventListener("click", () => {
+        studentSingle(student, mode.READ);
+      });
+    }
+
+    const updateButton = document.getElementById("update");
+    if (updateButton) {
+      updateButton.addEventListener("click", updateCallBack);
     }
 
     const deleteButton = document.getElementById("delete");
