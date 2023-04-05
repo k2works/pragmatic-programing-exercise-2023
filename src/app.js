@@ -153,6 +153,9 @@ const Student = () => {
     const container = document.getElementById("contents");
     container.innerHTML =
       `
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="絞り込み">
+        </div>
         <button class="action-button" id="create">新規</button>
         <div class="main-object-container">
           <ul class="main-object-list">
@@ -185,6 +188,102 @@ const Student = () => {
         studentSingle(student);
       });
     });
+
+    const searchAction = (keyword) => {
+      const filteredStudents = students.filter((student) => {
+        return (
+          student.name.includes(keyword)
+        );
+      });
+      const record = filteredStudents.map((student) => {
+        return `
+        <li class="main-object-item">
+          <div class="main-object-item-content" data="${student.id}">
+            <div class="main-object-item-name">${student.name}</div>
+            <div class="main-object-item-details">${student.class
+          } ${student.clubs.join(" ")}</div>
+          </div>
+          <div class="main-object-item-actions">
+            <button class="action-button" id="delete" data=${student.id
+          }>削除</button>
+          </div>
+        </li>
+      `;
+      });
+
+      const container = document.getElementById("contents");
+      container.innerHTML =
+        `
+          <div class="search-container">
+            <input type="text" id="search-input" placeholder="絞り込み" value="${keyword}">
+          </div>
+          <button class="action-button" id="create">新規</button>
+          <div class="main-object-container">
+            <ul class="main-object-list">
+              ` +
+        record.join("") +
+        `
+            </div>
+          </div>     
+    `;
+
+      const createButton = document.getElementById("create");
+      createButton.addEventListener("click", () => {
+        studentSingle();
+      });
+
+      const deleteButtons = document.querySelectorAll("#delete");
+      deleteButtons.forEach((button) => {
+        button.addEventListener("click", deleteCallBack);
+      });
+
+      const selectButtons = document.querySelectorAll(
+        ".main-object-item-content",
+      );
+      selectButtons.forEach((button) => {
+        button.addEventListener("click", (e) => {
+          const id = e.currentTarget.getAttribute("data");
+          const student = students.find((student) => {
+            return student.id === Number(id);
+          });
+          studentSingle(student);
+        });
+      });
+
+      const searchInput = document.getElementById("search-input");
+      searchInput.addEventListener('compositionstart', () => { isComposing = true; });
+      searchInput.addEventListener('compositionend', onSearchInputEnd);
+      searchInput.addEventListener("input", onSearchInput);
+
+      return searchInput;
+    };
+
+    const searchInput = document.getElementById("search-input");
+    let isComposing = false;
+    searchInput.addEventListener('compositionstart', () => { isComposing = true; });
+    const onSearchInputEnd = (e) => {
+      isComposing = false;
+      const keyword = e.currentTarget.value;
+      e.preventDefault();
+      searchInput.blur();
+      const result = searchAction(keyword);
+      const inputLength = result.value.length;
+      result.focus();
+      result.setSelectionRange(inputLength, inputLength);
+    }
+    const onSearchInput = (e) => {
+      const keyword = e.currentTarget.value;
+      if (!isComposing) {
+        e.preventDefault();
+        searchInput.blur();
+        const result = searchAction(keyword);
+        const inputLength = result.value.length;
+        result.focus();
+        result.setSelectionRange(inputLength, inputLength);
+      }
+    }
+    searchInput.addEventListener('compositionend', onSearchInputEnd);
+    searchInput.addEventListener("input", onSearchInput);
   };
 
   const studentSingle = (student, action) => {
