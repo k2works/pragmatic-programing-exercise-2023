@@ -95,7 +95,7 @@ const Student = () => {
 
   const saveCallBack = (e) => {
     const name = document.getElementById("name-input").value;
-    let selectElement = document.querySelector('.single-view-property-value');
+    let selectElement = document.querySelector(".single-view-property-value");
     const classValue = selectElement.value;
 
     if (!name) {
@@ -117,7 +117,7 @@ const Student = () => {
   const updateCallBack = (e) => {
     const id = e.currentTarget.getAttribute("data");
     const name = document.getElementById("name-input").value;
-    let selectElement = document.querySelector('.single-view-property-value');
+    let selectElement = document.querySelector(".single-view-property-value");
     const classValue = selectElement.value;
 
     if (!name) {
@@ -139,12 +139,14 @@ const Student = () => {
       <li class="main-object-item">
         <div class="main-object-item-content" data="${student.id}">
           <div class="main-object-item-name">${student.name}</div>
-          <div class="main-object-item-details">${student.class
-        } ${student.clubs.join(" ")}</div>
+          <div class="main-object-item-details">${
+            student.class
+          } ${student.clubs.join(" ")}</div>
         </div>
         <div class="main-object-item-actions">
-          <button class="action-button" id="delete" data=${student.id
-        }>削除</button>
+          <button class="action-button" id="delete" data=${
+            student.id
+          }>削除</button>
         </div>
       </li>
     `;
@@ -191,21 +193,21 @@ const Student = () => {
 
     const searchAction = (keyword) => {
       const filteredStudents = students.filter((student) => {
-        return (
-          student.name.includes(keyword)
-        );
+        return student.name.includes(keyword);
       });
       const record = filteredStudents.map((student) => {
         return `
         <li class="main-object-item">
           <div class="main-object-item-content" data="${student.id}">
             <div class="main-object-item-name">${student.name}</div>
-            <div class="main-object-item-details">${student.class
-          } ${student.clubs.join(" ")}</div>
+            <div class="main-object-item-details">${
+              student.class
+            } ${student.clubs.join(" ")}</div>
           </div>
           <div class="main-object-item-actions">
-            <button class="action-button" id="delete" data=${student.id
-          }>削除</button>
+            <button class="action-button" id="delete" data=${
+              student.id
+            }>削除</button>
           </div>
         </li>
       `;
@@ -251,8 +253,10 @@ const Student = () => {
       });
 
       const searchInput = document.getElementById("search-input");
-      searchInput.addEventListener('compositionstart', () => { isComposing = true; });
-      searchInput.addEventListener('compositionend', onSearchInputEnd);
+      searchInput.addEventListener("compositionstart", () => {
+        isComposing = true;
+      });
+      searchInput.addEventListener("compositionend", onSearchInputEnd);
       searchInput.addEventListener("input", onSearchInput);
 
       return searchInput;
@@ -260,7 +264,9 @@ const Student = () => {
 
     const searchInput = document.getElementById("search-input");
     let isComposing = false;
-    searchInput.addEventListener('compositionstart', () => { isComposing = true; });
+    searchInput.addEventListener("compositionstart", () => {
+      isComposing = true;
+    });
     const onSearchInputEnd = (e) => {
       isComposing = false;
       const keyword = e.currentTarget.value;
@@ -270,7 +276,7 @@ const Student = () => {
       const inputLength = result.value.length;
       result.focus();
       result.setSelectionRange(inputLength, inputLength);
-    }
+    };
     const onSearchInput = (e) => {
       const keyword = e.currentTarget.value;
       if (!isComposing) {
@@ -281,14 +287,15 @@ const Student = () => {
         result.focus();
         result.setSelectionRange(inputLength, inputLength);
       }
-    }
-    searchInput.addEventListener('compositionend', onSearchInputEnd);
+    };
+    searchInput.addEventListener("compositionend", onSearchInputEnd);
     searchInput.addEventListener("input", onSearchInput);
   };
 
   const studentSingle = (student, action) => {
-    const header = action === mode.EDIT
-      ? `
+    const header =
+      action === mode.EDIT
+        ? `
       <div class="single-view-header-left">
         <h1 class="single-view-title">${student.name}</h1>
         <p class="single-view-subtitle">${student.class}</p>
@@ -298,7 +305,7 @@ const Student = () => {
         <button class="single-view-action-button" id="update" data=${student.id}>更新</button>
       </div>
     `
-      : student
+        : student
         ? `
       <div class="single-view-header-left">
         <h1 class="single-view-title">${student.name}</h1>
@@ -318,26 +325,35 @@ const Student = () => {
         <button class="single-view-action-button" id="save">保存</button>
       </div>
     `;
-    const main = action === mode.EDIT
-      ? `
+    const main =
+      action === mode.EDIT
+        ? `
       <div class="single-view-body-left">
       <form class="single-view-property-form">
         <ul class="single-view-property-list">
           <li class="single-view-property-item">
             <label for="name-input" class="single-view-property-label">名前:</label>
-            <input id="name-input" name="name" class="single-view-property-input" type="text" value="${student.name}" required>
+            <input id="name-input" name="name" class="single-view-property-input" type="text" value="${
+              student.name
+            }" required>
           </li>
           <li class="single-view-property-item">
           <span class="single-view-property-label">組:</span>
           <select class="single-view-property-value">
-          ${classes.map((c) => (c === student.class ? `<option value="${c}" selected>${c}</option>` : `<option value="${c}">${c}</option>`)).join('')}
+          ${classes
+            .map((c) =>
+              c === student.class
+                ? `<option value="${c}" selected>${c}</option>`
+                : `<option value="${c}">${c}</option>`,
+            )
+            .join("")}
           </select>
         </li> 
         </ul>
       </form>
     </div>    
     `
-      : student
+        : student
         ? `
     <div class="single-view-body-left">
       <ul class="single-view-property-list">
@@ -363,7 +379,7 @@ const Student = () => {
           <li class="single-view-property-item">
           <span class="single-view-property-label">組:</span>
           <select class="single-view-property-value">
-          ${classes.map((c) => `<option value="${c}">${c}</option>`).join('')}
+          ${classes.map((c) => `<option value="${c}">${c}</option>`).join("")}
           </select>
         </li> 
         </ul>
@@ -372,36 +388,38 @@ const Student = () => {
     
   `;
 
-    const clubs = action === mode.EDIT
-      ? student.clubs.map((club) => {
-        return `
+    const clubs =
+      action === mode.EDIT
+        ? student.clubs.map((club) => {
+            return `
       <li class="single-view-related-item">
         <input class="single-view-related-input" type="text" value="${club}">
       </li>
       `;
-      })
-      : student
+          })
+        : student
         ? student.clubs.map((club) => {
-          return `
+            return `
       <li class="single-view-related-item">${club}</li>
     `;
-        })
+          })
         : [];
 
-    const relatedStudents = action === mode.EDIT
-      ? student.relatedStudents.map((relatedStudent) => {
-        return `
+    const relatedStudents =
+      action === mode.EDIT
+        ? student.relatedStudents.map((relatedStudent) => {
+            return `
       <li class="single-view-related-item">
         <input class="single-view-related-input" type="text" value="${relatedStudent}">
       </li>
     `;
-      })
-      : student
+          })
+        : student
         ? student.relatedStudents.map((relatedStudent) => {
-          return `
+            return `
       <li class="single-view-related-item">${relatedStudent}</li>
     `;
-        })
+          })
         : [];
 
     const container = document.getElementById("contents");
