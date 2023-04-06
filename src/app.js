@@ -159,11 +159,13 @@ const Student = () => {
 
     const student = students.find((s) => s.id === id);
     const filteredClubs = clubs.map(club => club.trim()).filter(club => club !== '');
+    const filteredClubs2 = filteredClubs.map(club => club.replace(/x/g, ''));
     const filteredRelatedStudents = relatedStudents.map(relatedStudent => relatedStudent.trim()).filter(relatedStudent => relatedStudent !== '');
+    const filteredRelatedStudents2 = filteredRelatedStudents.map(relatedStudent => relatedStudent.replace(/x/g, ''));
     const newStudent = {
       ...student,
-      clubs: Array.from(new Set([...student.clubs, ...filteredClubs])),
-      relatedStudents: Array.from(new Set([...student.relatedStudents, ...filteredRelatedStudents])),
+      clubs: Array.from(new Set([...filteredClubs2])),
+      relatedStudents: Array.from(new Set([...filteredRelatedStudents2])),
     };
 
     const index = students.findIndex((student) => student.id === Number(id));
@@ -432,7 +434,7 @@ const Student = () => {
           ? student.clubs.map((club) => {
             return `
       <li class="single-view-related-item">
-        <input class="single-view-related-input" type="text" value="${club}">
+        ${club}<button>x</button>
       </li>
       `;
           })
@@ -492,7 +494,7 @@ const Student = () => {
           ? student.relatedStudents.map((relatedStudent) => {
             return `
       <li class="single-view-related-item">
-        <input class="single-view-related-input" type="text" value="${relatedStudent}">
+        ${relatedStudent}<button>x</button>
       </li>
     `;
           })
@@ -656,6 +658,23 @@ const Student = () => {
     if (addRelatedStudentButton) {
       addRelatedStudentButton.addEventListener("click", addRelatedStudentCallBack);
     }
+
+    const deleteButtons = document.querySelectorAll('#clubs li button');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const listItem = this.parentNode;
+        listItem.parentNode.removeChild(listItem);
+      });
+    });
+
+    const deleteRelatedStudentButtons = document.querySelectorAll('#relatedStudents li button');
+    deleteRelatedStudentButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const listItem = this.parentNode;
+        listItem.parentNode.removeChild(listItem);
+      });
+    });
+
   };
 
   return {
