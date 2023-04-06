@@ -103,11 +103,19 @@ const Student = () => {
       return;
     }
 
+    const ulElement = document.getElementById('clubs');
+    const clubsElements = ulElement.getElementsByClassName('single-view-related-item');
+    const clubs = [];
+    for (var i = 0; i < clubsElements.length; i++) {
+      clubs.push(clubsElements[i].textContent);
+      clubs[i] = clubs[i].replace('×', '');
+    }
+
     const student = {
       id: students.length + 1,
       name,
       class: classValue,
-      clubs: [],
+      clubs: Array.from(new Set([...clubs])),
       relatedStudents: [],
     };
     students.push(student);
@@ -115,7 +123,7 @@ const Student = () => {
   };
 
   const updateCallBack = (e) => {
-    const id = e.currentTarget.getAttribute("data");
+    const id = parseInt(e.target.getAttribute("data"));
     const name = document.getElementById("name-input").value;
     let selectElement = document.querySelector(".single-view-property-value");
     const classValue = selectElement.value;
@@ -125,10 +133,25 @@ const Student = () => {
       return;
     }
 
+    const ulElement = document.getElementById('clubs');
+    const clubsElements = ulElement.getElementsByClassName('single-view-related-item');
+    const clubs = [];
+    for (var i = 0; i < clubsElements.length; i++) {
+      clubs.push(clubsElements[i].textContent);
+      clubs[i] = clubs[i].replace('×', '');
+    }
+
+    const student = students.find((s) => s.id === id);
+    const newStudent = {
+      ...student,
+      clubs: Array.from(new Set([...student.clubs, ...clubs])),
+    };
+
     const index = students.findIndex((student) => student.id === Number(id));
     if (index !== -1) {
       students[index].name = name;
       students[index].class = classValue;
+      students[index].clubs = newStudent.clubs;
       render();
     }
   };
@@ -139,14 +162,12 @@ const Student = () => {
       <li class="main-object-item">
         <div class="main-object-item-content" data="${student.id}">
           <div class="main-object-item-name">${student.name}</div>
-          <div class="main-object-item-details">${
-            student.class
-          } ${student.clubs.join(" ")}</div>
+          <div class="main-object-item-details">${student.class
+        } ${student.clubs.join(" ")}</div>
         </div>
         <div class="main-object-item-actions">
-          <button class="action-button" id="delete" data=${
-            student.id
-          }>削除</button>
+          <button class="action-button" id="delete" data=${student.id
+        }>削除</button>
         </div>
       </li>
     `;
@@ -200,14 +221,12 @@ const Student = () => {
         <li class="main-object-item">
           <div class="main-object-item-content" data="${student.id}">
             <div class="main-object-item-name">${student.name}</div>
-            <div class="main-object-item-details">${
-              student.class
-            } ${student.clubs.join(" ")}</div>
+            <div class="main-object-item-details">${student.class
+          } ${student.clubs.join(" ")}</div>
           </div>
           <div class="main-object-item-actions">
-            <button class="action-button" id="delete" data=${
-              student.id
-            }>削除</button>
+            <button class="action-button" id="delete" data=${student.id
+          }>削除</button>
           </div>
         </li>
       `;
@@ -306,7 +325,7 @@ const Student = () => {
       </div>
     `
         : student
-        ? `
+          ? `
       <div class="single-view-header-left">
         <h1 class="single-view-title">${student.name}</h1>
         <p class="single-view-subtitle">${student.class}</p>
@@ -316,7 +335,7 @@ const Student = () => {
         <button class="single-view-action-button" id="delete" data=${student.id}>削除</button>
       </div>
     `
-        : `
+          : `
       <div class="single-view-header-left">
         <h1 class="single-view-title"></h1>
         <p class="single-view-subtitle"></p>
@@ -333,20 +352,19 @@ const Student = () => {
         <ul class="single-view-property-list">
           <li class="single-view-property-item">
             <label for="name-input" class="single-view-property-label">名前:</label>
-            <input id="name-input" name="name" class="single-view-property-input" type="text" value="${
-              student.name
-            }" required>
+            <input id="name-input" name="name" class="single-view-property-input" type="text" value="${student.name
+        }" required>
           </li>
           <li class="single-view-property-item">
           <span class="single-view-property-label">組:</span>
           <select class="single-view-property-value">
           ${classes
-            .map((c) =>
-              c === student.class
-                ? `<option value="${c}" selected>${c}</option>`
-                : `<option value="${c}">${c}</option>`,
-            )
-            .join("")}
+          .map((c) =>
+            c === student.class
+              ? `<option value="${c}" selected>${c}</option>`
+              : `<option value="${c}">${c}</option>`,
+          )
+          .join("")}
           </select>
         </li> 
         </ul>
@@ -354,7 +372,7 @@ const Student = () => {
     </div>    
     `
         : student
-        ? `
+          ? `
     <div class="single-view-body-left">
       <ul class="single-view-property-list">
         <li class="single-view-property-item">
@@ -368,7 +386,7 @@ const Student = () => {
       </ul>
     </div>
     `
-        : `
+          : `
       <div class="single-view-body-left">
       <form class="single-view-property-form">
         <ul class="single-view-property-list">
@@ -388,39 +406,87 @@ const Student = () => {
     
   `;
 
-    const clubs =
-      action === mode.EDIT
-        ? student.clubs.map((club) => {
+    const clubs = (() => {
+      const clubs =
+        action === mode.EDIT
+          ? student.clubs.map((club) => {
             return `
       <li class="single-view-related-item">
         <input class="single-view-related-input" type="text" value="${club}">
       </li>
       `;
           })
-        : student
-        ? student.clubs.map((club) => {
-            return `
+          : student
+            ? student.clubs.map((club) => {
+              return `
       <li class="single-view-related-item">${club}</li>
     `;
-          })
-        : [];
+            })
+            : [];
+
+      const view = action === mode.EDIT
+        ? `
+              <div class="single-view-body-right" >
+                <h2 class="single-view-related-title">部</h2>
+               
+                <input type="text" id="departmentInput">
+                <button id="addButton">追加</button>
+                <div id="departmentContainer"></div>
+
+                <ul class="single-view-related-list" id="clubs">
+
+                ` +
+        clubs.join("") +
+        `
+                </ul>
+              </div>
+      `
+        : student ? `
+              <div class="single-view-body-right" >
+                <h2 class="single-view-related-title">部</h2>
+                <ul class="single-view-related-list" id="clubs">
+
+                ` +
+          clubs.join("") +
+          `
+                </ul>
+              </div >
+       `: `
+              <div class="single-view-body-right" >
+                <h2 class="single-view-related-title">部</h2>
+               
+                <input type="text" id="departmentInput">
+                <button id="addButton">追加</button>
+                <div id="departmentContainer"></div>
+
+                <ul class="single-view-related-list" id="clubs">
+
+                ` +
+        clubs.join("") +
+        `
+                </ul>
+              </div>
+       `;
+
+      return view;
+    })();
 
     const relatedStudents =
       action === mode.EDIT
         ? student.relatedStudents.map((relatedStudent) => {
-            return `
+          return `
       <li class="single-view-related-item">
         <input class="single-view-related-input" type="text" value="${relatedStudent}">
       </li>
     `;
-          })
+        })
         : student
-        ? student.relatedStudents.map((relatedStudent) => {
+          ? student.relatedStudents.map((relatedStudent) => {
             return `
       <li class="single-view-related-item">${relatedStudent}</li>
     `;
           })
-        : [];
+          : [];
 
     const container = document.getElementById("contents");
     container.innerHTML =
@@ -437,12 +503,9 @@ const Student = () => {
       main +
       `
               <div class="single-view-body-right">
-                <h2 class="single-view-related-title">部</h2>
-                <ul class="single-view-related-list">
-                ` +
-      clubs.join("") +
+              ` +
+      clubs +
       `
-                </ul>
               </div>
               <div class="single-view-body-right">
                 <h2 class="single-view-related-title">関連する生徒</h2>
@@ -484,6 +547,32 @@ const Student = () => {
     const saveButton = document.getElementById("save");
     if (saveButton) {
       saveButton.addEventListener("click", saveCallBack);
+    }
+
+    const addCallBack = () => {
+      var departmentInput = document.getElementById('departmentInput');
+      var selectedDepartment = departmentInput.value;
+
+      if (selectedDepartment !== '') {
+        const clubs = document.getElementById("clubs");
+        const club = document.createElement("li");
+        club.className = "single-view-related-item";
+        club.textContent = selectedDepartment;
+        clubs.appendChild(club);
+
+        var deleteButton = document.createElement('button');
+        deleteButton.textContent = '×';
+        deleteButton.addEventListener('click', function () {
+          clubs.removeChild(club);
+        });
+        club.appendChild(deleteButton);
+
+        departmentInput.value = '';
+      }
+    };
+    const addButton = document.getElementById("addButton");
+    if (addButton) {
+      addButton.addEventListener("click", addCallBack);
     }
   };
 
