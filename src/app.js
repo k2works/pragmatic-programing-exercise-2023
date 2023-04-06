@@ -106,9 +106,17 @@ const Student = () => {
     const ulElement = document.getElementById('clubs');
     const clubsElements = ulElement.getElementsByClassName('single-view-related-item');
     const clubs = [];
-    for (var i = 0; i < clubsElements.length; i++) {
+    for (let i = 0; i < clubsElements.length; i++) {
       clubs.push(clubsElements[i].textContent);
       clubs[i] = clubs[i].replace('×', '');
+    }
+
+    const ulRelatedStudentElement = document.getElementById('relatedStudents');
+    const relatedStudentsElements = ulRelatedStudentElement.getElementsByClassName('single-view-related-item');
+    const relatedStudents = [];
+    for (let i = 0; i < relatedStudentsElements.length; i++) {
+      relatedStudents.push(relatedStudentsElements[i].textContent);
+      relatedStudents[i] = relatedStudents[i].replace('×', '');
     }
 
     const student = {
@@ -116,7 +124,7 @@ const Student = () => {
       name,
       class: classValue,
       clubs: Array.from(new Set([...clubs])),
-      relatedStudents: [],
+      relatedStudents: Array.from(new Set([...relatedStudents])),
     };
     students.push(student);
     render();
@@ -141,10 +149,21 @@ const Student = () => {
       clubs[i] = clubs[i].replace('×', '');
     }
 
+    const ulRelatedStudentElement = document.getElementById('relatedStudents');
+    const relatedStudentsElements = ulRelatedStudentElement.getElementsByClassName('single-view-related-item');
+    const relatedStudents = [];
+    for (let i = 0; i < relatedStudentsElements.length; i++) {
+      relatedStudents.push(relatedStudentsElements[i].textContent);
+      relatedStudents[i] = relatedStudents[i].replace('×', '');
+    }
+
     const student = students.find((s) => s.id === id);
+    const filteredClubs = clubs.map(club => club.trim()).filter(club => club !== '');
+    const filteredRelatedStudents = relatedStudents.map(relatedStudent => relatedStudent.trim()).filter(relatedStudent => relatedStudent !== '');
     const newStudent = {
       ...student,
-      clubs: Array.from(new Set([...student.clubs, ...clubs])),
+      clubs: Array.from(new Set([...student.clubs, ...filteredClubs])),
+      relatedStudents: Array.from(new Set([...student.relatedStudents, ...filteredRelatedStudents])),
     };
 
     const index = students.findIndex((student) => student.id === Number(id));
@@ -152,6 +171,7 @@ const Student = () => {
       students[index].name = name;
       students[index].class = classValue;
       students[index].clubs = newStudent.clubs;
+      students[index].relatedStudents = newStudent.relatedStudents;
       render();
     }
   };
@@ -424,17 +444,17 @@ const Student = () => {
             })
             : [];
 
+      const add = `
+                <input type="text" id="clubInput">
+                <button id="addClubButton">追加</button>
+      `
+
       const view = action === mode.EDIT
         ? `
               <div class="single-view-body-right" >
                 <h2 class="single-view-related-title">部</h2>
-               
-                <input type="text" id="departmentInput">
-                <button id="addButton">追加</button>
-                <div id="departmentContainer"></div>
-
+                ` + add + `
                 <ul class="single-view-related-list" id="clubs">
-
                 ` +
         clubs.join("") +
         `
@@ -454,13 +474,8 @@ const Student = () => {
        `: `
               <div class="single-view-body-right" >
                 <h2 class="single-view-related-title">部</h2>
-               
-                <input type="text" id="departmentInput">
-                <button id="addButton">追加</button>
-                <div id="departmentContainer"></div>
-
+                ` + add + `
                 <ul class="single-view-related-list" id="clubs">
-
                 ` +
         clubs.join("") +
         `
@@ -471,22 +486,66 @@ const Student = () => {
       return view;
     })();
 
-    const relatedStudents =
-      action === mode.EDIT
-        ? student.relatedStudents.map((relatedStudent) => {
-          return `
+    const relatedStudents = (() => {
+      const relatedStudents =
+        action === mode.EDIT
+          ? student.relatedStudents.map((relatedStudent) => {
+            return `
       <li class="single-view-related-item">
         <input class="single-view-related-input" type="text" value="${relatedStudent}">
       </li>
     `;
-        })
-        : student
-          ? student.relatedStudents.map((relatedStudent) => {
-            return `
+          })
+          : student
+            ? student.relatedStudents.map((relatedStudent) => {
+              return `
       <li class="single-view-related-item">${relatedStudent}</li>
     `;
-          })
-          : [];
+            })
+            : [];
+
+      const add = `
+                <input type="text" id="relatedStudentInput">
+                <button id="addRelatedStudentButton">追加</button>
+      `
+
+      const view = action === mode.EDIT
+        ? `
+      <div class="single-view-body-right">
+        <h2 class="single-view-related-title">関連する生徒</h2>
+        `+ add + `
+        <ul class="single-view-related-list" id="relatedStudents">
+        ` +
+        relatedStudents.join("") +
+        `
+        </ul>
+      </div>
+    `
+        : student
+          ? `
+      <div class="single-view-body-right">
+        <h2 class="single-view-related-title">関連する生徒</h2>
+        <ul class="single-view-related-list" id="relatedStudents">
+        ` +
+          relatedStudents.join("") +
+          `
+        </ul>
+      </div>
+    `
+          : `
+      <div class="single-view-body-right">
+        <h2 class="single-view-related-title">関連する生徒</h2>
+        `+ add + `
+        <ul class="single-view-related-list" id="relatedStudents">
+        ` +
+          relatedStudents.join("") +
+          `
+        </ul>
+      </div>
+    `;
+
+      return view;
+    })();
 
     const container = document.getElementById("contents");
     container.innerHTML =
@@ -508,12 +567,9 @@ const Student = () => {
       `
               </div>
               <div class="single-view-body-right">
-                <h2 class="single-view-related-title">関連する生徒</h2>
-                <ul class="single-view-related-list">
-                ` +
-      relatedStudents.join("") +
+              ` +
+      relatedStudents +
       `
-                </ul>
               </div>
             </div>
           </div>
@@ -549,30 +605,56 @@ const Student = () => {
       saveButton.addEventListener("click", saveCallBack);
     }
 
-    const addCallBack = () => {
-      var departmentInput = document.getElementById('departmentInput');
-      var selectedDepartment = departmentInput.value;
+    const addClubCallBack = () => {
+      const clubInput = document.getElementById('clubInput');
+      const selectClub = clubInput.value;
 
-      if (selectedDepartment !== '') {
+      if (selectClub !== '') {
         const clubs = document.getElementById("clubs");
         const club = document.createElement("li");
         club.className = "single-view-related-item";
-        club.textContent = selectedDepartment;
+        club.textContent = selectClub;
         clubs.appendChild(club);
 
-        var deleteButton = document.createElement('button');
+        const deleteButton = document.createElement('button');
         deleteButton.textContent = '×';
         deleteButton.addEventListener('click', function () {
           clubs.removeChild(club);
         });
         club.appendChild(deleteButton);
 
-        departmentInput.value = '';
+        clubInput.value = '';
       }
     };
-    const addButton = document.getElementById("addButton");
-    if (addButton) {
-      addButton.addEventListener("click", addCallBack);
+    const addClubButton = document.getElementById("addClubButton");
+    if (addClubButton) {
+      addClubButton.addEventListener("click", addClubCallBack);
+    }
+
+    const addRelatedStudentCallBack = () => {
+      const relatedStudentInput = document.getElementById('relatedStudentInput');
+      const selectStudent = relatedStudentInput.value;
+
+      if (selectStudent !== '') {
+        const relatedStudents = document.getElementById("relatedStudents");
+        const relatedStudent = document.createElement("li");
+        relatedStudent.className = "single-view-related-item";
+        relatedStudent.textContent = selectStudent;
+        relatedStudents.appendChild(relatedStudent);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '×';
+        deleteButton.addEventListener('click', function () {
+          relatedStudents.removeChild(relatedStudent);
+        });
+        relatedStudent.appendChild(deleteButton);
+
+        relatedStudentInput.value = '';
+      }
+    };
+    const addRelatedStudentButton = document.getElementById("addRelatedStudentButton");
+    if (addRelatedStudentButton) {
+      addRelatedStudentButton.addEventListener("click", addRelatedStudentCallBack);
     }
   };
 
