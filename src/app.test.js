@@ -1166,7 +1166,7 @@ describe("銀行口座データベース", () => {
           残高: x.balance,
           残高別利息: Math.floor(
             x.balance *
-            (x.balance < 500000 ? 0.01 : x.balance < 2000000 ? 0.02 : 0.03),
+              (x.balance < 500000 ? 0.01 : x.balance < 2000000 ? 0.02 : 0.03),
           ),
         }))
         .sort((a, b) => {
@@ -1237,8 +1237,9 @@ describe("銀行口座データベース", () => {
       const allResult = result.map((x) => ({
         口座番号: x.number,
         名義: x.name,
-        更新日: `${x.updatedAt.getFullYear()}年${x.updatedAt.getMonth() + 1
-          }月${x.updatedAt.getDate()}日`,
+        更新日: `${x.updatedAt.getFullYear()}年${
+          x.updatedAt.getMonth() + 1
+        }月${x.updatedAt.getDate()}日`,
       }));
 
       console.table(allResult);
@@ -3719,21 +3720,21 @@ describe("商品データベース", () => {
           OR: [
             {
               name: {
-                contains: "ブーツ"
+                contains: "ブーツ",
               },
             },
           ],
           OR: [
             {
               name: {
-                contains: "雨"
+                contains: "雨",
               },
             },
           ],
           OR: [
             {
               name: {
-                contains: "安心"
+                contains: "安心",
               },
             },
           ],
@@ -3808,7 +3809,7 @@ describe("商品データベース", () => {
 
       const maxAvgQuantity = orders.reduce(
         (max, o) => Math.max(max, o._avg.quantity),
-        0
+        0,
       );
 
       const result = await prisma.order.findMany({
@@ -3897,6 +3898,5 @@ describe("商品データベース", () => {
         });
       }
     });
-
   });
 });
