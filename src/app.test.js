@@ -3645,6 +3645,258 @@ describe("商品データベース", () => {
         },
       });
     });
+  });
+
+  describe("第7章 副問い合わせ", () => {
+    beforeAll(async () => {
+      await prisma.product.deleteMany({});
+      for (const p of product) {
+        await prisma.product.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        });
+      }
+      await prisma.retiredProduct.deleteMany({});
+      for (const p of retiredProduct) {
+        await prisma.retiredProduct.upsert({
+          where: { code: p.code },
+          update: p,
+          create: p,
+        });
+      }
+    });
+
+    test("商品コード「S0604」の商品について、商品コード、商品名、単価、これまでに販売した数量を抽出する。ただし、抽出には、選択列リストにて注文テーブルを副問い合わせするSELECT文を用いること。", async () => {
+      const productCode = "S0604";
+      const orders = await prisma.order.groupBy({
+        by: ["productCode"],
+        _sum: {
+          quantity: true,
+        },
+        having: {
+          productCode: {
+            in: [productCode],
+          },
+        },
+      });
+
+      const products = await prisma.product.findMany({
+        where: {
+          code: productCode,
+        },
+        select: {
+          code: true,
+          name: true,
+          price: true,
+        },
+      });
+
+      const result = products.map((p) => ({
+        ...p,
+        quantity: orders[0]?._sum.quantity ?? 0,
+      }));
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        code: "S0604",
+        name: "さらさらキャミソール",
+        price: 1300,
+        quantity: 21,
+      });
+    });
+
+    test("次の注文について、商品コードを間違って登録したことがわかった。商品テーブルより条件に合致する商品コードを取得し、該当の注文テーブルを更新する。ただし、注文テーブルの更新には、SET句にて商品テーブルを副問い合わせするUPDATE文を用いること。", async () => {
+      // 注文日:2022-03-15 注文番号:202203150014 注文枝番:1
+      // 正しい商品の条件:商品区分が「靴」で、商品名に「ブーツ」「雨」「安心」を含む。
+      const product = await prisma.product.findFirst({
+        where: {
+          AND: [
+            {
+              type: "2",
+            },
+          ],
+          OR: [
+            {
+              name: {
+                contains: "ブーツ"
+              },
+            },
+          ],
+          OR: [
+            {
+              name: {
+                contains: "雨"
+              },
+            },
+          ],
+          OR: [
+            {
+              name: {
+                contains: "安心"
+              },
+            },
+          ],
+        },
+      });
+
+      await prisma.order.update({
+        where: {
+          orderNumber_orderSubNumber: {
+            orderNumber: "202203150014",
+            orderSubNumber: 1,
+          },
+        },
+        data: {
+          productCode: product?.code ?? "",
+        },
+      });
+
+      const result = await prisma.order.findFirst({
+        where: {
+          orderNumber: "202203150014",
+          orderSubNumber: 1,
+        },
+      });
+
+      console.table(result);
+      expect(result.productCode).toBe("B1350");
+    });
+
+    test("商品名に「あったか」が含まれる商品が売れた日付とその商品コードを過去の日付順に抽出する。ただし、WHERE句でIN演算子を利用した副問い合わせを用いること。", async () => {
+      const products = await prisma.product.findMany({
+        where: {
+          name: {
+            contains: "あったか",
+          },
+        },
+        select: {
+          code: true,
+        },
+      });
+
+      const orders = await prisma.order.findMany({
+        where: {
+          productCode: {
+            in: products.map((p) => p.code),
+          },
+        },
+        orderBy: {
+          day: "asc",
+        },
+      });
+
+      const result = orders.map((o) => ({
+        day: o.day,
+        productCode: o.productCode,
+      }));
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        day: new Date("2021-09-15T00:00:00.000Z"),
+        productCode: "W0746",
+      });
+    });
+
+    test("商品ごとにそれぞれ平均販売数量を求め、どの商品の平均販売数量よりも多い数が売れた商品を探し、その商品コードと販売数量を抽出する。ただし、ALL演算子を利用した副問い合わせを用いること。", async () => {
+      const orders = await prisma.order.groupBy({
+        by: ["productCode"],
+        _avg: {
+          quantity: true,
+        },
+      });
+
+      const maxAvgQuantity = orders.reduce(
+        (max, o) => Math.max(max, o._avg.quantity),
+        0
+      );
+
+      const result = await prisma.order.findMany({
+        where: {
+          quantity: {
+            gt: maxAvgQuantity,
+          },
+        },
+        select: {
+          productCode: true,
+          quantity: true,
+        },
+      });
+
+      console.table(result);
+    });
+
+    test("クーポン割引を利用して販売した商品コード「W0746」の商品について、その販売数量と、商品1個あたりの平均割引額を抽出する。列名は「割引による販売数」と「平均割引額」とし、1円未満は切り捨てる。抽出にはFROM句で副問い合わせを利用すること。", async () => {
+      const orders = await prisma.order.findMany({
+        where: {
+          productCode: "W0746",
+          couponDiscount: {
+            gt: 0,
+          },
+        },
+      });
+
+      const result = orders.map((o) => ({
+        割引による販売数: o.quantity,
+        平均割引額: Math.floor(o.couponDiscount / o.quantity),
+      }));
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        割引による販売数: 1,
+        平均割引額: 1000,
+      });
+    });
+
+    test("次の注文について、内容を追加したいという依頼があった。追加分の注文を注文テーブルに登録する。使用する注文枝番は、該当の注文番号を副問い合わせにて参照し、1を加算した番号を採番する。なお、登録のSQL文は注文ごとに1つずつ作成すること。", async () => {
+      // 注文日: 2022-03-21,注文番号:202203210080 商品コード:S1003, 数量:1, クーポン割引:なし
+      // 注文日: 2022-03-22,注文番号:202203220901 商品コード:A0052, 数量:2, クーポン割引:500円
+      const addOrders = [
+        {
+          day: new Date("2022-03-21T00:00:00.000Z"),
+          orderNumber: "202203210080",
+          productCode: "S1003",
+          quantity: 1,
+          couponDiscount: null,
+        },
+        {
+          day: new Date("2022-03-22T00:00:00.000Z"),
+          orderNumber: "202203220901",
+          productCode: "A0052",
+          quantity: 2,
+          couponDiscount: 500,
+        },
+      ];
+
+      for (const addOrder of addOrders) {
+        const orderSubNumber = await prisma.order.count({
+          where: {
+            orderNumber: addOrder.orderNumber,
+          },
+        });
+
+        const result = await prisma.order.create({
+          data: {
+            day: addOrder.day,
+            orderNumber: addOrder.orderNumber,
+            orderSubNumber: orderSubNumber + 1,
+            productCode: addOrder.productCode,
+            quantity: addOrder.quantity,
+            couponDiscount: addOrder.couponDiscount,
+          },
+        });
+
+        console.table(result);
+        expect(result).toStrictEqual({
+          day: addOrder.day,
+          orderNumber: addOrder.orderNumber,
+          orderSubNumber: orderSubNumber + 1,
+          productCode: addOrder.productCode,
+          quantity: addOrder.quantity,
+          couponDiscount: addOrder.couponDiscount,
+        });
+      }
+    });
 
   });
 });
