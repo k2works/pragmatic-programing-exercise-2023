@@ -103,20 +103,25 @@ const Student = () => {
       return;
     }
 
-    const ulElement = document.getElementById('clubs');
-    const clubsElements = ulElement.getElementsByClassName('single-view-related-item');
+    const ulElement = document.getElementById("clubs");
+    const clubsElements = ulElement.getElementsByClassName(
+      "single-view-related-item",
+    );
     const clubs = [];
     for (let i = 0; i < clubsElements.length; i++) {
       clubs.push(clubsElements[i].textContent);
-      clubs[i] = clubs[i].replace('×', '');
+      clubs[i] = clubs[i].replace("×", "");
     }
 
-    const ulRelatedStudentElement = document.getElementById('relatedStudents');
-    const relatedStudentsElements = ulRelatedStudentElement.getElementsByClassName('single-view-related-item');
+    const ulRelatedStudentElement = document.getElementById("relatedStudents");
+    const relatedStudentsElements =
+      ulRelatedStudentElement.getElementsByClassName(
+        "single-view-related-item",
+      );
     const relatedStudents = [];
     for (let i = 0; i < relatedStudentsElements.length; i++) {
       relatedStudents.push(relatedStudentsElements[i].textContent);
-      relatedStudents[i] = relatedStudents[i].replace('×', '');
+      relatedStudents[i] = relatedStudents[i].replace("×", "");
     }
 
     const student = {
@@ -141,27 +146,38 @@ const Student = () => {
       return;
     }
 
-    const ulElement = document.getElementById('clubs');
-    const clubsElements = ulElement.getElementsByClassName('single-view-related-item');
+    const ulElement = document.getElementById("clubs");
+    const clubsElements = ulElement.getElementsByClassName(
+      "single-view-related-item",
+    );
     const clubs = [];
     for (var i = 0; i < clubsElements.length; i++) {
       clubs.push(clubsElements[i].textContent);
-      clubs[i] = clubs[i].replace('×', '');
+      clubs[i] = clubs[i].replace("×", "");
     }
 
-    const ulRelatedStudentElement = document.getElementById('relatedStudents');
-    const relatedStudentsElements = ulRelatedStudentElement.getElementsByClassName('single-view-related-item');
+    const ulRelatedStudentElement = document.getElementById("relatedStudents");
+    const relatedStudentsElements =
+      ulRelatedStudentElement.getElementsByClassName(
+        "single-view-related-item",
+      );
     const relatedStudents = [];
     for (let i = 0; i < relatedStudentsElements.length; i++) {
       relatedStudents.push(relatedStudentsElements[i].textContent);
-      relatedStudents[i] = relatedStudents[i].replace('×', '');
+      relatedStudents[i] = relatedStudents[i].replace("×", "");
     }
 
     const student = students.find((s) => s.id === id);
-    const filteredClubs = clubs.map(club => club.trim()).filter(club => club !== '');
-    const filteredClubs2 = filteredClubs.map(club => club.replace(/x/g, ''));
-    const filteredRelatedStudents = relatedStudents.map(relatedStudent => relatedStudent.trim()).filter(relatedStudent => relatedStudent !== '');
-    const filteredRelatedStudents2 = filteredRelatedStudents.map(relatedStudent => relatedStudent.replace(/x/g, ''));
+    const filteredClubs = clubs
+      .map((club) => club.trim())
+      .filter((club) => club !== "");
+    const filteredClubs2 = filteredClubs.map((club) => club.replace(/x/g, ""));
+    const filteredRelatedStudents = relatedStudents
+      .map((relatedStudent) => relatedStudent.trim())
+      .filter((relatedStudent) => relatedStudent !== "");
+    const filteredRelatedStudents2 = filteredRelatedStudents.map(
+      (relatedStudent) => relatedStudent.replace(/x/g, ""),
+    );
     const newStudent = {
       ...student,
       clubs: Array.from(new Set([...filteredClubs2])),
@@ -184,12 +200,14 @@ const Student = () => {
       <li class="main-object-item">
         <div class="main-object-item-content" data="${student.id}">
           <div class="main-object-item-name">${student.name}</div>
-          <div class="main-object-item-details">${student.class
-        } ${student.clubs.join(" ")}</div>
+          <div class="main-object-item-details">${
+            student.class
+          } ${student.clubs.join(" ")}</div>
         </div>
         <div class="main-object-item-actions">
-          <button class="action-button" id="delete" data=${student.id
-        }>削除</button>
+          <button class="action-button" id="delete" data=${
+            student.id
+          }>削除</button>
         </div>
       </li>
     `;
@@ -243,12 +261,14 @@ const Student = () => {
         <li class="main-object-item">
           <div class="main-object-item-content" data="${student.id}">
             <div class="main-object-item-name">${student.name}</div>
-            <div class="main-object-item-details">${student.class
-          } ${student.clubs.join(" ")}</div>
+            <div class="main-object-item-details">${
+              student.class
+            } ${student.clubs.join(" ")}</div>
           </div>
           <div class="main-object-item-actions">
-            <button class="action-button" id="delete" data=${student.id
-          }>削除</button>
+            <button class="action-button" id="delete" data=${
+              student.id
+            }>削除</button>
           </div>
         </li>
       `;
@@ -347,7 +367,7 @@ const Student = () => {
       </div>
     `
         : student
-          ? `
+        ? `
       <div class="single-view-header-left">
         <h1 class="single-view-title">${student.name}</h1>
         <p class="single-view-subtitle">${student.class}</p>
@@ -357,7 +377,7 @@ const Student = () => {
         <button class="single-view-action-button" id="delete" data=${student.id}>削除</button>
       </div>
     `
-          : `
+        : `
       <div class="single-view-header-left">
         <h1 class="single-view-title"></h1>
         <p class="single-view-subtitle"></p>
@@ -374,19 +394,20 @@ const Student = () => {
         <ul class="single-view-property-list">
           <li class="single-view-property-item">
             <label for="name-input" class="single-view-property-label">名前:</label>
-            <input id="name-input" name="name" class="single-view-property-input" type="text" value="${student.name
-        }" required>
+            <input id="name-input" name="name" class="single-view-property-input" type="text" value="${
+              student.name
+            }" required>
           </li>
           <li class="single-view-property-item">
           <span class="single-view-property-label">組:</span>
           <select class="single-view-property-value">
           ${classes
-          .map((c) =>
-            c === student.class
-              ? `<option value="${c}" selected>${c}</option>`
-              : `<option value="${c}">${c}</option>`,
-          )
-          .join("")}
+            .map((c) =>
+              c === student.class
+                ? `<option value="${c}" selected>${c}</option>`
+                : `<option value="${c}">${c}</option>`,
+            )
+            .join("")}
           </select>
         </li> 
         </ul>
@@ -394,7 +415,7 @@ const Student = () => {
     </div>    
     `
         : student
-          ? `
+        ? `
     <div class="single-view-body-left">
       <ul class="single-view-property-list">
         <li class="single-view-property-item">
@@ -408,7 +429,7 @@ const Student = () => {
       </ul>
     </div>
     `
-          : `
+        : `
       <div class="single-view-body-left">
       <form class="single-view-property-form">
         <ul class="single-view-property-list">
@@ -432,55 +453,62 @@ const Student = () => {
       const clubs =
         action === mode.EDIT
           ? student.clubs.map((club) => {
-            return `
+              return `
       <li class="single-view-related-item">
         ${club}<button>x</button>
       </li>
       `;
-          })
+            })
           : student
-            ? student.clubs.map((club) => {
+          ? student.clubs.map((club) => {
               return `
       <li class="single-view-related-item">${club}</li>
     `;
             })
-            : [];
+          : [];
 
       const add = `
                 <input type="text" id="clubInput">
                 <button id="addClubButton">追加</button>
-      `
+      `;
 
-      const view = action === mode.EDIT
-        ? `
+      const view =
+        action === mode.EDIT
+          ? `
               <div class="single-view-body-right" >
                 <h2 class="single-view-related-title">部</h2>
-                ` + add + `
+                ` +
+            add +
+            `
                 <ul class="single-view-related-list" id="clubs">
                 ` +
-        clubs.join("") +
-        `
+            clubs.join("") +
+            `
                 </ul>
               </div>
       `
-        : student ? `
+          : student
+          ? `
               <div class="single-view-body-right" >
                 <h2 class="single-view-related-title">部</h2>
                 <ul class="single-view-related-list" id="clubs">
 
                 ` +
-          clubs.join("") +
-          `
+            clubs.join("") +
+            `
                 </ul>
               </div >
-       `: `
+       `
+          : `
               <div class="single-view-body-right" >
                 <h2 class="single-view-related-title">部</h2>
-                ` + add + `
+                ` +
+            add +
+            `
                 <ul class="single-view-related-list" id="clubs">
                 ` +
-        clubs.join("") +
-        `
+            clubs.join("") +
+            `
                 </ul>
               </div>
        `;
@@ -492,56 +520,61 @@ const Student = () => {
       const relatedStudents =
         action === mode.EDIT
           ? student.relatedStudents.map((relatedStudent) => {
-            return `
+              return `
       <li class="single-view-related-item">
         ${relatedStudent}<button>x</button>
       </li>
     `;
-          })
+            })
           : student
-            ? student.relatedStudents.map((relatedStudent) => {
+          ? student.relatedStudents.map((relatedStudent) => {
               return `
       <li class="single-view-related-item">${relatedStudent}</li>
     `;
             })
-            : [];
+          : [];
 
       const add = `
                 <input type="text" id="relatedStudentInput">
                 <button id="addRelatedStudentButton">追加</button>
-      `
+      `;
 
-      const view = action === mode.EDIT
-        ? `
+      const view =
+        action === mode.EDIT
+          ? `
       <div class="single-view-body-right">
         <h2 class="single-view-related-title">関連する生徒</h2>
-        `+ add + `
+        ` +
+            add +
+            `
         <ul class="single-view-related-list" id="relatedStudents">
         ` +
-        relatedStudents.join("") +
-        `
+            relatedStudents.join("") +
+            `
         </ul>
       </div>
     `
-        : student
+          : student
           ? `
       <div class="single-view-body-right">
         <h2 class="single-view-related-title">関連する生徒</h2>
         <ul class="single-view-related-list" id="relatedStudents">
         ` +
-          relatedStudents.join("") +
-          `
+            relatedStudents.join("") +
+            `
         </ul>
       </div>
     `
           : `
       <div class="single-view-body-right">
         <h2 class="single-view-related-title">関連する生徒</h2>
-        `+ add + `
+        ` +
+            add +
+            `
         <ul class="single-view-related-list" id="relatedStudents">
         ` +
-          relatedStudents.join("") +
-          `
+            relatedStudents.join("") +
+            `
         </ul>
       </div>
     `;
@@ -608,24 +641,24 @@ const Student = () => {
     }
 
     const addClubCallBack = () => {
-      const clubInput = document.getElementById('clubInput');
+      const clubInput = document.getElementById("clubInput");
       const selectClub = clubInput.value;
 
-      if (selectClub !== '') {
+      if (selectClub !== "") {
         const clubs = document.getElementById("clubs");
         const club = document.createElement("li");
         club.className = "single-view-related-item";
         club.textContent = selectClub;
         clubs.appendChild(club);
 
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = '×';
-        deleteButton.addEventListener('click', function () {
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "×";
+        deleteButton.addEventListener("click", function () {
           clubs.removeChild(club);
         });
         club.appendChild(deleteButton);
 
-        clubInput.value = '';
+        clubInput.value = "";
       }
     };
     const addClubButton = document.getElementById("addClubButton");
@@ -634,47 +667,55 @@ const Student = () => {
     }
 
     const addRelatedStudentCallBack = () => {
-      const relatedStudentInput = document.getElementById('relatedStudentInput');
+      const relatedStudentInput = document.getElementById(
+        "relatedStudentInput",
+      );
       const selectStudent = relatedStudentInput.value;
 
-      if (selectStudent !== '') {
+      if (selectStudent !== "") {
         const relatedStudents = document.getElementById("relatedStudents");
         const relatedStudent = document.createElement("li");
         relatedStudent.className = "single-view-related-item";
         relatedStudent.textContent = selectStudent;
         relatedStudents.appendChild(relatedStudent);
 
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = '×';
-        deleteButton.addEventListener('click', function () {
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "×";
+        deleteButton.addEventListener("click", function () {
           relatedStudents.removeChild(relatedStudent);
         });
         relatedStudent.appendChild(deleteButton);
 
-        relatedStudentInput.value = '';
+        relatedStudentInput.value = "";
       }
     };
-    const addRelatedStudentButton = document.getElementById("addRelatedStudentButton");
+    const addRelatedStudentButton = document.getElementById(
+      "addRelatedStudentButton",
+    );
     if (addRelatedStudentButton) {
-      addRelatedStudentButton.addEventListener("click", addRelatedStudentCallBack);
+      addRelatedStudentButton.addEventListener(
+        "click",
+        addRelatedStudentCallBack,
+      );
     }
 
-    const deleteButtons = document.querySelectorAll('#clubs li button');
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function () {
+    const deleteButtons = document.querySelectorAll("#clubs li button");
+    deleteButtons.forEach((button) => {
+      button.addEventListener("click", function () {
         const listItem = this.parentNode;
         listItem.parentNode.removeChild(listItem);
       });
     });
 
-    const deleteRelatedStudentButtons = document.querySelectorAll('#relatedStudents li button');
-    deleteRelatedStudentButtons.forEach(button => {
-      button.addEventListener('click', function () {
+    const deleteRelatedStudentButtons = document.querySelectorAll(
+      "#relatedStudents li button",
+    );
+    deleteRelatedStudentButtons.forEach((button) => {
+      button.addEventListener("click", function () {
         const listItem = this.parentNode;
         listItem.parentNode.removeChild(listItem);
       });
     });
-
   };
 
   return {
