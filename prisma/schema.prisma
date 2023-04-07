@@ -85,3 +85,46 @@ model Order {
   @@unique([orderNumber, orderSubNumber])
   @@map("注文")
 }
+
+model Party {
+  id             String @map("ID") //英字1桁 + 数字2桁
+  name           String @map("名称")
+  professionCode String @map("職業コード") //01:勇者 10:戦士 11:武闘家 20:魔法使い 21:学者 
+  hp             Int?   @map("HP")
+  mp             Int?   @map("MP")
+  statusCode     String @map("状態コード") //00: 異常なし 01:眠り 02:毒 03:沈黙 04:混乱 09:気絶
+
+  @@unique([id])
+  @@map("パーティ")
+}
+
+model Event {
+  eventNumber         Int               @id @default(autoincrement()) @map("イベント番号")
+  eventName           String            @map("イベント名称")
+  type                String            @map("タイプ") // 1:強制 2:フリー 3:特殊
+  premiseEventNumber  Int?              @map("前提イベント番号") // 事前にクリアが必要なイベント番号
+  followOnEventNumber Int?              @map("後続イベント番号") // 次に発生するイベント番号
+  experienceEvent     ExperienceEvent[]
+
+  @@map("イベントテーブル")
+}
+
+model ExperienceEvent {
+  eventNumber           Int     @id @default(autoincrement()) @map("イベント番号")
+  clearType             String  @map("クリア区分") // 0:プレイ中 1:クリア済
+  clearResult           String? @map("クリア結果") // 結果に応じたランク(A,B,C) *未クリアはNULL
+  routeNumber           Int?    @map("ルート番号") // クリアしたイベントの連番 *未クリアはNULL
+  event                 Event?  @relation(fields: [eventTableEventNumber], references: [eventNumber])
+  eventTableEventNumber Int?
+
+  @@map("経験イベント")
+}
+
+model Code {
+  type  String @map("コード種別")
+  value String @map("コード値")
+  name  String @map("コード名称")
+
+  @@unique([type, value])
+  @@map("コード")
+}

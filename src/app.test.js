@@ -1166,7 +1166,7 @@ describe("銀行口座データベース", () => {
           残高: x.balance,
           残高別利息: Math.floor(
             x.balance *
-            (x.balance < 500000 ? 0.01 : x.balance < 2000000 ? 0.02 : 0.03),
+              (x.balance < 500000 ? 0.01 : x.balance < 2000000 ? 0.02 : 0.03),
           ),
         }))
         .sort((a, b) => {
@@ -1237,8 +1237,9 @@ describe("銀行口座データベース", () => {
       const allResult = result.map((x) => ({
         口座番号: x.number,
         名義: x.name,
-        更新日: `${x.updatedAt.getFullYear()}年${x.updatedAt.getMonth() + 1
-          }月${x.updatedAt.getDate()}日`,
+        更新日: `${x.updatedAt.getFullYear()}年${
+          x.updatedAt.getMonth() + 1
+        }月${x.updatedAt.getDate()}日`,
       }));
 
       console.table(allResult);
@@ -4101,8 +4102,8 @@ describe("商品データベース", () => {
         const productName = productData
           ? productData.name
           : retiredProductData
-            ? "廃番"
-            : "";
+          ? "廃番"
+          : "";
         return {
           productCode: o.productCode,
           productName: productName,
@@ -4231,7 +4232,9 @@ describe("商品データベース", () => {
         productName: product ? product.name : retiredProduct.name,
         price: product ? product.price : retiredProduct.price,
         quantity: order.quantity,
-        orderAmount: product ? product.price * order.quantity : retiredProduct.price * order.quantity,
+        orderAmount: product
+          ? product.price * order.quantity
+          : retiredProduct.price * order.quantity,
       };
 
       console.table(result);
@@ -4267,7 +4270,10 @@ describe("商品データベース", () => {
           productName: p.name,
           price: p.price,
           quantity: order.reduce((acc, cur) => acc + cur.quantity, 0),
-          orderAmount: order.reduce((acc, cur) => acc + cur.quantity * p.price, 0),
+          orderAmount: order.reduce(
+            (acc, cur) => acc + cur.quantity * p.price,
+            0,
+          ),
         };
       });
 
@@ -4291,7 +4297,7 @@ describe("商品データベース", () => {
               code: true,
               name: true,
             },
-          }
+          },
         },
       });
 

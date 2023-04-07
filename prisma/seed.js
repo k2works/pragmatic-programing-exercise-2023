@@ -7,6 +7,10 @@ const transaction = require('./data/transaction')
 const product = require('./data/product')
 const retiredProduct = require('./data/retiredProduct')
 const order = require('./data/order')
+const party = require('./data/party')
+const experienceEvent = require('./data/experienceEvent')
+const event = require('./data/event')
+const code = require('./data/code')
 
 async function main() {
     for (const a of account) {
@@ -67,6 +71,42 @@ async function main() {
         })
     }
 
+    for (const p of party) {
+        await prisma.party.upsert({
+            where: { id: p.id },
+            update: p,
+            create: p,
+        })
+    }
+
+    for (const e of experienceEvent) {
+        await prisma.experienceEvent.upsert({
+            where: { eventNumber: e.eventNumber },
+            update: e,
+            create: e,
+        })
+    }
+
+    for (const e of event) {
+        await prisma.event.upsert({
+            where: { eventNumber: e.eventNumber },
+            update: e,
+            create: e,
+        })
+    }
+
+    for (const c of code) {
+        await prisma.code.upsert({
+            where: {
+                type_value: {
+                    type: c.type,
+                    value: c.value,
+                },
+            },
+            update: c,
+            create: c,
+        })
+    }
 }
 
 main()
