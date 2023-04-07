@@ -137,6 +137,44 @@ package "商品データベース" {
   product ||..o{ product : "n" -up- "1" 関連商品コード
 }
 
+package "RPGデータベース" {
+  entity "パーティ" as party {
+
+  ID : text <<PK>>
+  --
+  名称 : text
+  職業コード : text
+  HP : integer
+  MP : integer
+  状態コード : text
+  }
+  entity "イベントテーブル" as event {
+
+  イベント番号 : integer <<PK>>
+  --
+  イベント名称 : text
+  タイプ : text
+  前提イベント番号 : integer
+  後続イベント番号 : integer
+  }
+  entity "経験イベント" as experience_event {
+
+  イベント番号 : integer <<PK>>
+  --
+  クリア区分 : text
+  クリア結果 : text
+  ルート番号 : integer
+  }
+  entity "コード" as code {
+
+  コード種別 : text <<PK>>
+  コード値 : text <<PK>>
+  --
+  コード名称 : text
+  }
+  event -- experience_event : "eventNumber"
+}
+
 
 @enduml
 `;
