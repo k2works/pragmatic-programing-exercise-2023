@@ -1,13 +1,365 @@
-html,
+lines (12 sloc) 371 Bytes html,
 body {
   height: 100%;
-}
-
-body {
   margin: 10;
   padding: 10;
   font-family: -apple-system, "游ゴシック Medium", "Yu Gothic Medium",
     "游ゴシック体", YuGothic, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic ProN",
     "メイリオ", Meiryo, sans-serif;
   font-feature-settings: "palt"; /* プロポーショナルメトリクスを有効に */
+}
+
+/* コレクションビュー */
+.root-container {
+  display: flex;
+  height: 100vh;
+}
+
+.nav-container {
+  flex: 0 0 20%;
+  background-color: #ccc;
+  padding: 1rem;
+}
+
+.nav-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.nav-item {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background-color: #ddd;
+}
+
+.nav-item.active {
+  background-color: #fff;
+  font-weight: bold;
+}
+
+.view-container {
+  flex: 1;
+  padding: 1rem;
+}
+
+.main-object-container {
+  margin-bottom: 1rem;
+}
+
+.main-object-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.main-object-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.main-object-item:hover {
+  background-color: #ddd;
+}
+
+.main-object-item-name {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.main-object-item-name svg {
+  margin-right: 0.5rem;
+}
+
+.action-button {
+  background-color: #007aff;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.search-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 200px;
+  height: 30px;
+  margin-right: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* シングルビュー */
+.main-single-view-object-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.single-view-container {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  width: 100%;
+  margin: 0px 20px;
+}
+
+.single-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding: 16px;
+}
+
+.single-view-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.single-view-title {
+  margin: 0px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.single-view-subtitle {
+  margin: 0px;
+  font-size: 16px;
+}
+
+.single-view-header-right {
+  display: flex;
+  flex-direction: row;
+}
+
+.single-view-action-button {
+  background-color: #007aff;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.single-view-related-title {
+  margin: 0px;
+  font-size: 16px;
+  padding: 8px 16px;
+}
+
+.single-view-property-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.single-view-property-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.single-view-property-item {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.single-view-property-label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.single-view-property-input {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.single-view-property-button {
+  background-color: #007aff;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  align-self: flex-end;
+}
+
+.single-view-property-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.single-view-property-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.single-view-property-label {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.single-view-property-value {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  flex: 1;
+}
+
+.single-view-property-value:focus {
+  outline: none;
+  box-shadow: 0 0 4px 2px rgba(0, 0, 255, 0.2);
+}
+
+.single-view-property-value option {
+  padding: 8px;
+}
+
+/* モバイルファースト */
+/* 600px以下の画面サイズの場合 */
+@media screen and (max-width: 600px) {
+  .root-container {
+    flex-direction: column;
+  }
+
+  .nav-container {
+    flex: 0 0 auto;
+    order: 1;
+  }
+
+  .view-container {
+    flex: 1;
+    order: 2;
+  }
+
+  .main-object-container {
+    margin-bottom: 0.5rem;
+  }
+
+  .main-object-item {
+    display: block;
+    border: none;
+    margin: 0;
+    padding: 1rem;
+    border-radius: 0;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  .main-object-item-name {
+    font-size: 1rem;
+  }
+
+  .single-view-container {
+    margin: 0;
+  }
+
+  .single-view-header {
+    flex-direction: column;
+  }
+
+  .single-view-header-left {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .single-view-title {
+    font-size: 20px;
+  }
+
+  .single-view-subtitle {
+    font-size: 14px;
+  }
+
+  .single-view-header-right {
+    flex-direction: column;
+    margin-top: 1rem;
+  }
+
+  .single-view-action-button {
+    margin-bottom: 0.5rem;
+  }
+
+  .single-view-related-title {
+    padding: 0;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .root-container {
+    flex-direction: column;
+  }
+  .nav-container {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    background-color: #ccc;
+    padding: 1rem;
+    box-sizing: border-box;
+    z-index: 1;
+  }
+  .nav-list {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+  }
+  .nav-item {
+    display: block;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .nav-item:hover {
+    background-color: #ddd;
+  }
+  .nav-item.active {
+    background-color: #fff;
+    font-weight: bold;
+  }
+  .nav-container.active .nav-list {
+    max-height: 500px;
+  }
+  .nav-container.active .nav-item {
+    animation: fade-in 0.3s ease-in-out;
+  }
 }
