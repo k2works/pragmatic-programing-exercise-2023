@@ -110,12 +110,11 @@ model Event {
 }
 
 model ExperienceEvent {
-  eventNumber           Int     @id @default(autoincrement()) @map("イベント番号")
-  clearType             String  @map("クリア区分") // 0:プレイ中 1:クリア済
-  clearResult           String? @map("クリア結果") // 結果に応じたランク(A,B,C) *未クリアはNULL
-  routeNumber           Int?    @map("ルート番号") // クリアしたイベントの連番 *未クリアはNULL
-  event                 Event?  @relation(fields: [eventTableEventNumber], references: [eventNumber])
-  eventTableEventNumber Int?
+  eventNumber Int     @id @default(autoincrement()) @map("イベント番号")
+  clearType   String  @map("クリア区分") // 0:プレイ中 1:クリア済
+  clearResult String? @map("クリア結果") // 結果に応じたランク(A,B,C) *未クリアはNULL
+  routeNumber Int?    @map("ルート番号") // クリアしたイベントの連番 *未クリアはNULL
+  event       Event?  @relation(fields: [eventNumber], references: [eventNumber])
 
   @@map("経験イベント")
 }
