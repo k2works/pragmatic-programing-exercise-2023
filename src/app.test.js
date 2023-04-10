@@ -6,6 +6,10 @@ import transactionReason from "../prisma/data/transactionReason";
 import product from "../prisma/data/product";
 import retiredProduct from "../prisma/data/retiredProduct";
 import order from "../prisma/data/order";
+const party = require("../prisma/data/party");
+const experienceEvent = require("../prisma/data/experienceEvent");
+const event = require("../prisma/data/event");
+const code = require("../prisma/data/code");
 
 const prisma = new PrismaClient();
 
@@ -1166,7 +1170,7 @@ describe("銀行口座データベース", () => {
           残高: x.balance,
           残高別利息: Math.floor(
             x.balance *
-              (x.balance < 500000 ? 0.01 : x.balance < 2000000 ? 0.02 : 0.03),
+            (x.balance < 500000 ? 0.01 : x.balance < 2000000 ? 0.02 : 0.03),
           ),
         }))
         .sort((a, b) => {
@@ -1237,9 +1241,8 @@ describe("銀行口座データベース", () => {
       const allResult = result.map((x) => ({
         口座番号: x.number,
         名義: x.name,
-        更新日: `${x.updatedAt.getFullYear()}年${
-          x.updatedAt.getMonth() + 1
-        }月${x.updatedAt.getDate()}日`,
+        更新日: `${x.updatedAt.getFullYear()}年${x.updatedAt.getMonth() + 1
+          }月${x.updatedAt.getDate()}日`,
       }));
 
       console.table(allResult);
@@ -4102,8 +4105,8 @@ describe("商品データベース", () => {
         const productName = productData
           ? productData.name
           : retiredProductData
-          ? "廃番"
-          : "";
+            ? "廃番"
+            : "";
         return {
           productCode: o.productCode,
           productName: productName,
@@ -4313,5 +4316,183 @@ describe("商品データベース", () => {
       console.table(result);
       expect(result.length).toBe(8);
     });
+  });
+});
+
+describe("RPGデータベース", () => {
+  describe("第2章 基本文法と四大命令", () => {
+    beforeAll(async () => {
+      await prisma.party.deleteMany();
+      await prisma.experienceEvent.deleteMany();
+      await prisma.event.deleteMany();
+      await prisma.code.deleteMany();
+
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+
+      for (const e of event) {
+        await prisma.event.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const e of experienceEvent) {
+        await prisma.experienceEvent.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const c of code) {
+        await prisma.code.upsert({
+          where: {
+            type_value: {
+              type: c.type,
+              value: c.value,
+            },
+          },
+          update: c,
+          create: c,
+        });
+      }
+    });
+
+    test("主人公のパーティにいるキャラクターの全データをパーティテーブルから「＊」を用いずに抽出する。", async () => {
+      const result = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          hp: true,
+          mp: true,
+          statusCode: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("パーティテーブルから、名称、HP、MPの一覧を取得する。各見出しは次のように表示すること。", async () => {
+      // なまえ　現在のHP　現在のMP
+      const party = await prisma.party.findMany({
+        select: {
+          name: true,
+          hp: true,
+          mp: true,
+        },
+      });
+
+      const result = party.map((p) => {
+        return {
+          なまえ: p.name,
+          現在のHP: p.hp,
+          現在のMP: p.mp,
+        };
+      });
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        なまえ: "ミナト",
+        現在のHP: 89,
+        現在のMP: 74,
+      });
+    });
+
+    test("イベントの全データをイベントテーブルから「＊」を用いて抽出する。", async () => {
+      const result = await prisma.event.findMany({
+        select: {
+          eventNumber: true,
+          eventName: true,
+          type: true,
+          premiseEventNumber: true,
+          followOnEventNumber: true,
+          experienceEvent: {
+            select: {
+              eventNumber: true,
+              clearResult: true,
+              routeNumber: true,
+            },
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(26);
+    });
+
+    test("イベントテーブルから、イベント番号とイベント名称の一覧を取得する。各見出しは次のように表示すること。", async () => {
+      // 番号　場面
+      const events = await prisma.event.findMany({
+        select: {
+          eventNumber: true,
+          eventName: true,
+        },
+      });
+
+      const result = events.map((e) => {
+        return {
+          番号: e.eventNumber,
+          場面: e.eventName,
+        };
+      });
+
+      console.table(result);
+      expect(result[0]).toStrictEqual({
+        番号: 1,
+        場面: "オープニング",
+      });
+    });
+
+    test("パーティテーブルに,次のつのデータを1回の実行ごとに1つずつ追加する。", async () => {
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        }
+      ]
+
+      await prisma.party.createMany({ data: data });
+      const result = await prisma.party.findMany({
+        where: {
+          id: {
+            in: ["A01", "A02", "A03"],
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    });
+
+
   });
 });
