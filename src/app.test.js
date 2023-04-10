@@ -4495,4 +4495,285 @@ describe("RPGデータベース", () => {
 
 
   });
+
+  describe("第3章 操作する行の絞り込み", () => {
+    beforeAll(async () => {
+      await prisma.party.deleteMany();
+      await prisma.experienceEvent.deleteMany();
+      await prisma.event.deleteMany();
+      await prisma.code.deleteMany();
+
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+
+      for (const e of event) {
+        await prisma.event.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const e of experienceEvent) {
+        await prisma.experienceEvent.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const c of code) {
+        await prisma.code.upsert({
+          where: {
+            type_value: {
+              type: c.type,
+              value: c.value,
+            },
+          },
+          update: c,
+          create: c,
+        });
+      }
+
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        }
+      ]
+
+      await prisma.party.createMany({ data: data });
+    });
+
+    test("パーティーテーブルから、IDが「C02」のデータを抽出する。", async () => {
+      const result = await prisma.party.findUnique({
+        where: { id: "C02" },
+      });
+
+      console.table(result);
+      expect(result.id).toBe("C02");
+    });
+
+    test("パーティーテーブルのID「A01」のデータについて、HPを120に更新する。", async () => {
+      const result = await prisma.party.update({
+        where: { id: "A01" },
+        data: { hp: 120 },
+      });
+
+      console.table(result);
+      expect(result.hp).toBe(120);
+    });
+
+    test("パーティーテーブルから、HPが100未満のデータについて、ID、名称、HPの一覧を抽出する。", async () => {
+      const result = await prisma.party.findMany({
+        where: { hp: { lt: 100 } },
+        select: {
+          id: true,
+          name: true,
+          hp: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    });
+
+    test("イベントテーブルから、タイプが「特殊」でないデータについて、イベント番号、イベント名称、タイプの一覧を抽出する。", async () => {
+      const result = await prisma.event.findMany({
+        where: { type: { not: "3" } },
+        select: {
+          eventNumber: true,
+          eventName: true,
+          type: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(24);
+    });
+
+    test("イベントテーブルから、イベント番号が5以下のデータについて、イベント番号とイベント名称を抽出する。", async () => {
+      const result = await prisma.event.findMany({
+        where: { eventNumber: { lte: 5 } },
+        select: {
+          eventNumber: true,
+          eventName: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("イベントテーブルから、イベント番号が20を超過しているデータについて、イベント番号とイベント名称を抽出する。", async () => {
+      const result = await prisma.event.findMany({
+        where: { eventNumber: { gt: 20 } },
+        select: {
+          eventNumber: true,
+          eventName: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(6);
+    });
+
+    test("イベントテーブルから、別のイベントのクリアを前提としないイベントについて、イベント番号とイベント名称を抽出する。", async () => {
+      const result = await prisma.event.findMany({
+        where: { premiseEventNumber: { equals: null } },
+        select: {
+          eventNumber: true,
+          eventName: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(8);
+    });
+
+    test("イベントテーブルから、次に発生するイベントが決められれているイベントについて、イベント番号、イベント名称、後続イベント番号を抽出する。", async () => {
+      const result = await prisma.event.findMany({
+        where: { followOnEventNumber: { not: null } },
+        select: {
+          eventNumber: true,
+          eventName: true,
+          followOnEventNumber: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(14);
+    });
+
+    test("名称に「ミ」が含まれるパーティーテーブルのデータについて、ID、名称、HPの一覧を抽出する。ただし、記述する条件式は1つであること。", async () => {
+      const result = await prisma.party.findMany({
+        where: { name: { contains: "ミ" } },
+        select: {
+          id: true,
+          name: true,
+          hp: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("HPが120～160の範囲にあるパーティーテーブルのデータについて、ID、名称、HPの一覧を抽出する。ただし、記述条件は1つであること。", async () => {
+      const result = await prisma.party.findMany({
+        where: { hp: { gte: 120, lte: 160 } },
+        select: {
+          id: true,
+          name: true,
+          hp: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("職業が「勇者」「戦士」「武道家」のいずれかであるパーティテーブルのデータについて、名称と職業コードを抽出する。ただし、記述する条件式は1つであること。", async () => {
+      const result = await prisma.party.findMany({
+        where: {
+          OR: [
+            { professionCode: { equals: "01" } },
+            { professionCode: { equals: "10" } },
+            { professionCode: { equals: "11" } },
+          ],
+        },
+        select: {
+          name: true,
+          professionCode: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    });
+
+    test("状態コードが「異常なし」と「気絶」のどちらでもないパーティテーブルのデータについて、名称と状態コードを抽出する。ただし、記述する条件式は1つであること。", async () => {
+      const result = await prisma.party.findMany({
+        where: {
+          NOT: [
+            { statusCode: { equals: "00" } },
+            { statusCode: { equals: "09" } },
+          ],
+        },
+        select: {
+          name: true,
+          statusCode: true,
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(1);
+    });
+
+    test("パーティテーブルから、HPとMPがともに100を超えているデータを抽出する。", async () => {
+      const result = await prisma.party.findMany({
+        where: {
+          AND: [{ hp: { gt: 100 } }, { mp: { gt: 100 } }],
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(1);
+    });
+
+    test("パーティテーブルから、IDが「A」で始まり、職業コードの1文字目が「2」であるデータを抽出する。", async () => {
+      const result = await prisma.party.findMany({
+        where: {
+          AND: [
+            { id: { startsWith: "A" } },
+            { professionCode: { startsWith: "2" } },
+          ],
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("イベントテーブルから、タイプが「強制」で、事前にクリアが必要なイベントかつ次に発生するイベントが設定されているデータを抽出する。", async () => {
+      const result = await prisma.event.findMany({
+        where: {
+          AND: [
+            { type: { equals: "1" } },
+            { premiseEventNumber: { not: null } },
+            { followOnEventNumber: { not: null } },
+          ],
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(10);
+    });
+
+  });
 });
