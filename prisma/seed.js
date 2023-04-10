@@ -79,16 +79,16 @@ async function main() {
         })
     }
 
-    for (const e of experienceEvent) {
-        await prisma.experienceEvent.upsert({
+    for (const e of event) {
+        await prisma.event.upsert({
             where: { eventNumber: e.eventNumber },
             update: e,
             create: e,
         })
     }
 
-    for (const e of event) {
-        await prisma.event.upsert({
+    for (const e of experienceEvent) {
+        await prisma.experienceEvent.upsert({
             where: { eventNumber: e.eventNumber },
             update: e,
             create: e,
