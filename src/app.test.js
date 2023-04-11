@@ -5462,6 +5462,377 @@ describe("RPGデータベース", () => {
       console.table(result);
       expect(result.length).toBe(26);
     });
+  });
+
+  describe("第6章 集計とグループ化", () => {
+    beforeAll(async () => {
+      await prisma.party.deleteMany();
+      await prisma.experienceEvent.deleteMany();
+      await prisma.event.deleteMany();
+      await prisma.code.deleteMany();
+
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+
+      for (const e of event) {
+        await prisma.event.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const e of experienceEvent) {
+        await prisma.experienceEvent.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const c of code) {
+        await prisma.code.upsert({
+          where: {
+            type_value: {
+              type: c.type,
+              value: c.value,
+            },
+          },
+          update: c,
+          create: c,
+        });
+      }
+
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        }
+      ]
+
+      await prisma.party.createMany({ data: data });
+    });
+
+    test("主人公のパーティーにいるキャラクターのHPとMPについて、最大値、最小値、平均値をそれぞれ求める。", async () => {
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          statusCode: true,
+          hp: true,
+          mp: true,
+        },
+      });
+
+      const result = {
+        "HPの最大値": Math.max(...party.map((p) => p.hp)),
+        "HPの最小値": Math.min(...party.map((p) => p.hp)),
+        "HPの平均値": party.map((p) => p.hp).reduce((a, b) => a + b) / party.length,
+        "MPの最大値": Math.max(...party.map((p) => p.mp)),
+        "MPの最小値": Math.min(...party.map((p) => p.mp)),
+        "MPの平均値": party.map((p) => p.mp).reduce((a, b) => a + b) / party.length,
+      };
+
+      console.table(result);
+      expect(result).toStrictEqual({
+        "HPの最大値": 156,
+        "HPの最小値": 74,
+        "HPの平均値": 106.8,
+        "MPの最大値": 232,
+        "MPの最小値": 66,
+        "MPの平均値": 129.2,
+      });
+    });
+
+    test("イベントテーブルから、タイプ別にイベントの数を取得する。ただし、タイプは日本語で表示すること。", async () => {
+      const event = await prisma.event.findMany({
+        select: {
+          type: true,
+        },
+      });
+
+      const group = event.reduce((acc, cur) => {
+        const type = cur.type;
+        if (acc[type]) {
+          acc[type] += 1;
+        } else {
+          acc[type] = 1;
+        }
+        return acc;
+      }, {});
+
+      const result = Object.keys(group).map((key) => {
+        return {
+          タイプ: key === "1" ? "強制" : key === "2" ? "フリー" : "特殊",
+          イベント数: group[key],
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(3);
+    });
+
+    test("経験イベントテーブルから、クリアの結果別にクリアしたイベントの数を取得する。クリア結果順に表示すること。", async () => {
+      const event = await prisma.experienceEvent.findMany({
+        select: {
+          clearResult: true,
+        },
+      });
+
+      const group = event.reduce((acc, cur) => {
+        const clearResult = cur.clearResult;
+        if (acc[clearResult]) {
+          acc[clearResult] += 1;
+        } else {
+          acc[clearResult] = 1;
+        }
+        return acc;
+      }, {});
+
+      const result = Object.keys(group).map((key) => {
+        return {
+          クリア結果: key,
+          クリア数: group[key],
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(4);
+    });
+
+    test("攻撃魔法「小さな奇跡」は、パーティー全員のMPによって敵の行動が異なる。次の条件に従って、現在のパーティーがこの魔法を使ったときの敵の行動を表示する。", async () => {
+      // パーティー全員のMPが500未満なら「敵は見とれている！」
+      // パーティー全員のMPが500以上1000未満なら「敵は呆然としている！」
+      // パーティー全員のMPが1000以上なら「敵はひれ伏している！」
+      const paryt = await prisma.party.aggregate({
+        _sum: {
+          mp: true,
+        },
+      });
+
+      const result = paryt._sum.mp < 500 ? "敵は見とれている！" : paryt._sum.mp < 1000 ? "敵は呆然としている！" : "敵はひれ伏している！";
+
+      console.log(result);
+      expect(result).toBe("敵は呆然としている！");
+    });
+
+    test("経験イベントテーブルから、クリアしたイベント数と参加したもののまだクリアしていないイベントの数を次の形式で表示する", async () => {
+      // 区分                    |イベント数
+      // ------------------------|---------
+      // クリアした               |
+      // 参加したがクリアしていない  |
+      const event = await prisma.experienceEvent.groupBy({
+        by: ["clearType"],
+        _count: {
+          eventNumber: true,
+        },
+      });
+
+      const result = event.map((e) => (
+        {
+          区分: e.clearType === "1" ? "クリアした" : "参加したがクリアしていない",
+          イベント数: e._count.eventNumber,
+        }
+      ));
+
+      console.table(result);
+      expect(result).toStrictEqual([
+        {
+          区分: "クリアした",
+          イベント数: 6,
+        },
+        {
+          区分: "参加したがクリアしていない",
+          イベント数: 1,
+        },
+      ]);
+    });
+
+    test("職業タイプごとのHPとMPの最大値、最小値、平均値を抽出する。ただし、職業タイプは職業コードの1文字目によって分類すること", async () => {
+      const party = await prisma.party.findMany({
+        select: {
+          professionCode: true,
+          hp: true,
+          mp: true,
+        },
+      });
+
+      const party2 = party.map((p) => {
+        return {
+          ...p,
+          professionCode: p.professionCode.slice(0, 1),
+        };
+      });
+
+      const group = party2.reduce((acc, cur) => {
+        const professionCode = cur.professionCode;
+        const hp = cur.hp;
+        const mp = cur.mp;
+        if (acc[professionCode]) {
+          acc[professionCode].hp.push(hp);
+          acc[professionCode].mp.push(mp);
+        } else {
+          acc[professionCode] = {
+            hp: [hp],
+            mp: [mp],
+          };
+        }
+        return acc;
+      }, {});
+
+      const result = Object.keys(group).map((key) => {
+        const hp = group[key].hp;
+        const mp = group[key].mp;
+        return {
+          職業タイプ: key,
+          "HPの最大値": Math.max(...hp),
+          "HPの最小値": Math.min(...hp),
+          "HPの平均値": hp.reduce((a, b) => a + b) / hp.length,
+          "MPの最大値": Math.max(...mp),
+          "MPの最小値": Math.min(...mp),
+          "MPの平均値": mp.reduce((a, b) => a + b) / mp.length,
+        };
+      });
+
+      console.table(result);
+      expect(result).toStrictEqual([
+        {
+          職業タイプ: "0",
+          "HPの最大値": 89,
+          "HPの最小値": 89,
+          "HPの平均値": 89,
+          "MPの最大値": 74,
+          "MPの最小値": 74,
+          "MPの平均値": 74,
+        },
+        {
+          職業タイプ: "1",
+          "HPの最大値": 156,
+          "HPの最小値": 74,
+          "HPの平均値": 115,
+          "MPの最大値": 84,
+          "MPの最小値": 66,
+          "MPの平均値": 75,
+        },
+        {
+          職業タイプ: "2",
+          "HPの最大値": 131,
+          "HPの最小値": 84,
+          "HPの平均値": 107.5,
+          "MPの最大値": 232,
+          "MPの最小値": 190,
+          "MPの平均値": 211,
+        },
+      ]);
+    });
+
+    test("IDの1文字目によってパーティーを分類し、HPの平均が100を超えているデータを抽出する。次の項目を抽出すること。", async () => {
+      // IDよる分類　HPの平均　MPの平均
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          hp: true,
+          mp: true,
+        },
+      });
+
+      const party2 = party.map((p) => {
+        return {
+          ...p,
+          id: p.id.slice(0, 1),
+        };
+      });
+
+      const group = party2.reduce((acc, cur) => {
+        const id = cur.id;
+        const hp = cur.hp;
+        const mp = cur.mp;
+        if (acc[id]) {
+          acc[id].hp.push(hp);
+          acc[id].mp.push(mp);
+        } else {
+          acc[id] = {
+            hp: [hp],
+            mp: [mp],
+          };
+        }
+        return acc;
+      }, {});
+
+      const result = Object.keys(group).map((key) => {
+        const hp = group[key].hp;
+        const mp = group[key].mp;
+        return {
+          id: key,
+          hp: hp.reduce((a, b) => a + b) / hp.length,
+          mp: mp.reduce((a, b) => a + b) / mp.length,
+        };
+      }).filter((r) => r.hp > 100);
+
+      console.table(result);
+      expect(result).toStrictEqual([
+        {
+          id: "A",
+          hp: 123.66666666666667,
+          mp: 168.66666666666666,
+        },
+      ]);
+    });
+
+    test("ある洞窟に存在する「力の扉」は、キャラクターのHPによって開けることのできる扉の数が決まっている。次の条件によってその数が決まるとき、現在のパーティーで開けることのできる扉の合計数を求める。", async () => {
+      // HPが100未満のキャラクター 1枚
+      // HPが100以上150未満のキャラクター 2枚
+      // HPが150以上200未満のキャラクター 3枚
+      // HPが200以上のキャラクター 5枚
+      const party = await prisma.party.findMany({
+        select: {
+          hp: true,
+        },
+      });
+
+      const result = party.reduce((acc, cur) => {
+        const hp = cur.hp;
+        if (hp < 100) {
+          acc += 1;
+        } else if (hp >= 100 && hp < 150) {
+          acc += 2;
+        } else if (hp >= 150 && hp < 200) {
+          acc += 3;
+        } else if (hp >= 200) {
+          acc += 5;
+        }
+        return acc;
+      }, 0);
+
+      console.log(result);
+      expect(result).toBe(8);
+    });
 
   });
 });
