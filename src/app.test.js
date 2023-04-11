@@ -5024,6 +5024,444 @@ describe("RPGデータベース", () => {
       console.table(result);
       expect(result.length).toBe(1);
     });
+  });
+
+  describe("第5章 式と関数", () => {
+    beforeAll(async () => {
+      await prisma.party.deleteMany();
+      await prisma.experienceEvent.deleteMany();
+      await prisma.event.deleteMany();
+      await prisma.code.deleteMany();
+
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+
+      for (const e of event) {
+        await prisma.event.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const e of experienceEvent) {
+        await prisma.experienceEvent.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const c of code) {
+        await prisma.code.upsert({
+          where: {
+            type_value: {
+              type: c.type,
+              value: c.value,
+            },
+          },
+          update: c,
+          create: c,
+        });
+      }
+
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        }
+      ]
+
+      await prisma.party.createMany({ data: data });
+    });
+
+    test("パーティーテーブルから、次の形式の一覧を取得する。", async () => {
+      // 職業区分　職業コード　ID　名称
+      // 職業区分は、物理攻撃が得意なもの（職業コードが1から始まる）を「S」、魔法攻撃の得意なもの（職業コードが2から始まる）を「M」、それ以外を「A」と表示すること。
+      // また、一覧は職業コード順とすること。
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+        },
+        orderBy: {
+          professionCode: "asc",
+        },
+      });
+
+      const result = party.map((p) => {
+        const code = p.professionCode;
+        const type = code.startsWith("1") ? "S" : code.startsWith("2") ? "M" : "A";
+        return {
+          type,
+          code,
+          id: p.id,
+          name: p.name,
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("アイテム「勇気の鈴」を装備すると、HPが50ポイントアップする。このアイテムを装備したときの各キャラクターのHPを適切な列を用いて次の別名で取得する。ただし、このアイテムは「武道家」と「学者」しか装備できない。", async () => {
+      // なまえ　現在のHP　装備後のHP
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          hp: true,
+        },
+        where: {
+          professionCode: {
+            in: ["11", "21"],
+          },
+        },
+      });
+
+      const result = party.map((p) => {
+        const hp = p.hp + 50;
+        return {
+          なまえ: p.name,
+          現在のHP: p.hp,
+          装備後のHP: hp,
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(2);
+    });
+
+    test("ID「A01」と「A03」のキャラクターがアイテム「知恵の指輪」を装備し、MPが20ポイントアップした。その該当データのMPを更新する。", async () => {
+      const result = await prisma.party.updateMany({
+        where: {
+          id: {
+            in: ["A01", "A03"],
+          },
+        },
+        data: {
+          mp: {
+            increment: 20,
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.count).toBe(2);
+    });
+
+    test("武道家の技「スッキリパンチ」は、自分のHPを2倍したポイントのダメージを敵に与える。この技を使ったときのダメージを適切な列を用いて次の別名で抽出する。", async () => {
+      // なまえ　現在のHP　予想されるダメージ
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          hp: true,
+        },
+        where: {
+          professionCode: {
+            in: ["11"],
+          },
+        },
+      });
+
+      const result = party.map((p) => {
+        const damage = p.hp * 2;
+        return {
+          なまえ: p.name,
+          現在のHP: p.hp,
+          予想されるダメージ: damage,
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(1);
+    });
+
+    test("現在、主人公のパーティーにいるキャラクターの状況について、適切な列を用いて次の別名で一覧を取得する。", async () => {
+      // なまえ　HPとMP ステータス
+      // 「HPとMP」はHPとMPを「／」でつなげたものとする。ステータスには状態コードを日本語に置き換えたものを表示するが、ステータスに異常がない場合は、何も表示しなくてよい。
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          statusCode: true,
+          hp: true,
+          mp: true,
+        },
+      });
+
+      const result = party.map((p) => {
+        const hpmp = `${p.hp}/${p.mp}`;
+        const status = p.statusCode === "00" ? "" : p.statusCode === "01" ? "眠り" : p.statusCode === "02" ? "毒" : p.statusCode === "03" ? "沈黙" : p.statusCode === "04" ? "混乱" : p.statusCode === "09" ? "気絶" : "";
+        return {
+          なまえ: p.name,
+          "HPとMP": hpmp,
+          ステータス: status,
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("イベントテーブルから、次の形式でイベント一覧を取得する。", async () => {
+      // イベント番号　イベント名称　タイプ　発生時期
+      // タイプはコードを日本語で置き換えたもの、発生時期は次の条件に応じたものを表示すること。
+      // イベント番号が1～10なら「序盤」
+      // イベント番号が11～17なら「中盤」
+      // 上記以外なら「終盤」
+      const event = await prisma.event.findMany({
+        select: {
+          eventNumber: true,
+          eventName: true,
+          type: true,
+        },
+      });
+
+      const result = event.map((e) => {
+        return {
+          イベント番号: e.eventNumber,
+          イベント名称: e.eventName,
+          タイプ: e.type === "1" ? "強制" : e.type === "2" ? "フリー" : "特殊",
+          発生時期: e.eventNumber >= 1 && e.eventNumber <= 10 ? "序盤" : e.eventNumber >= 11 && e.eventNumber <= 17 ? "中盤" : "終盤",
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(26);
+    });
+
+    test("敵の攻撃「ネームバリュー」は、名前の文字数を10倍したポイントのダメージがある。この攻撃を受けた時の各キャラクターの予想ダメージを適切な列を用いて次の別名で取得する。", async () => {
+      // なまえ　現在のHP　予想ダメージ
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          hp: true,
+        },
+      });
+
+      const result = party.map((p) => {
+        const damage = p.name.length * 10;
+        return {
+          なまえ: p.name,
+          現在のHP: p.hp,
+          予想ダメージ: damage,
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("敵の攻撃「四苦八苦」を受け、HPまたはMPが4で割り切れるキャラクターは混乱した。該当のデータの状態コードを更新する。なお、剰余の計算には%演算子かMOD関数を用いる。", async () => {
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          statusCode: true,
+          hp: true,
+          mp: true,
+        },
+      });
+
+      const result = party.map((p) => {
+        const status = p.hp % 4 === 0 || p.mp % 4 === 0 ? "04" : p.statusCode;
+        return {
+          id: p.id,
+          statusCode: status,
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("町の道具やで売値が777のアイテム「女神の祝福」を買ったところ、会員証を持っていたため30%割引で購入できた。この際に支払った金額を求める。端数は切り捨て。", async () => {
+    });
+
+    test("戦闘中にアイテム「女神の祝福」を使ったところ、全員のHPとMPがそれまでの値に対して3割ほど回復した。該当するデータを更新する。ただし、端数は四捨五入すること。", async () => {
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          statusCode: true,
+          hp: true,
+          mp: true,
+        },
+      });
+
+      const cure = party.map((p) => {
+        const hp = Math.round(p.hp * 1.3);
+        const mp = Math.round(p.mp * 1.3);
+        return {
+          id: p.id,
+          hp: hp,
+          mp: mp,
+        };
+      });
+
+      for (const c of cure) {
+        const p = await prisma.party.findUnique({
+          where: {
+            id: c.id,
+          },
+        });
+        if (p) {
+          await prisma.party.update({
+            where: {
+              id: c.id,
+            },
+            data: {
+              hp: c.hp,
+              mp: c.mp,
+            },
+          });
+        }
+      }
+
+      const result = await prisma.party.findMany({
+        where: {
+          id: {
+            in: cure.map((c) => c.id),
+          },
+        },
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("戦士の技「Step by Step」は、攻撃の回数に応じて自分のHPをべき乗したポイントのダメージを与える。3回攻撃したときの、各回の攻撃ポイントを適切な列を用いて次の別名で取得する。ただし、1回目は0乗から始まる。", async () => {
+      // なまえ　HP　攻撃1回目 　攻撃2回目　攻撃3回目
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          statusCode: true,
+          hp: true,
+          mp: true,
+        },
+      });
+
+      const result = party.map((p) => {
+        const stepByStep = (n) => (p.professionCode === "01" ? p.hp ** n : 0)
+        return {
+          なまえ: p.name,
+          HP: p.hp,
+          攻撃1回目: stepByStep(0),
+          攻撃2回目: stepByStep(1),
+          攻撃3回目: stepByStep(2),
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("現在、主人公のパーティーにいるキャラクターの状況について、HPと状態コードから、リスクを重み付けした一覧を適切な列を用いて次の別名で取得する。", async () => {
+      // なまえ　HP　状態コード　リスク値
+      // リスク値には、次の条件に従った値を算出する。
+      // HPが50以下ならリスク値3
+      // HPが51以上100以下ならリスク値2
+      // HPが101以上ならリスク値1
+      // HPがそれ以外ならリスク値0
+      // 状態コードの値をリスク値に加算
+      // リスクの高い順かつHPの低い順にキャラクターを表示する。
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          statusCode: true,
+          hp: true,
+          mp: true,
+        },
+      });
+
+      const result = party.map((p) => {
+        const risk = p.hp <= 50 ? 3 : p.hp <= 100 ? 2 : p.hp >= 101 ? 1 : 0;
+        return {
+          なまえ: p.name,
+          HP: p.hp,
+          状態コード: p.statusCode,
+          リスク値: risk + Number(p.statusCode),
+        };
+      }).sort((a, b) => {
+        if (a.リスク値 > b.リスク値) {
+          return -1;
+        } else if (a.リスク値 < b.リスク値) {
+          return 1;
+        } else {
+          if (a.HP < b.HP) {
+            return -1;
+          } else if (a.HP > b.HP) {
+            return 1;
+          } else {
+            return 0;
+          }
+        }
+      });
+
+      console.table(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("イベントテーブルより、イベントの一覧をイベント番号順に次の形式で取得する。", async () => {
+      // 前提イベント番号　イベント番号　後続イベント番号
+      const event = await prisma.event.findMany({
+        select: {
+          premiseEventNumber: true,
+          eventNumber: true,
+          followOnEventNumber: true,
+        },
+      });
+
+      const result = event.map((e) => {
+        return {
+          前提イベント番号: e.eventNumber,
+          イベント番号: e.eventNumber,
+          後続イベント番号: e.premiseEventNumber,
+        };
+      });
+
+      console.table(result);
+      expect(result.length).toBe(26);
+    });
 
   });
 });
