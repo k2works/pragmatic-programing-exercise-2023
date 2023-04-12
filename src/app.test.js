@@ -4477,8 +4477,8 @@ describe("RPGデータベース", () => {
           hp: 84,
           mp: 190,
           statusCode: "00",
-        }
-      ]
+        },
+      ];
 
       await prisma.party.createMany({ data: data });
       const result = await prisma.party.findMany({
@@ -4492,8 +4492,6 @@ describe("RPGデータベース", () => {
       console.table(result);
       expect(result.length).toBe(3);
     });
-
-
   });
 
   describe("第3章 操作する行の絞り込み", () => {
@@ -4564,8 +4562,8 @@ describe("RPGデータベース", () => {
           hp: 84,
           mp: 190,
           statusCode: "00",
-        }
-      ]
+        },
+      ];
 
       await prisma.party.createMany({ data: data });
     });
@@ -4844,8 +4842,8 @@ describe("RPGデータベース", () => {
           hp: 84,
           mp: 190,
           statusCode: "00",
-        }
-      ]
+        },
+      ];
 
       await prisma.party.createMany({ data: data });
     });
@@ -5094,8 +5092,8 @@ describe("RPGデータベース", () => {
           hp: 84,
           mp: 190,
           statusCode: "00",
-        }
-      ]
+        },
+      ];
 
       await prisma.party.createMany({ data: data });
     });
@@ -5117,7 +5115,11 @@ describe("RPGデータベース", () => {
 
       const result = party.map((p) => {
         const code = p.professionCode;
-        const type = code.startsWith("1") ? "S" : code.startsWith("2") ? "M" : "A";
+        const type = code.startsWith("1")
+          ? "S"
+          : code.startsWith("2")
+            ? "M"
+            : "A";
         return {
           type,
           code,
@@ -5222,10 +5224,23 @@ describe("RPGデータベース", () => {
 
       const result = party.map((p) => {
         const hpmp = `${p.hp}/${p.mp}`;
-        const status = p.statusCode === "00" ? "" : p.statusCode === "01" ? "眠り" : p.statusCode === "02" ? "毒" : p.statusCode === "03" ? "沈黙" : p.statusCode === "04" ? "混乱" : p.statusCode === "09" ? "気絶" : "";
+        const status =
+          p.statusCode === "00"
+            ? ""
+            : p.statusCode === "01"
+              ? "眠り"
+              : p.statusCode === "02"
+                ? "毒"
+                : p.statusCode === "03"
+                  ? "沈黙"
+                  : p.statusCode === "04"
+                    ? "混乱"
+                    : p.statusCode === "09"
+                      ? "気絶"
+                      : "";
         return {
           なまえ: p.name,
-          "HPとMP": hpmp,
+          HPとMP: hpmp,
           ステータス: status,
         };
       });
@@ -5253,7 +5268,12 @@ describe("RPGデータベース", () => {
           イベント番号: e.eventNumber,
           イベント名称: e.eventName,
           タイプ: e.type === "1" ? "強制" : e.type === "2" ? "フリー" : "特殊",
-          発生時期: e.eventNumber >= 1 && e.eventNumber <= 10 ? "序盤" : e.eventNumber >= 11 && e.eventNumber <= 17 ? "中盤" : "終盤",
+          発生時期:
+            e.eventNumber >= 1 && e.eventNumber <= 10
+              ? "序盤"
+              : e.eventNumber >= 11 && e.eventNumber <= 17
+                ? "中盤"
+                : "終盤",
         };
       });
 
@@ -5309,8 +5329,7 @@ describe("RPGデータベース", () => {
       expect(result.length).toBe(5);
     });
 
-    test("町の道具やで売値が777のアイテム「女神の祝福」を買ったところ、会員証を持っていたため30%割引で購入できた。この際に支払った金額を求める。端数は切り捨て。", async () => {
-    });
+    test("町の道具やで売値が777のアイテム「女神の祝福」を買ったところ、会員証を持っていたため30%割引で購入できた。この際に支払った金額を求める。端数は切り捨て。", async () => { });
 
     test("戦闘中にアイテム「女神の祝福」を使ったところ、全員のHPとMPがそれまでの値に対して3割ほど回復した。該当するデータを更新する。ただし、端数は四捨五入すること。", async () => {
       const party = await prisma.party.findMany({
@@ -5379,7 +5398,7 @@ describe("RPGデータベース", () => {
       });
 
       const result = party.map((p) => {
-        const stepByStep = (n) => (p.professionCode === "01" ? p.hp ** n : 0)
+        const stepByStep = (n) => (p.professionCode === "01" ? p.hp ** n : 0);
         return {
           なまえ: p.name,
           HP: p.hp,
@@ -5413,29 +5432,31 @@ describe("RPGデータベース", () => {
         },
       });
 
-      const result = party.map((p) => {
-        const risk = p.hp <= 50 ? 3 : p.hp <= 100 ? 2 : p.hp >= 101 ? 1 : 0;
-        return {
-          なまえ: p.name,
-          HP: p.hp,
-          状態コード: p.statusCode,
-          リスク値: risk + Number(p.statusCode),
-        };
-      }).sort((a, b) => {
-        if (a.リスク値 > b.リスク値) {
-          return -1;
-        } else if (a.リスク値 < b.リスク値) {
-          return 1;
-        } else {
-          if (a.HP < b.HP) {
+      const result = party
+        .map((p) => {
+          const risk = p.hp <= 50 ? 3 : p.hp <= 100 ? 2 : p.hp >= 101 ? 1 : 0;
+          return {
+            なまえ: p.name,
+            HP: p.hp,
+            状態コード: p.statusCode,
+            リスク値: risk + Number(p.statusCode),
+          };
+        })
+        .sort((a, b) => {
+          if (a.リスク値 > b.リスク値) {
             return -1;
-          } else if (a.HP > b.HP) {
+          } else if (a.リスク値 < b.リスク値) {
             return 1;
           } else {
-            return 0;
+            if (a.HP < b.HP) {
+              return -1;
+            } else if (a.HP > b.HP) {
+              return 1;
+            } else {
+              return 0;
+            }
           }
-        }
-      });
+        });
 
       console.table(result);
       expect(result.length).toBe(5);
@@ -5532,8 +5553,8 @@ describe("RPGデータベース", () => {
           hp: 84,
           mp: 190,
           statusCode: "00",
-        }
-      ]
+        },
+      ];
 
       await prisma.party.createMany({ data: data });
     });
@@ -5551,22 +5572,24 @@ describe("RPGデータベース", () => {
       });
 
       const result = {
-        "HPの最大値": Math.max(...party.map((p) => p.hp)),
-        "HPの最小値": Math.min(...party.map((p) => p.hp)),
-        "HPの平均値": party.map((p) => p.hp).reduce((a, b) => a + b) / party.length,
-        "MPの最大値": Math.max(...party.map((p) => p.mp)),
-        "MPの最小値": Math.min(...party.map((p) => p.mp)),
-        "MPの平均値": party.map((p) => p.mp).reduce((a, b) => a + b) / party.length,
+        HPの最大値: Math.max(...party.map((p) => p.hp)),
+        HPの最小値: Math.min(...party.map((p) => p.hp)),
+        HPの平均値:
+          party.map((p) => p.hp).reduce((a, b) => a + b) / party.length,
+        MPの最大値: Math.max(...party.map((p) => p.mp)),
+        MPの最小値: Math.min(...party.map((p) => p.mp)),
+        MPの平均値:
+          party.map((p) => p.mp).reduce((a, b) => a + b) / party.length,
       };
 
       console.table(result);
       expect(result).toStrictEqual({
-        "HPの最大値": 156,
-        "HPの最小値": 74,
-        "HPの平均値": 106.8,
-        "MPの最大値": 232,
-        "MPの最小値": 66,
-        "MPの平均値": 129.2,
+        HPの最大値: 156,
+        HPの最小値: 74,
+        HPの平均値: 106.8,
+        MPの最大値: 232,
+        MPの最小値: 66,
+        MPの平均値: 129.2,
       });
     });
 
@@ -5636,7 +5659,12 @@ describe("RPGデータベース", () => {
         },
       });
 
-      const result = paryt._sum.mp < 500 ? "敵は見とれている！" : paryt._sum.mp < 1000 ? "敵は呆然としている！" : "敵はひれ伏している！";
+      const result =
+        paryt._sum.mp < 500
+          ? "敵は見とれている！"
+          : paryt._sum.mp < 1000
+            ? "敵は呆然としている！"
+            : "敵はひれ伏している！";
 
       console.log(result);
       expect(result).toBe("敵は呆然としている！");
@@ -5654,12 +5682,10 @@ describe("RPGデータベース", () => {
         },
       });
 
-      const result = event.map((e) => (
-        {
-          区分: e.clearType === "1" ? "クリアした" : "参加したがクリアしていない",
-          イベント数: e._count.eventNumber,
-        }
-      ));
+      const result = event.map((e) => ({
+        区分: e.clearType === "1" ? "クリアした" : "参加したがクリアしていない",
+        イベント数: e._count.eventNumber,
+      }));
 
       console.table(result);
       expect(result).toStrictEqual([
@@ -5711,12 +5737,12 @@ describe("RPGデータベース", () => {
         const mp = group[key].mp;
         return {
           職業タイプ: key,
-          "HPの最大値": Math.max(...hp),
-          "HPの最小値": Math.min(...hp),
-          "HPの平均値": hp.reduce((a, b) => a + b) / hp.length,
-          "MPの最大値": Math.max(...mp),
-          "MPの最小値": Math.min(...mp),
-          "MPの平均値": mp.reduce((a, b) => a + b) / mp.length,
+          HPの最大値: Math.max(...hp),
+          HPの最小値: Math.min(...hp),
+          HPの平均値: hp.reduce((a, b) => a + b) / hp.length,
+          MPの最大値: Math.max(...mp),
+          MPの最小値: Math.min(...mp),
+          MPの平均値: mp.reduce((a, b) => a + b) / mp.length,
         };
       });
 
@@ -5724,30 +5750,30 @@ describe("RPGデータベース", () => {
       expect(result).toStrictEqual([
         {
           職業タイプ: "0",
-          "HPの最大値": 89,
-          "HPの最小値": 89,
-          "HPの平均値": 89,
-          "MPの最大値": 74,
-          "MPの最小値": 74,
-          "MPの平均値": 74,
+          HPの最大値: 89,
+          HPの最小値: 89,
+          HPの平均値: 89,
+          MPの最大値: 74,
+          MPの最小値: 74,
+          MPの平均値: 74,
         },
         {
           職業タイプ: "1",
-          "HPの最大値": 156,
-          "HPの最小値": 74,
-          "HPの平均値": 115,
-          "MPの最大値": 84,
-          "MPの最小値": 66,
-          "MPの平均値": 75,
+          HPの最大値: 156,
+          HPの最小値: 74,
+          HPの平均値: 115,
+          MPの最大値: 84,
+          MPの最小値: 66,
+          MPの平均値: 75,
         },
         {
           職業タイプ: "2",
-          "HPの最大値": 131,
-          "HPの最小値": 84,
-          "HPの平均値": 107.5,
-          "MPの最大値": 232,
-          "MPの最小値": 190,
-          "MPの平均値": 211,
+          HPの最大値: 131,
+          HPの最小値: 84,
+          HPの平均値: 107.5,
+          MPの最大値: 232,
+          MPの最小値: 190,
+          MPの平均値: 211,
         },
       ]);
     });
@@ -5785,15 +5811,17 @@ describe("RPGデータベース", () => {
         return acc;
       }, {});
 
-      const result = Object.keys(group).map((key) => {
-        const hp = group[key].hp;
-        const mp = group[key].mp;
-        return {
-          id: key,
-          hp: hp.reduce((a, b) => a + b) / hp.length,
-          mp: mp.reduce((a, b) => a + b) / mp.length,
-        };
-      }).filter((r) => r.hp > 100);
+      const result = Object.keys(group)
+        .map((key) => {
+          const hp = group[key].hp;
+          const mp = group[key].mp;
+          return {
+            id: key,
+            hp: hp.reduce((a, b) => a + b) / hp.length,
+            mp: mp.reduce((a, b) => a + b) / mp.length,
+          };
+        })
+        .filter((r) => r.hp > 100);
 
       console.table(result);
       expect(result).toStrictEqual([
@@ -5832,6 +5860,323 @@ describe("RPGデータベース", () => {
 
       console.log(result);
       expect(result).toBe(8);
+    });
+  });
+
+  describe("第7章 副問い合わせ", () => {
+    beforeAll(async () => {
+      await prisma.party.deleteMany();
+      await prisma.experienceEvent.deleteMany();
+      await prisma.event.deleteMany();
+      await prisma.code.deleteMany();
+
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+
+      for (const e of event) {
+        await prisma.event.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const e of experienceEvent) {
+        await prisma.experienceEvent.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const c of code) {
+        await prisma.code.upsert({
+          where: {
+            type_value: {
+              type: c.type,
+              value: c.value,
+            },
+          },
+          update: c,
+          create: c,
+        });
+      }
+
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        },
+      ];
+
+      await prisma.party.createMany({ data: data });
+    });
+
+    test("勇者の現在のHPが、パーティー全員のHPの何%に当たるかを求めたい。適切な列を用いて次の別名で抽出する。ただし、割合は小数点第2位を四捨五入し、小数点第1位まで求めること。", async () => {
+      // なまえ　現在のHP　パーティーでの割合
+      const party = await prisma.party.findMany({
+        select: {
+          hp: true,
+        },
+      });
+
+      const usha = await prisma.party.findFirst({
+        where: { professionCode: "01" },
+        select: {
+          name: true,
+          hp: true,
+        },
+      });
+
+      const allHp = party.reduce((acc, cur) => {
+        const hp = cur.hp;
+        acc += hp;
+        return acc;
+      }, 0);
+
+      const result = {
+        "なまえ": usha.name,
+        "現在のHP": usha.hp,
+        "パーティーでの割合": Math.round((usha.hp / allHp) * 10) / 10,
+      };
+
+      console.log(result);
+      expect(result).toStrictEqual({
+        "なまえ": "ミナト",
+        "現在のHP": 89,
+        "パーティーでの割合": 0.2,
+      })
+    });
+
+    test("魔法使いは回復魔法「みんなからお裾分け」を使ってMPを回復した。この魔法は、本人を除くパーティー全員のMP合計値の10%をもらうことができる。端数は四捨五入して魔法使いのMPを更新する。なお、魔法使い以外のMPは更新しなくてよいものとする。", async () => {
+      const party = await prisma.party.findMany({
+        where: {
+          professionCode: { not: "20" }
+        },
+        select: {
+          id: true,
+          professionCode: true,
+          mp: true,
+        },
+      });
+
+      const mage = await prisma.party.findFirst({
+        where: { professionCode: "20" },
+        select: {
+          id: true,
+          mp: true,
+        },
+      });
+
+      const allMp = party.reduce((acc, cur) => {
+        const mp = cur.mp;
+        acc += mp;
+        return acc;
+      }, 0);
+
+      const result = await prisma.party.update({
+        where: {
+          id: mage.id,
+        },
+        data: {
+          mp: Math.round((allMp - mage.mp) * 0.1),
+        },
+      });
+
+      console.log(result);
+      expect(result).toStrictEqual({
+        id: "A03",
+        name: "イズミ",
+        professionCode: "20",
+        hp: 84,
+        mp: 27,
+        statusCode: "00",
+      });
+    });
+
+    test("経験イベントテーブルから、これまでにクリアしたイベントのうち、タイプが「強制」または「特殊」であるものについて、次の形式で抽出する。", async () => {
+      // イベント番号　クリア結果
+      // 抽出には、副問い合わせを用いること。
+      const result = await prisma.experienceEvent.findMany({
+        where: {
+          event: {
+            OR: [
+              { type: "1" },
+              { type: "3" },
+            ],
+          }
+        },
+        select: {
+          eventNumber: true,
+          clearResult: true,
+        },
+      });
+
+      console.log(result);
+      expect(result[0]).toStrictEqual({
+        eventNumber: 1,
+        clearResult: "A",
+      });
+    });
+
+    test("パーティーテーブルから、パーティー内で最も高いMPをもつキャラクター名とそのMPを抽出する。抽出には、副問い合わせを用いること。", async () => {
+      const maxMp = await prisma.party.aggregate({
+        _max: {
+          mp: true,
+        },
+      });
+
+      const result = await prisma.party.findFirst({
+        where: {
+          mp: maxMp._max.mp,
+        },
+        select: {
+          name: true,
+          mp: true,
+        },
+      });
+
+      console.log(result);
+      expect(result).toStrictEqual({
+        name: "スガワラ",
+        mp: 232,
+      });
+    });
+
+    test("これまでに着手していないイベントの数を抽出する。抽出には、副問い合わせを用いること。", async () => {
+      const result = await prisma.event.count({
+        where: {
+          experienceEvent: {
+            some: {
+              clearResult: null,
+            },
+          },
+        },
+      });
+
+      console.log(result);
+      expect(result).toBe(1);
+    });
+
+    test("5番目にクリアしたイベントのイベント番号よりも小さい番号を持つすべてのイベントについて、イベント番号とイベント名称を抽出する", async () => {
+      const result = await prisma.event.findMany({
+        where: {
+          experienceEvent: {
+            some: {
+              clearResult: {
+                not: null,
+              },
+            },
+          },
+        },
+        select: {
+          eventNumber: true,
+          eventName: true,
+        },
+        orderBy: {
+          eventNumber: "asc",
+        },
+        take: 4,
+      });
+
+      console.log(result);
+      expect(result[3]).toStrictEqual({
+        eventNumber: 5,
+        eventName: "盗賊ダンシーを追え！",
+      });
+    });
+
+    test("これまでにパーティーがクリアしたイベントを前提としているイベントの一覧を次の形式で抽出する。", async () => {
+      // イベント番号　イベント名称　前提イベント番号
+      const clearEvent = await prisma.experienceEvent.findMany({
+        where: {
+          clearResult: {
+            not: null,
+          },
+        },
+        select: {
+          eventNumber: true,
+        },
+      });
+
+      const result = await prisma.event.findMany({
+        where: {
+          premiseEventNumber: {
+            in: clearEvent.map((event) => event.eventNumber),
+          },
+        },
+        select: {
+          eventNumber: true,
+          eventName: true,
+          premiseEventNumber: true,
+        },
+      });
+
+      console.log(result);
+      expect(result[0]).toStrictEqual({
+        eventNumber: 4,
+        eventName: "初めての仲間",
+        premiseEventNumber: 3,
+      });
+    });
+
+    test("パーティーは、イベント番号「9」のイベントを結果「B」でクリアし、その次に発生するイベントに参加した。これを経験イベントテーブルに記録する。なお、更新と追加の両方を2つのSQL文で記述すること。", async () => {
+      const result = await prisma.$transaction([
+        prisma.experienceEvent.update({
+          where: {
+            eventNumber: 9,
+          },
+          data: {
+            clearResult: "B",
+          },
+        }),
+        prisma.experienceEvent.create({
+          data: {
+            eventNumber: 10,
+            clearType: "0",
+            clearResult: null,
+          },
+        }),
+      ]);
+
+      console.log(result);
+      expect(result[0]).toStrictEqual({
+        eventNumber: 9,
+        clearType: "0",
+        clearResult: "B",
+        routeNumber: null,
+      });
+      expect(result[1]).toStrictEqual({
+        eventNumber: 10,
+        clearType: "0",
+        clearResult: null,
+        routeNumber: null,
+      });
     });
 
   });
