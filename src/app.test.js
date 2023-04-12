@@ -6,6 +6,7 @@ import transactionReason from "../prisma/data/transactionReason";
 import product from "../prisma/data/product";
 import retiredProduct from "../prisma/data/retiredProduct";
 import order from "../prisma/data/order";
+import { flattenDiagnosticMessageText } from "typescript";
 const party = require("../prisma/data/party");
 const experienceEvent = require("../prisma/data/experienceEvent");
 const event = require("../prisma/data/event");
@@ -6177,6 +6178,448 @@ describe("RPGデータベース", () => {
         clearResult: null,
         routeNumber: null,
       });
+    });
+  });
+
+  describe("第8章 複数テーブルの結合", () => {
+    beforeAll(async () => {
+      await prisma.party.deleteMany();
+      await prisma.experienceEvent.deleteMany();
+      await prisma.event.deleteMany();
+      await prisma.code.deleteMany();
+
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+
+      for (const e of event) {
+        await prisma.event.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const e of experienceEvent) {
+        await prisma.experienceEvent.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const c of code) {
+        await prisma.code.upsert({
+          where: {
+            type_value: {
+              type: c.type,
+              value: c.value,
+            },
+          },
+          update: c,
+          create: c,
+        });
+      }
+
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        },
+      ];
+
+      await prisma.party.createMany({ data: data });
+    });
+
+    test("すでにクリアしたイベントについて、次の形式の一覧を抽出する", async () => {
+      // ルート番号　イベント番号　イベント名称　クリア結果
+      const result = await prisma.experienceEvent.findMany({
+        where: {
+          clearResult: {
+            not: null,
+          },
+        },
+        select: {
+          routeNumber: true,
+          eventNumber: true,
+          clearResult: true,
+          event: {
+            select: {
+              eventName: true,
+            },
+          },
+        },
+      });
+
+      console.log(result);
+      expect(result[0]).toStrictEqual({
+        routeNumber: 1,
+        eventNumber: 1,
+        clearResult: "A",
+        event: {
+          eventName: "オープニング",
+        },
+      });
+    });
+
+    test("イベントテーブルから、タイプ「強制」のイベントについて、イベント番号とイベント名称、パーティーのクリア区分を抽出する。ただし、これまでに未着手のイベントは考慮しなくてよい", async () => {
+      const result = await prisma.event.findMany({
+        where: {
+          type: "1",
+          experienceEvent: {
+            some: {
+              clearResult: {
+                not: null,
+              },
+            },
+          },
+        },
+        select: {
+          eventNumber: true,
+          eventName: true,
+          experienceEvent: {
+            select: {
+              clearType: true,
+            },
+          },
+        },
+      });
+
+      console.log(result);
+      expect(result.length).toBe(5);
+    });
+
+    test("問題63では、着手していないイベントについては抽出されなかった。未着手のイベントについてももれなく抽出できるよう、SQL文を変更する。なお、クリアしていないイベントについては、クリア区分に「未クリア」と表示する。", async () => {
+      const event = await prisma.event.findMany({
+        where: {
+          type: "1",
+        },
+        select: {
+          eventNumber: true,
+          eventName: true,
+          experienceEvent: {
+            select: {
+              clearType: true,
+            },
+          },
+        },
+      });
+
+      const result = event.map((e) => {
+        if (e.experienceEvent.length === 0) {
+          return {
+            eventNumber: e.eventNumber,
+            eventName: e.eventName,
+            clearType: "未クリア",
+          };
+        } else {
+          return {
+            eventNumber: e.eventNumber,
+            eventName: e.eventName,
+            clearType: e.experienceEvent[0].clearType,
+          };
+        }
+      });
+
+      console.log(result);
+      expect(result.length).toBe(14);
+    });
+
+    // 次のようなコードテーブルを新しく作成し、職業コードと状態コードを登録した。
+    // 「コード」テーブル・・・さまざまなコード値を管理するテーブル
+    // 列名　型　制約　備考
+    // コード種別 INTEGER PKEY コード値を区別する 1:職業コード 2:状態コード 3:イベントタイプ 4:クリア結果
+    // コード値 CHAR(2) PKEY コード種別ごとのコード値
+    // コード名称 VARCHAR(100)  コード値の日本語名称
+    // このテーブルを使って、現在のパーティーに参加しているキャラクターの一覧を適切な列を用いて次の別名で、ID順に抽出する。
+    // ID　なまえ　職業　状態
+    // なお、職業と状態は日本語名称で表示すること。
+    test("このテーブルを使って、現在のパーティーに参加しているキャラクターの一覧を適切な列を用いて次の別名で、ID順に抽出する。", async () => {
+      const paryt = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          statusCode: true,
+        },
+      });
+
+      const profession = await prisma.code.findMany({
+        where: {
+          type: "1",
+        },
+        select: {
+          value: true,
+          name: true,
+        },
+      });
+
+      const status = await prisma.code.findMany({
+        where: {
+          type: "2",
+        },
+        select: {
+          value: true,
+          name: true,
+        },
+      });
+
+      const result = paryt.map((p) => {
+        const professionName = profession.find((pro) => pro.value === p.professionCode)?.name;
+        const statusName = status.find((sta) => sta.value === p.statusCode)?.name;
+        return {
+          "ID": p.id,
+          "なまえ": p.name,
+          "職業": professionName,
+          "状態": statusName,
+        };
+      });
+
+      console.log(result);
+      expect(result[0]).toStrictEqual({
+        "ID": "C01",
+        "なまえ": "ミナト",
+        "職業": "勇者",
+        "状態": "異常なし",
+      });
+    });
+
+    test("パーティーテーブルから、現在のパーティーに参加しているキャラクターの一覧を次の形式で抽出する。職業はコードテーブルより日本語で表示する。また、現在のパーティーにいない職業についてももれなく一覧に記載し、名称の項目に「（仲間になっていない！）」と表示すること。", async () => {
+      // ID なまえ　職業
+      const party = await prisma.party.findMany({
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          statusCode: true,
+        },
+      });
+
+      const profession = await prisma.code.findMany({
+        where: {
+          type: "1",
+        },
+        select: {
+          value: true,
+          name: true,
+        },
+      });
+
+      const result = profession.map((pro) => {
+        const partyName = party.find((p) => p.professionCode === pro.value)?.name;
+        return {
+          "ID": pro.value,
+          "なまえ": partyName ? partyName : `（仲間になっていない！）`,
+          "職業": pro.name,
+        };
+      });
+
+      console.log(result);
+      expect(result[3]).toStrictEqual({
+        "ID": "12",
+        "なまえ": "（仲間になっていない！）",
+        "職業": "忍者",
+      });
+    });
+
+    test("経験イベントテーブルから、参加済みイベントのクリア結果一覧を次の形式で抽出する。クリア結果は「コード値：コード名称」のように表示し、クリア未済のイベントも記載されるよう考慮する。", async () => {
+      // イベント番号　イベント名　クリア結果
+      const event = await prisma.event.findMany({
+        select: {
+          eventNumber: true,
+          eventName: true,
+          experienceEvent: {
+            select: {
+              clearResult: true,
+            },
+          },
+        },
+      });
+
+      const clearType = await prisma.code.findMany({
+        where: {
+          type: "4",
+        },
+        select: {
+          value: true,
+          name: true,
+        },
+      });
+
+      const result = event.map((e) => {
+        const clearTypeName = clearType.find((c) => c.value === e.experienceEvent[0]?.clearResult)?.name;
+        return {
+          "イベント番号": e.eventNumber,
+          "イベント名": e.eventName,
+          "クリア結果": `${e.experienceEvent[0]?.clearResult}:${clearTypeName}`,
+        };
+      });
+
+      console.log(result);
+      expect(result[0]).toStrictEqual({
+        "イベント番号": 1,
+        "イベント名": "オープニング",
+        "クリア結果": "A:たいへんよくできました",
+      });
+    });
+
+    test("イベントテーブルから、前提イベントが設定されているイベントについて、次の形式の一覧を抽出する。", async () => {
+      // イベント番号　イベント名称　前提イベント番号 前提イベント名称
+      const event = await prisma.event.findMany({
+        where: {
+          premiseEventNumber: {
+            not: null,
+          },
+        },
+        select: {
+          eventNumber: true,
+          eventName: true,
+          premiseEventNumber: true,
+        },
+      });
+
+      const premiseEventName = await prisma.event.findFirst({
+        where: {
+          eventNumber: {
+            in: event.map((e) => e.premiseEventNumber),
+          },
+        },
+        select: {
+          eventName: true,
+        },
+      });
+
+      const result = event.map((e) => {
+        return {
+          "イベント番号": e.eventNumber,
+          "イベント名称": e.eventName,
+          "前提イベント番号": e.premiseEventNumber,
+          "前提イベント名称": premiseEventName?.eventName,
+        };
+      });
+
+      console.log(result);
+      expect(result[0]).toStrictEqual({
+        "イベント番号": 4,
+        "イベント名称": "初めての仲間",
+        "前提イベント番号": 3,
+        "前提イベント名称": "勇者の旅立ち",
+      });
+    });
+
+    test("イベントテーブルから、前提イベントまたは後続イベントが設定されているイベントについて、次の形式の一覧を抽出する。", async () => {
+      // イベント番号　イベント名称　前提イベント番号 前提イベント名称　後続イベント番号　後続イベント名称
+      const event = await prisma.event.findMany({
+        where: {
+          OR: [
+            {
+              premiseEventNumber: {
+                not: null,
+              },
+            },
+            {
+              followOnEventNumber: {
+                not: null,
+              },
+            },
+          ],
+        },
+        select: {
+          eventNumber: true,
+          eventName: true,
+          premiseEventNumber: true,
+          followOnEventNumber: true,
+        },
+      });
+
+      const eventName = await prisma.event.findMany({
+        select: {
+          eventName: true,
+          eventNumber: true,
+        },
+        orderBy: {
+          eventNumber: "asc",
+        },
+      })
+
+      const result = event.map((e) => {
+        return {
+          "イベント番号": e.eventNumber,
+          "イベント名称": e.eventName,
+          "前提イベント番号": e.premiseEventNumber,
+          "前提イベント名称": eventName.filter((n) => n.eventNumber === e.premiseEventNumber)[0]?.eventName,
+          "後続イベント番号": e.followOnEventNumber,
+          "後続イベント名称": eventName.filter((n) => n.eventNumber === e.followOnEventNumber)[0]?.eventName,
+        };
+      });
+
+      console.log(result);
+      expect(result[3]).toStrictEqual({
+        "イベント番号": 4,
+        "イベント名称": "初めての仲間",
+        "前提イベント番号": 3,
+        "前提イベント名称": "勇者の旅立ち",
+        "後続イベント番号": 5,
+        "後続イベント名称": "盗賊ダンシーを追え！",
+      });
+    });
+
+    test("ほかのイベントの前提となっているイベントについて、次の形式の一覧を抽出する。一覧はイベント番号順とする。", async () => {
+      // イベント番号　イベント名称　前提イベント数
+      const event = await prisma.event.groupBy({
+        by: ["eventNumber", "eventName"],
+        where: {
+          premiseEventNumber: {
+            not: null,
+          },
+        },
+        _sum: {
+          premiseEventNumber: true,
+        },
+        orderBy: {
+          eventNumber: "asc",
+        },
+      });
+
+      const result = event.map((e) => {
+        return {
+          "イベント番号": e.eventNumber,
+          "イベント名称": e.eventName,
+          "前提イベント数": e._sum.premiseEventNumber,
+        };
+      });
+
+      console.log(result);
+      expect(result[0]).toStrictEqual({
+        "イベント番号": 4,
+        "イベント名称": "初めての仲間",
+        "前提イベント数": 3,
+      });
+
     });
 
   });
