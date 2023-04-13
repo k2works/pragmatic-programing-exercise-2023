@@ -182,6 +182,17 @@ describe("銀行口座データベース", () => {
       await prisma.account.deleteMany({});
       await prisma.account.createMany({ data: account });
     });
+    const fullConvert = (accounts) => {
+      return accounts.map((account) => {
+        return {
+          口座番号: account.number,
+          名義: account.name,
+          種別: account.type,
+          残高: account.balance,
+          更新日: account.updatedAt,
+        };
+      });
+    }
 
     test("9:口座テーブルから、口座番号が「0037651」のデータを抽出する。", async () => {
       const account = await prisma.account.findUnique({
@@ -189,7 +200,6 @@ describe("銀行口座データベース", () => {
           number: "0037651",
         },
       });
-
       const result = {
         口座番号: account.number,
         名義: account.name,
@@ -197,8 +207,9 @@ describe("銀行口座データベース", () => {
         残高: account.balance,
         更新日: account.updatedAt,
       };
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 口座番号 = '0037651'`
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 口座番号 = '0037651'`
       expect(result).toStrictEqual(expected[0])
     });
 
@@ -210,18 +221,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 残高 > 0`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 残高 > 0`
       expect(result).toStrictEqual(expected)
     });
 
@@ -233,18 +236,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 口座番号 < '1000000'`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 口座番号 < '1000000'`
       expect(result).toStrictEqual(expected)
     });
 
@@ -256,18 +251,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 更新日 <= '2021-12-31'`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 更新日 <= '2021-12-31'`
       expect(result).toStrictEqual(expected)
     });
 
@@ -279,18 +266,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 残高 >= 1000000`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 残高 >= 1000000`
       expect(result).toStrictEqual(expected)
     });
 
@@ -302,18 +281,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 種別 <> '1'`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 種別 <> '1'`
       expect(result).toStrictEqual(expected)
     });
 
@@ -323,18 +294,10 @@ describe("銀行口座データベース", () => {
           updatedAt: null,
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 更新日 IS NULL`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 更新日 IS NULL`
       expect(result).toStrictEqual(expected)
     });
 
@@ -346,18 +309,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 名義 LIKE '%ハシ%'`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 名義 LIKE '%ハシ%'`
       expect(result).toStrictEqual(expected)
     });
 
@@ -370,18 +325,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 更新日 BETWEEN '2022-01-01' AND '2022-02-01'`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 更新日 BETWEEN '2022-01-01' AND '2022-02-01'`
       expect(result).toStrictEqual(expected)
     });
 
@@ -393,18 +340,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 種別 IN ('2', '3')`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 種別 IN ('2', '3')`
       expect(result).toStrictEqual(expected)
     });
 
@@ -416,18 +355,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 名義 IN ('サカタ　リョウヘイ', 'マツモト　ミワコ', 'ハマダ　サトシ')`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 名義 IN ('サカタ　リョウヘイ', 'マツモト　ミワコ', 'ハマダ　サトシ')`
       expect(result).toStrictEqual(expected)
     });
 
@@ -440,18 +371,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 更新日 >= '2021-12-30' AND 更新日 < '2022-01-05'`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 更新日 >= '2021-12-30' AND 更新日 < '2022-01-05'`
       expect(result).toStrictEqual(expected)
     });
 
@@ -466,18 +389,10 @@ describe("銀行口座データベース", () => {
           },
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 残高 < 10000 AND 更新日 IS NOT NULL`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 残高 < 10000 AND 更新日 IS NOT NULL`
       expect(result).toStrictEqual(expected)
     });
 
@@ -501,18 +416,10 @@ describe("銀行口座データベース", () => {
           ],
         },
       });
-
-      const result = accounts.map((account) => {
-        return {
-          口座番号: account.number,
-          名義: account.name,
-          種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
-        };
-      });
-      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 口座番号 LIKE '2______' OR 名義 LIKE 'エ__　%コ'`
+      const result = fullConvert(accounts);
       console.table(result);
+
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 口座番号 LIKE '2______' OR 名義 LIKE 'エ__　%コ'`
       expect(result).toStrictEqual(expected)
     });
   });
