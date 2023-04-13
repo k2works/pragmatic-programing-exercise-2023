@@ -20,7 +20,7 @@ describe("銀行口座データベース", () => {
       await prisma.account.deleteMany({});
       await prisma.account.createMany({ data: account });
     });
-    test("口座テーブルの全てのデータを「*]を用いずに抽出する", async () => {
+    test("1:口座テーブルの全てのデータを「*」を用いずに抽出する", async () => {
       const accounts = await prisma.account.findMany({
         select: {
           number: true,
@@ -31,40 +31,38 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      expect(accounts.length).toBe(30);
-      expect(accounts[0]).toStrictEqual({
-        number: "0037651",
-        name: "キタムラ　ユウコ",
-        type: "1",
-        balance: 1341107,
-        updatedAt: new Date(2022, 0, 3),
+      const result = accounts.map((account) => {
+        return {
+          口座番号: account.number,
+          名義: account.name,
+          種別: account.type,
+          残高: account.balance,
+          更新日: account.updatedAt,
+        };
       });
-      expect(accounts[29]).toStrictEqual({
-        number: "3104451",
-        name: "ナカジョウ　ヨシヒコ",
-        type: "2",
-        balance: 8136406,
-        updatedAt: new Date("2022-03-13"),
-      });
+      console.table(result)
+      const expected = await prisma.$queryRaw`SELECT 口座番号, 名義, 種別, 残高, 更新日 FROM 口座`
+      expect(result).toStrictEqual(expected)
     });
 
-    test("口座テーブルの全ての口座番号を抽出する", async () => {
+    test("2:口座テーブルの全ての口座番号を抽出する", async () => {
       const accounts = await prisma.account.findMany({
         select: {
           number: true,
         },
       });
 
-      expect(accounts.length).toBe(30);
-      expect(accounts[0]).toStrictEqual({
-        number: "0037651",
+      const result = accounts.map((account) => {
+        return {
+          口座番号: account.number,
+        };
       });
-      expect(accounts[29]).toStrictEqual({
-        number: "3104451",
-      });
+      console.table(result)
+      const expected = await prisma.$queryRaw`SELECT 口座番号 FROM 口座`
+      expect(result).toStrictEqual(expected)
     });
 
-    test("口座テーブルの全ての口座番号と残高を抽出する", async () => {
+    test("3:口座テーブルの全ての口座番号と残高を抽出する", async () => {
       const accounts = await prisma.account.findMany({
         select: {
           number: true,
@@ -72,89 +70,80 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      expect(accounts.length).toBe(30);
-      expect(accounts[0]).toStrictEqual({
-        number: "0037651",
-        balance: 1341107,
+      const result = accounts.map((account) => {
+        return {
+          口座番号: account.number,
+          残高: account.balance,
+        }
       });
-      expect(accounts[29]).toStrictEqual({
-        number: "3104451",
-        balance: 8136406,
-      });
+      console.table(result)
+      const expected = await prisma.$queryRaw`SELECT 口座番号, 残高 FROM 口座`
+      expect(result).toStrictEqual(expected)
     });
 
-    test("口座テーブルの全てのデータを「＊」を用いて抽出する", async () => {
+    test("4:口座テーブルの全てのデータを「＊」を用いて抽出する", async () => {
       const accounts = await prisma.account.findMany();
 
-      expect(accounts.length).toBe(30);
-      expect(accounts[0]).toStrictEqual({
-        number: "0037651",
-        name: "キタムラ　ユウコ",
-        type: "1",
-        balance: 1341107,
-        updatedAt: new Date(2022, 0, 3),
+      const result = accounts.map((account) => {
+        return {
+          口座番号: account.number,
+          名義: account.name,
+          種別: account.type,
+          残高: account.balance,
+          更新日: account.updatedAt,
+        };
       });
-      expect(accounts[29]).toStrictEqual({
-        number: "3104451",
-        name: "ナカジョウ　ヨシヒコ",
-        type: "2",
-        balance: 8136406,
-        updatedAt: new Date("2022-03-13"),
-      });
+      console.table(result)
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座`
+      expect(result).toStrictEqual(expected)
     });
 
-    test("口座テーブルの全ての名義を「ｘｘｘｘｘ」に更新する", async () => {
-      const accounts = await prisma.account.updateMany({
+    test("5:口座テーブルの全ての名義を「ｘｘｘｘｘ」に更新する", async () => {
+      await prisma.account.updateMany({
         data: {
           name: "ｘｘｘｘｘ",
         },
       });
 
-      const result = await prisma.account.findMany();
-
-      expect(result[0]).toStrictEqual({
-        number: "0037651",
-        name: "ｘｘｘｘｘ",
-        type: "1",
-        balance: 1341107,
-        updatedAt: new Date(2022, 0, 3),
+      const accounts = await prisma.account.findMany();
+      const result = accounts.map((account) => {
+        return {
+          口座番号: account.number,
+          名義: account.name,
+          種別: account.type,
+          残高: account.balance,
+          更新日: account.updatedAt,
+        };
       });
-      expect(result[29]).toStrictEqual({
-        number: "3104451",
-        name: "ｘｘｘｘｘ",
-        type: "2",
-        balance: 8136406,
-        updatedAt: new Date("2022-03-13"),
-      });
+      await prisma.$queryRaw`UPDATE 口座 SET 名義 = 'ｘｘｘｘｘ'`
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座`
+      expect(result).toStrictEqual(expected)
     });
 
-    test("口座テーブルの全て残高を99999999、更新日を「2022-03-01」に更新する", async () => {
-      const accounts = await prisma.account.updateMany({
+    test("6:口座テーブルの全て残高を99999999、更新日を「2022-03-01」に更新する", async () => {
+      await prisma.account.updateMany({
         data: {
           balance: 99999999,
           updatedAt: new Date("2022-03-01"),
         },
       });
 
-      const result = await prisma.account.findMany();
-
-      expect(result[0]).toStrictEqual({
-        number: "0037651",
-        name: "ｘｘｘｘｘ",
-        type: "1",
-        balance: 99999999,
-        updatedAt: new Date("2022-03-01"),
+      const accounts = await prisma.account.findMany();
+      const result = accounts.map((account) => {
+        return {
+          口座番号: account.number,
+          名義: account.name,
+          種別: account.type,
+          残高: account.balance,
+          更新日: account.updatedAt,
+        };
       });
-      expect(result[29]).toStrictEqual({
-        number: "3104451",
-        name: "ｘｘｘｘｘ",
-        type: "2",
-        balance: 99999999,
-        updatedAt: new Date("2022-03-01"),
-      });
+      await prisma.$queryRaw`UPDATE 口座 SET 残高 = 99999999, 更新日 = '2022-03-01'`
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座`
+      expect(result).toStrictEqual(expected)
     });
 
-    test("口座テーブルに次の３つのデータを１回の実行ごとに１つずつ登録する", async () => {
+    test("7:口座テーブルに次の３つのデータを１回の実行ごとに１つずつ登録する", async () => {
       const data = [
         {
           number: "0642191",
@@ -178,14 +167,28 @@ describe("銀行口座データベース", () => {
           updatedAt: null,
         },
       ];
-      const accounts = await prisma.account.createMany({ data: data });
+      await prisma.account.createMany({ data: data });
+      const accounts = await prisma.account.findMany();
+      const result = accounts.map((account) => {
+        return {
+          口座番号: account.number,
+          名義: account.name,
+          種別: account.type,
+          残高: account.balance,
+          更新日: account.updatedAt,
+        };
+      });
 
-      const result = await prisma.account.findMany();
-
-      expect(accounts.count).toBe(3);
-      expect(result[30]).toStrictEqual(data[0]);
-      expect(result[31]).toStrictEqual(data[1]);
-      expect(result[32]).toStrictEqual(data[2]);
+      await prisma.account.deleteMany({
+        where: {
+          number: {
+            in: data.map((account) => account.number),
+          },
+        },
+      });
+      await prisma.$queryRaw`INSERT INTO 口座 (口座番号, 名義, 種別, 残高, 更新日) VALUES ('0642191', 'アオキ　ハルカ', '1', 3640551, '2022-03-13'), ('1039410', 'キノシタ　リュウジ', '1', 259017, '2021-11-30'), ('1239855', 'タカシナ ミツル', '2', 6509773, null)`
+      const expected = await prisma.$queryRaw`SELECT * FROM 口座`
+      expect(result).toStrictEqual(expected)
     });
   });
 
