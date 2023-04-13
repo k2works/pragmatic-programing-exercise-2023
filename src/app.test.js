@@ -448,8 +448,8 @@ describe("銀行口座データベース", () => {
           口座番号: account.number,
           名義: account.name,
           種別: account.type,
-          残高: account.balance,
-          更新日: account.updatedAt,
+          解約時残高: account.balance,
+          解約日: account.retiredAt,
         };
       });
     }
