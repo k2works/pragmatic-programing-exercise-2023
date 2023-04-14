@@ -1625,8 +1625,7 @@ describe("銀行口座データベース", () => {
       await prisma.transaction.createMany({ data: transaction });
     });
 
-    // UPDATE account SET balance = (SELECT SUM(income) - SUM(outcome) FROM transaction WHERE account_number = account.number AND day = '2022-01-11') WHERE number = '0351333';
-    test("次の口座について、取引日の取引結果を口座テーブルの残高に反映する。更新には、SET句にて取引テーブルを副問い合わせするUPDATE文を用いること。", async () => {
+    test("59:次の口座について、取引日の取引結果を口座テーブルの残高に反映する。更新には、SET句にて取引テーブルを副問い合わせするUPDATE文を用いること。", async () => {
       // 口座番号: 0351333, 取引日: 2022-01-11
       const transactionData = await prisma.transaction.findMany({
         where: {
@@ -1638,21 +1637,7 @@ describe("銀行口座データベース", () => {
           outcome: true,
         },
       });
-
-      const transactionBalance = transactionData.reduce(
-        (a, b) => a + b.income - b.outcome,
-        0,
-      );
-      await prisma.account.update({
-        where: {
-          number: "0351333",
-        },
-        data: {
-          balance: transactionBalance,
-        },
-      });
-
-      const result = await prisma.account.findMany({
+      const initBalance = await prisma.account.findMany({
         where: {
           number: "0351333",
         },
@@ -1660,13 +1645,60 @@ describe("銀行口座データベース", () => {
           balance: true,
         },
       });
+      const result = await (async () => {
+        const balanceSum = initBalance[0].balance;
+        const transactionBalance = transactionData.reduce(
+          (a, b) => a + b.income - b.outcome,
+          0,
+        );
+        await prisma.account.update({
+          where: {
+            number: "0351333",
+          },
+          data: {
+            balance: balanceSum + transactionBalance,
+          },
+        });
+        const accounts = await prisma.account.findMany({
+          where: {
+            number: "0351333",
+          },
+          select: {
+            balance: true,
+          },
+        });
 
+        return accounts.map((item) => {
+          return {
+            残高: item.balance,
+          };
+        });
+      })()
       console.table(result);
-      expect(result[0].balance).toBe(transactionBalance);
+
+      await prisma.account.deleteMany({});
+      await prisma.account.createMany({ data: account });
+      await prisma.$queryRaw`
+        UPDATE 口座
+        SET 残高 = 残高 + (
+            SELECT COALESCE(SUM(入金額), 0) - COALESCE(SUM(出金額), 0)
+            FROM 取引
+            WHERE 口座番号 = '0351333'
+              AND 日付 = '2022-01-11'
+          ),
+          更新日 = '2022-01-11'
+        WHERE 口座番号 = '0351333'
+        `;
+      const expected = await prisma.$queryRaw`
+        SELECT 残高
+        FROM 口座
+        WHERE 口座番号 = '0351333'
+      `;
+      console.table(expected);
+      expect(expected[0].残高).toStrictEqual(result[0].残高);
     });
 
-    // SELECT account_number, SUM(income) AS income, SUM(outcome) AS outcome FROM transaction WHERE day = '2021-12-28' GROUP BY account_number;
-    test("次の口座について、現在の残高と、取引日に発生した取引による入出金額それぞれの合計金額を取得する。取得には、選択列リストにて取引テーブルを副問い合わせするSELECT文を用いること。", async () => {
+    test("60:次の口座について、現在の残高と、取引日に発生した取引による入出金額それぞれの合計金額を取得する。取得には、選択列リストにて取引テーブルを副問い合わせするSELECT文を用いること。", async () => {
       // 口座番号: 1115600, 取引日: 2021-12-28
       const transactionData = await prisma.transaction.findMany({
         where: {
@@ -1679,11 +1711,8 @@ describe("銀行口座データベース", () => {
         },
       });
 
-      const transactionBalance = transactionData.reduce(
-        (a, b) => a + b.income - b.outcome,
-        0,
-      );
-
+      const incomSum = transactionData.reduce((a, b) => a + b.income, 0);
+      const outcomeSum = transactionData.reduce((a, b) => a + b.outcome, 0);
       const accountBalance = await prisma.account.findMany({
         where: {
           number: "1115600",
@@ -1692,21 +1721,24 @@ describe("銀行口座データベース", () => {
           balance: true,
         },
       });
-
       const result = {
-        現在の残高: accountBalance[0].balance,
-        取引日に発生した取引による入出金額それぞれの合計金額:
-          transactionBalance,
+        残高: accountBalance[0].balance,
+        入金額合計: incomSum,
+        出金額合計: outcomeSum,
       };
-
       console.table(result);
-      expect(result.取引日に発生した取引による入出金額それぞれの合計金額).toBe(
-        transactionBalance,
-      );
+
+      const expected = await prisma.$queryRaw`
+        SELECT 残高,
+        (SELECT SUM(入金額) FROM 取引 WHERE 口座番号 = '1115600' AND 日付 = '2021-12-28') AS 入金額合計,
+        (SELECT SUM(出金額) FROM 取引 WHERE 口座番号 = '1115600' AND 日付 = '2021-12-28') AS 出金額合計
+        FROM 口座
+        WHERE 口座番号 = '1115600'
+      `;
+      expect(expected[0].残高).toStrictEqual(result.残高);
     });
 
-    // SELECT number, name, balance FROM account WHERE number IN (SELECT account_number FROM transaction WHERE income >= 1000000);
-    test("これまで1回の取引で100万円以上の入金があった口座について、口座番号、名義、残高を取得する。ただし、WHERE句でIN演算子を利用した副問い合わせを用いること。", async () => {
+    test("61:これまで1回の取引で100万円以上の入金があった口座について、口座番号、名義、残高を取得する。ただし、WHERE句でIN演算子を利用した副問い合わせを用いること。", async () => {
       const transactionData = await prisma.transaction.findMany({
         where: {
           income: {
@@ -1717,8 +1749,7 @@ describe("銀行口座データベース", () => {
           accountNumber: true,
         },
       });
-
-      const result = await prisma.account.findMany({
+      const accounts = await prisma.account.findMany({
         where: {
           number: {
             in: [...new Set(transactionData.map((item) => item.accountNumber))],
@@ -1731,74 +1762,137 @@ describe("銀行口座データベース", () => {
         },
       });
 
+      const result = accounts.map((item) => {
+        return {
+          口座番号: item.number,
+          名義: item.name,
+          残高: item.balance,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(3);
+
+      const expected = await prisma.$queryRaw`
+        SELECT 口座番号, 名義, 残高
+        FROM 口座
+        WHERE 口座番号 IN (
+          SELECT 口座番号
+          FROM 取引
+          WHERE 入金額 >= 1000000
+        )
+      `;
+      expect(expected).toStrictEqual(result);
     });
 
-    test("取引テーブルの日付よりも未来の更新日を持つ口座テーブルのデータを抽出する。ただし、WHERE句でALL演算子を利用した副問い合わせを用いること。", async () => {
+    test("62:取引テーブルの日付よりも未来の更新日を持つ口座テーブルのデータを抽出する。ただし、WHERE句でALL演算子を利用した副問い合わせを用いること。", async () => {
       const transactionData = await prisma.transaction.findMany({
         select: {
           day: true,
         },
       });
-
-      const maxDay = transactionData.reduce((a, b) => {
-        return a.day > b.day ? a : b;
-      });
-
-      const result = await prisma.account.findMany({
+      const accounts = await prisma.account.findMany({
         where: {
           updatedAt: {
             gt: transactionData.reduce((a, b) => {
               return a.day > b.day ? a : b;
             }).day,
           },
-        },
-        select: {
-          number: true,
-          name: true,
-          balance: true,
-        },
+        }
       });
 
-      console.table(result);
-      expect(result[0]).toStrictEqual({
-        number: "1106405",
-        name: "センカワ　シゲル",
-        balance: 5310840,
+      const result = accounts.map((item) => {
+        return {
+          口座番号: item.number,
+          名義: item.name,
+          種別: item.type,
+          残高: item.balance,
+          更新日: item.updatedAt,
+        };
       });
+      console.table(result);
+
+      const expected = await prisma.$queryRaw`
+        SELECT * FROM 口座 WHERE 更新日 > ALL (SELECT 日付 FROM 取引)
+      `;
+      expect(expected).toStrictEqual(result);
     });
 
-    // SELECT account_number, SUM(income) AS income, SUM(outcome) AS outcome FROM transaction WHERE day = '2021-12-28' GROUP BY account_number;
-    test("次の口座について、入金と出金の両方が発生した日付を抽出する。また、これまでの入金と出金それぞれの最大額もあわせて抽出する。FROM句で副問い合わせを用いること。", async () => {
+    test("63:次の口座について、入金と出金の両方が発生した日付を抽出する。また、これまでの入金と出金それぞれの最大額もあわせて抽出する。FROM句で副問い合わせを用いること。", async () => {
       // 口座番号: 3104451
-      const result = await prisma.transaction.groupBy({
-        by: ["income", "outcome", "accountNumber", "day"],
+      const transactions = await prisma.transaction.groupBy({
+        by: ["day"],
         where: {
           accountNumber: "3104451",
+        },
+        having: {
           income: {
-            gt: 0,
+            _sum: {
+              gt: 0,
+            },
           },
           outcome: {
-            gt: 0,
+            _sum: {
+              gt: 0,
+            },
           },
         },
         select: {
-          accountNumber: true,
           day: true,
-          income: {
-            max: true,
-          },
-          outcome: {
-            max: true,
-          },
         },
       });
+
+      const result = await (async () => {
+        const maxIncome = await prisma.transaction.aggregate({
+          where: {
+            accountNumber: "3104451",
+          },
+          _max: {
+            income: true,
+          },
+        });
+        const maxOutcome = await prisma.transaction.aggregate({
+          where: {
+            accountNumber: "3104451",
+          },
+          _max: {
+            outcome: true,
+          },
+        });
+        return transactions.map((item) => {
+          return {
+            日付: item.day,
+            最大入金額: maxIncome._max.income,
+            最大出金額: maxOutcome._max.outcome,
+          };
+        });
+
+      })()
       console.table(result);
-      expect(result.length).toBe(0);
+
+      const expected = await prisma.$queryRaw`
+            SELECT A.日付,
+              (
+                SELECT MAX(入金額)
+                FROM 取引
+                WHERE 口座番号 = '3104451'
+              ) AS 最大入金額,
+              (
+                SELECT MAX(出金額)
+                FROM 取引
+                WHERE 口座番号 = '3104451'
+              ) AS 最大出金額
+            FROM (
+                SELECT 日付
+                FROM 取引
+                WHERE 口座番号 = '3104451'
+                GROUP BY 日付
+                HAVING SUM(入金額) > 0
+                  AND SUM(出金額) > 0
+              ) AS A        
+              `;
+      expect(expected).toStrictEqual(result);
     });
 
-    test("次の口座について解約の申し出があった。副問い合わせを使って口座テーブルから廃止口座テーブルにデータを登録する。また、口座テーブルの該当データを削除する。ただし、データの整合性を保つことについては考慮しなくてよい。", async () => {
+    test("64:次の口座について解約の申し出があった。副問い合わせを使って口座テーブルから廃止口座テーブルにデータを登録する。また、口座テーブルの該当データを削除する。ただし、データの整合性を保つことについては考慮しなくてよい。", async () => {
       // 口座番号: 2761055
       const retairedAccountNumber = "2761055";
       const result = await prisma.account.findMany({
@@ -1844,8 +1938,19 @@ describe("銀行口座データベース", () => {
 
       console.table(accountData);
       console.table(retiredAccount);
-      expect(accountData.length).toBe(0);
-      expect(retiredAccount.length).toBe(1);
+
+      await prisma.account.deleteMany({});
+      await prisma.account.createMany({ data: account });
+      await prisma.retiredAccount.deleteMany({});
+      await prisma.retiredAccount.createMany({ data: retiredAccount });
+      await prisma.$transaction([
+        prisma.$queryRaw`DELETE FROM 口座 WHERE 口座番号 = ${retairedAccountNumber}`,
+        prisma.$queryRaw`INSERT INTO 廃止口座 SELECT * FROM 口座 WHERE 口座番号 = ${retairedAccountNumber}`,
+      ]);
+      const exceptedAccountData = await prisma.$queryRaw`SELECT * FROM 口座 WHERE 口座番号 = ${retairedAccountNumber}`;
+      const exceptedRetiredAccount = await prisma.$queryRaw`SELECT * FROM 廃止口座 WHERE 口座番号 = ${retairedAccountNumber}`;
+      expect(exceptedAccountData).toStrictEqual(accountData);
+      expect(exceptedRetiredAccount.length).toBe(retiredAccount.length);
     });
   });
 
