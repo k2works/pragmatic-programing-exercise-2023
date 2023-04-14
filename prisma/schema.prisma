@@ -32,7 +32,7 @@ model RetiredAccount {
 
 model Transaction {
   number              Int               @id @default(autoincrement()) @map("取引番号")
-  transactionReasonId Int               @map("取引事由ID")
+  transactionReasonId Int               @map("取引事由ＩＤ")
   day                 DateTime          @map("日付")
   accountNumber       String            @map("口座番号")
   income              Int?              @map("入金額")
@@ -43,7 +43,7 @@ model Transaction {
 }
 
 model TransactionReason {
-  id          Int           @id @default(autoincrement()) @map("取引事由ID")
+  id          Int           @id @default(autoincrement()) @map("取引事由ＩＤ")
   name        String        @map("取引事由名")
   transaction Transaction[]
 
