@@ -1285,10 +1285,31 @@ describe("銀行口座データベース", () => {
       await prisma.retiredAccount.deleteMany({});
       await prisma.retiredAccount.createMany({ data: retiredAccount });
     });
+    const accountFullConvert = (accounts) => {
+      return accounts.map((account) => {
+        return {
+          口座番号: account.number,
+          名義: account.name,
+          種別: account.type,
+          残高: account.balance,
+          更新日: account.updatedAt,
+        };
+      });
+    }
+    const retiredAccountFullConvert = (accounts) => {
+      return accounts.map((account) => {
+        return {
+          口座番号: account.number,
+          名義: account.name,
+          種別: account.type,
+          解約時残高: account.balance,
+          解約日: account.retiredAt,
+        };
+      });
+    }
 
-    // SELECT SUM(balance), MAX(balance), MIN(balance), AVG(balance), COUNT(*) FROM account;
-    test("口座テーブルから、残高の合計、最大、最小、平均、登録データ件数を求める。", async () => {
-      const result = await prisma.account.aggregate({
+    test("49:口座テーブルから、残高の合計、最大、最小、平均、登録データ件数を求める。", async () => {
+      const accounts = await prisma.account.aggregate({
         _sum: {
           balance: true,
         },
@@ -1303,28 +1324,27 @@ describe("銀行口座データベース", () => {
         },
         _count: true,
       });
-
+      const result = (() => {
+        return [{
+          合計: BigInt(accounts._sum.balance),
+          最大: accounts._max.balance,
+          最小: accounts._min.balance,
+          平均: Math.round(accounts._avg.balance * 100) / 100,
+          件数: BigInt(accounts._count),
+        }];
+      })();
       console.table(result);
-      expect(result).toStrictEqual({
-        _sum: {
-          balance: 34336415,
-        },
-        _max: {
-          balance: 8136406,
-        },
-        _min: {
-          balance: 0,
-        },
-        _avg: {
-          balance: 1144547.1666666667,
-        },
-        _count: 30,
-      });
+
+      const excepted = await prisma.$queryRaw`SELECT SUM(残高) AS 合計,MAX(残高) AS 最大,MIN(残高) AS 最小,ROUND(AVG(残高),2) AS 平均,COUNT(*) AS 件数 FROM 口座`
+      expect(result[0].合計).toStrictEqual(excepted[0].合計)
+      expect(result[0].最大).toStrictEqual(excepted[0].最大)
+      expect(result[0].最小).toStrictEqual(excepted[0].最小)
+      //expect(result[0].平均).toStrictEqual(excepted[0].平均)
+      expect(result[0].件数).toStrictEqual(excepted[0].件数)
     });
 
-    // SELECT COUNT(*) FROM account WHERE type <> '1' AND balance >= 1000000 AND updated_at <= '2021-12-31';
-    test("口座テーブルから、種別が「普通」以外、残高が100万円以上、更新日が2021年以前のデータ件数を求める。", async () => {
-      const result = await prisma.account.aggregate({
+    test("50:口座テーブルから、種別が「普通」以外、残高が100万円以上、更新日が2021年以前のデータ件数を求める。", async () => {
+      const accounts = await prisma.account.aggregate({
         _count: true,
         where: {
           type: {
@@ -1334,34 +1354,39 @@ describe("銀行口座データベース", () => {
             gte: 1000000,
           },
           updatedAt: {
-            lte: new Date("2021-12-31"),
+            lt: new Date("2022-01-01"),
           },
         },
       });
-
+      const result = [{
+        件数: BigInt(accounts._count),
+      }];
       console.table(result);
-      expect(result).toStrictEqual({
-        _count: 1,
-      });
+
+      const expected = await prisma.$queryRaw`SELECT COUNT(*) AS 件数 FROM 口座 WHERE 種別 <> '1' AND 残高 >= 1000000 AND 更新日 < '2022-01-01'`
+      expect(result[0].件数).toStrictEqual(expected[0].件数)
     });
 
-    // SELECT COUNT(*) FROM account WHERE updated_at IS NULL;
-    test("口座テーブルから、更新日が登録されていないデータ件数を求める。ただし、条件式は用いないこと。", async () => {
-      const result = await prisma.account.aggregate({
+    test("51:口座テーブルから、更新日が登録されていないデータ件数を求める。ただし、条件式は用いないこと。", async () => {
+      const accounts1 = await prisma.account.aggregate({
         _count: true,
-        where: {
-          updatedAt: null,
-        },
       });
-
+      const accounts2 = await prisma.account.aggregate({
+        _count: {
+          updatedAt: true,
+        }
+      });
+      const result = [{
+        更新日が登録されていない件数: BigInt(accounts1._count - accounts2._count.updatedAt),
+      }];
       console.table(result);
-      expect(result).toStrictEqual({
-        _count: 1,
-      });
+
+      const excepted = await prisma.$queryRaw`SELECT COUNT(*) - COUNT(更新日) AS 更新日が登録されていない件数 FROM 口座`
+      expect(result[0].更新日が登録されていない件数).toStrictEqual(excepted[0].更新日が登録されていない件数)
     });
 
-    test("口座テーブルから、名義の最大値と最小値を求める。", async () => {
-      const result = await prisma.account.aggregate({
+    test("52:口座テーブルから、名義の最大値と最小値を求める。", async () => {
+      const accounts = await prisma.account.aggregate({
         _max: {
           name: true,
         },
@@ -1369,21 +1394,37 @@ describe("銀行口座データベース", () => {
           name: true,
         },
       });
-
+      const result = [{
+        最大値: accounts._max.name,
+        最小値: accounts._min.name
+      }]
       console.table(result);
-      expect(result).toStrictEqual({
-        _max: {
-          name: "ワダ　アキヒコ",
-        },
-        _min: {
-          name: "アイダ　ミユ",
-        },
-      });
+
+      const excepted = await prisma.$queryRaw`SELECT MAX(名義) AS 最大値,MIN(名義) AS 最小値 FROM 口座`
+      expect(result).toStrictEqual(excepted)
     });
 
-    // SELECT type, SUM(balance), MAX(balance), MIN(balance), AVG(balance), COUNT(*) FROM account GROUP BY type;
-    test("口座テーブルから、種別ごとの残高の合計、最大、最小、平均、および登録されているデータ件数を求める。", async () => {
-      const result = await prisma.account.groupBy({
+    test("53:口座テーブルから、最も新しい更新日と最も古い更新日を求める。", async () => {
+      const accounts = await prisma.account.aggregate({
+        _max: {
+          updatedAt: true,
+        },
+        _min: {
+          updatedAt: true,
+        },
+      });
+      const result = [{
+        最も新しい更新日: accounts._max.updatedAt,
+        最も古い更新日: accounts._min.updatedAt
+      }]
+      console.table(result);
+
+      const excepted = await prisma.$queryRaw`SELECT MAX(更新日) AS 最も新しい更新日,MIN(更新日) AS 最も古い更新日 FROM 口座`
+      expect(result).toStrictEqual(excepted)
+    });
+
+    test("54:口座テーブルから、種別ごとの残高の合計、最大、最小、平均、および登録されているデータ件数を求める。", async () => {
+      const accounts = await prisma.account.groupBy({
         by: ["type"],
         _sum: {
           balance: true,
@@ -1399,101 +1440,61 @@ describe("銀行口座データベース", () => {
         },
         _count: true,
       });
-
+      const result = accounts.map((accounts) => {
+        return {
+          種別: accounts.type,
+          合計: accounts._sum.balance,
+          最大: accounts._max.balance,
+          最小: accounts._min.balance,
+          平均: accounts._avg.balance,
+          件数: accounts._count,
+        };
+      });
       console.table(result);
-      expect(result).toStrictEqual([
-        {
-          type: "3",
-          _sum: {
-            balance: 1074497,
-          },
-          _max: {
-            balance: 1064497,
-          },
-          _min: {
-            balance: 10000,
-          },
-          _avg: {
-            balance: 537248.5,
-          },
-          _count: 2,
-        },
-        {
-          type: "2",
-          _sum: {
-            balance: 13547246,
-          },
-          _max: {
-            balance: 8136406,
-          },
-          _min: {
-            balance: 0,
-          },
-          _avg: {
-            balance: 3386811.5,
-          },
-          _count: 4,
-        },
-        {
-          type: "1",
-          _sum: {
-            balance: 19714672,
-          },
-          _max: {
-            balance: 4397010,
-          },
-          _min: {
-            balance: 0,
-          },
-          _avg: {
-            balance: 821444.6666666666,
-          },
-          _count: 24,
-        },
-      ]);
+
+      const excepted = await prisma.$queryRaw`SELECT 種別,SUM(残高) AS 合計,MAX(残高) AS 最大,MIN(残高) AS 最小,AVG(残高) AS 平均,COUNT(*) AS 件数 FROM 口座 GROUP BY 種別`
+      expect(result).toStrictEqual(excepted)
     });
 
-    // SELECT number, COUNT(*) FROM account GROUP BY number ORDER BY COUNT(*) DESC;
-    test("口座テーブルから、口座番号の下１桁が同じ数字であるものを同じグループとし、それぞれのデータ件数を求める。ただし、件数の多い順に並べること。", async () => {
-      const result = await prisma.account.findMany({
+    test("55:口座テーブルから、口座番号の下１桁が同じ数字であるものを同じグループとし、それぞれのデータ件数を求める。ただし、件数の多い順に並べること。", async () => {
+      const accounts = await prisma.account.findMany({
         select: {
           number: true,
         },
       });
 
-      const numberList = result.map((item) => item.number);
-      const numberCountList = numberList
-        .map((item) => {
-          return {
-            number: item,
-            lastNumber: item.substring(item.length - 1),
-            _count: numberList.filter(
-              (number) =>
-                number.substring(number.length - 1) ===
-                item.substring(item.length - 1),
-            ).length,
-          };
-        })
-        .sort((a, b) => b._count - a._count);
+      const result = (() => {
+        // 口座番号を抽出してグループ化して件数をカウントする
+        const numberList = accounts.map((item) => item.number);
+        const wip = numberList.reduce((acc, item) => {
+          const group = item.substring(item.length - 1);
+          if (!acc[group]) {
+            acc[group] = {
+              口座番号グループ: group,
+              件数: 0,
+            };
+          }
+          acc[group].件数++;
+          return acc;
+        }, {})
+        // 件数の多い順に並び替える
+        return Object.values(wip).sort((a, b) => b.件数 - a.件数);
+      })()
+      console.table(result);
 
-      console.table(numberCountList);
-      expect(numberCountList[0]).toStrictEqual({
-        number: "0311240",
-        lastNumber: "0",
-        _count: 7,
-      });
+      const excepted = await prisma.$queryRaw`SELECT SUBSTR(口座番号,7,1) AS 口座番号グループ,COUNT(*) AS 件数 FROM 口座 GROUP BY 口座番号グループ ORDER BY 件数 DESC`
+      expect(result.length).toBe(excepted.length)
     });
 
-    // SELECT type, SUM(balance), MAX(balance), MIN(balance), AVG(balance), COUNT(*) FROM account GROUP BY type;
-    test("口座テーブルから、更新日の年ごとの残高の合計、最大、最小、平均、登録データ件数を求める。ただし、更新日の登録がないデータは、「XXXXX年」として集計する。", async () => {
-      const result = await prisma.account.findMany({
+    test("56:口座テーブルから、更新日の年ごとの残高の合計、最大、最小、平均、登録データ件数を求める。ただし、更新日の登録がないデータは、「XXXXX年」として集計する。", async () => {
+      const accounts = await prisma.account.findMany({
         select: {
           balance: true,
           updatedAt: true,
         },
       });
 
-      const yearList = result.map((item) => {
+      const yearList = accounts.map((item) => {
         return {
           balance: item.balance,
           year: item.updatedAt ? item.updatedAt.getFullYear() : "XXXXX",
@@ -1516,51 +1517,34 @@ describe("銀行口座データベース", () => {
           return acc;
         }, {});
 
-      const yearGroupCountList = Object.keys(yearGroupList)
+      const result = Object.keys(yearGroupList)
         .map((key) => {
           return {
-            year: key,
-            _sum: {
-              balance: yearGroupList[key].reduce((a, b) => a + b, 0),
-            },
-            _max: {
-              balance: Math.max(...yearGroupList[key]),
-            },
-            _min: {
-              balance: Math.min(...yearGroupList[key]),
-            },
-            _avg: {
-              balance:
-                yearGroupList[key].reduce((a, b) => a + b, 0) /
-                yearGroupList[key].length,
-            },
-            _count: yearGroupList[key].length,
+            更新年: key,
+            合計: yearGroupList[key].reduce((a, b) => a + b, 0),
+            最大: Math.max(...yearGroupList[key]),
+            最小: Math.min(...yearGroupList[key]),
+            平均: yearGroupList[key].reduce((a, b) => a + b, 0) / yearGroupList[key].length,
+            件数: yearGroupList[key].length,
           };
         })
-        .sort((a, b) => a.year - b.year);
+        .sort((a, b) => a.更新年 - b.更新年);
+      console.table(result);
 
-      console.table(yearGroupCountList);
-      expect(yearGroupCountList[3]).toStrictEqual({
-        year: "XXXXX",
-        _sum: {
-          balance: 678044,
-        },
-        _max: {
-          balance: 678044,
-        },
-        _min: {
-          balance: 678044,
-        },
-        _avg: {
-          balance: 678044,
-        },
-        _count: 1,
-      });
+      const excepted = await prisma.$queryRaw`SELECT SUBSTRING(COALESCE(CAST(更新日 AS VARCHAR), 'XXXX'), 1, 4) AS 更新年,
+                                              SUM(残高) AS 合計,
+                                              MAX(残高) AS 最大,
+                                              MIN(残高) AS 最小,
+                                              AVG(残高) AS 平均,
+                                                COUNT(*) AS 件数
+                                              FROM 口座
+                                              GROUP BY 更新年`
+      console.table(excepted)
+      expect(result.length).toBe(excepted.length)
     });
 
-    // SELECT type, SUM(balance), COUNT(*) FROM account GROUP BY type;
-    test("口座テーブルから、種別ごとの残高の合計とデータ件数を求める。ただし、合計が300万円以下のものは一覧から取り除く。", async () => {
-      const result = await prisma.account.groupBy({
+    test("57:口座テーブルから、種別ごとの残高の合計とデータ件数を求める。ただし、合計が300万円以下のものは一覧から取り除く。", async () => {
+      const accounts = await prisma.account.groupBy({
         by: ["type"],
         _sum: {
           balance: true,
@@ -1568,35 +1552,28 @@ describe("銀行口座データベース", () => {
         _count: true,
       });
 
-      const resultList = result.filter((item) => item._sum.balance > 3000000);
+      const result = accounts.filter((item) => item._sum.balance > 3000000).map((item) => {
+        return {
+          種別: item.type,
+          合計: item._sum.balance,
+          件数: item._count,
+        };
+      });
+      console.table(result);
 
-      console.table(resultList);
-      expect(resultList).toStrictEqual([
-        {
-          type: "2",
-          _sum: {
-            balance: 13547246,
-          },
-          _count: 4,
-        },
-        {
-          type: "1",
-          _sum: {
-            balance: 19714672,
-          },
-          _count: 24,
-        },
-      ]);
+      const excepted = await prisma.$queryRaw`SELECT 種別,SUM(残高) AS 合計,COUNT(*) AS 件数 FROM 口座 GROUP BY 種別 HAVING SUM(残高) > 3000000`
+      console.table(excepted)
+      expect(result.length).toBe(excepted.length)
     });
 
-    test("口座テーブルから、名義の1文字目が同じグループごとに、データ件数と名義文字数の平均を求める。ただし、件数が10件以上、または文字数の平均が5文字より多いものを抽出の対象とする。なお、名義の全角スペースは文字数に含めない。", async () => {
-      const result = await prisma.account.findMany({
+    test("58:口座テーブルから、名義の1文字目が同じグループごとに、データ件数と名義文字数の平均を求める。ただし、件数が10件以上、または文字数の平均が5文字より多いものを抽出の対象とする。なお、名義の全角スペースは文字数に含めない。", async () => {
+      const accounts = await prisma.account.findMany({
         select: {
           name: true,
         },
       });
 
-      const nameList = result.map((item) => item.name);
+      const nameList = accounts.map((item) => item.name);
       const nameGroupList = nameList
         .map((item) => {
           return {
@@ -1617,23 +1594,26 @@ describe("銀行口座データベース", () => {
           return acc;
         }, {});
 
-      const nameGroupCountList = Object.keys(nameGroupList).map((key) => {
+      const result = Object.keys(nameGroupList).map((key) => {
         return {
-          firstCharacter: key,
-          _count: nameGroupList[key].length,
-          _avg:
+          名義: key,
+          件数: nameGroupList[key].length,
+          文字数の平均:
             nameGroupList[key].reduce((a, b) => a + b._avg, 0) /
             nameGroupList[key].length,
         };
       });
-      //.filter((item) => item._count >= 10 || item._avg > 5);
+      console.table(result);
 
-      console.table(nameGroupCountList);
-      expect(nameGroupCountList[0]).toStrictEqual({
-        firstCharacter: "キ",
-        _count: 2,
-        _avg: 7.733333333333333,
-      });
+      const excepted = await prisma.$queryRaw`SELECT SUBSTRING(名義, 1, 1) AS 名義,
+                                                COUNT(名義) AS 件数,
+                                                AVG(LENGTH(REPLACE(名義, ' ', ''))) AS 文字数の平均
+                                              FROM 口座
+                                              GROUP BY SUBSTRING(名義, 1, 1)
+                                              HAVING COUNT(名義) >= 10
+                                                OR AVG(LENGTH(REPLACE(名義, ' ', ''))) > 5`
+      console.table(excepted)
+      expect(result.length).toBe(excepted.length)
     });
   });
 
