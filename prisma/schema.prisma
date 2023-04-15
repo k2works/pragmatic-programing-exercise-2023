@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,661 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model alternate_products {
+  prod_code     String   @db.VarChar(16)
+  alt_prod_code String   @db.VarChar(16)
+  priority      Int?     @default(1)
+  create_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?  @db.VarChar(12)
+  update_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?  @db.VarChar(12)
+
+  @@id([prod_code, alt_prod_code], map: "pk_alternate_products")
+}
+
+model area_mst {
+  area_code        String             @id(map: "pk_地域マスタ") @db.VarChar(10)
+  area_name        String?            @db.VarChar(20)
+  create_date      DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator          String?            @db.VarChar(12)
+  update_date      DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater          String?            @db.VarChar(12)
+  destinations_mst destinations_mst[]
+}
+
+model auto_number {
+  slip_type    String   @db.VarChar(2)
+  yearmonth    DateTime @db.Timestamp(6)
+  last_silp_no Int      @default(0)
+
+  @@id([slip_type, yearmonth])
+}
+
+model bank_acut_mst {
+  bank_acut_code       String    @id(map: "pk_bank_acut_mst") @db.VarChar(8)
+  recive_act_name      String?   @db.VarChar(30)
+  appl_start_date      DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  appl_end_date        DateTime? @default(dbgenerated("'2100-12-31 00:00:00'::timestamp without time zone")) @db.Timestamp(6)
+  start_act_name       String?   @db.VarChar(30)
+  recive_bank_act_type String?   @db.VarChar(1)
+  recive_act_no        String?   @db.VarChar(12)
+  bank_act_type        String?   @db.VarChar(1)
+  act_name             String?   @db.VarChar(20)
+  dept_code            String    @db.VarChar(6)
+  start_date           DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  a_bank_code          String?   @db.VarChar(4)
+  a_bank_blnc_code     String?   @db.VarChar(3)
+  create_date          DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator              String?   @db.VarChar(12)
+  update_date          DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater              String?   @db.VarChar(12)
+  update_plg_date      DateTime? @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  update_pgm           String?   @db.VarChar(50)
+  dept_mst             dept_mst  @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_入金口座マスタ")
+}
+
+model bom {
+  prod_code   String   @id(map: "pk_bom") @db.VarChar(16)
+  bom_code    String   @db.VarChar(16)
+  quantity    Int      @default(1)
+  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator     String?  @db.VarChar(12)
+  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater     String?  @db.VarChar(12)
+  products    products @relation(fields: [prod_code], references: [prod_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_products_bom")
+}
+
+model category_type {
+  category_type_code                                             String             @id(map: "pk_category_type") @db.VarChar(2)
+  cate_type_name                                                 String?            @db.VarChar(20)
+  create_date                                                    DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator                                                        String?            @db.VarChar(12)
+  update_date                                                    DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater                                                        String?            @db.VarChar(12)
+  company_category_company_category_category_typeTocategory_type company_category[] @relation("company_category_category_typeTocategory_type")
+}
+
+model company_category {
+  category_type                                               String                   @db.VarChar(2)
+  comp_cate_code                                              String                   @db.VarChar(8)
+  comp_cate_name                                              String?                  @db.VarChar(30)
+  create_date                                                 DateTime                 @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator                                                     String?                  @db.VarChar(12)
+  update_date                                                 DateTime                 @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater                                                     String?                  @db.VarChar(12)
+  category_type_company_category_category_typeTocategory_type category_type            @relation("company_category_category_typeTocategory_type", fields: [category_type], references: [category_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_type_company_categ")
+  company_category_group                                      company_category_group[]
+
+  @@id([comp_cate_code, category_type], map: "pk_company_category")
+}
+
+model company_category_group {
+  category_type    String           @db.VarChar(2)
+  comp_cate_code   String           @db.VarChar(8)
+  comp_code        String           @db.VarChar(8)
+  create_date      DateTime         @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator          String?          @db.VarChar(12)
+  update_date      DateTime         @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater          String?          @db.VarChar(12)
+  company_category company_category @relation(fields: [comp_cate_code, category_type], references: [comp_cate_code, category_type], onDelete: NoAction, onUpdate: NoAction, map: "fk_company_category_company_ca")
+
+  @@id([category_type, comp_code, comp_cate_code], map: "pk_company_category_group")
+}
+
+model company_group_mst {
+  comp_group_code String   @id(map: "pk_company_group_mst") @db.VarChar(4)
+  group_name      String?  @db.VarChar(40)
+  create_date     DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?  @db.VarChar(12)
+  update_date     DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?  @db.VarChar(12)
+}
+
+model companys_mst {
+  comp_code       String            @id(map: "pk_companys_mst") @db.VarChar(8)
+  comp_name       String            @db.VarChar(40)
+  comp_kana       String?           @db.VarChar(40)
+  sup_type        Int?              @default(0)
+  zip_code        String?           @db.Char(8)
+  state           String?           @db.VarChar(4)
+  address1        String?           @db.VarChar(40)
+  address2        String?           @db.VarChar(40)
+  no_sales_flg    Int?              @default(0)
+  wide_use_type   Int?
+  comp_group_code String            @db.VarChar(4)
+  max_credit      Int?
+  temp_credit_up  Int?              @default(0)
+  create_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?           @db.VarChar(12)
+  update_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?           @db.VarChar(12)
+  credit_balance  credit_balance?
+  customers_mst   customers_mst[]
+  pricebycustomer pricebycustomer[]
+  supplier_mst    supplier_mst[]
+}
+
+model consumer {
+  consumer_code   String    @id(map: "customer_pk") @db.VarChar(16)
+  last_name       String    @db.VarChar(20)
+  first_name      String    @db.VarChar(20)
+  last_name_kana  String    @db.VarChar(40)
+  first_name_kana String    @db.VarChar(40)
+  login_id        String    @db.VarChar(256)
+  email           String    @db.VarChar(256)
+  pwd             String    @db.VarChar(16)
+  birth_date      DateTime  @db.Timestamp(6)
+  sex             Int
+  login_datetime  DateTime? @db.Timestamp(6)
+  rest_point      Int?
+  withdrawal_date DateTime? @db.Timestamp(6)
+  create_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?   @db.VarChar(12)
+  update_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?   @db.VarChar(12)
+}
+
+model credit {
+  credit_no       String    @id(map: "pk_credit") @db.VarChar(10)
+  credit_date     DateTime? @db.Timestamp(6)
+  dept_code       String    @db.VarChar(6)
+  start_date      DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  comp_code       String    @db.VarChar(8)
+  comp_sub_no     Int?
+  pay_method_type Int?      @default(1)
+  bank_acut_code  String?   @db.VarChar(8)
+  received_amnt   Int?      @default(0)
+  received        Int?      @default(0)
+  create_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?   @db.VarChar(12)
+  update_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?   @db.VarChar(12)
+  update_plg_date DateTime? @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  update_pgm      String?   @db.VarChar(50)
+  dept_mst        dept_mst  @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_credit")
+}
+
+model credit_balance {
+  comp_code     String       @id(map: "pk_credit_balance") @db.VarChar(8)
+  order_balance Int?         @default(0)
+  rec_balance   Int?         @default(0)
+  pay_balance   Int?         @default(0)
+  create_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?      @db.VarChar(12)
+  update_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?      @db.VarChar(12)
+  companys_mst  companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_credit_balanc")
+}
+
+model customers_mst {
+  cust_code          String       @db.VarChar(8)
+  cust_sub_no        Int
+  cust_type          Int?         @default(0)
+  ar_code            String       @db.VarChar(8)
+  ar_sub_no          Int?
+  payer_code         String       @db.VarChar(8)
+  payer_sub_no       Int?
+  cust_name          String       @db.VarChar(40)
+  cust_kana          String?      @db.VarChar(40)
+  emp_code           String       @db.VarChar(10)
+  cust_user_name     String?      @db.VarChar(20)
+  cust_user_dep_name String?      @db.VarChar(40)
+  cust_zip_code      String?      @db.Char(8)
+  cust_state         String?      @db.VarChar(4)
+  cust_address1      String?      @db.VarChar(40)
+  cust_address2      String?      @db.VarChar(40)
+  cust_tel           String?      @db.VarChar(13)
+  cust_fax           String?      @db.VarChar(13)
+  cust_email         String?      @db.VarChar(100)
+  cust_ar_flag       Int?
+  cust_close_date1   Int
+  cust_pay_months1   Int?         @default(1)
+  cust_pay_dates1    Int?
+  cust_pay_method1   Int?         @default(1)
+  cust_close_date2   Int
+  cust_pay_months2   Int?         @default(1)
+  cust_pay_dates2    Int?
+  cust_pay_method2   Int?         @default(1)
+  create_date        DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?      @db.VarChar(12)
+  update_date        DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?      @db.VarChar(12)
+  companys_mst       companys_mst @relation(fields: [cust_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_customers_mst")
+  orders             orders[]
+
+  @@id([cust_code, cust_sub_no], map: "pk_customers_mst")
+}
+
+model dept_mst {
+  dept_code     String          @db.VarChar(6)
+  start_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  end_date      DateTime?       @default(dbgenerated("'2100-12-31 00:00:00'::timestamp without time zone")) @db.Timestamp(6)
+  dep_name      String?         @db.VarChar(40)
+  dept_layer    Int             @default(0)
+  dept_psth     String          @db.VarChar(100)
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 最下層区分 Int @default(0) @map("最下層区分")
+  slit_yn       Int             @default(1)
+  create_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?         @db.VarChar(12)
+  update_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?         @db.VarChar(12)
+  bank_acut_mst bank_acut_mst[]
+  credit        credit[]
+  orders        orders[]
+  pay           pay[]
+  pu            pu[]
+  sales         sales[]
+  wh_dept_mst   wh_dept_mst[]
+
+  @@id([dept_code, start_date], map: "pk_dept_mst")
+}
+
+model destinations_mst {
+  comp_code   String   @db.VarChar(8)
+  comp_sub_no Int
+  dist_no     Int
+  dist_name   String   @db.VarChar(40)
+  area_code   String   @db.VarChar(10)
+  zip_code    String?  @db.Char(8)
+  address1    String?  @db.VarChar(40)
+  address2    String?  @db.VarChar(40)
+  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator     String?  @db.VarChar(12)
+  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater     String?  @db.VarChar(12)
+  area_mst    area_mst @relation(fields: [area_code], references: [area_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_地域マスタ_destinations_mst")
+
+  @@id([comp_code, dist_no, comp_sub_no], map: "pk_destinations_mst")
+}
+
+model employee {
+  emp_code        String            @id(map: "pk_employee") @db.VarChar(10)
+  emp_name        String?           @db.VarChar(20)
+  emp_kana        String?           @db.VarChar(40)
+  login_password  String?           @db.VarChar(8)
+  tel             String?           @db.VarChar(13)
+  fax             String?           @db.VarChar(13)
+  dept_code       String            @db.VarChar(6)
+  start_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  occu_code       String            @db.VarChar(2)
+  approval_code   String            @db.VarChar(2)
+  create_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?           @db.VarChar(12)
+  update_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?           @db.VarChar(12)
+  orders          orders[]
+  pu              pu[]
+  purchase_orders purchase_orders[]
+}
+
+model invoice {
+  invoice_no       String            @id(map: "pk_invoice") @db.VarChar(10)
+  invoiced_date    DateTime?         @db.Timestamp(6)
+  comp_code        String            @db.VarChar(8)
+  cust_sub_no      Int?
+  last_received    Int?
+  month_sales      Int?
+  month_received   Int?
+  month_invoice    Int?
+  cmp_tax          Int               @default(0)
+  invoice_received Int?              @default(0)
+  create_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator          String?           @db.VarChar(12)
+  update_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater          String?           @db.VarChar(12)
+  invoice_details  invoice_details[]
+}
+
+model invoice_details {
+  invoice_no  String   @db.VarChar(10)
+  sales_no    String   @db.VarChar(10)
+  row_no      Int
+  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator     String?  @db.VarChar(12)
+  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater     String?  @db.VarChar(12)
+  invoice     invoice  @relation(fields: [invoice_no], references: [invoice_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_請求データ明細")
+
+  @@id([invoice_no, sales_no, row_no], map: "pk_invoice_details")
+}
+
+model location_mst {
+  wh_code       String   @db.VarChar(3)
+  location_code String   @db.VarChar(4)
+  prod_code     String   @db.VarChar(16)
+  create_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?  @db.VarChar(12)
+  update_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?  @db.VarChar(12)
+  products      products @relation(fields: [prod_code], references: [prod_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_products_棚番マスタ")
+  wh_mst        wh_mst   @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_棚番マスタ")
+
+  @@id([wh_code, location_code, prod_code], map: "pk_location_mst")
+}
+
+model order_details {
+  order_no           String    @db.VarChar(10)
+  so_row_no          Int
+  prod_code          String    @db.VarChar(16)
+  prod_name          String    @db.VarChar(10)
+  unitprice          Int       @default(0)
+  quantity           Int       @default(1)
+  cmp_tax_rate       Int?
+  reserve_qty        Int?      @default(0)
+  delivery_order_qty Int?      @default(0)
+  delivered_qty      Int?      @default(0)
+  complete_flg       Int       @default(0)
+  discount           Int       @default(0)
+  delivery_date      DateTime? @db.Timestamp(6)
+  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?   @db.VarChar(12)
+  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?   @db.VarChar(12)
+  orders             orders    @relation(fields: [order_no], references: [order_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_order_details")
+
+  @@id([order_no, so_row_no])
+}
+
+model orders {
+  order_no      String          @id(map: "pk_orders") @db.VarChar(10)
+  order_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  dept_code     String          @db.VarChar(6)
+  start_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  cust_code     String          @db.VarChar(8)
+  cust_sub_no   Int?
+  emp_code      String          @db.VarChar(10)
+  required_date DateTime?       @db.Timestamp(6)
+  custorder_no  String?         @db.VarChar(20)
+  wh_code       String          @db.VarChar(3)
+  order_amnt    Int             @default(0)
+  cmp_tax       Int             @default(0)
+  slip_comment  String?         @db.VarChar(1000)
+  create_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?         @db.VarChar(12)
+  update_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?         @db.VarChar(12)
+  order_details order_details[]
+  customers_mst customers_mst?  @relation(fields: [cust_code, cust_sub_no], references: [cust_code, cust_sub_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_customers_mst_orders")
+  dept_mst      dept_mst        @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_orders")
+  employee      employee        @relation(fields: [emp_code], references: [emp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_orders")
+  wh_mst        wh_mst          @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_orders")
+}
+
+model pay {
+  pay_no          String        @id(map: "pk_pay") @db.VarChar(10)
+  pay_date        Int?
+  dept_code       String        @db.VarChar(6)
+  start_date      DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  sup_code        String        @db.VarChar(8)
+  sup_sub_no      Int?
+  pay_method_type Int?          @default(1)
+  pay_amnt        Int?
+  cmp_tax         Int           @default(0)
+  complete_flg    Int           @default(0)
+  create_date     DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?       @db.VarChar(12)
+  update_date     DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?       @db.VarChar(12)
+  dept_mst        dept_mst      @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_pay")
+  supplier_mst    supplier_mst? @relation(fields: [sup_code, sup_sub_no], references: [sup_code, sup_sub_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_supplier_mst_pay")
+}
+
+model po_details {
+  po_no           String          @db.VarChar(10)
+  po_row_no       Int
+  po_row_dsp_no   Int
+  order_no        String          @db.VarChar(10)
+  so_row_no       Int
+  prod_code       String          @db.VarChar(16)
+  prod_name       String          @db.VarChar(10)
+  po_price        Int?            @default(0)
+  po_qt           Int             @default(1)
+  recived_qt      Int             @default(1)
+  complete_flg    Int             @default(0)
+  create_date     DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?         @db.VarChar(12)
+  update_date     DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?         @db.VarChar(12)
+  purchase_orders purchase_orders @relation(fields: [po_no], references: [po_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_purchase_orders_po_details")
+
+  @@id([po_row_no, po_no])
+}
+
+model pricebycustomer {
+  prod_code    String       @db.VarChar(16)
+  comp_code    String       @db.VarChar(8)
+  unitprice    Int          @default(0)
+  create_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator      String?      @db.VarChar(12)
+  update_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater      String?      @db.VarChar(12)
+  companys_mst companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_pricebycustome")
+
+  @@id([prod_code, comp_code], map: "pk_pricebycustomer")
+}
+
+model product_category {
+  category_code  String   @id(map: "pk_product_category") @db.VarChar(8)
+  prod_cate_name String?  @db.VarChar(30)
+  category_layer Int      @default(0)
+  category_path  String?  @db.VarChar(100)
+  lowest_flug    Int?     @default(0)
+  create_date    DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator        String?  @db.VarChar(12)
+  update_date    DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater        String?  @db.VarChar(12)
+}
+
+model products {
+  prod_code          String         @id(map: "pk_products") @db.VarChar(16)
+  prod_fullname      String         @db.VarChar(40)
+  prod_name          String         @db.VarChar(10)
+  prod_kana          String         @db.VarChar(20)
+  prod_type          String?        @db.VarChar(1)
+  serial_no          String?        @db.VarChar(40)
+  unitprice          Int            @default(0)
+  po_price           Int?           @default(0)
+  prime_cost         Int            @default(0)
+  tax_type           Int            @default(1)
+  category_code      String?        @db.VarChar(8)
+  wide_use_type      Int?
+  stock_manage_type  Int?           @default(1)
+  stock_reserve_type Int?
+  sup_code           String         @db.VarChar(8)
+  sup_sub_no         Int?
+  create_date        DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?        @db.VarChar(12)
+  update_date        DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?        @db.VarChar(12)
+  bom                bom?
+  location_mst       location_mst[]
+  pu_details         pu_details[]
+}
+
+model pu {
+  pu_no        String       @id(map: "pk_pu") @db.VarChar(10)
+  pu_date      DateTime?    @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  sup_code     String       @db.VarChar(8)
+  sup_sub_no   Int?
+  emp_code     String       @db.VarChar(10)
+  start_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  po_no        String?      @db.VarChar(10)
+  dept_code    String       @db.VarChar(6)
+  pu_ammount   Int?
+  cmp_tax      Int          @default(0)
+  slip_comment String?      @db.VarChar(1000)
+  create_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator      String?      @db.VarChar(12)
+  update_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater      String?      @db.VarChar(12)
+  dept_mst     dept_mst     @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_仕入データ")
+  employee     employee     @relation(fields: [emp_code], references: [emp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_仕入データ")
+  pu_details   pu_details[]
+}
+
+model pu_details {
+  pu_no         String   @db.VarChar(10)
+  pu_row_no     Int
+  pu_row_dsp_no Int
+  po_row_no     Int
+  prod_code     String   @db.VarChar(16)
+  wh_code       String   @db.VarChar(3)
+  prod_name     String   @db.VarChar(10)
+  po_price      Int?     @default(0)
+  pu_quantity   Int      @default(1)
+  create_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?  @db.VarChar(12)
+  update_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?  @db.VarChar(12)
+  products      products @relation(fields: [prod_code], references: [prod_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_products_pu_details")
+  wh_mst        wh_mst   @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_pu_details")
+  pu            pu       @relation(fields: [pu_no], references: [pu_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_仕入データ_pu_details")
+
+  @@id([pu_row_no, pu_no], map: "pk_pu_details")
+}
+
+model purchase_orders {
+  po_no        String       @id(map: "pk_purchase_orders") @db.VarChar(10)
+  po_date      DateTime?    @db.Timestamp(6)
+  order_no     String       @db.VarChar(10)
+  sup_code     String       @db.VarChar(8)
+  sup_sub_no   Int?
+  emp_code     String       @db.VarChar(10)
+  due_date     DateTime?    @db.Timestamp(6)
+  wh_code      String       @db.VarChar(3)
+  po_amnt      Int?
+  cmp_tax      Int          @default(0)
+  slip_comment String?      @db.VarChar(1000)
+  create_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator      String?      @db.VarChar(12)
+  update_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater      String?      @db.VarChar(12)
+  po_details   po_details[]
+  employee     employee     @relation(fields: [emp_code], references: [emp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_purchase_orders")
+}
+
+model sales {
+  sales_no      String          @id(map: "pk_sales") @db.VarChar(10)
+  order_no      String          @db.VarChar(10)
+  sales_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  sales_type    Int?            @default(1)
+  dept_code     String          @db.VarChar(6)
+  start_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  comp_code     String          @db.VarChar(8)
+  emp_code      String          @db.VarChar(10)
+  sales_amnt    Int             @default(0)
+  cmp_tax       Int             @default(0)
+  slip_comment  String?         @db.VarChar(1000)
+  updated_no    Int?
+  orgnl_no      String?         @db.VarChar(10)
+  create_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?         @db.VarChar(12)
+  update_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?         @db.VarChar(12)
+  dept_mst      dept_mst        @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_sales")
+  sales_details sales_details[]
+}
+
+model sales_details {
+  sales_no           String    @db.VarChar(10)
+  row_no             Int
+  prod_code          String    @db.VarChar(16)
+  prod_name          String    @db.VarChar(10)
+  unitprice          Int       @default(0)
+  delivered_qty      Int?      @default(0)
+  quantity           Int       @default(1)
+  discount           Int       @default(0)
+  invoiced_date      DateTime? @db.Timestamp(6)
+  invoice_no         String?   @db.VarChar(10)
+  invoice_delay_type Int?
+  auto_journal_date  DateTime? @db.Timestamp(6)
+  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?   @db.VarChar(12)
+  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?   @db.VarChar(12)
+  sales              sales     @relation(fields: [sales_no], references: [sales_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_sales_details")
+
+  @@id([sales_no, row_no], map: "pk_sales_details")
+}
+
+model stock {
+  wh_code            String    @db.VarChar(3)
+  prod_code          String    @db.VarChar(16)
+  rot_no             String    @db.VarChar(20)
+  stock_type         String    @default("1") @db.VarChar(1)
+  quality_type       String    @default("G") @db.VarChar(1)
+  actual             Int       @default(1)
+  valid              Int       @default(1)
+  last_delivery_date DateTime? @db.Timestamp(6)
+  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?   @db.VarChar(12)
+  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?   @db.VarChar(12)
+  wh_mst             wh_mst    @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_stock")
+
+  @@id([wh_code, prod_code, rot_no, stock_type, quality_type], map: "pk_stock")
+}
+
+model supplier_mst {
+  sup_code        String       @db.VarChar(8)
+  sup_sub_no      Int
+  sup_name        String       @db.VarChar(40)
+  sup_kana        String?      @db.VarChar(40)
+  sup_emp_name    String?      @db.VarChar(20)
+  sup_dep_name    String?      @db.VarChar(40)
+  sup_zip_code    String?      @db.Char(8)
+  sup_state       String?      @db.VarChar(4)
+  sup_address1    String?      @db.VarChar(40)
+  sup_address2    String?      @db.VarChar(40)
+  sup_tel         String?      @db.VarChar(13)
+  sup_fax         String?      @db.VarChar(13)
+  sup_email       String?      @db.VarChar(100)
+  sup_close_date  Int
+  sup_pay_months  Int?         @default(1)
+  sup_pay_dates   Int?
+  pay_method_type Int?         @default(1)
+  create_date     DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?      @db.VarChar(12)
+  update_date     DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?      @db.VarChar(12)
+  pay             pay[]
+  companys_mst    companys_mst @relation(fields: [sup_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_supplier_mst")
+
+  @@id([sup_code, sup_sub_no], map: "pk_supplier_mst")
+}
+
+model wh_dept_mst {
+  wh_code     String   @db.VarChar(3)
+  dept_code   String   @db.VarChar(6)
+  start_date  DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator     String?  @db.VarChar(12)
+  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater     String?  @db.VarChar(12)
+  dept_mst    dept_mst @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_wh_dept_mst")
+  wh_mst      wh_mst   @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_wh_dept_mst")
+
+  @@id([wh_code, dept_code, start_date], map: "pk_wh_dept_mst")
+}
+
+model wh_mst {
+  wh_code      String         @id(map: "pk_wh_mst") @db.VarChar(3)
+  wh_name      String?        @db.VarChar(20)
+  wh_type      String?        @default("N") @db.VarChar(1)
+  zip_code     String?        @db.Char(8)
+  state        String?        @db.VarChar(4)
+  address1     String?        @db.VarChar(40)
+  address2     String?        @db.VarChar(40)
+  create_date  DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator      String?        @db.VarChar(12)
+  update_date  DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater      String?        @db.VarChar(12)
+  location_mst location_mst[]
+  orders       orders[]
+  pu_details   pu_details[]
+  stock        stock[]
+  wh_dept_mst  wh_dept_mst[]
 }
