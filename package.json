@@ -2,7 +2,7 @@
   "name": "",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
    },
@@ -71,6 +71,9 @@
     "testMatch": [
       "**/**/*.test.js",
       "**/**/*.test.ts"
+    ],
+    "roots": [
+      "src"
     ]
   },
   "dependencies": {
