@@ -20,6 +20,8 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:show": "prisma studio",
+    "db:schemaspy:mysql": "docker-compose run --rm schemaspy_mysql",
+    "db:schemaspy:postresal": "docker-compose run --rm schemaspy_postgresql",
     "heroku-postbuild": "webpack --config ./webpack.config.js --progress"
   },
   "repository": {
