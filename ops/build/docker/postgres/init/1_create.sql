@@ -1,3 +1,3 @@
 /* DATABASEを作成 */
 CREATE
-DATABASE appdb;
+DATABASE sales;
