@@ -4713,14 +4713,22 @@ describe("商店データベース", () => {
       await prisma.order.createMany({ data: order });
     });
 
-    test("注文番号「202201130115」について、注文番号、注文枝番、商品コード、商品名、数量の一覧を注文番号および注文枝番の順に抽出する。商品名は商品テーブルより取得すること。", async () => {
+    test("61:注文番号「202201130115」について、注文番号、注文枝番、商品コード、商品名、数量の一覧を注文番号および注文枝番の順に抽出する。商品名は商品テーブルより取得すること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT T.注文番号,T.注文枝番,T.商品コード,S.商品名,T.数量 FROM 注文 AS T JOIN 商品 AS S ON T.商品コード = S.商品コード WHERE T.注文番号 = '202201130115' ORDER BY T.注文番号,T.注文枝番`;
+      console.table(expected);
+
       const orders = await prisma.order.findMany({
         where: {
           orderNumber: "202201130115",
         },
-        orderBy: {
-          orderSubNumber: "asc",
-        },
+        orderBy: [
+          {
+            orderNumber: "asc",
+          },
+          {
+            orderSubNumber: "asc",
+          },
+        ],
         select: {
           orderNumber: true,
           orderSubNumber: true,
@@ -4728,78 +4736,73 @@ describe("商店データベース", () => {
           quantity: true,
         },
       });
-
       const product = await prisma.product.findMany({
         select: {
           code: true,
           name: true,
         },
       });
-
       const result = orders.map((o) => ({
         ...o,
         product: product.find((p) => p.code === o.productCode),
+      })).map((o) => ({
+        注文番号: o.orderNumber,
+        注文枝番: o.orderSubNumber,
+        商品コード: o.productCode,
+        商品名: o.product.name,
+        数量: o.quantity,
       }));
-
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        orderNumber: "202201130115",
-        orderSubNumber: 1,
-        productCode: "F0190",
-        quantity: 1,
-        product: {
-          code: "F0190",
-          name: "アンティーク調長財布",
-        },
-      });
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("廃番となった商品コード「A0009」について、廃番日より後に注文された注文情報（注文日、注文番号、注文枝番、数量、注文金額）を抽出する。注文金額は単価と数量より算出すること。", async () => {
+    test("62:廃番となった商品コード「A0009」について、廃番日より後に注文された注文情報（注文日、注文番号、注文枝番、数量、注文金額）を抽出する。注文金額は単価と数量より算出すること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT T.注文日,T.注文番号,T.注文枝番,T.数量,T.数量 * H.単価 AS 注文金額 FROM 注文 AS T JOIN 廃番商品 AS H ON T.商品コード = H.商品コード WHERE T.商品コード = 'A0009' AND T.注文日 >= H.廃番日`;
+      console.table(expected);
+
       const retiredProduct = await prisma.retiredProduct.findFirst({
         where: {
           code: "A0009",
         },
       });
-
       const orders = await prisma.order.findMany({
         where: {
           productCode: "A0009",
           day: {
-            gte: retiredProduct.retiredDate,
+            gte: retiredProduct.retiredAt,
           },
         },
       });
-
       const product = await prisma.retiredProduct.findFirst({
         where: {
           code: "A0009",
         },
       });
-
       const result = orders.map((o) => ({
         ...o,
         orderAmount: o.quantity * product.price,
+      })).map((o) => ({
+        注文日: o.day,
+        注文番号: o.orderNumber,
+        注文枝番: o.orderSubNumber,
+        数量: o.quantity,
+        注文金額: o.orderAmount,
       }));
-
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        day: new Date("2021-04-03T00:00:00.000Z"),
-        orderNumber: "202104030010",
-        orderSubNumber: 3,
-        productCode: "A0009",
-        quantity: 1,
-        couponDiscount: null,
-        orderAmount: 7500,
-      });
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品コード「S0604」について、商品情報（商品コード、商品名、単価）とこれまでの注文情報（注文日、注文番号、数量）、さらに単価と数量から売上金額を求め、一覧として抽出する。一覧は、注文のあった順に表示すること。", async () => {
+    test("63:商品コード「S0604」について、商品情報（商品コード、商品名、単価）とこれまでの注文情報（注文日、注文番号、数量）、さらに単価と数量から売上金額を求め、一覧として抽出する。一覧は、注文のあった順に表示すること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT S.商品コード,S.商品名,S.単価,T.注文日,T.注文番号,T.数量,T.数量 * S.単価 AS 売上金額 FROM 商品 AS S JOIN 注文 AS T ON S.商品コード = T.商品コード WHERE S.商品コード = 'S0604' ORDER BY T.注文番号`;
+      console.table(expected);
+
       const product = await prisma.product.findFirst({
         where: {
           code: "S0604",
         },
       });
-
       const orders = await prisma.order.findMany({
         where: {
           productCode: "S0604",
@@ -4808,22 +4811,24 @@ describe("商店データベース", () => {
           day: "asc",
         },
       });
-
-      const result = [product].map((p) => ({
-        ...p,
-        orders: orders
-          .map((o) => ({
-            ...o,
-            orderAmount: o.quantity * p.price,
-          }))
-          .sort((a, b) => a.day.getTime() - b.day.getTime()),
+      const result = orders.map((o) => ({
+        商品コード: product.code,
+        商品名: product.name,
+        単価: product.price,
+        注文日: o.day,
+        注文番号: o.orderNumber,
+        数量: o.quantity,
+        売上金額: o.quantity * product.price,
       }));
-
       console.table(result);
-      expect(result[0].orders.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("2020年8月に注文のあった商品コードの一覧を抽出する。一覧には、商品名も表示する必要がある。すでに廃番となっている商品に関しては特に考慮しなくてよい（一覧に含まれなくてよい）。", async () => {
+    test("64:2020年8月に注文のあった商品コードの一覧を抽出する。一覧には、商品名も表示する必要がある。すでに廃番となっている商品に関しては特に考慮しなくてよい（一覧に含まれなくてよい）。", async () => {
+      const expected = await prisma.$queryRaw`SELECT T.商品コード,S.商品名 FROM 注文 AS T JOIN 商品 AS S ON T.商品コード = S.商品コード WHERE T.注文日 >= '2020-08-01' AND T.注文日 < '2020-09-01' ORDER BY T.商品コード`;
+      console.table(expected);
+
       const orders = await prisma.order.findMany({
         where: {
           day: {
@@ -4832,14 +4837,12 @@ describe("商店データベース", () => {
           },
         },
       });
-
       const product = await prisma.product.findMany({
         select: {
           code: true,
           name: true,
         },
       });
-
       const result = orders
         .map((o) => ({
           ...o,
@@ -4847,15 +4850,18 @@ describe("商店データベース", () => {
         }))
         .filter((o) => o.product !== undefined)
         .map((o) => ({
-          productCode: o.productCode,
-          productName: o.product.name,
-        }));
-
+          商品コード: o.productCode,
+          商品名: o.product.name,
+        })).sort((a, b) => a.商品コード.localeCompare(b.商品コード));
       console.table(result);
-      expect(result.length).toBe(3);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("問題64では、すでに廃番となっている商品は抽出されなかった。廃番となった商品ももれなく一覧に記載されるよう、SQL文を変更する。なお、廃番商品の商品名には「廃番」と表示すること。", async () => {
+    test("65:問題64では、すでに廃番となっている商品は抽出されなかった。廃番となった商品ももれなく一覧に記載されるよう、SQL文を変更する。なお、廃番商品の商品名には「廃番」と表示すること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT T.商品コード,COALESCE(S.商品名,'廃番') AS 商品名 FROM 注文 AS T LEFT JOIN 商品 AS S ON T.商品コード = S.商品コード WHERE T.注文日 >= '2020-08-01' AND T.注文日 < '2020-09-01' ORDER BY T.商品コード`;
+      console.table(expected);
+
       const orders = await prisma.order.findMany({
         where: {
           day: {
@@ -4864,14 +4870,12 @@ describe("商店データベース", () => {
           },
         },
       });
-
       const product = await prisma.product.findMany({
         select: {
           code: true,
           name: true,
         },
       });
-
       const retiredProduct = await prisma.retiredProduct.findMany({
         select: {
           code: true,
@@ -4890,16 +4894,19 @@ describe("商店データベース", () => {
             ? "廃番"
             : "";
         return {
-          productCode: o.productCode,
-          productName: productName,
+          商品コード: o.productCode,
+          商品名: productName,
         };
-      });
-
+      }).sort((a, b) => a.商品コード.localeCompare(b.商品コード));
       console.table(result);
-      expect(result.length).toBe(4);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品区分「雑貨」の商品について、注文日、商品コード、商品名、数量を抽出する。商品については、「商品コード:商品名」の形式で表示する。ただし、注文のなかった「雑貨」商品についてももれなく一覧に記載し、数量は0とすること。", async () => {
+    test("66:商品区分「雑貨」の商品について、注文日、商品コード、商品名、数量を抽出する。商品については、「商品コード:商品名」の形式で表示する。ただし、注文のなかった「雑貨」商品についてももれなく一覧に記載し、数量は0とすること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT T.注文日,S.商品コード ||':'|| S.商品名 AS 商品,COALESCE(T.数量,0) AS 数量 FROM 注文 AS T RIGHT JOIN 商品 AS S ON T.商品コード = S.商品コード WHERE S.商品区分 = '3'`;
+      console.table(expected);
+
       const product = await prisma.product.findMany({
         where: {
           type: "3",
@@ -4909,7 +4916,6 @@ describe("商店データベース", () => {
           name: true,
         },
       });
-
       const orders = await prisma.order.findMany({
         where: {
           productCode: {
@@ -4917,21 +4923,27 @@ describe("商店データベース", () => {
           },
         },
       });
-
       const result = product.map((p) => {
         const order = orders.find((o) => o.productCode === p.code);
         return {
           day: order ? order.day : null,
-          product: `${p.code}:${p.name} `,
+          product: `${p.code}:${p.name}`,
           quantity: order ? order.quantity : 0,
         };
-      });
-
+      }).map((o) => ({
+        注文日: o.day,
+        商品: o.product,
+        数量: o.quantity,
+      }))
       console.table(result);
-      expect(result.length).toBe(11);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("問題66について、注文おあった「雑貨」商品がすでに廃番になっている可能性も考慮し、一覧を抽出する。廃番になった商品は、「商品コード:(廃番済み)」のように表示する。", async () => {
+    test("67:問題66について、注文のあった「雑貨」商品がすでに廃番になっている可能性も考慮し、一覧を抽出する。廃番になった商品は、「商品コード:(廃番済み)」のように表示する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT T.注文日,COALESCE(S.商品コード ||':'|| S.商品名,T.商品コード || ':(廃番済み)') AS 商品,COALESCE(T.数量,0) AS 数量 FROM 注文 AS T FULL JOIN 商品 AS S ON T.商品コード = S.商品コード WHERE S.商品区分 = '3' ORDER BY T.注文日`;
+      console.table(expected);
+
       const products = await (async () => {
         const product = await prisma.product.findMany({
           where: {
@@ -4942,7 +4954,6 @@ describe("商店データベース", () => {
             name: true,
           },
         });
-
         const retiredProduct = await prisma.retiredProduct.findMany({
           where: {
             type: "3",
@@ -4955,7 +4966,6 @@ describe("商店データベース", () => {
 
         return Array.from(new Set([...product, ...retiredProduct]));
       })();
-
       const result = await (async () => {
         const orders = await prisma.order.findMany({
           where: {
@@ -4963,67 +4973,69 @@ describe("商店データベース", () => {
               in: products.map((p) => p.code),
             },
           },
+          orderBy: {
+            day: "asc",
+          },
         });
 
-        return product
+        return products
           .map((p) => {
             const order = orders.find((o) => o.productCode === p.code);
             return {
-              day: order ? order.day : null,
-              product: `${p.code}:${p.name} `,
-              quantity: order ? order.quantity : 0,
+              注文日: order ? order.day : null,
+              商品: `${p.code}:${p.name} `,
+              数量: order ? order.quantity : 0,
             };
           })
           .concat(
             retiredProduct.map((p) => {
               const order = orders.find((o) => o.productCode === p.code);
               return {
-                day: order ? order.day : null,
-                product: `${p.code}: (廃番済み)`,
-                quantity: order ? order.quantity : 0,
+                注文日: order ? order.day : null,
+                商品: `${p.code}: (廃番済み)`,
+                数量: order ? order.quantity : 0,
               };
             }),
           );
       })();
-
       console.table(result);
-      expect(result.length).toBe(59);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("注文番号「202104030010」について、注文日、注文番号、注文枝番、商品コード、商品名、単価、数量、注文金額を抽出する。注文金額は単価と数量より算出し、その総額からクーポン割引料を差し引いたものとする。また、商品が廃番になっている場合は、廃番商品テーブルから必要な情報を取得すること。", async () => {
-      const order = await prisma.order.findFirst({
+    test("68:注文番号「202104030010」について、注文日、注文番号、注文枝番、商品コード、商品名、単価、数量、注文金額を抽出する。注文金額は単価と数量より算出し、その総額からクーポン割引料を差し引いたものとする。また、商品が廃番になっている場合は、廃番商品テーブルから必要な情報を取得すること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT T.注文日,T.注文番号,T.注文枝番,T.商品コード,COALESCE(S.商品名,H.商品名) AS 商品名,COALESCE(S.単価,H.単価) AS 単価,T.数量 AS 数量,COALESCE(S.単価,H.単価) * T.数量 - COALESCE(T.クーポン割引料,0) AS 注文金額 FROM 注文 AS T LEFT JOIN 商品 AS S ON T.商品コード = S.商品コード LEFT JOIN 廃番商品 AS H ON T.商品コード = H.商品コード WHERE T.注文番号 = '202104030010'`;
+      console.table(expected);
+
+      const orders = await prisma.order.findMany({
         where: {
           orderNumber: "202104030010",
         },
       });
-
       const product = await prisma.product.findUnique({
         where: {
           code: order.productCode,
         },
       });
-
       const retiredProduct = await prisma.retiredProduct.findUnique({
         where: {
           code: order.productCode,
         },
       });
-
-      const result = {
-        day: order.day,
-        orderNumber: order.orderNumber,
-        orderSubNumber: order.orderSubNumber,
-        productCode: order.productCode,
-        productName: product ? product.name : retiredProduct.name,
-        price: product ? product.price : retiredProduct.price,
-        quantity: order.quantity,
-        orderAmount: product
-          ? product.price * order.quantity
-          : retiredProduct.price * order.quantity,
-      };
-
+      const result = orders.map((order) => ({
+        注文日: order.day,
+        注文番号: order.orderNumber,
+        注文枝番: order.orderSubNumber,
+        商品コード: order.productCode,
+        商品名: product ? product.name : retiredProduct.name,
+        単価: product ? product.price : retiredProduct.price,
+        数量: order.quantity,
+        注文金額:
+          (product ? product.price : retiredProduct.price) * order.quantity - order.couponDiscount,
+      }));
       console.table(result);
-      expect(result.orderAmount).toBe(5000);
+
+      expect(expected).toStrictEqual([result]);
     });
 
     test("商品コードが「B」で始まる商品について、商品テーブルから商品コード、商品名、単価を、注文テーブルからこれまでに売り上げた個数をそれぞれ抽出する。併せて、単価と個数からこれまでの総売上金額を計算する（クーポン割引は考慮しなくてよい）。一覧は、商品コード順に表示すること。", async () => {
