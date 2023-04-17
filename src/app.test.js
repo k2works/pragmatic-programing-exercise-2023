@@ -6,6 +6,7 @@ import transactionReason from "../prisma/data/transactionReason";
 import product from "../prisma/data/product";
 import retiredProduct from "../prisma/data/retiredProduct";
 import order from "../prisma/data/order";
+import { resume } from "browser-sync";
 const party = require("../prisma/data/party");
 const experienceEvent = require("../prisma/data/experienceEvent");
 const event = require("../prisma/data/event");
@@ -2720,7 +2721,7 @@ describe("銀行口座データベース", () => {
   });
 });
 
-describe("商品データベース", () => {
+describe("商店データベース", () => {
   describe("第２章 基本文法と四大命令", () => {
     beforeAll(async () => {
       await prisma.product.deleteMany({});
@@ -2745,8 +2746,11 @@ describe("商品データベース", () => {
       await prisma.order.createMany({ data: order });
     });
 
-    test("商品テーブルのすべてのデータを「*」を用いずに抽出する。", async () => {
-      const result = await prisma.product.findMany({
+    test("1:商品テーブルのすべてのデータを「*」を用いずに抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品コード,商品名,単価,商品区分,関連商品コード FROM 商品`;
+      console.table(expected);
+
+      const products = await prisma.product.findMany({
         select: {
           code: true,
           name: true,
@@ -2755,40 +2759,40 @@ describe("商品データベース", () => {
           product: true,
         },
       });
-
+      const result = products.map((p) => ({
+        商品コード: p.code,
+        商品名: p.name,
+        単価: p.price,
+        商品区分: p.type,
+        関連商品コード: p.product?.code ?? null,
+      }));
       console.table(result);
-      expect(result.length).toBe(42);
-      expect(result[34]).toEqual({
-        code: "A0100",
-        name: "手編みのてぶくろ",
-        price: 2500,
-        type: "3",
-        product: {
-          code: "A0101",
-          name: "手編みのマフラー",
-          price: 3900,
-          relatedCode: "A0100",
-          type: "3",
-        },
-      });
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品テーブルのすべての商品名を抽出する。", async () => {
-      const result = await prisma.product.findMany({
+    test("2:商品テーブルのすべての商品名を抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品名 FROM 商品`;
+      console.table(expected);
+
+      const products = await prisma.product.findMany({
         select: {
           name: true,
         },
       });
-
+      const result = products.map((p) => ({
+        商品名: p.name,
+      }));
       console.table(result);
-      expect(result.length).toBe(42);
-      expect(result[34]).toEqual({
-        name: "手編みのてぶくろ",
-      });
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("注文テーブルのすべてのデータを「*」を用いずに抽出する。", async () => {
-      const result = await prisma.order.findMany({
+    test("3:注文テーブルのすべてのデータを「*」を用いて抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT * FROM 注文`;
+      console.table(expected);
+
+      const products = await prisma.order.findMany({
         select: {
           day: true,
           orderNumber: true,
@@ -2798,38 +2802,41 @@ describe("商品データベース", () => {
           couponDiscount: true,
         },
       });
-
+      const result = products.map((p) => ({
+        注文日: p.day,
+        注文番号: p.orderNumber,
+        注文枝番: p.orderSubNumber,
+        商品コード: p.productCode,
+        数量: p.quantity,
+        クーポン割引料: p.couponDiscount,
+      }));
       console.table(result);
-      expect(result.length).toBe(68);
-      expect(result[0]).toEqual({
-        day: new Date("2020-04-12T00:00:00.000Z"),
-        orderNumber: "202004120003",
-        orderSubNumber: 1,
-        productCode: "S0604",
-        quantity: 1,
-        couponDiscount: null,
-      });
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("注文テーブルのすべての注文番号、注文枝番、商品コードを抽出する。", async () => {
-      const result = await prisma.order.findMany({
+    test("4:注文テーブルのすべての注文番号、注文枝番、商品コードを抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 注文番号,注文枝番,商品コード FROM 注文`;
+      console.table(expected);
+
+      const products = await prisma.order.findMany({
         select: {
           orderNumber: true,
           orderSubNumber: true,
           productCode: true,
         },
       });
-
+      const result = products.map((p) => ({
+        注文番号: p.orderNumber,
+        注文枝番: p.orderSubNumber,
+        商品コード: p.productCode,
+      }));
       console.table(result);
-      expect(result.length).toBe(68);
-      expect(result[0]).toEqual({
-        orderNumber: "202004120003",
-        orderSubNumber: 1,
-        productCode: "S0604",
-      });
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品テーブルに次の3つのデータを1回の実行ごとに1つずつ追加する。", async () => {
+    test("5:商品テーブルに次の3つのデータを1回の実行ごとに1つずつ追加する。", async () => {
       const data = [
         {
           code: "W0461",
@@ -2853,22 +2860,42 @@ describe("商品データベース", () => {
           relatedCode: null,
         },
       ];
-
       for (const d of data) {
-        await prisma.product.create({
-          data: d,
-        });
+        await prisma.$queryRaw`INSERT INTO 商品 (商品コード,商品名,単価,商品区分,関連商品コード) VALUES (${d.code},${d.name},${d.price},${d.type},${d.relatedCode})`;
       }
-      const result = await prisma.product.findMany({
+      const expected = await prisma.$queryRaw`SELECT * FROM 商品 WHERE 商品コード IN ('W0461','S0331','A0582')`;
+
+      console.table(expected);
+
+      await prisma.product.deleteMany({
         where: {
           code: {
             in: data.map((d) => d.code),
           },
         },
       });
+      for (const d of data) {
+        await prisma.product.create({
+          data: d,
+        });
+      }
+      const products = await prisma.product.findMany({
+        where: {
+          code: {
+            in: data.map((d) => d.code),
+          },
+        },
+      });
+      const result = products.map((p) => ({
+        商品コード: p.code,
+        商品名: p.name,
+        単価: p.price,
+        商品区分: p.type,
+        関連商品コード: p.product?.code ?? null,
+      }));
 
       console.table(result);
-      expect(result[0]).toEqual(data[0]);
+      expect(expected).toEqual(result);
     });
   });
 

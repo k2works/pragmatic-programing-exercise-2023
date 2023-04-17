@@ -75,9 +75,9 @@ model RetiredProduct {
 }
 
 model Order {
-  day            DateTime @map("日付")
-  orderNumber    String   @map("受注番号")
-  orderSubNumber Int      @map("受注枝番")
+  day            DateTime @map("注文日")
+  orderNumber    String   @map("注文番号")
+  orderSubNumber Int      @map("注文枝番")
   productCode    String   @map("商品コード")
   quantity       Int      @map("数量")
   couponDiscount Int?     @map("クーポン割引料")
