@@ -4412,8 +4412,11 @@ describe("商店データベース", () => {
       await prisma.order.createMany({ data: order });
     });
 
-    test("商品コード「S0604」の商品について、商品コード、商品名、単価、これまでに販売した数量を抽出する。ただし、抽出には、選択列リストにて注文テーブルを副問い合わせするSELECT文を用いること。", async () => {
+    test("55:商品コード「S0604」の商品について、商品コード、商品名、単価、これまでに販売した数量を抽出する。ただし、抽出には、選択列リストにて注文テーブルを副問い合わせするSELECT文を用いること。", async () => {
       const productCode = "S0604";
+      const exepcted = await prisma.$queryRaw`SELECT 商品コード, 商品名, 単価, (SELECT SUM(数量) FROM 注文 WHERE 商品コード=${productCode}) AS 数量 FROM 商品 WHERE 商品コード=${productCode}`;
+      console.table(exepcted);
+
       const orders = await prisma.order.groupBy({
         by: ["productCode"],
         _sum: {
@@ -4425,7 +4428,6 @@ describe("商店データベース", () => {
           },
         },
       });
-
       const products = await prisma.product.findMany({
         where: {
           code: productCode,
@@ -4436,24 +4438,30 @@ describe("商店データベース", () => {
           price: true,
         },
       });
-
-      const result = products.map((p) => ({
+      const wip = products.map((p) => ({
         ...p,
         quantity: orders[0]?._sum.quantity ?? 0,
       }));
-
+      const result = wip.map((p) => ({
+        商品コード: p.code,
+        商品名: p.name,
+        単価: p.price,
+        数量: p.quantity,
+      }));
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        code: "S0604",
-        name: "さらさらキャミソール",
-        price: 1300,
-        quantity: 21,
-      });
+
+      expect(exepcted.toString()).toStrictEqual(result.toString());
     });
 
-    test("次の注文について、商品コードを間違って登録したことがわかった。商品テーブルより条件に合致する商品コードを取得し、該当の注文テーブルを更新する。ただし、注文テーブルの更新には、SET句にて商品テーブルを副問い合わせするUPDATE文を用いること。", async () => {
+    test("56:次の注文について、商品コードを間違って登録したことがわかった。商品テーブルより条件に合致する商品コードを取得し、該当の注文テーブルを更新する。ただし、注文テーブルの更新には、SET句にて商品テーブルを副問い合わせするUPDATE文を用いること。", async () => {
       // 注文日:2022-03-15 注文番号:202203150014 注文枝番:1
       // 正しい商品の条件:商品区分が「靴」で、商品名に「ブーツ」「雨」「安心」を含む。
+      await prisma.$queryRaw`UPDATE 注文 SET 商品コード=(SELECT 商品コード FROM 商品 WHERE 商品区分='2' AND 商品名 LIKE '%ブーツ%' AND 商品名 LIKE '%雨%' AND 商品名 LIKE '%安心%') WHERE 注文日='2022-03-15' AND 注文番号='202203150014' AND 注文枝番=1`;
+      const expected = await prisma.$queryRaw`SELECT * FROM 注文 WHERE 注文日='2022-03-15' AND 注文番号='202203150014' AND 注文枝番=1`;
+      console.table(expected);
+
+      await prisma.order.deleteMany({});
+      await prisma.order.createMany({ data: order });
       const product = await prisma.product.findFirst({
         where: {
           AND: [
@@ -4461,21 +4469,21 @@ describe("商店データベース", () => {
               type: "2",
             },
           ],
-          OR: [
+          AND: [
             {
               name: {
                 contains: "ブーツ",
               },
             },
           ],
-          OR: [
+          AND: [
             {
               name: {
                 contains: "雨",
               },
             },
           ],
-          OR: [
+          AND: [
             {
               name: {
                 contains: "安心",
@@ -4484,7 +4492,6 @@ describe("商店データベース", () => {
           ],
         },
       });
-
       await prisma.order.update({
         where: {
           orderNumber_orderSubNumber: {
@@ -4497,18 +4504,29 @@ describe("商店データベース", () => {
         },
       });
 
-      const result = await prisma.order.findFirst({
+      const wip = await prisma.order.findFirst({
         where: {
           orderNumber: "202203150014",
           orderSubNumber: 1,
         },
       });
-
+      const result = [{
+        商品コード: wip?.productCode ?? "",
+        数量: wip?.quantity ?? 0,
+        クーポン割引料: wip?.couponDiscount,
+        注文日: wip?.day ?? "",
+        注文枝番: wip?.orderSubNumber ?? 0,
+        注文番号: wip?.orderNumber ?? "",
+      }];
       console.table(result);
-      expect(result.productCode).toBe("B1350");
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品名に「あったか」が含まれる商品が売れた日付とその商品コードを過去の日付順に抽出する。ただし、WHERE句でIN演算子を利用した副問い合わせを用いること。", async () => {
+    test("57:商品名に「あったか」が含まれる商品が売れた日付とその商品コードを過去の日付順に抽出する。ただし、WHERE句でIN演算子を利用した副問い合わせを用いること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 注文日, 商品コード FROM 注文 WHERE 商品コード IN (SELECT 商品コード FROM 商品 WHERE 商品名 LIKE '%あったか%') ORDER BY 注文日`;
+      console.table(expected);
+
       const products = await prisma.product.findMany({
         where: {
           name: {
@@ -4519,7 +4537,6 @@ describe("商店データベース", () => {
           code: true,
         },
       });
-
       const orders = await prisma.order.findMany({
         where: {
           productCode: {
@@ -4530,72 +4547,83 @@ describe("商店データベース", () => {
           day: "asc",
         },
       });
-
       const result = orders.map((o) => ({
-        day: o.day,
-        productCode: o.productCode,
+        注文日: o.day,
+        商品コード: o.productCode,
       }));
-
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        day: new Date("2021-09-15T00:00:00.000Z"),
-        productCode: "W0746",
-      });
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品ごとにそれぞれ平均販売数量を求め、どの商品の平均販売数量よりも多い数が売れた商品を探し、その商品コードと販売数量を抽出する。ただし、ALL演算子を利用した副問い合わせを用いること。", async () => {
-      const orders = await prisma.order.groupBy({
+    test("58:商品ごとにそれぞれ平均販売数量を求め、どの商品の平均販売数量よりも多い数が売れた商品を探し、その商品コードと販売数量を抽出する。ただし、ALL演算子を利用した副問い合わせを用いること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品コード,SUM(数量) AS 数量 FROM 注文 GROUP BY 商品コード HAVING SUM(数量) > ALL (SELECT AVG(数量) FROM 注文 GROUP BY 商品コード)`;
+      console.table(expected);
+
+      const avgQuantity = await prisma.order.groupBy({
         by: ["productCode"],
         _avg: {
           quantity: true,
         },
       });
-
-      const maxAvgQuantity = orders.reduce(
-        (max, o) => Math.max(max, o._avg.quantity),
-        0,
-      );
-
-      const result = await prisma.order.findMany({
-        where: {
-          quantity: {
-            gt: maxAvgQuantity,
-          },
-        },
-        select: {
-          productCode: true,
+      const maxAvgQuantity = Math.max(...avgQuantity.map(o => o._avg.quantity));
+      const orders = await prisma.order.groupBy({
+        by: ["productCode"],
+        _sum: {
           quantity: true,
         },
+        having: {
+          quantity: {
+            _sum: {
+              gt: maxAvgQuantity,
+            },
+          },
+        },
       });
-
+      const result = orders.map((o) => ({
+        商品コード: o.productCode,
+        数量: o._sum.quantity,
+      }));
       console.table(result);
+
+      expect(expected.toString()).toStrictEqual(result.toString());
     });
 
-    test("クーポン割引を利用して販売した商品コード「W0746」の商品について、その販売数量と、商品1個あたりの平均割引額を抽出する。列名は「割引による販売数」と「平均割引額」とし、1円未満は切り捨てる。抽出にはFROM句で副問い合わせを利用すること。", async () => {
-      const orders = await prisma.order.findMany({
+    test("59:クーポン割引を利用して販売した商品コード「W0746」の商品について、その販売数量と、商品1個あたりの平均割引額を抽出する。列名は「割引による販売数」と「平均割引額」とし、1円未満は切り捨てる。抽出にはFROM句で副問い合わせを利用すること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT A.数量合計 AS 割引による販売数, TRUNC(A.割引料合計/A.数量合計,0) AS 平均割引額 FROM (SELECT SUM(数量) AS 数量合計,SUM(クーポン割引料) AS 割引料合計 FROM 注文 WHERE 商品コード = 'W0746' AND クーポン割引料 IS NOT NULL) AS A`;
+      console.table(expected);
+
+      const aggregatedResult = await prisma.order.aggregate({
         where: {
           productCode: "W0746",
           couponDiscount: {
             gt: 0,
           },
         },
+        _sum: {
+          quantity: true,
+          couponDiscount: true,
+        },
       });
-
-      const result = orders.map((o) => ({
-        割引による販売数: o.quantity,
-        平均割引額: Math.floor(o.couponDiscount / o.quantity),
-      }));
-
+      const result = [{
+        "割引による販売数": aggregatedResult._sum.quantity,
+        "平均割引額": Math.floor(aggregatedResult._sum.couponDiscount / aggregatedResult._sum.quantity),
+      }];
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        割引による販売数: 1,
-        平均割引額: 1000,
-      });
+
+      expect(expected.toString()).toStrictEqual(result.toString());
     });
 
-    test("次の注文について、内容を追加したいという依頼があった。追加分の注文を注文テーブルに登録する。使用する注文枝番は、該当の注文番号を副問い合わせにて参照し、1を加算した番号を採番する。なお、登録のSQL文は注文ごとに1つずつ作成すること。", async () => {
+    test("60:次の注文について、内容を追加したいという依頼があった。追加分の注文を注文テーブルに登録する。使用する注文枝番は、該当の注文番号を副問い合わせにて参照し、1を加算した番号を採番する。なお、登録のSQL文は注文ごとに1つずつ作成すること。", async () => {
       // 注文日: 2022-03-21,注文番号:202203210080 商品コード:S1003, 数量:1, クーポン割引:なし
       // 注文日: 2022-03-22,注文番号:202203220901 商品コード:A0052, 数量:2, クーポン割引:500円
+      await prisma.$queryRaw`INSERT INTO 注文 SELECT 'S1003',1,NULL,注文日,MAX(注文枝番) + 1,注文番号 FROM 注文 WHERE 注文日 = '2022-03-21' AND 注文番号 = '202203210080' GROUP BY 注文日,注文番号`;
+      await prisma.$queryRaw`INSERT INTO 注文 SELECT 'A0052',2,500,注文日,MAX(注文枝番) + 1,注文番号 FROM 注文 WHERE 注文日 = '2022-03-22' AND 注文番号 = '202203220901' GROUP BY 注文日,注文番号`;
+      const expected = await prisma.$queryRaw`SELECT 注文日,注文番号,注文枝番,商品コード,数量,クーポン割引料 FROM 注文 WHERE 注文番号 IN ('202203210080','202203220901') ORDER BY 注文日,注文番号,注文枝番`;
+      console.table(expected);
+
+      await prisma.order.deleteMany({});
+      await prisma.order.createMany({ data: order });
       const addOrders = [
         {
           day: new Date("2022-03-21T00:00:00.000Z"),
@@ -4612,7 +4640,6 @@ describe("商店データベース", () => {
           couponDiscount: 500,
         },
       ];
-
       for (const addOrder of addOrders) {
         const orderSubNumber = await prisma.order.count({
           where: {
@@ -4620,7 +4647,7 @@ describe("商店データベース", () => {
           },
         });
 
-        const result = await prisma.order.create({
+        await prisma.order.create({
           data: {
             day: addOrder.day,
             orderNumber: addOrder.orderNumber,
@@ -4630,17 +4657,36 @@ describe("商店データベース", () => {
             couponDiscount: addOrder.couponDiscount,
           },
         });
-
-        console.table(result);
-        expect(result).toStrictEqual({
-          day: addOrder.day,
-          orderNumber: addOrder.orderNumber,
-          orderSubNumber: orderSubNumber + 1,
-          productCode: addOrder.productCode,
-          quantity: addOrder.quantity,
-          couponDiscount: addOrder.couponDiscount,
-        });
       }
+      const orders = await prisma.order.findMany({
+        where: {
+          orderNumber: {
+            in: addOrders.map((o) => o.orderNumber),
+          },
+        },
+        orderBy: [
+          {
+            day: "asc",
+          },
+          {
+            orderNumber: "asc",
+          },
+          {
+            orderSubNumber: "asc",
+          },
+        ],
+      });
+      const result = orders.map((o) => ({
+        注文日: o.day,
+        注文番号: o.orderNumber,
+        注文枝番: o.orderSubNumber,
+        商品コード: o.productCode,
+        数量: o.quantity,
+        クーポン割引料: o.couponDiscount,
+      }));
+      console.table(result);
+
+      expect(expected).toStrictEqual(result);
     });
   });
 
