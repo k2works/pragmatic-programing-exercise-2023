@@ -4171,19 +4171,26 @@ describe("商店データベース", () => {
       await prisma.order.createMany({ data: order });
     });
 
-    test("これまでに注文された数量の合計を求める", async () => {
-      const result = await prisma.order.aggregate({
+    test("46:これまでに注文された数量の合計を求める", async () => {
+      const expected = await prisma.$queryRaw`SELECT SUM(数量) AS 数量 FROM 注文`;
+      console.table(expected);
+
+      const orders = await prisma.order.aggregate({
         _sum: {
           quantity: true,
         },
       });
-
+      const result = orders._sum ? [{ 数量: orders._sum.quantity }] : [];
       console.table(result);
-      expect(result._sum.quantity).toBe(449);
+
+      expect(expected.toString()).toStrictEqual(result.toString());
     });
 
-    test("注文日順に、注文日ごとの数量の合計を求める。", async () => {
-      const result = await prisma.order.groupBy({
+    test("47:注文日順に、注文日ごとの数量の合計を求める。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 注文日, SUM(数量) AS 数量 FROM 注文 GROUP BY 注文日 ORDER BY 注文日`;
+      console.table(expected);
+
+      const orders = await prisma.order.groupBy({
         by: ["day"],
         _sum: {
           quantity: true,
@@ -4192,18 +4199,20 @@ describe("商店データベース", () => {
           day: "asc",
         },
       });
-
+      const result = orders.map((o) => ({
+        注文日: o.day,
+        数量: o._sum?.quantity,
+      }));
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        day: new Date("2020-04-12"),
-        _sum: {
-          quantity: 1,
-        },
-      });
+
+      expect(expected.toString()).toStrictEqual(result.toString());
     });
 
-    test("商品区分順に、商品区分ごとの単価の最小額と最高額を求める。", async () => {
-      const result = await prisma.product.groupBy({
+    test("48:商品区分順に、商品区分ごとの単価の最小額と最高額を求める。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品区分, MIN(単価) AS 最小額, MAX(単価) AS 最高額 FROM 商品 GROUP BY 商品区分 ORDER BY 商品区分`;
+      console.table(expected);
+
+      const products = await prisma.product.groupBy({
         by: ["type"],
         _min: {
           price: true,
@@ -4215,21 +4224,44 @@ describe("商店データベース", () => {
           type: "asc",
         },
       });
-
+      const result = products.map((p) => ({
+        商品区分: p.type,
+        最小額: p._min?.price,
+        最高額: p._max?.price,
+      }));
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        type: "1",
-        _min: {
-          price: 500,
-        },
-        _max: {
-          price: 58000,
-        },
-      });
+
+      expect(expected.toString()).toStrictEqual(result.toString());
     });
 
-    test("これまでに最もよく売れた商品を10位まで抽出する。商品コードと販売した数量の多い順に並べ、数量が同じ商品については、商品コードを昇順にすること。", async () => {
-      const result = await prisma.order.groupBy({
+    test("49:商品コードごとに、これあｍで注文された数量の合計を商品コード順に求める。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品コード, SUM(数量) AS 数量合計 FROM 注文 GROUP BY 商品コード ORDER BY 商品コード`;
+      console.table(expected);
+
+      const orders = await prisma.order.groupBy({
+        by: ["productCode"],
+        _sum: {
+          quantity: true,
+        },
+        orderBy: {
+          productCode: "asc",
+        },
+      });
+      const result = orders.map((o) => ({
+        商品コード: o.productCode,
+        数量合計: o._sum?.quantity,
+      }));
+      console.table(result);
+
+      expect(expected.toString()).toStrictEqual(result.toString());
+    });
+
+
+    test("50:これまでに最もよく売れた商品を10位まで抽出する。商品コードと販売した数量の多い順に並べ、数量が同じ商品については、商品コードを昇順にすること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品コード, SUM(数量) AS 数量合計 FROM 注文 GROUP BY 商品コード ORDER BY 数量合計 DESC, 商品コード OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY`;
+      console.table(expected);
+
+      const orders = await prisma.order.groupBy({
         by: ["productCode"],
         _sum: {
           quantity: true,
@@ -4241,18 +4273,20 @@ describe("商店データベース", () => {
         },
         take: 10,
       });
-
+      const result = orders.map((o) => ({
+        商品コード: o.productCode,
+        数量合計: o._sum?.quantity,
+      }));
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        productCode: "Z6511",
-        _sum: {
-          quantity: 160,
-        },
-      });
+
+      expect(expected.toString()).toStrictEqual(result.toString());
     });
 
-    test("これまでに売れた数量が5個未案の商品コードとその数量を抽出する。", async () => {
-      const result = await prisma.order.groupBy({
+    test("51:これまでに売れた数量が5個未満の商品コードとその数量を抽出する。", async () => {
+      const exepcted = await prisma.$queryRaw`SELECT 商品コード, SUM(数量) AS 数量合計 FROM 注文 GROUP BY 商品コード HAVING SUM(数量) < 5`;
+      console.table(exepcted);
+
+      const orders = await prisma.order.groupBy({
         by: ["productCode"],
         _sum: {
           quantity: true,
@@ -4265,18 +4299,20 @@ describe("商店データベース", () => {
           },
         },
       });
-
+      const result = orders.map((o) => ({
+        商品コード: o.productCode,
+        数量合計: o._sum?.quantity,
+      }));
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        productCode: "A1055",
-        _sum: {
-          quantity: 2,
-        },
-      });
+
+      expect(exepcted.toString()).toStrictEqual(result.toString());
     });
 
-    test("これまでにクーポン割引をした注文件数と、割引件数の合計を求める。ただし、WHERE句による絞り込み条件を指定しないこと。", async () => {
-      const result = await prisma.order.aggregate({
+    test("52:これまでにクーポン割引をした注文件数と、割引件数の合計を求める。ただし、WHERE句による絞り込み条件を指定しないこと。", async () => {
+      const expected = await prisma.$queryRaw`SELECT COUNT(クーポン割引料) AS 割引件数, SUM(クーポン割引料) AS 割引額合計 FROM 注文`;
+      console.table(expected);
+
+      const orders = await prisma.order.aggregate({
         _count: {
           orderNumber: true,
         },
@@ -4284,44 +4320,51 @@ describe("商店データベース", () => {
           couponDiscount: true,
         },
       });
-
+      const result = {
+        割引件数: orders._count?.orderNumber,
+        割引額合計: orders._sum?.couponDiscount,
+      };
       console.table(result);
-      expect(result._count.orderNumber).toBe(68);
-      expect(result._sum.couponDiscount).toBe(8300);
+
+      expect(expected.toString()).toStrictEqual(result.toString());
     });
 
-    test("月ごとの注文件数を求める。抽出する列の名前は「年月」と「注文件数」とし、年月列の内容は「202201」のような形式で、日付の新しい順で抽出すること。なお、1件の注文には、必ず注文枝番「1」の注文明細が含まれることが保証されている、", async () => {
-      const orders = await prisma.order.groupBy({
-        by: ["day"],
-        _count: {
+    test("53:月ごとの注文件数を求める。抽出する列の名前は「年月」と「注文件数」とし、年月列の内容は「202201」のような形式で、日付の新しい順で抽出すること。なお、1件の注文には、必ず注文枝番「1」の注文明細が含まれることが保証されている、", async () => {
+      const expected = await prisma.$queryRaw`SELECT SUBSTRING(注文番号,1,6) AS 年月, COUNT(*) AS 注文件数 FROM 注文 WHERE 注文枝番 = 1 GROUP BY 年月 ORDER BY SUBSTRING(注文番号,1,6) DESC`;
+      console.table(expected);
+
+      const orders = await prisma.order.findMany({
+        where: {
+          orderSubNumber: 1,
+        },
+        select: {
           orderNumber: true,
-        },
-        orderBy: {
-          day: "desc",
+          day: true,
         },
       });
-
-      const result = orders.map((o) => ({
-        year: {
-          month: o.day.getFullYear() * 100 + o.day.getMonth() + 1,
-        },
-        _count: {
-          orderNumber: o._count.orderNumber,
-        },
-      }));
-
+      const wip = orders.reduce((acc, o) => {
+        const yearMonth = `${o.day.getFullYear()}${(o.day.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}`;
+        if (!acc[yearMonth]) {
+          acc[yearMonth] = 0;
+        }
+        acc[yearMonth]++;
+        return acc;
+      }, {});
+      const result = Object.entries(wip).map(([yearMonth, count]) => ({
+        年月: yearMonth,
+        注文件数: count,
+      })).sort((a, b) => b.年月.localeCompare(a.年月));
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        year: {
-          month: 202203,
-        },
-        _count: {
-          orderNumber: 2,
-        },
-      });
+
+      expect(expected.toString()).toStrictEqual(result.toString());
     });
 
-    test("注文テーブルから、「Z」から始まる商品コードのうち、これまでに売れた数量が100個以上の商品コードを抽出する。", async () => {
+    test("54:注文テーブルから、「Z」から始まる商品コードのうち、これまでに売れた数量が100個以上の商品コードを抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品コード FROM 注文 WHERE 商品コード LIKE 'Z%' GROUP BY 商品コード HAVING SUM(数量) >= 100`;
+      console.table(expected);
+
       const orders = await prisma.order.groupBy({
         by: ["productCode"],
         _sum: {
@@ -4335,16 +4378,14 @@ describe("商店データベース", () => {
           },
         },
       });
-
-      const result = orders.filter((o) => o.productCode.startsWith("Z"));
-
+      const result = orders
+        .filter((o) => o.productCode.startsWith("Z"))
+        .map((o) => ({
+          商品コード: o.productCode,
+        }));
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        productCode: "Z2323",
-        _sum: {
-          quantity: 150,
-        },
-      });
+
+      expect(expected.toString()).toStrictEqual(result.toString());
     });
   });
 
