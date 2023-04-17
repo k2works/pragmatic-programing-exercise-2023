@@ -3407,8 +3407,11 @@ describe("商店データベース", () => {
       }
     });
 
-    test("商品区分「衣類」の商品について、商品コードの降順に商品コードと商品名の一覧を取得する。", async () => {
-      const result = await prisma.product.findMany({
+    test("25:商品区分「衣類」の商品について、商品コードの降順に商品コードと商品名の一覧を取得する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品コード, 商品名 FROM 商品 WHERE 商品区分 = '1' ORDER BY 商品コード DESC`;
+      console.table(expected);
+
+      const products = await prisma.product.findMany({
         where: {
           type: "1",
         },
@@ -3420,16 +3423,20 @@ describe("商店データベース", () => {
           name: true,
         },
       });
-
+      const result = products.map((p) => ({
+        商品コード: p.code,
+        商品名: p.name,
+      }));
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        code: "Z6511",
-        name: "丈夫な靴下",
-      });
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("注文テーブルから、主キーの昇順に2022年3月以降の注文一覧を取得する。取得する項目は、注文日、注文番号、注文枝番、商品コード、数量とする。", async () => {
-      const result = await prisma.order.findMany({
+    test("26:注文テーブルから、主キーの昇順に2022年3月以降の注文一覧を取得する。取得する項目は、注文日、注文番号、注文枝番、商品コード、数量とする。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 注文日, 注文番号, 注文枝番, 商品コード, 数量 FROM 注文 WHERE 注文日 >= '2022-03-01' ORDER BY 注文番号, 注文枝番`;
+      console.table(expected);
+
+      const orders = await prisma.order.findMany({
         where: {
           day: {
             gte: new Date("2022-03-01"),
@@ -3451,13 +3458,23 @@ describe("商店データベース", () => {
           quantity: true,
         },
       });
-
+      const result = orders.map((o) => ({
+        注文日: o.day,
+        注文番号: o.orderNumber,
+        注文枝番: o.orderSubNumber,
+        商品コード: o.productCode,
+        数量: o.quantity,
+      }));
       console.table(result);
-      expect(result.length).toBe(12);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("注文テーブルから、これまででに注文のあった商品コードを抽出する。重複は除外し、商品コードの昇順に抽出すること。", async () => {
-      const result = await prisma.order.findMany({
+    test("27:注文テーブルから、これまででに注文のあった商品コードを抽出する。重複は除外し、商品コードの昇順に抽出すること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT DISTINCT 商品コード FROM 注文 ORDER BY 商品コード`;
+      console.table(expected);
+
+      const orders = await prisma.order.findMany({
         select: {
           productCode: true,
         },
@@ -3466,13 +3483,19 @@ describe("商店データベース", () => {
           productCode: "asc",
         },
       });
-
+      const result = orders.map((o) => ({
+        商品コード: o.productCode,
+      }));
       console.table(result);
-      expect(result.length).toBe(36);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("注文テーブルから、これまでに注文のあった日付を新しい順に10行抽出する（同一日付が複数回登場してもよい）。", async () => {
-      const result = await prisma.order.findMany({
+    test("28:注文テーブルから、これまでに注文のあった日付を新しい順に10行抽出する（同一日付が複数回登場してもよい）。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 注文日 FROM 注文 ORDER BY 注文日 DESC OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY`;
+      console.table(expected);
+
+      const orders = await prisma.order.findMany({
         orderBy: {
           day: "desc",
         },
@@ -3481,13 +3504,19 @@ describe("商店データベース", () => {
         },
         take: 10,
       });
-
+      const result = orders.map((o) => ({
+        注文日: o.day,
+      }));
       console.table(result);
-      expect(result.length).toBe(10);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品テーブルから、単価の低い順に並べて6～20行目に当たる商品データを抽出する。同一の単価の場合は、商品区分、商品コードの昇順に並ぶように抽出すること。", async () => {
-      const result = await prisma.product.findMany({
+    test("29:商品テーブルから、単価の低い順に並べて6～20行目に当たる商品データを抽出する。同一の単価の場合は、商品区分、商品コードの昇順に並ぶように抽出すること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT * FROM 商品 ORDER BY 単価, 商品区分, 商品コード OFFSET 5 ROWS FETCH NEXT 15 ROWS ONLY`;
+      console.table(expected);
+
+      const products = await prisma.product.findMany({
         orderBy: [
           {
             price: "asc",
@@ -3502,13 +3531,23 @@ describe("商店データベース", () => {
         skip: 5,
         take: 15,
       });
-
+      const result = products.map((p) => ({
+        商品コード: p.code,
+        商品名: p.name,
+        商品区分: p.type,
+        単価: p.price,
+        関連商品コード: p?.relatedCode,
+      }));
       console.table(result);
-      expect(result.length).toBe(15);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("廃版商品テーブルから、2020年12月に廃版されたものと、売上個数が100を超えるものを併せて抽出する。一覧は、売上個数の多い順に並べること。", async () => {
-      const result = await prisma.retiredProduct.findMany({
+    test("30:廃番商品テーブルから、2020年12月に廃番されたものと、売上個数が100を超えるものを併せて抽出する。一覧は、売上個数の多い順に並べること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT * FROM 廃番商品 WHERE 廃番日 >= '2020-12-01' AND 廃番日 <= '2020-12-31' OR 売上個数 > 100 ORDER BY 売上個数 DESC`;
+      console.table(expected);
+
+      const retiredProducts = await prisma.retiredProduct.findMany({
         where: {
           OR: [
             {
@@ -3528,12 +3567,23 @@ describe("商店データベース", () => {
           quantity: "desc",
         },
       });
-
+      const result = retiredProducts.map((p) => ({
+        商品コード: p.code,
+        商品名: p.name,
+        単価: p.price,
+        商品区分: p.type,
+        廃番日: p.retiredAt,
+        売上個数: p.quantity,
+      }));
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品テーブルから、これまでに注文されたことのない商品コードを昇順に抽出する。", async () => {
+    test("31:商品テーブルから、これまでに注文されたことのない商品コードを昇順に抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品コード FROM 商品 EXCEPT SELECT 商品コード FROM 注文 ORDER BY 商品コード`;
+      console.table(expected);
+
       const orderedProductCode = await prisma.order.findMany({
         select: {
           productCode: true,
@@ -3541,7 +3591,7 @@ describe("商店データベース", () => {
         distinct: ["productCode"],
       });
 
-      const result = await prisma.product.findMany({
+      const products = await prisma.product.findMany({
         where: {
           code: {
             notIn: orderedProductCode.map((p) => p.productCode),
@@ -3551,20 +3601,25 @@ describe("商店データベース", () => {
           code: "asc",
         },
       });
-
+      const result = products.map((p) => ({
+        商品コード: p.code,
+      }));
       console.table(result);
-      expect(result.length).toBe(9);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品テーブルから、これまでに注文された実績のある商品コードを降順に抽出する。", async () => {
+    test("32:商品テーブルから、これまでに注文された実績のある商品コードを降順に抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品コード FROM 商品 INTERSECT SELECT 商品コード FROM 注文 ORDER BY 商品コード DESC`;
+      console.table(expected);
+
       const orderedProductCode = await prisma.order.findMany({
         select: {
           productCode: true,
         },
         distinct: ["productCode"],
       });
-
-      const result = await prisma.product.findMany({
+      const products = await prisma.product.findMany({
         where: {
           code: {
             in: orderedProductCode.map((p) => p.productCode),
@@ -3574,13 +3629,19 @@ describe("商店データベース", () => {
           code: "desc",
         },
       });
-
+      const result = products.map((p) => ({
+        商品コード: p.code,
+      }));
       console.table(result);
-      expect(result.length).toBe(30);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("商品区分が「未分類」で、単価が千円以下と1万円を超える商品について、商品コード、商品名、単価を抽出する。単価の低い順に並べ、同額の場合は商品コードの昇順とする。", async () => {
-      const result = await prisma.product.findMany({
+    test("33:商品区分が「未分類」で、単価が千円以下と1万円を超える商品について、商品コード、商品名、単価を抽出する。単価の低い順に並べ、同額の場合は商品コードの昇順とする。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 商品コード, 商品名, 単価 FROM 商品 WHERE 商品区分 = '9' AND 単価 <= 1000 UNION SELECT 商品コード, 商品名, 単価 FROM 商品 WHERE 商品区分 = '9' AND 単価 >= 10000 ORDER BY 単価, 商品コード`;
+      console.table(expected);
+
+      const products = await prisma.product.findMany({
         where: {
           type: "9",
           OR: [{ price: { lte: 1000 } }, { price: { gte: 10000 } }],
@@ -3599,9 +3660,14 @@ describe("商店データベース", () => {
           price: true,
         },
       });
-
+      const result = products.map((p) => ({
+        商品コード: p.code,
+        商品名: p.name,
+        単価: p.price,
+      }));
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
   });
 
