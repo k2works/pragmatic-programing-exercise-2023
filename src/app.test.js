@@ -6,6 +6,7 @@ import transactionReason from "../prisma/data/transactionReason";
 import product from "../prisma/data/product";
 import retiredProduct from "../prisma/data/retiredProduct";
 import order from "../prisma/data/order";
+import exp from "constants";
 const party = require("../prisma/data/party");
 const experienceEvent = require("../prisma/data/experienceEvent");
 const event = require("../prisma/data/event");
@@ -5904,22 +5905,32 @@ describe("RPGデータベース", () => {
       await prisma.party.createMany({ data: data });
     });
 
-    test("パーティテーブルから、パーティーの現在の状態コード一覧を取得する。重複は除外すること", async () => {
-      const result = await prisma.party.findMany({
+    test("23:パーティテーブルから、パーティーの現在の状態コード一覧を取得する。重複は除外すること", async () => {
+      const expected = await prisma.$queryRaw`SELECT DISTINCT "状態コード" FROM パーティ`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           statusCode: true,
         },
       });
-
-      const statusCodes = result.map((r) => r.statusCode);
+      const statusCodes = parties.map((r) => r.statusCode);
       const uniqueStatusCodes = [...new Set(statusCodes)];
+      const result = uniqueStatusCodes.map((r) => {
+        return {
+          状態コード: r,
+        };
+      });
+      console.table(result);
 
-      console.table(uniqueStatusCodes);
-      expect(uniqueStatusCodes.length).toBe(2);
+      expect(expected).toStrictEqual(result);
     });
 
-    test("パーティテーブルから、IDと名称をIDの昇順に抽出する", async () => {
-      const result = await prisma.party.findMany({
+    test("24:パーティテーブルから、IDと名称をIDの昇順に抽出する", async () => {
+      const expected = await prisma.$queryRaw`SELECT "ID", "名称" FROM パーティ ORDER BY "ID" ASC`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           id: true,
           name: true,
@@ -5928,13 +5939,22 @@ describe("RPGデータベース", () => {
           id: "asc",
         },
       });
-
+      const result = parties.map((r) => {
+        return {
+          ID: r.id,
+          名称: r.name,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("パーティーテーブルから、名称と職業コードを名称の降順に抽出する", async () => {
-      const result = await prisma.party.findMany({
+    test("25:パーティーテーブルから、名称と職業コードを名称の降順に抽出する", async () => {
+      const expected = await prisma.$queryRaw`SELECT "名称", "職業コード" FROM パーティ ORDER BY "名称" DESC`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           name: true,
           professionCode: true,
@@ -5943,13 +5963,22 @@ describe("RPGデータベース", () => {
           name: "desc",
         },
       });
-
+      const result = parties.map((r) => {
+        return {
+          名称: r.name,
+          職業コード: r.professionCode,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("パーティーテーブルから、名称、HP、状態コードを、状態コードの昇順かつHPの高い順（降順）に抽出する", async () => {
-      const result = await prisma.party.findMany({
+    test("26:パーティーテーブルから、名称、HP、状態コードを、状態コードの昇順かつHPの高い順（降順）に抽出する", async () => {
+      const expected = await prisma.$queryRaw`SELECT "名称", "HP", "状態コード" FROM パーティ ORDER BY "状態コード" ASC, "HP" DESC`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           name: true,
           hp: true,
@@ -5964,13 +5993,23 @@ describe("RPGデータベース", () => {
           },
         ],
       });
-
+      const result = parties.map((r) => {
+        return {
+          名称: r.name,
+          HP: r.hp,
+          状態コード: r.statusCode,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("イベントテーブルから、タイプ、イベント番号、イベント名称、前提イベント番号、後続イベント番号を、タイプの昇順かつイベント番号の昇順に抽出する。並べ替えには列番号を用いること。", async () => {
-      const result = await prisma.event.findMany({
+    test("27:イベントテーブルから、タイプ、イベント番号、イベント名称、前提イベント番号、後続イベント番号を、タイプの昇順かつイベント番号の昇順に抽出する。並べ替えには列番号を用いること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT "タイプ", "イベント番号", "イベント名称", "前提イベント番号", "後続イベント番号" FROM イベント ORDER BY 1 ASC, 2 ASC`;
+      console.table(expected);
+
+      const parties = await prisma.event.findMany({
         select: {
           type: true,
           eventNumber: true,
@@ -5987,13 +6026,25 @@ describe("RPGデータベース", () => {
           },
         ],
       });
-
+      const result = parties.map((r) => {
+        return {
+          タイプ: r.type,
+          イベント番号: r.eventNumber,
+          イベント名称: r.eventName,
+          前提イベント番号: r.premiseEventNumber,
+          後続イベント番号: r.followOnEventNumber,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(26);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("パーティーテーブルから、HPの高い順に3件抽出する", async () => {
-      const result = await prisma.party.findMany({
+    test("28:パーティーテーブルから、HPの高い順に3件抽出する", async () => {
+      const expected = await prisma.$queryRaw`SELECT "名称", "HP" FROM パーティ ORDER BY "HP" DESC OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           name: true,
           hp: true,
@@ -6003,13 +6054,22 @@ describe("RPGデータベース", () => {
         },
         take: 3,
       });
-
+      const result = parties.map((r) => {
+        return {
+          名称: r.name,
+          HP: r.hp,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(3);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("パーティーテーブルから、MPが3番目に高いデータを抽出する", async () => {
-      const result = await prisma.party.findMany({
+    test("29:パーティーテーブルから、MPが3番目に高いデータを抽出する", async () => {
+      const expected = await prisma.$queryRaw`SELECT "名称", "MP" FROM パーティ ORDER BY "MP" DESC OFFSET 2 ROWS FETCH NEXT 1 ROWS ONLY`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           name: true,
           mp: true,
@@ -6020,41 +6080,56 @@ describe("RPGデータベース", () => {
         skip: 2,
         take: 1,
       });
-
+      const result = parties.map((r) => {
+        return {
+          名称: r.name,
+          MP: r.mp,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(1);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("イベントテーブルと経験イベントテーブルから、まだ参加していないイベントの番号を抽出する。イベントの番号順に表示すること", async () => {
-      const experienceEvent = await prisma.experienceEvent.findMany({
+    test("30:イベントテーブルと経験イベントテーブルから、まだ参加していないイベントの番号を抽出する。イベントの番号順に表示すること", async () => {
+      const expected = await prisma.$queryRaw`SELECT "イベント番号" FROM イベント EXCEPT SELECT "イベント番号" FROM 経験イベント ORDER BY "イベント番号" ASC`;
+      console.table(expected);
+
+      const experienceEvents = await prisma.experienceEvent.findMany({
         select: {
           eventNumber: true,
-        },
-        where: {
-          clearType: "0",
         },
       });
-
-      const result = await prisma.event.findMany({
+      const events = await prisma.event.findMany({
         select: {
           eventNumber: true,
         },
         where: {
-          eventNumber: {
-            notIn: experienceEvent.map((e) => e.eventNumber),
+          NOT: {
+            eventNumber: {
+              in: experienceEvents.map((e) => e.eventNumber),
+            },
           },
         },
         orderBy: {
           eventNumber: "asc",
         },
       });
-
+      const result = events.map((r) => {
+        return {
+          イベント番号: r.eventNumber,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(25);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("イベントテーブルと経験イベントテーブルから、すでにクリアされたイベントのうちタイプがフリーのイベント番号を対象とする。抽出には集合演算子を用いること。", async () => {
-      const experienceEvent = await prisma.experienceEvent.findMany({
+    test("31:イベントテーブルと経験イベントテーブルから、すでにクリアされたイベントのうちタイプがフリーのイベント番号を対象とする。抽出には集合演算子を用いること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT イベント番号 FROM 経験イベント WHERE クリア区分 = '1' INTERSECT SELECT イベント番号 FROM イベント WHERE タイプ = '2'`;
+      console.table(expected);
+
+      const experienceEvents = await prisma.experienceEvent.findMany({
         select: {
           eventNumber: true,
         },
@@ -6062,8 +6137,7 @@ describe("RPGデータベース", () => {
           clearType: "1",
         },
       });
-
-      const result = await prisma.event.findMany({
+      const events = await prisma.event.findMany({
         select: {
           eventNumber: true,
         },
@@ -6074,9 +6148,14 @@ describe("RPGデータベース", () => {
           },
         },
       });
-
+      const result = events.map((r) => {
+        return {
+          イベント番号: r.eventNumber,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(1);
+
+      expect(expected).toStrictEqual(result);
     });
   });
 
