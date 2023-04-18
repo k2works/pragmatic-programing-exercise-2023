@@ -106,7 +106,7 @@ model Event {
   followOnEventNumber Int?              @map("後続イベント番号") // 次に発生するイベント番号
   experienceEvent     ExperienceEvent[]
 
-  @@map("イベントテーブル")
+  @@map("イベント")
 }
 
 model ExperienceEvent {

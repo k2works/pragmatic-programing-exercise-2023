@@ -5190,8 +5190,11 @@ describe("RPGデータベース", () => {
       }
     });
 
-    test("主人公のパーティにいるキャラクターの全データをパーティテーブルから「＊」を用いずに抽出する。", async () => {
-      const result = await prisma.party.findMany({
+    test("1:主人公のパーティにいるキャラクターの全データをパーティテーブルから「＊」を用いずに抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT "ID",名称,職業コード,"HP","MP",状態コード FROM パーティ`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           id: true,
           name: true,
@@ -5201,13 +5204,26 @@ describe("RPGデータベース", () => {
           statusCode: true,
         },
       });
-
+      const result = parties.map((p) => {
+        return {
+          ID: p.id,
+          名称: p.name,
+          職業コード: p.professionCode,
+          HP: p.hp,
+          MP: p.mp,
+          状態コード: p.statusCode,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(2);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("パーティテーブルから、名称、HP、MPの一覧を取得する。各見出しは次のように表示すること。", async () => {
+    test("2:パーティテーブルから、名称、HP、MPの一覧を取得する。各見出しは次のように表示すること。", async () => {
       // なまえ　現在のHP　現在のMP
+      const expected = await prisma.$queryRaw`SELECT 名称 AS なまえ,"HP" AS "現在のHP","MP" AS "現在のMP" FROM パーティ`;
+      console.table(expected);
+
       const party = await prisma.party.findMany({
         select: {
           name: true,
@@ -5215,7 +5231,6 @@ describe("RPGデータベース", () => {
           mp: true,
         },
       });
-
       const result = party.map((p) => {
         return {
           なまえ: p.name,
@@ -5223,61 +5238,61 @@ describe("RPGデータベース", () => {
           現在のMP: p.mp,
         };
       });
-
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        なまえ: "ミナト",
-        現在のHP: 89,
-        現在のMP: 74,
-      });
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("イベントの全データをイベントテーブルから「＊」を用いて抽出する。", async () => {
-      const result = await prisma.event.findMany({
+    test("3:イベントの全データをイベントテーブルから「＊」を用いて抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT * FROM イベント`;
+      console.table(expected);
+
+      const events = await prisma.event.findMany({
         select: {
           eventNumber: true,
           eventName: true,
           type: true,
           premiseEventNumber: true,
           followOnEventNumber: true,
-          experienceEvent: {
-            select: {
-              eventNumber: true,
-              clearResult: true,
-              routeNumber: true,
-            },
-          },
         },
       });
-
+      const result = events.map((e) => {
+        return {
+          イベント番号: e.eventNumber,
+          イベント名称: e.eventName,
+          タイプ: e.type,
+          前提イベント番号: e.premiseEventNumber,
+          後続イベント番号: e.followOnEventNumber,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(26);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("イベントテーブルから、イベント番号とイベント名称の一覧を取得する。各見出しは次のように表示すること。", async () => {
+    test("4:イベントテーブルから、イベント番号とイベント名称の一覧を取得する。各見出しは次のように表示すること。", async () => {
       // 番号　場面
+      const exepcted = await prisma.$queryRaw`SELECT イベント番号 AS 番号,イベント名称 AS 場面 FROM イベント`;
+      console.table(exepcted);
+
       const events = await prisma.event.findMany({
         select: {
           eventNumber: true,
           eventName: true,
         },
       });
-
       const result = events.map((e) => {
         return {
           番号: e.eventNumber,
           場面: e.eventName,
         };
       });
-
       console.table(result);
-      expect(result[0]).toStrictEqual({
-        番号: 1,
-        場面: "オープニング",
-      });
+
+      expect(exepcted).toStrictEqual(result);
     });
 
-    test("パーティテーブルに,次のつのデータを1回の実行ごとに1つずつ追加する。", async () => {
+    test("5:パーティテーブルに,次のつのデータを1回の実行ごとに1つずつ追加する。", async () => {
       const data = [
         {
           id: "A01",
@@ -5304,18 +5319,36 @@ describe("RPGデータベース", () => {
           statusCode: "00",
         },
       ];
+      await prisma.$transaction(async (tx) => {
+        for (const d of data) {
+          await tx.$queryRaw`INSERT INTO パーティ("ID", 名称, 職業コード, "HP", "MP", 状態コード) VALUES (${d.id}, ${d.name}, ${d.professionCode}, ${d.hp}, ${d.mp}, ${d.statusCode})`;
+        }
+      });
+      const expected = await prisma.$queryRaw`SELECT * FROM パーティ WHERE "ID" IN ('A01','A02','A03')`;
+      console.table(expected);
 
+      await prisma.party.deleteMany();
       await prisma.party.createMany({ data: data });
-      const result = await prisma.party.findMany({
+      const parties = await prisma.party.findMany({
         where: {
           id: {
             in: ["A01", "A02", "A03"],
           },
         },
       });
-
+      const result = parties.map((p) => {
+        return {
+          ID: p.id,
+          名称: p.name,
+          職業コード: p.professionCode,
+          HP: p.hp,
+          MP: p.mp,
+          状態コード: p.statusCode,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(3);
+
+      expect(expected).toStrictEqual(result);
     });
   });
 
