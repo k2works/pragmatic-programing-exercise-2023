@@ -6,7 +6,6 @@ import transactionReason from "../prisma/data/transactionReason";
 import product from "../prisma/data/product";
 import retiredProduct from "../prisma/data/retiredProduct";
 import order from "../prisma/data/order";
-import exp from "constants";
 const party = require("../prisma/data/party");
 const experienceEvent = require("../prisma/data/experienceEvent");
 const event = require("../prisma/data/event");
@@ -6233,10 +6232,13 @@ describe("RPGデータベース", () => {
       await prisma.party.createMany({ data: data });
     });
 
-    test("パーティーテーブルから、次の形式の一覧を取得する。", async () => {
+    test("32:パーティーテーブルから、次の形式の一覧を取得する。", async () => {
       // 職業区分　職業コード　ID　名称
       // 職業区分は、物理攻撃が得意なもの（職業コードが1から始まる）を「S」、魔法攻撃の得意なもの（職業コードが2から始まる）を「M」、それ以外を「A」と表示すること。
       // また、一覧は職業コード順とすること。
+      const exepcted = await prisma.$queryRaw`SELECT CASE WHEN 職業コード LIKE '1%' THEN 'S' WHEN 職業コード LIKE '2%' THEN 'M' ELSE 'A' END AS 職業区分, 職業コード, "ID", "名称" FROM パーティ ORDER BY 職業コード ASC`;
+      console.table(exepcted);
+
       const party = await prisma.party.findMany({
         select: {
           id: true,
@@ -6247,8 +6249,7 @@ describe("RPGデータベース", () => {
           professionCode: "asc",
         },
       });
-
-      const result = party.map((p) => {
+      const parties = party.map((p) => {
         const code = p.professionCode;
         const type = code.startsWith("1")
           ? "S"
@@ -6262,13 +6263,24 @@ describe("RPGデータベース", () => {
           name: p.name,
         };
       });
-
+      const result = parties.map((p) => {
+        return {
+          職業区分: p.type,
+          職業コード: p.code,
+          ID: p.id,
+          名称: p.name,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(exepcted).toStrictEqual(result);
     });
 
-    test("アイテム「勇気の鈴」を装備すると、HPが50ポイントアップする。このアイテムを装備したときの各キャラクターのHPを適切な列を用いて次の別名で取得する。ただし、このアイテムは「武道家」と「学者」しか装備できない。", async () => {
+    test("33:アイテム「勇気の鈴」を装備すると、HPが50ポイントアップする。このアイテムを装備したときの各キャラクターのHPを適切な列を用いて次の別名で取得する。ただし、このアイテムは「武道家」と「学者」しか装備できない。", async () => {
       // なまえ　現在のHP　装備後のHP
+      const expected = await prisma.$queryRaw`SELECT "名称" AS なまえ, "HP" AS "現在のHP", "HP" + 50 AS "装備後のHP" FROM パーティ WHERE 職業コード IN ('11', '21')`;
+      console.table(expected);
+
       const party = await prisma.party.findMany({
         select: {
           id: true,
@@ -6282,7 +6294,6 @@ describe("RPGデータベース", () => {
           },
         },
       });
-
       const result = party.map((p) => {
         const hp = p.hp + 50;
         return {
@@ -6291,13 +6302,52 @@ describe("RPGデータベース", () => {
           装備後のHP: hp,
         };
       });
-
       console.table(result);
-      expect(result.length).toBe(2);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("ID「A01」と「A03」のキャラクターがアイテム「知恵の指輪」を装備し、MPが20ポイントアップした。その該当データのMPを更新する。", async () => {
-      const result = await prisma.party.updateMany({
+    test("34:ID「A01」と「A03」のキャラクターがアイテム「知恵の指輪」を装備し、MPが20ポイントアップした。その該当データのMPを更新する。", async () => {
+      await prisma.$queryRaw`UPDATE パーティ SET "MP" = "MP" + 20 WHERE "ID" IN ('A01', 'A03')`;
+      const expected = await prisma.$queryRaw`SELECT * FROM パーティ WHERE "ID" IN ('A01', 'A03')`;
+      console.table(expected);
+
+      await prisma.party.deleteMany();
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        },
+      ];
+      await prisma.party.createMany({ data: data });
+      await prisma.party.updateMany({
         where: {
           id: {
             in: ["A01", "A03"],
@@ -6309,14 +6359,34 @@ describe("RPGデータベース", () => {
           },
         },
       });
-
+      const parties = await prisma.party.findMany({
+        where: {
+          id: {
+            in: ["A01", "A03"],
+          },
+        },
+      });
+      const result = parties.map((p) => {
+        return {
+          ID: p.id,
+          名称: p.name,
+          職業コード: p.professionCode,
+          HP: p.hp,
+          MP: p.mp,
+          状態コード: p.statusCode,
+        };
+      });
       console.table(result);
-      expect(result.count).toBe(2);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("武道家の技「スッキリパンチ」は、自分のHPを2倍したポイントのダメージを敵に与える。この技を使ったときのダメージを適切な列を用いて次の別名で抽出する。", async () => {
+    test("35:武道家の技「スッキリパンチ」は、自分のHPを2倍したポイントのダメージを敵に与える。この技を使ったときのダメージを適切な列を用いて次の別名で抽出する。", async () => {
       // なまえ　現在のHP　予想されるダメージ
-      const party = await prisma.party.findMany({
+      const expected = await prisma.$queryRaw`SELECT "名称" AS なまえ, "HP" AS "現在のHP", "HP" * 2 AS "予想されるダメージ" FROM パーティ WHERE 職業コード = '11'`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           id: true,
           name: true,
@@ -6329,8 +6399,7 @@ describe("RPGデータベース", () => {
           },
         },
       });
-
-      const result = party.map((p) => {
+      const result = parties.map((p) => {
         const damage = p.hp * 2;
         return {
           なまえ: p.name,
@@ -6338,15 +6407,18 @@ describe("RPGデータベース", () => {
           予想されるダメージ: damage,
         };
       });
-
       console.table(result);
-      expect(result.length).toBe(1);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("現在、主人公のパーティーにいるキャラクターの状況について、適切な列を用いて次の別名で一覧を取得する。", async () => {
+    test("36:現在、主人公のパーティーにいるキャラクターの状況について、適切な列を用いて次の別名で一覧を取得する。", async () => {
       // なまえ　HPとMP ステータス
       // 「HPとMP」はHPとMPを「／」でつなげたものとする。ステータスには状態コードを日本語に置き換えたものを表示するが、ステータスに異常がない場合は、何も表示しなくてよい。
-      const party = await prisma.party.findMany({
+      const expected = await prisma.$queryRaw`SELECT "名称" AS なまえ, "HP" || ' /' || "MP" AS "HPとMP", CASE "状態コード" WHEN '00' THEN NULL WHEN '01' THEN '眠り' WHEN '02' THEN '毒' WHEN '03' THEN '沈黙' WHEN '04' THEN '混乱' WHEN '09' THEN '気絶' END AS "ステータス" FROM パーティ`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           id: true,
           name: true,
@@ -6356,40 +6428,47 @@ describe("RPGデータベース", () => {
           mp: true,
         },
       });
-
-      const result = party.map((p) => {
+      const result = parties.map((p) => {
+        const statusName = (statusCode) => {
+          switch (statusCode) {
+            case "00":
+              return null;
+            case "01":
+              return "眠り";
+            case "02":
+              return "毒";
+            case "03":
+              return "沈黙";
+            case "04":
+              return "混乱";
+            case "09":
+              return "気絶";
+            default:
+              return "";
+          }
+        }
         const hpmp = `${p.hp} /${p.mp}`;
-        const status =
-          p.statusCode === "00"
-            ? ""
-            : p.statusCode === "01"
-              ? "眠り"
-              : p.statusCode === "02"
-                ? "毒"
-                : p.statusCode === "03"
-                  ? "沈黙"
-                  : p.statusCode === "04"
-                    ? "混乱"
-                    : p.statusCode === "09"
-                      ? "気絶"
-                      : "";
+        const status = statusName(p.statusCode);
         return {
           なまえ: p.name,
           HPとMP: hpmp,
           ステータス: status,
         };
       });
-
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("イベントテーブルから、次の形式でイベント一覧を取得する。", async () => {
+    test("37:イベントテーブルから、次の形式でイベント一覧を取得する。", async () => {
       // イベント番号　イベント名称　タイプ　発生時期
       // タイプはコードを日本語で置き換えたもの、発生時期は次の条件に応じたものを表示すること。
       // イベント番号が1～10なら「序盤」
       // イベント番号が11～17なら「中盤」
       // 上記以外なら「終盤」
+      const expected = await prisma.$queryRaw`SELECT "イベント番号", "イベント名称", CASE "タイプ" WHEN '1' THEN '強制' WHEN '2' THEN 'フリー' WHEN '3' THEN '特殊' END AS "タイプ", CASE WHEN イベント番号 >= 1 AND イベント番号 <= 10 THEN '序盤' WHEN イベント番号 >= 11 AND イベント番号 <= 17 THEN '中盤' ELSE '終盤' END AS "発生時期" FROM イベント`;
+      console.table(expected);
+
       const event = await prisma.event.findMany({
         select: {
           eventNumber: true,
@@ -6397,7 +6476,6 @@ describe("RPGデータベース", () => {
           type: true,
         },
       });
-
       const result = event.map((e) => {
         return {
           イベント番号: e.eventNumber,
@@ -6411,14 +6489,17 @@ describe("RPGデータベース", () => {
                 : "終盤",
         };
       });
-
       console.table(result);
-      expect(result.length).toBe(26);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("敵の攻撃「ネームバリュー」は、名前の文字数を10倍したポイントのダメージがある。この攻撃を受けた時の各キャラクターの予想ダメージを適切な列を用いて次の別名で取得する。", async () => {
+    test("38:敵の攻撃「ネームバリュー」は、名前の文字数を10倍したポイントのダメージがある。この攻撃を受けた時の各キャラクターの予想ダメージを適切な列を用いて次の別名で取得する。", async () => {
       // なまえ　現在のHP　予想ダメージ
-      const party = await prisma.party.findMany({
+      const expected = await prisma.$queryRaw`SELECT "名称" AS なまえ, "HP" AS "現在のHP", LENGTH("名称") * 10 AS "予想ダメージ" FROM パーティ`;
+      console.table(expected);
+
+      const parties = await prisma.party.findMany({
         select: {
           id: true,
           name: true,
@@ -6426,8 +6507,7 @@ describe("RPGデータベース", () => {
           hp: true,
         },
       });
-
-      const result = party.map((p) => {
+      const result = parties.map((p) => {
         const damage = p.name.length * 10;
         return {
           なまえ: p.name,
@@ -6435,13 +6515,52 @@ describe("RPGデータベース", () => {
           予想ダメージ: damage,
         };
       });
-
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("敵の攻撃「四苦八苦」を受け、HPまたはMPが4で割り切れるキャラクターは混乱した。該当のデータの状態コードを更新する。なお、剰余の計算には%演算子かMOD関数を用いる。", async () => {
-      const party = await prisma.party.findMany({
+    test("39:敵の攻撃「四苦八苦」を受け、HPまたはMPが4で割り切れるキャラクターは混乱した。該当のデータの状態コードを更新する。なお、剰余の計算には%演算子かMOD関数を用いる。", async () => {
+      await prisma.$queryRaw`UPDATE パーティ SET "状態コード" = '04' WHERE MOD("HP",4) = 0 OR MOD("MP",4) = 0`;
+      const expected = await prisma.$queryRaw`SELECT * FROM パーティ WHERE "状態コード" = '04'`;
+      console.table(expected);
+
+      await prisma.party.deleteMany();
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        },
+      ];
+      await prisma.party.createMany({ data: data });
+      const updateStatus = await prisma.party.findMany({
         select: {
           id: true,
           name: true,
@@ -6451,20 +6570,56 @@ describe("RPGデータベース", () => {
           mp: true,
         },
       });
-
-      const result = party.map((p) => {
-        const status = p.hp % 4 === 0 || p.mp % 4 === 0 ? "04" : p.statusCode;
-        return {
-          id: p.id,
-          statusCode: status,
-        };
+      const updateStatusCodes = updateStatus.filter(
+        (p) => p.hp % 4 === 0 || p.mp % 4 === 0
+      );
+      await prisma.party.updateMany({
+        where: {
+          id: { in: updateStatusCodes.map((p) => p.id) },
+        },
+        data: { statusCode: "04" },
       });
 
+      const parties = await prisma.party.findMany({
+        where: {
+          id: { in: updateStatusCodes.map((p) => p.id) },
+        },
+        select: {
+          id: true,
+          name: true,
+          professionCode: true,
+          statusCode: true,
+          hp: true,
+          mp: true,
+        },
+      });
+      const result = parties.map((p) => {
+        return {
+          ID: p.id,
+          名称: p.name,
+          職業コード: p.professionCode,
+          HP: p.hp,
+          MP: p.mp,
+          状態コード: p.statusCode,
+        };
+      });
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("町の道具やで売値が777のアイテム「女神の祝福」を買ったところ、会員証を持っていたため30%割引で購入できた。この際に支払った金額を求める。端数は切り捨て。", async () => { });
+    test("40:町の道具やで売値が777のアイテム「女神の祝福」を買ったところ、会員証を持っていたため30%割引で購入できた。この際に支払った金額を求める。端数は切り捨て。", async () => {
+      const expected = await prisma.$queryRaw`SELECT TRUNC(777 * 0.7,0) AS "支払った金額"`;
+      console.table(expected);
+
+      const amount = 777 * 0.7;
+      const result = [{
+        支払った金額: Math.floor(amount)
+      }];
+      console.table(result);
+
+      expect(expected.toString()).toStrictEqual(result.toString());
+    });
 
     test("戦闘中にアイテム「女神の祝福」を使ったところ、全員のHPとMPがそれまでの値に対して3割ほど回復した。該当するデータを更新する。ただし、端数は四捨五入すること。", async () => {
       const party = await prisma.party.findMany({
