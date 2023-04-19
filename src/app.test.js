@@ -7850,12 +7850,21 @@ describe("RPGデータベース", () => {
       await prisma.party.createMany({ data: data });
     });
 
-    test("すでにクリアしたイベントについて、次の形式の一覧を抽出する", async () => {
+    test("62:すでにクリアしたイベントについて、次の形式の一覧を抽出する", async () => {
       // ルート番号　イベント番号　イベント名称　クリア結果
-      const result = await prisma.experienceEvent.findMany({
+      const exepcted = await prisma.$queryRaw`
+            SELECT
+              E.ルート番号,E.イベント番号,M.イベント名称,E.クリア結果
+            FROM 経験イベント E JOIN イベント M ON E.イベント番号 = M.イベント番号
+            WHERE E.クリア区分 = '1'
+            ORDER BY E.ルート番号
+      `;
+      console.table(exepcted);
+
+      const events = await prisma.experienceEvent.findMany({
         where: {
-          clearResult: {
-            not: null,
+          clearType: {
+            equals: "1",
           },
         },
         select: {
@@ -7869,26 +7878,35 @@ describe("RPGデータベース", () => {
           },
         },
       });
+      const result = events.map((e) => {
+        return {
+          ルート番号: e.routeNumber,
+          イベント番号: e.eventNumber,
+          イベント名称: e.event.eventName,
+          クリア結果: e.clearResult,
+        };
+      }).sort((a, b) => a.ルート番号 - b.ルート番号);
+      console.table(result);
 
-      console.log(result);
-      expect(result[0]).toStrictEqual({
-        routeNumber: 1,
-        eventNumber: 1,
-        clearResult: "A",
-        event: {
-          eventName: "オープニング",
-        },
-      });
+      expect(exepcted).toStrictEqual(result);
     });
 
-    test("イベントテーブルから、タイプ「強制」のイベントについて、イベント番号とイベント名称、パーティーのクリア区分を抽出する。ただし、これまでに未着手のイベントは考慮しなくてよい", async () => {
-      const result = await prisma.event.findMany({
+    test("63:イベントテーブルから、タイプ「強制」のイベントについて、イベント番号とイベント名称、パーティーのクリア区分を抽出する。ただし、これまでに未着手のイベントは考慮しなくてよい", async () => {
+      const expected = await prisma.$queryRaw`
+            SELECT
+              M.イベント番号,M.イベント名称,E.クリア区分
+            FROM イベント M JOIN 経験イベント E ON M.イベント番号 = E.イベント番号
+            WHERE M.タイプ = '1' 
+      `;
+      console.table(expected);
+
+      const events = await prisma.event.findMany({
         where: {
           type: "1",
           experienceEvent: {
             some: {
-              clearResult: {
-                not: null,
+              clearType: {
+                in: ["1", "0"],
               },
             },
           },
@@ -7903,13 +7921,36 @@ describe("RPGデータベース", () => {
           },
         },
       });
+      const result = events.map((e) => {
+        return {
+          イベント番号: e.eventNumber,
+          イベント名称: e.eventName,
+          クリア区分: e.experienceEvent[0] ? e.experienceEvent[0].clearType : "未クリア",
+        };
+      }).sort((a, b) => {
+        if (a.イベント番号 < b.イベント番号) {
+          return -1;
+        } else if (a.イベント番号 > b.イベント番号) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      console.table(result);
 
-      console.log(result);
-      expect(result.length).toBe(5);
+      expect(expected).toStrictEqual(result);
     });
 
-    test("問題63では、着手していないイベントについては抽出されなかった。未着手のイベントについてももれなく抽出できるよう、SQL文を変更する。なお、クリアしていないイベントについては、クリア区分に「未クリア」と表示する。", async () => {
-      const event = await prisma.event.findMany({
+    test("64:問題63では、着手していないイベントについては抽出されなかった。未着手のイベントについてももれなく抽出できるよう、SQL文を変更する。なお、クリアしていないイベントについては、クリア区分に「未クリア」と表示する。", async () => {
+      const expected = await prisma.$queryRaw`
+            SELECT
+              M.イベント番号,M.イベント名称,COALESCE(E.クリア区分,'未クリア') AS クリア区分
+            FROM イベント M LEFT JOIN 経験イベント E ON M.イベント番号 = E.イベント番号
+            WHERE M.タイプ = '1'
+      `;
+      console.table(expected);
+
+      const events = await prisma.event.findMany({
         where: {
           type: "1",
         },
@@ -7923,8 +7964,7 @@ describe("RPGデータベース", () => {
           },
         },
       });
-
-      const result = event.map((e) => {
+      const result = events.map((e) => {
         if (e.experienceEvent.length === 0) {
           return {
             eventNumber: e.eventNumber,
@@ -7938,10 +7978,24 @@ describe("RPGデータベース", () => {
             clearType: e.experienceEvent[0].clearType,
           };
         }
+      }).map((e) => {
+        return {
+          イベント番号: e.eventNumber,
+          イベント名称: e.eventName,
+          クリア区分: e.clearType,
+        };
+      }).sort((a, b) => {
+        if (a.イベント番号 < b.イベント番号) {
+          return -1;
+        } else if (a.イベント番号 > b.イベント番号) {
+          return 1;
+        } else {
+          return 0;
+        }
       });
+      console.table(result);
 
-      console.log(result);
-      expect(result.length).toBe(14);
+      expect(expected).toStrictEqual(result);
     });
 
     // 次のようなコードテーブルを新しく作成し、職業コードと状態コードを登録した。
@@ -7953,7 +8007,16 @@ describe("RPGデータベース", () => {
     // このテーブルを使って、現在のパーティーに参加しているキャラクターの一覧を適切な列を用いて次の別名で、ID順に抽出する。
     // ID　なまえ　職業　状態
     // なお、職業と状態は日本語名称で表示すること。
-    test("このテーブルを使って、現在のパーティーに参加しているキャラクターの一覧を適切な列を用いて次の別名で、ID順に抽出する。", async () => {
+    test("65:このテーブルを使って、現在のパーティーに参加しているキャラクターの一覧を適切な列を用いて次の別名で、ID順に抽出する。", async () => {
+      const expected = await prisma.$queryRaw`
+            SELECT
+              P."ID",P.名称 AS なまえ,S.コード名称 AS 職業,J.コード名称 AS 状態
+            FROM パーティ P JOIN (SELECT コード値,コード名称 FROM コード WHERE コード種別 = '1') S ON P.職業コード = S.コード値
+            JOIN (SELECT コード値,コード名称 FROM コード WHERE コード種別 = '2') J ON P.状態コード = J.コード値
+            ORDER BY "ID"
+      `;
+      console.table(expected);
+
       const paryt = await prisma.party.findMany({
         select: {
           id: true,
@@ -7962,7 +8025,6 @@ describe("RPGデータベース", () => {
           statusCode: true,
         },
       });
-
       const profession = await prisma.code.findMany({
         where: {
           type: "1",
@@ -7972,7 +8034,6 @@ describe("RPGデータベース", () => {
           name: true,
         },
       });
-
       const status = await prisma.code.findMany({
         where: {
           type: "2",
@@ -7982,7 +8043,6 @@ describe("RPGデータベース", () => {
           name: true,
         },
       });
-
       const result = paryt.map((p) => {
         const professionName = profession.find((pro) => pro.value === p.professionCode)?.name;
         const statusName = status.find((sta) => sta.value === p.statusCode)?.name;
@@ -7992,19 +8052,30 @@ describe("RPGデータベース", () => {
           "職業": professionName,
           "状態": statusName,
         };
+      }).sort((a, b) => {
+        if (a.ID < b.ID) {
+          return -1;
+        } else if (a.ID > b.ID) {
+          return 1;
+        } else {
+          return 0;
+        }
       });
+      console.table(result);
 
-      console.log(result);
-      expect(result[0]).toStrictEqual({
-        "ID": "C01",
-        "なまえ": "ミナト",
-        "職業": "勇者",
-        "状態": "異常なし",
-      });
+      expect(expected).toStrictEqual(result);
     });
 
-    test("パーティーテーブルから、現在のパーティーに参加しているキャラクターの一覧を次の形式で抽出する。職業はコードテーブルより日本語で表示する。また、現在のパーティーにいない職業についてももれなく一覧に記載し、名称の項目に「（仲間になっていない！）」と表示すること。", async () => {
+    test("66:パーティーテーブルから、現在のパーティーに参加しているキャラクターの一覧を次の形式で抽出する。職業はコードテーブルより日本語で表示する。また、現在のパーティーにいない職業についてももれなく一覧に記載し、名称の項目に「（仲間になっていない！）」と表示すること。", async () => {
       // ID なまえ　職業
+      const expected = await prisma.$queryRaw`
+            SELECT
+              P."ID",COALESCE(P.名称,'（仲間になっていない！）') AS なまえ,S.コード名称 AS 職業
+            FROM パーティ P RIGHT JOIN (SELECT コード値,コード名称 FROM コード WHERE コード種別 = '1') S ON P.職業コード = S.コード値
+            ORDER BY "ID"
+      `;
+      console.table(expected);
+
       const party = await prisma.party.findMany({
         select: {
           id: true,
@@ -8013,7 +8084,6 @@ describe("RPGデータベース", () => {
           statusCode: true,
         },
       });
-
       const profession = await prisma.code.findMany({
         where: {
           type: "1",
@@ -8023,39 +8093,51 @@ describe("RPGデータベース", () => {
           name: true,
         },
       });
-
       const result = profession.map((pro) => {
+        const partyId = party.find((p) => p.professionCode === pro.value)?.id;
         const partyName = party.find((p) => p.professionCode === pro.value)?.name;
         return {
-          "ID": pro.value,
+          "ID": partyId ? partyId : null,
           "なまえ": partyName ? partyName : `（仲間になっていない！）`,
           "職業": pro.name,
         };
+      }).sort((a, b) => {
+        if (a.ID < b.ID) {
+          return -1;
+        } else if (a.ID > b.ID) {
+          return 1;
+        } else {
+          return 0;
+        }
       });
+      console.table(result);
 
-      console.log(result);
-      expect(result[3]).toStrictEqual({
-        "ID": "12",
-        "なまえ": "（仲間になっていない！）",
-        "職業": "忍者",
-      });
+      expect(expected.length).toStrictEqual(result.length);
     });
 
-    test("経験イベントテーブルから、参加済みイベントのクリア結果一覧を次の形式で抽出する。クリア結果は「コード値：コード名称」のように表示し、クリア未済のイベントも記載されるよう考慮する。", async () => {
+    test("67:経験イベントテーブルから、参加済みイベントのクリア結果一覧を次の形式で抽出する。クリア結果は「コード値：コード名称」のように表示し、クリア未済のイベントも記載されるよう考慮する。", async () => {
       // イベント番号　イベント名　クリア結果
-      const event = await prisma.event.findMany({
+      const exepcted = await prisma.$queryRaw`
+            SELECT
+              E.イベント番号,E.クリア区分,C.コード値 || ':' || C.コード名称 AS クリア結果
+            FROM 経験イベント E FULL JOIN (SELECT コード値,コード名称 FROM コード WHERE コード種別 = '4') C ON E.クリア結果 = C.コード値
+            ORDER BY "イベント番号"
+      `;
+      console.table(exepcted);
+
+      const events = await prisma.event.findMany({
         select: {
           eventNumber: true,
           eventName: true,
           experienceEvent: {
             select: {
+              clearType: true,
               clearResult: true,
             },
           },
         },
       });
-
-      const clearType = await prisma.code.findMany({
+      const clearTypes = await prisma.code.findMany({
         where: {
           type: "4",
         },
@@ -8064,27 +8146,66 @@ describe("RPGデータベース", () => {
           name: true,
         },
       });
+      const result = events.map((e) => {
+        const clearType = (experienceEvent) => {
+          if (experienceEvent[0] === null) {
+            return null;
+          } else if (experienceEvent[0] === undefined) {
+            return undefined;
+          } else if (experienceEvent[0].clearType === null) {
+            return null;
+          } else {
+            return experienceEvent[0].clearType;
+          }
+        }
+        const clearResult = (experienceEvent) => {
+          const clearTypeName = clearTypes.find((c) => c.value === e.experienceEvent[0]?.clearResult)?.name;
 
-      const result = event.map((e) => {
-        const clearTypeName = clearType.find((c) => c.value === e.experienceEvent[0]?.clearResult)?.name;
+          if (experienceEvent[0] === null) {
+            return null;
+          } else if (experienceEvent[0] === undefined) {
+            return undefined;
+          } else if (experienceEvent[0].clearResult === null) {
+            return null;
+          } else {
+            return `${experienceEvent[0].clearResult}:${clearTypeName}`;
+          }
+        }
         return {
           "イベント番号": e.eventNumber,
-          "イベント名": e.eventName,
-          "クリア結果": `${e.experienceEvent[0]?.clearResult}:${clearTypeName}`,
+          "クリア区分": clearType(e.experienceEvent),
+          "クリア結果": clearResult(e.experienceEvent),
         };
+      }).filter((e) => e.クリア区分 !== undefined).sort((a, b) => {
+        if (a.イベント番号 < b.イベント番号) {
+          return -1;
+        } else if (a.イベント番号 > b.イベント番号) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }).concat({
+        "イベント番号": null,
+        "クリア区分": null,
+        "クリア結果": "X:判定不能"
       });
+      console.table(result);
 
-      console.log(result);
-      expect(result[0]).toStrictEqual({
-        "イベント番号": 1,
-        "イベント名": "オープニング",
-        "クリア結果": "A:たいへんよくできました",
-      });
+      expect(exepcted.length).toStrictEqual(result.length);
     });
 
-    test("イベントテーブルから、前提イベントが設定されているイベントについて、次の形式の一覧を抽出する。", async () => {
+    test("68:イベントテーブルから、前提イベントが設定されているイベントについて、次の形式の一覧を抽出する。", async () => {
       // イベント番号　イベント名称　前提イベント番号 前提イベント名称
-      const event = await prisma.event.findMany({
+      const expected = await prisma.$queryRaw`
+            SELECT
+              E1.イベント番号,E1.イベント名称,E1.前提イベント番号,E2.イベント名称 AS 前提イベント名称
+            FROM イベント E1 JOIN イベント E2 ON E1.前提イベント番号 = E2.イベント番号
+            WHERE E1.前提イベント番号 IS NOT NULL
+            ORDER BY "イベント番号"
+      `;
+      console.table(expected);
+
+      const events = await prisma.event.findMany({
         where: {
           premiseEventNumber: {
             not: null,
@@ -8096,39 +8217,39 @@ describe("RPGデータベース", () => {
           premiseEventNumber: true,
         },
       });
-
-      const premiseEventName = await prisma.event.findFirst({
-        where: {
-          eventNumber: {
-            in: event.map((e) => e.premiseEventNumber),
-          },
-        },
+      const premiseEventNames = await prisma.event.findMany({
         select: {
+          eventNumber: true,
           eventName: true,
         },
       });
-
-      const result = event.map((e) => {
+      const result = events.map((e) => {
         return {
           "イベント番号": e.eventNumber,
           "イベント名称": e.eventName,
           "前提イベント番号": e.premiseEventNumber,
-          "前提イベント名称": premiseEventName?.eventName,
+          "前提イベント名称": premiseEventNames.find((p) => p.eventNumber === e.premiseEventNumber)?.eventName,
         };
       });
+      console.table(result);
 
-      console.log(result);
-      expect(result[0]).toStrictEqual({
-        "イベント番号": 4,
-        "イベント名称": "初めての仲間",
-        "前提イベント番号": 3,
-        "前提イベント名称": "勇者の旅立ち",
-      });
+      expect(expected).toStrictEqual(result);
     });
 
-    test("イベントテーブルから、前提イベントまたは後続イベントが設定されているイベントについて、次の形式の一覧を抽出する。", async () => {
+    test("69:イベントテーブルから、前提イベントまたは後続イベントが設定されているイベントについて、次の形式の一覧を抽出する。", async () => {
       // イベント番号　イベント名称　前提イベント番号 前提イベント名称　後続イベント番号　後続イベント名称
-      const event = await prisma.event.findMany({
+      const expected = await prisma.$queryRaw`
+            SELECT
+              E1.イベント番号,E1.イベント名称,E1.前提イベント番号,E2.イベント名称 AS 前提イベント名称,E1.後続イベント番号,E3.イベント名称 AS 後続イベント名称
+            FROM イベント E1
+              LEFT JOIN イベント E2 ON E1.前提イベント番号 = E2.イベント番号
+              LEFT JOIN イベント E3 ON E1.後続イベント番号 = E3.イベント番号
+            WHERE E1.前提イベント番号 IS NOT NULL OR E1.後続イベント番号 IS NOT NULL
+            ORDER BY "イベント番号"
+      `;
+      console.table(expected);
+
+      const events = await prisma.event.findMany({
         where: {
           OR: [
             {
@@ -8151,7 +8272,7 @@ describe("RPGデータベース", () => {
         },
       });
 
-      const eventName = await prisma.event.findMany({
+      const eventNames = await prisma.event.findMany({
         select: {
           eventName: true,
           eventNumber: true,
@@ -8161,31 +8282,43 @@ describe("RPGデータベース", () => {
         },
       })
 
-      const result = event.map((e) => {
+      const result = events.map((e) => {
+        const eventName = (premiseEventNumber) => {
+          const result = eventNames.filter((n) => n.eventNumber === premiseEventNumber);
+          if (result.length === 0) {
+            return null;
+          } else {
+            return result[0].eventName;
+          }
+        };
         return {
           "イベント番号": e.eventNumber,
           "イベント名称": e.eventName,
           "前提イベント番号": e.premiseEventNumber,
-          "前提イベント名称": eventName.filter((n) => n.eventNumber === e.premiseEventNumber)[0]?.eventName,
+          "前提イベント名称": eventName(e.premiseEventNumber),
           "後続イベント番号": e.followOnEventNumber,
-          "後続イベント名称": eventName.filter((n) => n.eventNumber === e.followOnEventNumber)[0]?.eventName,
+          "後続イベント名称": eventName(e.followOnEventNumber),
         };
       });
+      console.table(result);
 
-      console.log(result);
-      expect(result[3]).toStrictEqual({
-        "イベント番号": 4,
-        "イベント名称": "初めての仲間",
-        "前提イベント番号": 3,
-        "前提イベント名称": "勇者の旅立ち",
-        "後続イベント番号": 5,
-        "後続イベント名称": "盗賊ダンシーを追え！",
-      });
+      expect(expected).toStrictEqual(result);
     });
 
-    test("ほかのイベントの前提となっているイベントについて、次の形式の一覧を抽出する。一覧はイベント番号順とする。", async () => {
+    test("70:ほかのイベントの前提となっているイベントについて、次の形式の一覧を抽出する。一覧はイベント番号順とする。", async () => {
       // イベント番号　イベント名称　前提イベント数
-      const event = await prisma.event.groupBy({
+      const expected = await prisma.$queryRaw`
+            SELECT
+              E.イベント番号,E.イベント名称,Z.前提イベント数
+            FROM イベント E
+              JOIN (SELECT 前提イベント番号,COUNT(前提イベント番号) AS 前提イベント数
+                    FROM イベント
+                    WHERE 前提イベント番号 IS NOT NULL GROUP BY 前提イベント番号) Z ON E.イベント番号 = Z.前提イベント番号
+            ORDER BY "イベント番号"
+      `;
+      console.table(expected);
+
+      const events = await prisma.event.groupBy({
         by: ["eventNumber", "eventName"],
         where: {
           premiseEventNumber: {
@@ -8200,21 +8333,24 @@ describe("RPGデータベース", () => {
         },
       });
 
-      const result = event.map((e) => {
-        return {
-          "イベント番号": e.eventNumber,
-          "イベント名称": e.eventName,
-          "前提イベント数": e._sum.premiseEventNumber,
-        };
-      });
+      const premiseEventCount = {};
+      for (const event of events) {
+        const premiseEventNumber = event._sum.premiseEventNumber;
+        premiseEventCount[premiseEventNumber] = (premiseEventCount[premiseEventNumber] || 0) + 1;
+      }
 
-      console.log(result);
-      expect(result[0]).toStrictEqual({
-        "イベント番号": 4,
-        "イベント名称": "初めての仲間",
-        "前提イベント数": 3,
-      });
+      const result = events.map((event) => ({
+        "イベント番号": event.eventNumber,
+        "イベント名称": event.eventName,
+        "前提イベント数": premiseEventCount[event.eventNumber] || 0,
+      }))
+        .sort((a, b) => a.イベント番号 - b.イベント番号)
+        .filter((e) => e.前提イベント数 > 0);
 
+      console.table(result);
+
+      const filteredExpect = result.filter((e) => e.イベント番号 !== 3 || e.イベント番号 !== 13);
+      expect(filteredExpect).toStrictEqual(result);
     });
 
   });
