@@ -47,7 +47,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result)
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("2:口座テーブルの全ての口座番号を抽出する。", async () => {
@@ -66,7 +66,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result)
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("3:口座テーブルの全ての口座番号と残高を抽出する。", async () => {
@@ -87,7 +87,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result)
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("4:口座テーブルの全てのデータを「＊」を用いて抽出する。", async () => {
@@ -98,7 +98,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result)
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("5:口座テーブルの全ての名義を「ｘｘｘｘｘ」に更新する。", async () => {
@@ -115,7 +115,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result)
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("6:口座テーブルの全て残高を99999999、更新日を「2022-03-01」に更新する。", async () => {
@@ -132,7 +132,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result)
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("7:口座テーブルに次の３つのデータを１回の実行ごとに１つずつ登録する。", async () => {
@@ -175,7 +175,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result)
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("8: 口座テーブルのすべてのデータを削除する。", async () => {
@@ -188,7 +188,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result)
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
   });
 
@@ -227,7 +227,7 @@ describe("銀行口座データベース", () => {
       }];
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("10:口座テーブルから、残高が0より大きいデータを抽出する。", async () => {
@@ -244,7 +244,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("11:口座テーブルから、口座番号が「1000000」番より前のデータを抽出する。", async () => {
@@ -261,7 +261,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("12:口座テーブルから、更新日が2021年以前のデータを抽出する。", async () => {
@@ -278,7 +278,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("13:口座テーブルから、残高が100万円以上のデータを抽出する。", async () => {
@@ -295,7 +295,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("14:口座テーブルから、種別が「普通」ではないデータを抽出する。", async () => {
@@ -312,7 +312,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("15:口座テーブルから、更新日が登録されていないデータを抽出する。", async () => {
@@ -327,7 +327,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("16:口座テーブルから、「ハシ」を含む名義のデータを抽出する。", async () => {
@@ -344,7 +344,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("17:口座テーブルから、更新日が2022年1月の日付であるデータを抽出する。ただし、記述する条件は式は１つであること。", async () => {
@@ -362,7 +362,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("18:口座テーブルから、種別が「当座」または「別段」のデータを抽出する。ただし、記述する条件は式は１つであること。", async () => {
@@ -379,7 +379,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("19:口座テーブルから、名義が「サカタ　リョウヘイ」「マツモト　ミワコ」「ハマダ　サトシ」のデータを抽出する。", async () => {
@@ -396,7 +396,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("20:口座テーブルから、更新日が2021年12月30日から2022年1月4日であるデータを抽出する。", async () => {
@@ -414,7 +414,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("21:口座テーブルから、残高が1万円未満で、更新日が登録されているデータを抽出する。", async () => {
@@ -434,7 +434,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("22:口座テーブルから、次の条件のいずれかに当てはまるデータを抽出する。", async () => {
@@ -463,7 +463,7 @@ describe("銀行口座データベース", () => {
       const result = fullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
   });
 
@@ -509,7 +509,7 @@ describe("銀行口座データベース", () => {
       const result = accountFullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("25:口座テーブルから、名義の一覧を取得する。データの重複は除外し、名義の昇順にすること。", async () => {
@@ -532,7 +532,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("26:口座テーブルから、残高の大きい順にすべてのデータを抽出する。残高が同額の場合には口座番号の昇順にし、並び替えには列番号を指定すること。", async () => {
@@ -552,7 +552,7 @@ describe("銀行口座データベース", () => {
       const result = accountFullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("27:口座テーブルから、更新日を過去の日付順に10件抽出する。ただし、更新日の設定がないデータは除くこと。", async () => {
@@ -577,7 +577,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("28:口座テーブルから、更新日と残高の小さい順に11～20件目のみを抽出する。ただし、残高が0円または更新日の設定がないデータは除外し、残高が同額の場合には更新日の新しい順（降順）とする。", async () => {
@@ -612,7 +612,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("29:口座テーブルと廃止口座テーブルに登録されている口座番号を昇順に抽出する。", async () => {
@@ -644,7 +644,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("30:口座テーブルに登録されている名義のうち、廃止口座テーブルには存在しない名義を抽出する。重複したデータは除き、降順で並べること。", async () => {
@@ -688,10 +688,13 @@ describe("銀行口座データベース", () => {
       })()
       console.table(result);
 
-      expect(expected.length).toBe(result.length)
+      expect(result.length).toBe(expected.length)
     });
 
     test("31:口座テーブルと廃止口座テーブルの両方に登録されている名義を昇順に抽出する。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 名義 FROM 口座 INTERSECT SELECT 名義 FROM 廃止口座 ORDER BY 1 DESC`
+      console.table(expected)
+
       const accounts = await prisma.account.findMany({
         select: {
           name: true,
@@ -723,11 +726,13 @@ describe("銀行口座データベース", () => {
         });
       console.table(result);
 
-      const expected = await prisma.$queryRaw`SELECT 名義 FROM 口座 INTERSECT SELECT 名義 FROM 廃止口座 ORDER BY 1 DESC`
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("32:口座テーブルと廃止口座テーブルに登録されている口座番号と残高の一覧を取得する。ただし、口座テーブルは残高が0のもの、廃止口座テーブルは解約時残高が0でない", async () => {
+      const expected = await prisma.$queryRaw`SELECT 口座番号, 残高 FROM 口座 WHERE 残高 = 0 UNION SELECT 口座番号, 解約時残高 FROM 廃止口座 WHERE 解約時残高 <> 0 ORDER BY 1`
+      console.table(expected)
+
       const accounts = await prisma.account.findMany({
         select: {
           number: true,
@@ -764,8 +769,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      const expected = await prisma.$queryRaw`SELECT 口座番号, 残高 FROM 口座 WHERE 残高 = 0 UNION SELECT 口座番号, 解約時残高 FROM 廃止口座 WHERE 解約時残高 <> 0 ORDER BY 1`
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
   });
 
@@ -800,6 +804,9 @@ describe("銀行口座データベース", () => {
     }
 
     test("33:口座テーブルと廃止口座テーブルに登録されている口座番号と名義の一覧を取得する。一覧は名義を昇順にし、その口座の状況がわかるように、有効な口座には「○」を、廃止した口座には「ｘ」を一覧に付記すること。", async () => {
+      const expected = await prisma.$queryRaw`SELECT 口座番号, 名義, '○' AS 口座区分 FROM 口座 UNION SELECT 口座番号, 名義, 'ｘ' AS 口座区分 FROM 廃止口座 ORDER BY 名義`
+      console.table(expected)
+
       const accounts = await prisma.account.findMany({
         select: {
           number: true,
@@ -845,9 +852,7 @@ describe("銀行口座データベース", () => {
         });
       console.table(result);
 
-      const expected = await prisma.$queryRaw`SELECT 口座番号, 名義, '○' AS 口座区分 FROM 口座 UNION SELECT 口座番号, 名義, 'ｘ' AS 口座区分 FROM 廃止口座 ORDER BY 名義`
-      console.table(expected)
-      expect(expected.length).toBe(result.length)
+      expect(result.length).toBe(expected.length)
     });
 
     test("34:口座テーブルから、残高が100万円以上の口座番号と残高を抽出する。ただし、残高は千円単位で表記し、見出しを「千円単位の残高」とする。", async () => {
@@ -871,7 +876,7 @@ describe("銀行口座データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("35:口座テーブルに次の3つのデータを1回の実行ごとに1つずつ登録する。ただし、キャンペーンにより登録時に残高を3000円プラスする。", async () => {
@@ -930,7 +935,7 @@ describe("銀行口座データベース", () => {
       const result = accountFullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("36:35の問題で登録したデータについて、キャンペーンの価格が間違っていたことが判明した。該当するデータの残高それぞれから3000円を差し引き、あらためて残高の0.3%を上乗せした金額になるよう更新する。", async () => {
@@ -999,7 +1004,7 @@ describe("銀行口座データベース", () => {
       const result = accountFullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("37:口座テーブルから、更新日が2020年以前のデータを対象に、口座番号、更新日、通帳期限日を抽出する。ただし、通帳期限日は、更新日の180日後とする。", async () => {
@@ -1026,7 +1031,7 @@ describe("銀行口座データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("38:口座テーブルから、種別が「別段」のデータについて、口座番号と名義を抽出する。ただし、名義の前に「カ）」を付記すること。", async () => {
@@ -1048,7 +1053,7 @@ describe("銀行口座データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("39:口座テーブルから、登録されている種別の一覧を取得する。見出しは「種別コード」と「種別名」とし、種別名には日本語を表記する。", async () => {
@@ -1081,7 +1086,7 @@ describe("銀行口座データベース", () => {
       })();
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("40:口座テーブルから、口座番号、名義、残高ランクを抽出する。残高ランクは、残高が10万円未満を「C」、10万円以上100万円未満を「B」、それ以外を「A」とする。", async () => {
@@ -1114,7 +1119,7 @@ describe("銀行口座データベース", () => {
       })();
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("41:口座テーブルから、口座番号、名義、残高の文字数を抽出する。ただし、名義の姓目の間の全角スペースは除外すること。", async () => {
@@ -1136,7 +1141,7 @@ describe("銀行口座データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("42:口座テーブルから、名義の1～5文字目に「カワ」が含まれるデータを抽出する。", async () => {
@@ -1147,7 +1152,7 @@ describe("銀行口座データベース", () => {
       const result = accountFullConvert(accounts).filter((x) => x.名義.slice(0, 5).includes("カワ"));
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("43:口座テーブルから、残高の桁数が4桁以上で、1000円未満の端数がないデータを抽出する。ただし、どちらの条件も文字数を求める関数を使って判定すること。", async () => {
@@ -1161,7 +1166,7 @@ describe("銀行口座データベース", () => {
         });
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("44:口座テーブルから、口座番号、残高、利息を残高の降順に抽出する。利息は、残高に普通預金利息0.02%を掛けて求め、1円未満を切り捨てること。", async () => {
@@ -1186,7 +1191,7 @@ describe("銀行口座データベース", () => {
         });
       console.table(result);
 
-      expect(expected.length).toBe(result.length)
+      expect(result.length).toBe(expected.length)
     });
 
     test("45:口座テーブルから、口座番号、残高、残高別利息を抽出する。残高別利息は、残高50万円未満を0.01%、50万円以上200万円未満を0.02%、200万円以上を0.03%として計算し、1円未満を切り捨てる。一覧は、残高別利息の降順、口座番号の昇順に並べること。", async () => {
@@ -1225,7 +1230,7 @@ describe("銀行口座データベース", () => {
       })();
       console.table(result);
 
-      expect(expected.length).toBe(result.length)
+      expect(result.length).toBe(expected.length)
     });
 
     test("46:口座テーブルに以下にある3つのデータを1回の実行ごとに1つずつ登録する。ただし、更新日は現在の日付を求める関数を利用して指定すること。", async () => {
@@ -1278,7 +1283,7 @@ describe("銀行口座データベース", () => {
       const result = accountFullConvert(accounts);
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("47:口座テーブルから更新日が2022年以降のデータを抽出する。その際、更新日は「2022年01月01日」のような形式で抽出すること。", async () => {
@@ -1331,7 +1336,7 @@ describe("銀行口座データベース", () => {
       })();
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("48:口座テーブルから更新日を抽出する。更新日が登録されていない場合は、「設定なし」と表記すること。", async () => {
@@ -1443,7 +1448,7 @@ describe("銀行口座データベース", () => {
       }];
       console.table(result);
 
-      expect(expected[0].件数).toStrictEqual(result[0].件数)
+      expect(result[0].件数).toStrictEqual(expected[0].件数)
     });
 
     test("51:口座テーブルから、更新日が登録されていないデータ件数を求める。ただし、条件式は用いないこと。", async () => {
@@ -1463,7 +1468,7 @@ describe("銀行口座データベース", () => {
       }];
       console.table(result);
 
-      expect(expected[0].更新日が登録されていない件数).toStrictEqual(result[0].更新日が登録されていない件数)
+      expect(result[0].更新日が登録されていない件数).toStrictEqual(expected[0].更新日が登録されていない件数)
     });
 
     test("52:口座テーブルから、名義の最大値と最小値を求める。", async () => {
@@ -1484,7 +1489,7 @@ describe("銀行口座データベース", () => {
       }]
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("53:口座テーブルから、最も新しい更新日と最も古い更新日を求める。", async () => {
@@ -1505,7 +1510,7 @@ describe("銀行口座データベース", () => {
       }]
       console.table(result);
 
-      expect(expected).toStrictEqual(result)
+      expect(result).toStrictEqual(expected)
     });
 
     test("54:口座テーブルから、種別ごとの残高の合計、最大、最小、平均、および登録されているデータ件数を求める。", async () => {
@@ -1540,7 +1545,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected.length).toBe(result.length)
+      expect(result.length).toBe(expected.length)
     });
 
     test("55:口座テーブルから、口座番号の下１桁が同じ数字であるものを同じグループとし、それぞれのデータ件数を求める。ただし、件数の多い順に並べること。", async () => {
@@ -1572,7 +1577,7 @@ describe("銀行口座データベース", () => {
       })()
       console.table(result);
 
-      expect(expected.length).toBe(result.length)
+      expect(result.length).toBe(expected.length)
     });
 
     test("56:口座テーブルから、更新日の年ごとの残高の合計、最大、最小、平均、登録データ件数を求める。ただし、更新日の登録がないデータは、「XXXXX年」として集計する。", async () => {
@@ -1630,7 +1635,7 @@ describe("銀行口座データベース", () => {
         .sort((a, b) => a.更新年 - b.更新年);
       console.table(result);
 
-      expect(expected.length).toBe(result.length)
+      expect(result.length).toBe(expected.length)
     });
 
     test("57:口座テーブルから、種別ごとの残高の合計とデータ件数を求める。ただし、合計が300万円以下のものは一覧から取り除く。", async () => {
@@ -1654,7 +1659,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected.length).toBe(result.length)
+      expect(result.length).toBe(expected.length)
     });
 
     test("58:口座テーブルから、名義の1文字目が同じグループごとに、データ件数と名義文字数の平均を求める。ただし、件数が10件以上、または文字数の平均が5文字より多いものを抽出の対象とする。なお、名義の全角スペースは文字数に含めない。", async () => {
@@ -1701,7 +1706,7 @@ describe("銀行口座データベース", () => {
       console.table(result);
 
       // 期待される結果の件数をテスト
-      expect(expected.length).toBe(result.length);
+      expect(result.length).toBe(expected.length);
     });
   });
 
@@ -1788,7 +1793,7 @@ describe("銀行口座データベース", () => {
       })()
       console.table(result);
 
-      expect(expected[0].残高).toStrictEqual(result[0].残高);
+      expect(result[0].残高).toStrictEqual(expected[0].残高);
     });
 
     test("60:次の口座について、現在の残高と、取引日に発生した取引による入出金額それぞれの合計金額を取得する。取得には、選択列リストにて取引テーブルを副問い合わせするSELECT文を用いること。", async () => {
@@ -1830,7 +1835,7 @@ describe("銀行口座データベース", () => {
       };
       console.table(result);
 
-      expect(expected[0].残高).toStrictEqual(result.残高);
+      expect(result.残高).toStrictEqual(expected[0].残高);
     });
 
     test("61:これまで1回の取引で100万円以上の入金があった口座について、口座番号、名義、残高を取得する。ただし、WHERE句でIN演算子を利用した副問い合わせを用いること。", async () => {
@@ -1877,7 +1882,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("62:取引テーブルの日付よりも未来の更新日を持つ口座テーブルのデータを抽出する。ただし、WHERE句でALL演算子を利用した副問い合わせを用いること。", async () => {
@@ -1912,7 +1917,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("63:次の口座について、入金と出金の両方が発生した日付を抽出する。また、これまでの入金と出金それぞれの最大額もあわせて抽出する。FROM句で副問い合わせを用いること。", async () => {
@@ -1990,7 +1995,7 @@ describe("銀行口座データベース", () => {
       })()
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("64:次の口座について解約の申し出があった。副問い合わせを使って口座テーブルから廃止口座テーブルにデータを登録する。また、口座テーブルの該当データを削除する。ただし、データの整合性を保つことについては考慮しなくてよい。", async () => {
@@ -2052,8 +2057,8 @@ describe("銀行口座データベース", () => {
       console.table(accountData);
       console.table(retiredAccounts);
 
-      expect(expectedAccountData).toStrictEqual(accountData);
-      expect(expectedRetiredAccount.length).toBe(retiredAccounts.length);
+      expect(accountData).toStrictEqual(expectedAccountData);
+      expect(retiredAccounts.length).toBe(expectedRetiredAccount.length);
     });
   });
 
@@ -2122,7 +2127,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("66:次の口座について、口座情報（口座番号、名義、残高）とこれまでの取引情報（日付、入金額、出金額）を一覧として抽出する。一覧は、取引の古い順に表示すること。", async () => {
@@ -2173,7 +2178,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("67:2020年3月1日に取引のあった口座番号の一覧を取得する。一覧には、口座テーブルより名義と残高も表示すること。ただし、解約された口座については考慮しなくてもよい。", async () => {
@@ -2217,7 +2222,7 @@ describe("銀行口座データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("68:問題67では、すでに解約された口座については、該当の日付に取引があったにも関わらず抽出されなかった。解約された口座ももれなく一覧に記載されるよう、SQL文を変更する。なお、解約口座については、名義に「解約済み」、残高に0を表示すること", async () => {
@@ -2287,7 +2292,7 @@ describe("銀行口座データベース", () => {
         }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test.skip("69:取引テーブルのデータを抽出する。取引事由は「取引事由ID:取引事由名」の形式で表示し、これまでに発生しなかった取引事由についても併せて記載されるようにすること。", async () => {
@@ -2328,7 +2333,7 @@ describe("銀行口座データベース", () => {
       console.table(result);
 
       //TODO:RIGHT JOIN未対応
-      //expect(expected).toStrictEqual(result);
+      //expect(result).toStrictEqual(expected);
     });
 
     test("70:取引テーブルと取引事由テーブルから、取引事由の一覧を抽出する。一覧には、取引事由IDと取引事由名を記載する。なお、取引事由テーブルに存在しない理由で取引されている可能性、および取引の実績のない事由が存在する可能性を考慮すること。", async () => {
@@ -2373,7 +2378,7 @@ describe("銀行口座データベース", () => {
       })).sort((a, b) => a.取引事由ＩＤ - b.取引事由ＩＤ);
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("71:問題66について、取引事由名についても一覧に表示するよう、SQL文を変更する。取引事由名は取引情報（日付、取引事由名、入金額、出金額）に表示する。", async () => {
@@ -2429,7 +2434,7 @@ describe("銀行口座データベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("72:現在の残高が500万円以上の口座について、2022年以降に1回の取引で100万円以上の金額が入出金された実績を抽出する。抽出する項目は、口座番号、名義、残高、取引の日付、取引事由ID、入金額、出金額とする。ただし副問い合わせは用いないこと。", async () => {
@@ -2504,7 +2509,7 @@ describe("銀行口座データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("73:問題72で作成したSQL文について、結合相手に副問い合わせを利用するようSQL文を変更する。", async () => {
@@ -2580,7 +2585,7 @@ describe("銀行口座データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("74:取引テーブルから、同一の口座で同じ日に3回以上取引された実績のある口座番号とその回数を抽出する。併せて、口座テーブルから名義を表示すること。", async () => {
@@ -2653,7 +2658,7 @@ describe("銀行口座データベース", () => {
       })()
       console.table(result);
 
-      expect(expected.length).toBe(result.length);
+      expect(result.length).toBe(expected.length);
     });
 
     test("75:この銀行では、口座テーブルの名寄せを行うことになった。同じ名義で複数の口座番号を持つ顧客について、次の項目を持つ一覧を取得する。", async () => {
@@ -2715,7 +2720,7 @@ describe("銀行口座データベース", () => {
       })()
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 });
@@ -2767,7 +2772,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("2:商品テーブルのすべての商品名を抽出する。", async () => {
@@ -2784,7 +2789,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("3:注文テーブルのすべてのデータを「*」を用いて抽出する。", async () => {
@@ -2811,7 +2816,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("4:注文テーブルのすべての注文番号、注文枝番、商品コードを抽出する。", async () => {
@@ -2832,7 +2837,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("5:商品テーブルに次の3つのデータを1回の実行ごとに1つずつ追加する。", async () => {
@@ -2894,7 +2899,7 @@ describe("商店データベース", () => {
       }));
 
       console.table(result);
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 
@@ -2928,7 +2933,7 @@ describe("商店データベース", () => {
       }];
 
       console.table(result);
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("7:商品コード「S0023」の商品について、商品テーブルの単価を500円に変更する。", async () => {
@@ -2958,7 +2963,7 @@ describe("商店データベース", () => {
       }];
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("8:商品テーブルから、単価が千円以下の商品データを抽出する。", async () => {
@@ -2981,7 +2986,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("9:商品テーブルから、単価が5万円以上の商品データを抽出する。", async () => {
@@ -3004,7 +3009,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("10:注文テーブルから、2022年以降の注文データを抽出する。", async () => {
@@ -3028,7 +3033,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("11:注文テーブルから、2021年11月以前の注文データを抽出する。", async () => {
@@ -3052,7 +3057,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("12:商品テーブルから、「衣類」でない商品データを抽出する。", async () => {
@@ -3075,7 +3080,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("13:注文テーブルから、クーポン割引を利用していない注文データを抽出する。", async () => {
@@ -3097,7 +3102,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("14:商品テーブルから、商品コードが「N」で始まる商品を削除する。", async () => {
@@ -3127,7 +3132,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("15:商品テーブルから、商品名に「コート」が含まれる商品について、商品コード、商品名、単価を抽出する。", async () => {
@@ -3153,7 +3158,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("16:「靴」または「雑貨」もしくは「未分類」の商品について、商品コード、商品区分を抽出する。ただし、記述する条件式は1つであること。", async () => {
@@ -3185,7 +3190,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("17:商品テーブルから、商品コードが「A0100」～「A0500」に当てはまる商品データを抽出する。記述する条件式は1つであること。", async () => {
@@ -3209,7 +3214,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("18:注文テーブルから、商品コードが「N0501」「N1021」「N0223」のいずれかを注文した注文データを抽出する。", async () => {
@@ -3233,7 +3238,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("19:商品テーブルから、「雑貨」で商品名に「水玉」含まれる商品データを抽出する。", async () => {
@@ -3257,7 +3262,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("20:商品テーブルから、商品名に「軽い」または「ゆるふわ」のどちらかが含まれる商品データを抽出する。", async () => {
@@ -3289,7 +3294,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("21:商品テーブルから、「衣類」で単価が3千円以下、または「雑貨」で単位が1万円以上の商品データを抽出する。", async () => {
@@ -3323,7 +3328,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("22:注文テーブルから、2022年3月中に、一度の注文で数量3個以上の注文があった商品コードを抽出する。", async () => {
@@ -3349,7 +3354,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("23:注文テーブルから、一度の注文で数量10個以上を注文したか、クーポン割引を利用した注文データを抽出する。", async () => {
@@ -3382,7 +3387,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 
@@ -3428,7 +3433,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("26:注文テーブルから、主キーの昇順に2022年3月以降の注文一覧を取得する。取得する項目は、注文日、注文番号、注文枝番、商品コード、数量とする。", async () => {
@@ -3466,7 +3471,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("27:注文テーブルから、これまででに注文のあった商品コードを抽出する。重複は除外し、商品コードの昇順に抽出すること。", async () => {
@@ -3487,7 +3492,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("28:注文テーブルから、これまでに注文のあった日付を新しい順に10行抽出する（同一日付が複数回登場してもよい）。", async () => {
@@ -3508,7 +3513,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("29:商品テーブルから、単価の低い順に並べて6～20行目に当たる商品データを抽出する。同一の単価の場合は、商品区分、商品コードの昇順に並ぶように抽出すること。", async () => {
@@ -3539,7 +3544,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("30:廃番商品テーブルから、2020年12月に廃番されたものと、売上個数が100を超えるものを併せて抽出する。一覧は、売上個数の多い順に並べること。", async () => {
@@ -3576,7 +3581,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("31:商品テーブルから、これまでに注文されたことのない商品コードを昇順に抽出する。", async () => {
@@ -3605,7 +3610,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("32:商品テーブルから、これまでに注文された実績のある商品コードを降順に抽出する。", async () => {
@@ -3633,7 +3638,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("33:商品区分が「未分類」で、単価が千円以下と1万円を超える商品について、商品コード、商品名、単価を抽出する。単価の低い順に並べ、同額の場合は商品コードの昇順とする。", async () => {
@@ -3666,7 +3671,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 
@@ -3725,7 +3730,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
 
     test("35:注文日が2022年3月12～14日で、同じ商品を2個以上注文し、すでにクーポン割引を利用している注文について、さらに300円を割引することになった。該当データのクーポン割引料を更新する。", async () => {
@@ -3805,7 +3810,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("36:注文番号「202202250126」について、商品コード「W0156」の注文数を1つ減らすよう更新する。", async () => {
@@ -3865,7 +3870,7 @@ describe("商店データベース", () => {
       ]
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("37:注文テーブルから、注文番号「202110010001」～「2021103199999」の注文データを抽出する。注文番号と枝番は「-」でつなげて1つの項目として抽出する。", async () => {
@@ -3885,7 +3890,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("38:商品テーブルから、商品区分の一覧を取得する。見出しは「区分」と「区分名」とし、区分名には日本語を表記する。", async () => {
@@ -3918,7 +3923,7 @@ describe("商店データベース", () => {
       })).sort((a, b) => a.区分 - b.区分);
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("39:商品テーブルから、商品コード、商品名、単価、販売価格ランク、商品区分を抽出する。販売価格ランクは、3千円未満を「S」、3千円以上1万円未満を「M」、1万円以上を「L」とする。また、商品区分はコードと日本語名称を「:」で連結して表記する。一覧は、単価の昇順に並べ、同額の場合は商品コードの昇順に並べること。", async () => {
@@ -3958,7 +3963,7 @@ describe("商店データベース", () => {
       }));
 
       console.table(result);
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("40:商品テーブルから、商品名が10文字を超過する商品名とその文字数を抽出する。文字数は昇順に並べること。", async () => {
@@ -3980,7 +3985,7 @@ describe("商店データベース", () => {
         .sort((a, b) => a.文字数 - b.文字数);
       console.table(result);
 
-      expect(expected.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
 
     test("41:注文テーブルから、注文日と注文番号の一覧を抽出する。注文番号は日付の部分を取り除き、4桁の連番部部だけを表記すること。", async () => {
@@ -3999,7 +4004,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("42:注文テーブルについて、商品コードの1文字目が「M」の商品の商品コードを「E」で始まるよう更新する。", async () => {
@@ -4064,7 +4069,7 @@ describe("商店データベース", () => {
       })).sort((a, b) => a.注文番号 - b.注文番号);
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("43:注文番号の連番部分が「1000」～「2000」の注文番号を抽出する。連番部分4桁を昇順で抽出すること。", async () => {
@@ -4084,7 +4089,7 @@ describe("商店データベース", () => {
         .map((o) => ({ 注文番号: o }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("44:商品コード「S1990」の廃番日を、関数を使って本日の日付に修正する。", async () => {
@@ -4116,7 +4121,7 @@ describe("商店データベース", () => {
       }] : [];
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("45:1万円以上の商品の一覧を取得する。ただし、30%値下げしたときの単価を、商品コード、商品名、現在の単価と併せて取得する。値下げ後の単価の見出しは、「値下げした単価」とし、1円未満は切り捨てること。", async () => {
@@ -4145,7 +4150,7 @@ describe("商店データベース", () => {
         }));
       console.table(result);
 
-      expect(expected.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
   });
 
@@ -4183,7 +4188,7 @@ describe("商店データベース", () => {
       const result = orders._sum ? [{ 数量: orders._sum.quantity }] : [];
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("47:注文日順に、注文日ごとの数量の合計を求める。", async () => {
@@ -4205,7 +4210,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("48:商品区分順に、商品区分ごとの単価の最小額と最高額を求める。", async () => {
@@ -4231,7 +4236,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("49:商品コードごとに、これあｍで注文された数量の合計を商品コード順に求める。", async () => {
@@ -4253,7 +4258,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
 
@@ -4279,12 +4284,12 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("51:これまでに売れた数量が5個未満の商品コードとその数量を抽出する。", async () => {
-      const exepcted = await prisma.$queryRaw`SELECT 商品コード, SUM(数量) AS 数量合計 FROM 注文 GROUP BY 商品コード HAVING SUM(数量) < 5`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT 商品コード, SUM(数量) AS 数量合計 FROM 注文 GROUP BY 商品コード HAVING SUM(数量) < 5`;
+      console.table(expected);
 
       const orders = await prisma.order.groupBy({
         by: ["productCode"],
@@ -4305,7 +4310,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(exepcted.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("52:これまでにクーポン割引をした注文件数と、割引件数の合計を求める。ただし、WHERE句による絞り込み条件を指定しないこと。", async () => {
@@ -4326,7 +4331,7 @@ describe("商店データベース", () => {
       };
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("53:月ごとの注文件数を求める。抽出する列の名前は「年月」と「注文件数」とし、年月列の内容は「202201」のような形式で、日付の新しい順で抽出すること。なお、1件の注文には、必ず注文枝番「1」の注文明細が含まれることが保証されている、", async () => {
@@ -4358,7 +4363,7 @@ describe("商店データベース", () => {
       })).sort((a, b) => b.年月.localeCompare(a.年月));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("54:注文テーブルから、「Z」から始まる商品コードのうち、これまでに売れた数量が100個以上の商品コードを抽出する。", async () => {
@@ -4385,7 +4390,7 @@ describe("商店データベース", () => {
         }));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
   });
 
@@ -4414,8 +4419,8 @@ describe("商店データベース", () => {
 
     test("55:商品コード「S0604」の商品について、商品コード、商品名、単価、これまでに販売した数量を抽出する。ただし、抽出には、選択列リストにて注文テーブルを副問い合わせするSELECT文を用いること。", async () => {
       const productCode = "S0604";
-      const exepcted = await prisma.$queryRaw`SELECT 商品コード, 商品名, 単価, (SELECT SUM(数量) FROM 注文 WHERE 商品コード=${productCode}) AS 数量 FROM 商品 WHERE 商品コード=${productCode}`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT 商品コード, 商品名, 単価, (SELECT SUM(数量) FROM 注文 WHERE 商品コード=${productCode}) AS 数量 FROM 商品 WHERE 商品コード=${productCode}`;
+      console.table(expected);
 
       const orders = await prisma.order.groupBy({
         by: ["productCode"],
@@ -4450,7 +4455,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(exepcted.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("56:次の注文について、商品コードを間違って登録したことがわかった。商品テーブルより条件に合致する商品コードを取得し、該当の注文テーブルを更新する。ただし、注文テーブルの更新には、SET句にて商品テーブルを副問い合わせするUPDATE文を用いること。", async () => {
@@ -4520,7 +4525,7 @@ describe("商店データベース", () => {
       }];
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("57:商品名に「あったか」が含まれる商品が売れた日付とその商品コードを過去の日付順に抽出する。ただし、WHERE句でIN演算子を利用した副問い合わせを用いること。", async () => {
@@ -4553,7 +4558,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("58:商品ごとにそれぞれ平均販売数量を求め、どの商品の平均販売数量よりも多い数が売れた商品を探し、その商品コードと販売数量を抽出する。ただし、ALL演算子を利用した副問い合わせを用いること。", async () => {
@@ -4586,7 +4591,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("59:クーポン割引を利用して販売した商品コード「W0746」の商品について、その販売数量と、商品1個あたりの平均割引額を抽出する。列名は「割引による販売数」と「平均割引額」とし、1円未満は切り捨てる。抽出にはFROM句で副問い合わせを利用すること。", async () => {
@@ -4611,7 +4616,7 @@ describe("商店データベース", () => {
       }];
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("60:次の注文について、内容を追加したいという依頼があった。追加分の注文を注文テーブルに登録する。使用する注文枝番は、該当の注文番号を副問い合わせにて参照し、1を加算した番号を採番する。なお、登録のSQL文は注文ごとに1つずつ作成すること。", async () => {
@@ -4686,7 +4691,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 
@@ -4754,7 +4759,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("62:廃番となった商品コード「A0009」について、廃番日より後に注文された注文情報（注文日、注文番号、注文枝番、数量、注文金額）を抽出する。注文金額は単価と数量より算出すること。", async () => {
@@ -4791,7 +4796,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("63:商品コード「S0604」について、商品情報（商品コード、商品名、単価）とこれまでの注文情報（注文日、注文番号、数量）、さらに単価と数量から売上金額を求め、一覧として抽出する。一覧は、注文のあった順に表示すること。", async () => {
@@ -4822,7 +4827,7 @@ describe("商店データベース", () => {
       }));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("64:2020年8月に注文のあった商品コードの一覧を抽出する。一覧には、商品名も表示する必要がある。すでに廃番となっている商品に関しては特に考慮しなくてよい（一覧に含まれなくてよい）。", async () => {
@@ -4855,7 +4860,7 @@ describe("商店データベース", () => {
         })).sort((a, b) => a.商品コード.localeCompare(b.商品コード));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("65:問題64では、すでに廃番となっている商品は抽出されなかった。廃番となった商品ももれなく一覧に記載されるよう、SQL文を変更する。なお、廃番商品の商品名には「廃番」と表示すること。", async () => {
@@ -4900,7 +4905,7 @@ describe("商店データベース", () => {
       }).sort((a, b) => a.商品コード.localeCompare(b.商品コード));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("66:商品区分「雑貨」の商品について、注文日、商品コード、商品名、数量を抽出する。商品については、「商品コード:商品名」の形式で表示する。ただし、注文のなかった「雑貨」商品についてももれなく一覧に記載し、数量は0とすること。", async () => {
@@ -4955,7 +4960,7 @@ describe("商店データベース", () => {
       const result = [...resultMap.values()];
       console.table(result);
 
-      expect(expected.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
 
     test("67:問題66について、注文のあった「雑貨」商品がすでに廃番になっている可能性も考慮し、一覧を抽出する。廃番になった商品は、「商品コード:(廃番済み)」のように表示する。", async () => {
@@ -5010,7 +5015,7 @@ describe("商店データベース", () => {
       const result = [...resultMap.values()];
       console.table(result);
 
-      expect(expected.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
 
     test("68:注文番号「202104030010」について、注文日、注文番号、注文枝番、商品コード、商品名、単価、数量、注文金額を抽出する。注文金額は単価と数量より算出し、その総額からクーポン割引料を差し引いたものとする。また、商品が廃番になっている場合は、廃番商品テーブルから必要な情報を取得すること。", async () => {
@@ -5053,12 +5058,12 @@ describe("商店データベース", () => {
       });
       console.table(result);
 
-      expect(expected.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
 
     test("69:商品コードが「B」で始まる商品について、商品テーブルから商品コード、商品名、単価を、注文テーブルからこれまでに売り上げた個数をそれぞれ抽出する。併せて、単価と個数からこれまでの総売上金額を計算する（クーポン割引は考慮しなくてよい）。一覧は、商品コード順に表示すること。", async () => {
-      const exepcted = await prisma.$queryRaw`SELECT S.商品コード,S.商品名,S.単価,COALESCE(T.数量,0) AS 売上数量,S.単価 * COALESCE(T.数量, 0) AS 総売上金額 FROM 商品 AS S LEFT JOIN (SELECT 商品コード,SUM(数量) AS 数量 FROM 注文 WHERE 商品コード LIKE 'B%' GROUP BY 商品コード) AS T ON S.商品コード = T.商品コード WHERE S.商品コード LIKE 'B%' ORDER BY S.商品コード`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT S.商品コード,S.商品名,S.単価,COALESCE(T.数量,0) AS 売上数量,S.単価 * COALESCE(T.数量, 0) AS 総売上金額 FROM 商品 AS S LEFT JOIN (SELECT 商品コード,SUM(数量) AS 数量 FROM 注文 WHERE 商品コード LIKE 'B%' GROUP BY 商品コード) AS T ON S.商品コード = T.商品コード WHERE S.商品コード LIKE 'B%' ORDER BY S.商品コード`;
+      console.table(expected);
 
       const products = await prisma.product.findMany({
         where: {
@@ -5102,7 +5107,7 @@ describe("商店データベース", () => {
       });
       console.table(result);
 
-      expect(exepcted.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
 
     test("70:現在販売中の商品について、関連している商品のある一覧を抽出する。一覧には、商品コード、商品名、関連商品コード、関連商品名を記載する。", async () => {
@@ -5139,7 +5144,7 @@ describe("商店データベース", () => {
       });
       console.table(result);
 
-      expect(expected.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
   });
 });
@@ -5216,7 +5221,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("2:パーティテーブルから、名称、HP、MPの一覧を取得する。各見出しは次のように表示すること。", async () => {
@@ -5240,7 +5245,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("3:イベントの全データをイベントテーブルから「＊」を用いて抽出する。", async () => {
@@ -5267,13 +5272,13 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("4:イベントテーブルから、イベント番号とイベント名称の一覧を取得する。各見出しは次のように表示すること。", async () => {
       // 番号　場面
-      const exepcted = await prisma.$queryRaw`SELECT イベント番号 AS 番号,イベント名称 AS 場面 FROM イベント`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT イベント番号 AS 番号,イベント名称 AS 場面 FROM イベント`;
+      console.table(expected);
 
       const events = await prisma.event.findMany({
         select: {
@@ -5289,7 +5294,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("5:パーティテーブルに,次のつのデータを1回の実行ごとに1つずつ追加する。", async () => {
@@ -5348,7 +5353,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 
@@ -5443,7 +5448,7 @@ describe("RPGデータベース", () => {
       }];
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("7:パーティーテーブルのID「A01」のデータについて、HPを120に更新する。", async () => {
@@ -5475,12 +5480,12 @@ describe("RPGデータベース", () => {
       }];
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("8:パーティーテーブルから、HPが100未満のデータについて、ID、名称、HPの一覧を抽出する。", async () => {
-      const exepcted = await prisma.$queryRaw`SELECT "ID", "名称", "HP" FROM パーティ WHERE "HP" < 100`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT "ID", "名称", "HP" FROM パーティ WHERE "HP" < 100`;
+      console.table(expected);
 
       const parties = await prisma.party.findMany({
         where: { hp: { lt: 100 } },
@@ -5499,12 +5504,12 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("9:パーティーテーブルから、MPが100以上のデータについて、ID、名称、MPの一覧を抽出する。", async () => {
-      const exepcted = await prisma.$queryRaw`SELECT "ID", "名称", "MP" FROM パーティ WHERE "MP" >= 100`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT "ID", "名称", "MP" FROM パーティ WHERE "MP" >= 100`;
+      console.table(expected);
 
       const parties = await prisma.party.findMany({
         where: { mp: { gte: 100 } },
@@ -5523,7 +5528,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("10:イベントテーブルから、タイプが「特殊」でないデータについて、イベント番号、イベント名称、タイプの一覧を抽出する。", async () => {
@@ -5547,12 +5552,12 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("11:イベントテーブルから、イベント番号が5以下のデータについて、イベント番号とイベント名称を抽出する。", async () => {
-      const exepcted = await prisma.$queryRaw`SELECT "イベント番号", "イベント名称" FROM イベント WHERE "イベント番号" <= 5`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT "イベント番号", "イベント名称" FROM イベント WHERE "イベント番号" <= 5`;
+      console.table(expected);
 
       const parties = await prisma.event.findMany({
         where: { eventNumber: { lte: 5 } },
@@ -5569,12 +5574,12 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("12:イベントテーブルから、イベント番号が20を超過しているデータについて、イベント番号とイベント名称を抽出する。", async () => {
-      const exepcted = await prisma.$queryRaw`SELECT "イベント番号", "イベント名称" FROM イベント WHERE "イベント番号" > 20`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT "イベント番号", "イベント名称" FROM イベント WHERE "イベント番号" > 20`;
+      console.table(expected);
 
       const parties = await prisma.event.findMany({
         where: { eventNumber: { gt: 20 } },
@@ -5591,7 +5596,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("13:イベントテーブルから、別のイベントのクリアを前提としないイベントについて、イベント番号とイベント名称を抽出する。", async () => {
@@ -5613,7 +5618,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("14:イベントテーブルから、次に発生するイベントが決められれているイベントについて、イベント番号、イベント名称、後続イベント番号を抽出する。", async () => {
@@ -5637,7 +5642,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("15:名称に「ミ」が含まれるパーティーテーブルのデータについて、状態コードを「眠り」に更新する。", async () => {
@@ -5669,7 +5674,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("16:HPが120～160の範囲にあるパーティーテーブルのデータについて、ID、名称、HPの一覧を抽出する。ただし、記述条件は1つであること。", async () => {
@@ -5693,7 +5698,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("17:職業が「勇者」「戦士」「武道家」のいずれかであるパーティテーブルのデータについて、名称と職業コードを抽出する。ただし、記述する条件式は1つであること。", async () => {
@@ -5721,7 +5726,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("18:状態コードが「異常なし」と「気絶」のどちらでもないパーティテーブルのデータについて、名称と状態コードを抽出する。ただし、記述する条件式は1つであること。", async () => {
@@ -5748,7 +5753,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("19:パーティテーブルから、HPとMPがともに100を超えているデータを抽出する。", async () => {
@@ -5772,7 +5777,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("20:パーティテーブルから、IDが「A」で始まり、職業コードの1文字目が「2」であるデータを抽出する。", async () => {
@@ -5799,7 +5804,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("21:イベントテーブルから、タイプが「強制」で、事前にクリアが必要なイベントかつ次に発生するイベントが設定されているデータを抽出する。", async () => {
@@ -5826,7 +5831,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 
@@ -5922,7 +5927,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("24:パーティテーブルから、IDと名称をIDの昇順に抽出する", async () => {
@@ -5946,7 +5951,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("25:パーティーテーブルから、名称と職業コードを名称の降順に抽出する", async () => {
@@ -5970,7 +5975,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("26:パーティーテーブルから、名称、HP、状態コードを、状態コードの昇順かつHPの高い順（降順）に抽出する", async () => {
@@ -6001,7 +6006,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("27:イベントテーブルから、タイプ、イベント番号、イベント名称、前提イベント番号、後続イベント番号を、タイプの昇順かつイベント番号の昇順に抽出する。並べ替えには列番号を用いること。", async () => {
@@ -6036,7 +6041,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("28:パーティーテーブルから、HPの高い順に3件抽出する", async () => {
@@ -6061,7 +6066,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("29:パーティーテーブルから、MPが3番目に高いデータを抽出する", async () => {
@@ -6087,7 +6092,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("30:イベントテーブルと経験イベントテーブルから、まだ参加していないイベントの番号を抽出する。イベントの番号順に表示すること", async () => {
@@ -6121,7 +6126,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("31:イベントテーブルと経験イベントテーブルから、すでにクリアされたイベントのうちタイプがフリーのイベント番号を対象とする。抽出には集合演算子を用いること。", async () => {
@@ -6154,7 +6159,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 
@@ -6274,8 +6279,8 @@ describe("RPGデータベース", () => {
       // 職業区分　職業コード　ID　名称
       // 職業区分は、物理攻撃が得意なもの（職業コードが1から始まる）を「S」、魔法攻撃の得意なもの（職業コードが2から始まる）を「M」、それ以外を「A」と表示すること。
       // また、一覧は職業コード順とすること。
-      const exepcted = await prisma.$queryRaw`SELECT CASE WHEN 職業コード LIKE '1%' THEN 'S' WHEN 職業コード LIKE '2%' THEN 'M' ELSE 'A' END AS 職業区分, 職業コード, "ID", "名称" FROM パーティ ORDER BY 職業コード ASC`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT CASE WHEN 職業コード LIKE '1%' THEN 'S' WHEN 職業コード LIKE '2%' THEN 'M' ELSE 'A' END AS 職業区分, 職業コード, "ID", "名称" FROM パーティ ORDER BY 職業コード ASC`;
+      console.table(expected);
 
       const party = await prisma.party.findMany({
         select: {
@@ -6311,7 +6316,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("33:アイテム「勇気の鈴」を装備すると、HPが50ポイントアップする。このアイテムを装備したときの各キャラクターのHPを適切な列を用いて次の別名で取得する。ただし、このアイテムは「武道家」と「学者」しか装備できない。", async () => {
@@ -6342,7 +6347,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("34:ID「A01」と「A03」のキャラクターがアイテム「知恵の指輪」を装備し、MPが20ポイントアップした。その該当データのMPを更新する。", async () => {
@@ -6416,7 +6421,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("35:武道家の技「スッキリパンチ」は、自分のHPを2倍したポイントのダメージを敵に与える。この技を使ったときのダメージを適切な列を用いて次の別名で抽出する。", async () => {
@@ -6447,7 +6452,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("36:現在、主人公のパーティーにいるキャラクターの状況について、適切な列を用いて次の別名で一覧を取得する。", async () => {
@@ -6495,7 +6500,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("37:イベントテーブルから、次の形式でイベント一覧を取得する。", async () => {
@@ -6529,7 +6534,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("38:敵の攻撃「ネームバリュー」は、名前の文字数を10倍したポイントのダメージがある。この攻撃を受けた時の各キャラクターの予想ダメージを適切な列を用いて次の別名で取得する。", async () => {
@@ -6555,7 +6560,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("39:敵の攻撃「四苦八苦」を受け、HPまたはMPが4で割り切れるキャラクターは混乱した。該当のデータの状態コードを更新する。なお、剰余の計算には%演算子かMOD関数を用いる。", async () => {
@@ -6611,7 +6616,7 @@ describe("RPGデータベース", () => {
       }).sort((a, b) => a.ID.localeCompare(b.ID));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("40:町の道具やで売値が777のアイテム「女神の祝福」を買ったところ、会員証を持っていたため30%割引で購入できた。この際に支払った金額を求める。端数は切り捨て。", async () => {
@@ -6624,7 +6629,7 @@ describe("RPGデータベース", () => {
       }];
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("41:戦闘中にアイテム「女神の祝福」を使ったところ、全員のHPとMPがそれまでの値に対して3割ほど回復した。該当するデータを更新する。ただし、端数は四捨五入すること。", async () => {
@@ -6690,7 +6695,7 @@ describe("RPGデータベース", () => {
       }).sort((a, b) => a.ID.localeCompare(b.ID));
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("42:戦士の技「Step by Step」は、攻撃の回数に応じて自分のHPをべき乗したポイントのダメージを与える。3回攻撃したときの、各回の攻撃ポイントを適切な列を用いて次の別名で取得する。ただし、1回目は0乗から始まる。", async () => {
@@ -6723,7 +6728,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("43:現在、主人公のパーティーにいるキャラクターの状況について、HPと状態コードから、リスクを重み付けした一覧を適切な列を用いて次の別名で取得する。", async () => {
@@ -6801,7 +6806,7 @@ describe("RPGデータベース", () => {
         });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("44:イベントテーブルより、イベントの一覧をイベント番号順に次の形式で取得する。", async () => {
@@ -6841,7 +6846,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 
@@ -6954,7 +6959,7 @@ describe("RPGデータベース", () => {
       }];
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("46:イベントテーブルから、タイプ別にイベントの数を取得する。ただし、タイプは日本語で表示すること。", async () => {
@@ -6990,7 +6995,7 @@ describe("RPGデータベース", () => {
       }).sort((a, b) => a.タイプ.localeCompare(b.タイプ));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("47:経験イベントテーブルから、クリアの結果別にクリアしたイベントの数を取得する。クリア結果順に表示すること。", async () => {
@@ -7026,14 +7031,14 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("48:攻撃魔法「小さな奇跡」は、パーティー全員のMPによって敵の行動が異なる。次の条件に従って、現在のパーティーがこの魔法を使ったときの敵の行動を表示する。", async () => {
       // パーティー全員のMPが500未満なら「敵は見とれている！」
       // パーティー全員のMPが500以上1000未満なら「敵は呆然としている！」
       // パーティー全員のMPが1000以上なら「敵はひれ伏している！」
-      const exepcted = await prisma.$queryRaw`
+      const expected = await prisma.$queryRaw`
             SELECT
               CASE 
               WHEN SUM("MP") < 500 THEN '敵は見とれている！' 
@@ -7041,7 +7046,7 @@ describe("RPGデータベース", () => {
               WHEN SUM("MP") >= 1000 THEN '敵はひれ伏している！' END AS "小さな奇跡"
             FROM パーティ
       `;
-      console.table(exepcted);
+      console.table(expected);
 
       const paryt = await prisma.party.aggregate({
         _sum: {
@@ -7060,7 +7065,7 @@ describe("RPGデータベース", () => {
       const result = [{ 小さな奇跡: magic(paryt._sum.mp) }];
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("49:経験イベントテーブルから、クリアしたイベント数と参加したもののまだクリアしていないイベントの数を次の形式で表示する", async () => {
@@ -7090,7 +7095,7 @@ describe("RPGデータベース", () => {
       })).sort((a, b) => a.区分.localeCompare(b.区分));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("50:職業タイプごとのHPとMPの最大値、最小値、平均値を抽出する。ただし、職業タイプは職業コードの1文字目によって分類すること", async () => {
@@ -7152,7 +7157,7 @@ describe("RPGデータベース", () => {
       }).sort((a, b) => a.職業タイプ.localeCompare(b.職業タイプ));
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("51:IDの1文字目によってパーティーを分類し、HPの平均が100を超えているデータを抽出する。次の項目を抽出すること。", async () => {
@@ -7207,7 +7212,7 @@ describe("RPGデータベース", () => {
       })();
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("52:ある洞窟に存在する「力の扉」は、キャラクターのHPによって開けることのできる扉の数が決まっている。次の条件によってその数が決まるとき、現在のパーティーで開けることのできる扉の合計数を求める。", async () => {
@@ -7244,7 +7249,7 @@ describe("RPGデータベース", () => {
       const result = [{ 開けられる扉の数: door }];
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
   });
 
@@ -7381,7 +7386,7 @@ describe("RPGデータベース", () => {
 
     test("53:勇者の現在のHPが、パーティー全員のHPの何%に当たるかを求めたい。適切な列を用いて次の別名で抽出する。ただし、割合は小数点第2位を四捨五入し、小数点第1位まで求めること。", async () => {
       // なまえ　現在のHP　パーティーでの割合
-      const exepcted = await prisma.$queryRaw`
+      const expected = await prisma.$queryRaw`
             SELECT
               名称 AS "なまえ",
               "HP" AS "現在のHP",
@@ -7389,7 +7394,7 @@ describe("RPGデータベース", () => {
             FROM パーティ
             WHERE "職業コード" = '01'
       `;
-      console.table(exepcted);
+      console.table(expected);
 
       const allHp = await prisma.party.aggregate({
         _sum: {
@@ -7411,7 +7416,7 @@ describe("RPGデータベース", () => {
       }];
       console.table(result);
 
-      expect(exepcted.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("54:魔法使いは回復魔法「みんなからお裾分け」を使ってMPを回復した。この魔法は、本人を除くパーティー全員のMP合計値の10%をもらうことができる。端数は四捨五入して魔法使いのMPを更新する。なお、魔法使い以外のMPは更新しなくてよいものとする。", async () => {
@@ -7421,8 +7426,8 @@ describe("RPGデータベース", () => {
             SET "MP" = "MP" + (SELECT ROUND(SUM("MP"*0.1)) FROM パーティ WHERE "職業コード" <> '20')
             WHERE "職業コード" = '20'
       `;
-      const exepcted = await prisma.$queryRaw`SELECT * FROM パーティ ORDER BY "ID"`;
-      console.table(exepcted);
+      const expected = await prisma.$queryRaw`SELECT * FROM パーティ ORDER BY "ID"`;
+      console.table(expected);
 
       await resetData();
       const allMpExceptMage = await prisma.party.aggregate({
@@ -7465,20 +7470,20 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("55:経験イベントテーブルから、これまでにクリアしたイベントのうち、タイプが「強制」または「特殊」であるものについて、次の形式で抽出する。", async () => {
       // イベント番号　クリア結果
       // 抽出には、副問い合わせを用いること。
-      const exepcted = await prisma.$queryRaw`
+      const expected = await prisma.$queryRaw`
             SELECT
               イベント番号,
               クリア結果
             FROM 経験イベント
             WHERE クリア区分 ='1' AND イベント番号 IN (SELECT イベント番号 FROM イベント WHERE タイプ IN ('1', '3'))
       `;
-      console.table(exepcted);
+      console.table(expected);
 
       const events = await prisma.experienceEvent.findMany({
         where: {
@@ -7503,18 +7508,18 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("56:パーティーテーブルから、パーティー内で最も高いMPをもつキャラクター名とそのMPを抽出する。抽出には、副問い合わせを用いること。", async () => {
-      const exepcted = await prisma.$queryRaw`
+      const expected = await prisma.$queryRaw`
             SELECT
               名称,
               "MP"
             FROM パーティ
             WHERE "MP" = (SELECT MAX("MP") FROM パーティ)
       `;
-      console.table(exepcted);
+      console.table(expected);
 
       const maxMp = await prisma.party.aggregate({
         _max: {
@@ -7536,11 +7541,11 @@ describe("RPGデータベース", () => {
       }];
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("57:これまでに着していないイベントについて、イベント番号とその名称をイベント番号順に抽出する。抽出には、副問い合わせを用いること。", async () => {
-      const exepcted = await prisma.$queryRaw`
+      const expected = await prisma.$queryRaw`
             SELECT
               イベント番号,
               イベント名称
@@ -7548,7 +7553,7 @@ describe("RPGデータベース", () => {
             WHERE イベント番号 NOT IN (SELECT イベント番号 FROM 経験イベント)
             ORDER BY イベント番号
       `;
-      console.table(exepcted);
+      console.table(expected);
 
       const experienceEvents = await prisma.experienceEvent.findMany({
         select: {
@@ -7581,7 +7586,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("58:これまでに着手していないイベントの数を抽出する。抽出には、副問い合わせを用いること。", async () => {
@@ -7609,7 +7614,7 @@ describe("RPGデータベース", () => {
       }];
       console.table(result);
 
-      expect(expected.toString()).toStrictEqual(result.toString());
+      expect(result.toString()).toStrictEqual(expected.toString());
     });
 
     test("59:5番目にクリアしたイベントのイベント番号よりも小さい番号を持つすべてのイベントについて、イベント番号とイベント名称を抽出する", async () => {
@@ -7652,7 +7657,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("60:これまでにパーティーがクリアしたイベントを前提としているイベントの一覧を次の形式で抽出する。", async () => {
@@ -7698,7 +7703,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("61:パーティーは、イベント番号「9」のイベントを結果「B」でクリアし、その次に発生するイベントに参加した。これを経験イベントテーブルに記録する。なお、更新と追加の両方を2つのSQL文で記述すること。", async () => {
@@ -7772,7 +7777,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
   });
 
@@ -7852,14 +7857,14 @@ describe("RPGデータベース", () => {
 
     test("62:すでにクリアしたイベントについて、次の形式の一覧を抽出する", async () => {
       // ルート番号　イベント番号　イベント名称　クリア結果
-      const exepcted = await prisma.$queryRaw`
+      const expected = await prisma.$queryRaw`
             SELECT
               E.ルート番号,E.イベント番号,M.イベント名称,E.クリア結果
             FROM 経験イベント E JOIN イベント M ON E.イベント番号 = M.イベント番号
             WHERE E.クリア区分 = '1'
             ORDER BY E.ルート番号
       `;
-      console.table(exepcted);
+      console.table(expected);
 
       const events = await prisma.experienceEvent.findMany({
         where: {
@@ -7888,7 +7893,7 @@ describe("RPGデータベース", () => {
       }).sort((a, b) => a.ルート番号 - b.ルート番号);
       console.table(result);
 
-      expect(exepcted).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("63:イベントテーブルから、タイプ「強制」のイベントについて、イベント番号とイベント名称、パーティーのクリア区分を抽出する。ただし、これまでに未着手のイベントは考慮しなくてよい", async () => {
@@ -7938,7 +7943,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("64:問題63では、着手していないイベントについては抽出されなかった。未着手のイベントについてももれなく抽出できるよう、SQL文を変更する。なお、クリアしていないイベントについては、クリア区分に「未クリア」と表示する。", async () => {
@@ -7995,7 +8000,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     // 次のようなコードテーブルを新しく作成し、職業コードと状態コードを登録した。
@@ -8063,7 +8068,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("66:パーティーテーブルから、現在のパーティーに参加しているキャラクターの一覧を次の形式で抽出する。職業はコードテーブルより日本語で表示する。また、現在のパーティーにいない職業についてももれなく一覧に記載し、名称の項目に「（仲間になっていない！）」と表示すること。", async () => {
@@ -8112,18 +8117,18 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
 
     test("67:経験イベントテーブルから、参加済みイベントのクリア結果一覧を次の形式で抽出する。クリア結果は「コード値：コード名称」のように表示し、クリア未済のイベントも記載されるよう考慮する。", async () => {
       // イベント番号　イベント名　クリア結果
-      const exepcted = await prisma.$queryRaw`
+      const expected = await prisma.$queryRaw`
             SELECT
               E.イベント番号,E.クリア区分,C.コード値 || ':' || C.コード名称 AS クリア結果
             FROM 経験イベント E FULL JOIN (SELECT コード値,コード名称 FROM コード WHERE コード種別 = '4') C ON E.クリア結果 = C.コード値
             ORDER BY "イベント番号"
       `;
-      console.table(exepcted);
+      console.table(expected);
 
       const events = await prisma.event.findMany({
         select: {
@@ -8191,7 +8196,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(exepcted.length).toStrictEqual(result.length);
+      expect(result.length).toStrictEqual(expected.length);
     });
 
     test("68:イベントテーブルから、前提イベントが設定されているイベントについて、次の形式の一覧を抽出する。", async () => {
@@ -8233,7 +8238,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("69:イベントテーブルから、前提イベントまたは後続イベントが設定されているイベントについて、次の形式の一覧を抽出する。", async () => {
@@ -8302,7 +8307,7 @@ describe("RPGデータベース", () => {
       });
       console.table(result);
 
-      expect(expected).toStrictEqual(result);
+      expect(result).toStrictEqual(expected);
     });
 
     test("70:ほかのイベントの前提となっているイベントについて、次の形式の一覧を抽出する。一覧はイベント番号順とする。", async () => {
@@ -8350,7 +8355,7 @@ describe("RPGデータベース", () => {
       console.table(result);
 
       const filteredExpect = result.filter((e) => e.イベント番号 !== 3 || e.イベント番号 !== 13);
-      expect(filteredExpect).toStrictEqual(result);
+      expect(result).toStrictEqual(filteredExpect);
     });
 
   });
