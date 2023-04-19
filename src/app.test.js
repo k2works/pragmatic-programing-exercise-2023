@@ -6232,6 +6232,44 @@ describe("RPGデータベース", () => {
       await prisma.party.createMany({ data: data });
     });
 
+    const resetData = async () => {
+      await prisma.party.deleteMany();
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        },
+      ];
+      await prisma.party.createMany({ data: data });
+    }
+
     test("32:パーティーテーブルから、次の形式の一覧を取得する。", async () => {
       // 職業区分　職業コード　ID　名称
       // 職業区分は、物理攻撃が得意なもの（職業コードが1から始まる）を「S」、魔法攻撃の得意なもの（職業コードが2から始まる）を「M」、それ以外を「A」と表示すること。
@@ -6521,45 +6559,12 @@ describe("RPGデータベース", () => {
     });
 
     test("39:敵の攻撃「四苦八苦」を受け、HPまたはMPが4で割り切れるキャラクターは混乱した。該当のデータの状態コードを更新する。なお、剰余の計算には%演算子かMOD関数を用いる。", async () => {
+      await resetData();
       await prisma.$queryRaw`UPDATE パーティ SET "状態コード" = '04' WHERE MOD("HP",4) = 0 OR MOD("MP",4) = 0`;
-      const expected = await prisma.$queryRaw`SELECT * FROM パーティ WHERE "状態コード" = '04'`;
+      const expected = await prisma.$queryRaw`SELECT * FROM パーティ WHERE "状態コード" = '04' ORDER BY "ID"`;
       console.table(expected);
 
-      await prisma.party.deleteMany();
-      for (const p of party) {
-        await prisma.party.upsert({
-          where: { id: p.id },
-          update: p,
-          create: p,
-        });
-      }
-      const data = [
-        {
-          id: "A01",
-          name: "スガワラ",
-          professionCode: "21",
-          hp: 131,
-          mp: 232,
-          statusCode: "03",
-        },
-        {
-          id: "A02",
-          name: "オーエ",
-          professionCode: "10",
-          hp: 156,
-          mp: 84,
-          statusCode: "00",
-        },
-        {
-          id: "A03",
-          name: "イズミ",
-          professionCode: "20",
-          hp: 84,
-          mp: 190,
-          statusCode: "00",
-        },
-      ];
-      await prisma.party.createMany({ data: data });
+      await resetData();
       const updateStatus = await prisma.party.findMany({
         select: {
           id: true,
@@ -6573,13 +6578,14 @@ describe("RPGデータベース", () => {
       const updateStatusCodes = updateStatus.filter(
         (p) => p.hp % 4 === 0 || p.mp % 4 === 0
       );
-      await prisma.party.updateMany({
-        where: {
-          id: { in: updateStatusCodes.map((p) => p.id) },
-        },
-        data: { statusCode: "04" },
-      });
-
+      await prisma.$transaction([
+        prisma.party.updateMany({
+          where: {
+            id: { in: updateStatusCodes.map((p) => p.id) },
+          },
+          data: { statusCode: "04" },
+        }),
+      ]);
       const parties = await prisma.party.findMany({
         where: {
           id: { in: updateStatusCodes.map((p) => p.id) },
@@ -6602,7 +6608,7 @@ describe("RPGデータベース", () => {
           MP: p.mp,
           状態コード: p.statusCode,
         };
-      });
+      }).sort((a, b) => a.ID.localeCompare(b.ID));
       console.table(result);
 
       expect(expected).toStrictEqual(result);
@@ -6621,7 +6627,13 @@ describe("RPGデータベース", () => {
       expect(expected.toString()).toStrictEqual(result.toString());
     });
 
-    test("戦闘中にアイテム「女神の祝福」を使ったところ、全員のHPとMPがそれまでの値に対して3割ほど回復した。該当するデータを更新する。ただし、端数は四捨五入すること。", async () => {
+    test("41:戦闘中にアイテム「女神の祝福」を使ったところ、全員のHPとMPがそれまでの値に対して3割ほど回復した。該当するデータを更新する。ただし、端数は四捨五入すること。", async () => {
+      await resetData()
+      await prisma.$queryRaw`UPDATE パーティ SET "HP" = ROUND("HP" * 1.3,0), "MP" = ROUND("MP" * 1.3,0)`;
+      const expected = await prisma.$queryRaw`SELECT * FROM パーティ ORDER BY "ID"`;
+      console.table(expected);
+
+      await resetData()
       const party = await prisma.party.findMany({
         select: {
           id: true,
@@ -6632,7 +6644,6 @@ describe("RPGデータベース", () => {
           mp: true,
         },
       });
-
       const cure = party.map((p) => {
         const hp = Math.round(p.hp * 1.3);
         const mp = Math.round(p.mp * 1.3);
@@ -6642,7 +6653,6 @@ describe("RPGデータベース", () => {
           mp: mp,
         };
       });
-
       for (const c of cure) {
         const p = await prisma.party.findUnique({
           where: {
@@ -6661,22 +6671,37 @@ describe("RPGデータベース", () => {
           });
         }
       }
-
-      const result = await prisma.party.findMany({
+      const parties = await prisma.party.findMany({
         where: {
           id: {
             in: cure.map((c) => c.id),
           },
         },
       });
-
+      const result = parties.map((p) => {
+        return {
+          ID: p.id,
+          名称: p.name,
+          職業コード: p.professionCode,
+          HP: p.hp,
+          MP: p.mp,
+          状態コード: p.statusCode,
+        };
+      }).sort((a, b) => a.ID.localeCompare(b.ID));
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("戦士の技「Step by Step」は、攻撃の回数に応じて自分のHPをべき乗したポイントのダメージを与える。3回攻撃したときの、各回の攻撃ポイントを適切な列を用いて次の別名で取得する。ただし、1回目は0乗から始まる。", async () => {
+    test("42:戦士の技「Step by Step」は、攻撃の回数に応じて自分のHPをべき乗したポイントのダメージを与える。3回攻撃したときの、各回の攻撃ポイントを適切な列を用いて次の別名で取得する。ただし、1回目は0乗から始まる。", async () => {
       // なまえ　HP　攻撃1回目 　攻撃2回目　攻撃3回目
+      const expected = await prisma.$queryRaw`SELECT "名称" AS "なまえ", "HP", POWER("HP",0) AS "攻撃1回目", POWER("HP",1) AS "攻撃2回目", POWER("HP",2) AS "攻撃3回目" FROM パーティ wHERE "職業コード" = '01'`;
+      console.table(expected);
+
       const party = await prisma.party.findMany({
+        where: {
+          professionCode: "01",
+        },
         select: {
           id: true,
           name: true,
@@ -6686,7 +6711,6 @@ describe("RPGデータベース", () => {
           mp: true,
         },
       });
-
       const result = party.map((p) => {
         const stepByStep = (n) => (p.professionCode === "01" ? p.hp ** n : 0);
         return {
@@ -6697,20 +6721,38 @@ describe("RPGデータベース", () => {
           攻撃3回目: stepByStep(2),
         };
       });
-
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("現在、主人公のパーティーにいるキャラクターの状況について、HPと状態コードから、リスクを重み付けした一覧を適切な列を用いて次の別名で取得する。", async () => {
+    test("43:現在、主人公のパーティーにいるキャラクターの状況について、HPと状態コードから、リスクを重み付けした一覧を適切な列を用いて次の別名で取得する。", async () => {
       // なまえ　HP　状態コード　リスク値
       // リスク値には、次の条件に従った値を算出する。
       // HPが50以下ならリスク値3
       // HPが51以上100以下ならリスク値2
-      // HPが101以上ならリスク値1
+      // HPが101以上150以下ならリスク値1
       // HPがそれ以外ならリスク値0
       // 状態コードの値をリスク値に加算
       // リスクの高い順かつHPの低い順にキャラクターを表示する。
+      const expected = await prisma.$queryRaw`
+            SELECT "名称" AS "なまえ",
+              "HP",
+              "状態コード" AS "状態コード",
+            CASE
+                WHEN "HP" <= 50 THEN 3 + CAST(状態コード AS INTEGER)
+                WHEN "HP" >= 51
+                AND "HP" <= 100 THEN 2 + CAST(状態コード AS INTEGER)
+                WHEN "HP" >= 101
+                AND "HP" <= 150 THEN 1 + CAST(状態コード AS INTEGER)
+                ELSE CAST(状態コード AS INTEGER)
+              END AS リスク値
+            FROM パーティ
+            ORDER BY リスク値 DESC,
+              "HP"
+      `;
+      console.table(expected);
+
       const party = await prisma.party.findMany({
         select: {
           id: true,
@@ -6724,12 +6766,22 @@ describe("RPGデータベース", () => {
 
       const result = party
         .map((p) => {
-          const risk = p.hp <= 50 ? 3 : p.hp <= 100 ? 2 : p.hp >= 101 ? 1 : 0;
+          const risk = (hp) => {
+            if (hp <= 50) {
+              return 3;
+            } else if (hp >= 51 && hp <= 100) {
+              return 2;
+            } else if (hp >= 101 && hp <= 150) {
+              return 1;
+            } else {
+              return 0;
+            }
+          };
           return {
             なまえ: p.name,
             HP: p.hp,
             状態コード: p.statusCode,
-            リスク値: risk + Number(p.statusCode),
+            リスク値: risk(p.hp) + Number(p.statusCode),
           };
         })
         .sort((a, b) => {
@@ -6747,31 +6799,49 @@ describe("RPGデータベース", () => {
             }
           }
         });
-
       console.table(result);
-      expect(result.length).toBe(5);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("イベントテーブルより、イベントの一覧をイベント番号順に次の形式で取得する。", async () => {
+    test("44:イベントテーブルより、イベントの一覧をイベント番号順に次の形式で取得する。", async () => {
       // 前提イベント番号　イベント番号　後続イベント番号
-      const event = await prisma.event.findMany({
+      const expected = await prisma.$queryRaw`
+            SELECT 
+              COALESCE(CAST(前提イベント番号 AS VARCHAR),'前提なし') AS 前提イベント番号,
+              "イベント番号",
+              COALESCE(CAST(後続イベント番号 AS VARCHAR),'後続なし') AS 後続イベント番号
+            FROM イベント
+            ORDER BY "イベント番号"
+      `;
+      console.table(expected);
+
+      const events = await prisma.event.findMany({
         select: {
           premiseEventNumber: true,
           eventNumber: true,
           followOnEventNumber: true,
         },
+        orderBy: {
+          eventNumber: 'asc',
+        },
       });
-
-      const result = event.map((e) => {
+      const result = events.map((event) => {
         return {
-          前提イベント番号: e.eventNumber,
-          イベント番号: e.eventNumber,
-          後続イベント番号: e.premiseEventNumber,
+          前提イベント番号: event.premiseEventNumber || '前提なし',
+          イベント番号: event.eventNumber,
+          後続イベント番号: event.followOnEventNumber || '後続なし',
+        };
+      }).map((event) => {
+        return {
+          前提イベント番号: event.前提イベント番号.toString(),
+          イベント番号: event.イベント番号,
+          後続イベント番号: event.後続イベント番号.toString(),
         };
       });
-
       console.table(result);
-      expect(result.length).toBe(26);
+
+      expect(expected).toStrictEqual(result);
     });
   });
 
