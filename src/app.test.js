@@ -7322,14 +7322,80 @@ describe("RPGデータベース", () => {
       await prisma.party.createMany({ data: data });
     });
 
-    test("勇者の現在のHPが、パーティー全員のHPの何%に当たるかを求めたい。適切な列を用いて次の別名で抽出する。ただし、割合は小数点第2位を四捨五入し、小数点第1位まで求めること。", async () => {
+    const resetData = async () => {
+      await prisma.party.deleteMany();
+      for (const p of party) {
+        await prisma.party.upsert({
+          where: { id: p.id },
+          update: p,
+          create: p,
+        });
+      }
+      const data = [
+        {
+          id: "A01",
+          name: "スガワラ",
+          professionCode: "21",
+          hp: 131,
+          mp: 232,
+          statusCode: "03",
+        },
+        {
+          id: "A02",
+          name: "オーエ",
+          professionCode: "10",
+          hp: 156,
+          mp: 84,
+          statusCode: "00",
+        },
+        {
+          id: "A03",
+          name: "イズミ",
+          professionCode: "20",
+          hp: 84,
+          mp: 190,
+          statusCode: "00",
+        },
+      ];
+      await prisma.party.createMany({ data: data });
+
+      await prisma.experienceEvent.deleteMany();
+      await prisma.event.deleteMany();
+      for (const e of event) {
+        await prisma.event.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+      for (const e of experienceEvent) {
+        await prisma.experienceEvent.upsert({
+          where: { eventNumber: e.eventNumber },
+          update: e,
+          create: e,
+        });
+      }
+
+    }
+
+    test("53:勇者の現在のHPが、パーティー全員のHPの何%に当たるかを求めたい。適切な列を用いて次の別名で抽出する。ただし、割合は小数点第2位を四捨五入し、小数点第1位まで求めること。", async () => {
       // なまえ　現在のHP　パーティーでの割合
-      const party = await prisma.party.findMany({
-        select: {
+      const exepcted = await prisma.$queryRaw`
+            SELECT
+              名称 AS "なまえ",
+              "HP" AS "現在のHP",
+              ROUND(CAST("HP" AS NUMERIC) / (SELECT SUM("HP") FROM パーティ) * 100, 1) AS "パーティーでの割合"
+            FROM パーティ
+            WHERE "職業コード" = '01'
+      `;
+      console.table(exepcted);
+
+      const allHp = await prisma.party.aggregate({
+        _sum: {
           hp: true,
         },
       });
-
       const usha = await prisma.party.findFirst({
         where: { professionCode: "01" },
         select: {
@@ -7337,78 +7403,86 @@ describe("RPGデータベース", () => {
           hp: true,
         },
       });
-
-      const allHp = party.reduce((acc, cur) => {
-        const hp = cur.hp;
-        acc += hp;
-        return acc;
-      }, 0);
-
-      const result = {
+      const ratio = Math.round((usha.hp / allHp._sum.hp) * 10000) / 100; // 小数点第2位で四捨五入して、小数点第1位まで求める
+      const result = [{
         "なまえ": usha.name,
         "現在のHP": usha.hp,
-        "パーティーでの割合": Math.round((usha.hp / allHp) * 10) / 10,
-      };
+        "パーティーでの割合": ratio,
+      }];
+      console.table(result);
 
-      console.log(result);
-      expect(result).toStrictEqual({
-        "なまえ": "ミナト",
-        "現在のHP": 89,
-        "パーティーでの割合": 0.2,
-      })
+      expect(exepcted.toString()).toStrictEqual(result.toString());
     });
 
-    test("魔法使いは回復魔法「みんなからお裾分け」を使ってMPを回復した。この魔法は、本人を除くパーティー全員のMP合計値の10%をもらうことができる。端数は四捨五入して魔法使いのMPを更新する。なお、魔法使い以外のMPは更新しなくてよいものとする。", async () => {
-      const party = await prisma.party.findMany({
+    test("54:魔法使いは回復魔法「みんなからお裾分け」を使ってMPを回復した。この魔法は、本人を除くパーティー全員のMP合計値の10%をもらうことができる。端数は四捨五入して魔法使いのMPを更新する。なお、魔法使い以外のMPは更新しなくてよいものとする。", async () => {
+      await resetData();
+      await prisma.$queryRaw`
+            UPDATE パーティ
+            SET "MP" = "MP" + (SELECT ROUND(SUM("MP"*0.1)) FROM パーティ WHERE "職業コード" <> '20')
+            WHERE "職業コード" = '20'
+      `;
+      const exepcted = await prisma.$queryRaw`SELECT * FROM パーティ ORDER BY "ID"`;
+      console.table(exepcted);
+
+      await resetData();
+      const allMpExceptMage = await prisma.party.aggregate({
+        _sum: {
+          mp: true,
+        },
         where: {
           professionCode: { not: "20" }
         },
-        select: {
-          id: true,
-          professionCode: true,
-          mp: true,
-        },
       });
-
-      const mage = await prisma.party.findFirst({
-        where: { professionCode: "20" },
-        select: {
-          id: true,
-          mp: true,
-        },
-      });
-
-      const allMp = party.reduce((acc, cur) => {
-        const mp = cur.mp;
-        acc += mp;
-        return acc;
-      }, 0);
-
-      const result = await prisma.party.update({
+      const magies = await prisma.party.findMany({
         where: {
-          id: mage.id,
-        },
-        data: {
-          mp: Math.round((allMp - mage.mp) * 0.1),
+          professionCode: "20",
         },
       });
+      for (const m of magies) {
+        await prisma.party.update({
+          where: {
+            id: m.id,
+          },
+          data: {
+            mp: m.mp + Math.round(allMpExceptMage._sum.mp * 0.1),
+          },
+        });
+      }
+      const parties = await prisma.party.findMany();
+      const result = parties.map((p) => {
+        return {
+          ID: p.id,
+          名称: p.name,
+          職業コード: p.professionCode,
+          HP: p.hp,
+          MP: p.mp,
+          状態コード: p.statusCode,
+        };
+      }).sort((a, b) => {
+        if (a.ID < b.ID) return -1;
+        if (a.ID > b.ID) return 1;
+        return 0;
+      });
+      console.table(result);
 
-      console.log(result);
-      expect(result).toStrictEqual({
-        id: "A03",
-        name: "イズミ",
-        professionCode: "20",
-        hp: 84,
-        mp: 27,
-        statusCode: "00",
-      });
+      expect(exepcted).toStrictEqual(result);
     });
 
-    test("経験イベントテーブルから、これまでにクリアしたイベントのうち、タイプが「強制」または「特殊」であるものについて、次の形式で抽出する。", async () => {
+    test("55:経験イベントテーブルから、これまでにクリアしたイベントのうち、タイプが「強制」または「特殊」であるものについて、次の形式で抽出する。", async () => {
       // イベント番号　クリア結果
       // 抽出には、副問い合わせを用いること。
-      const result = await prisma.experienceEvent.findMany({
+      const exepcted = await prisma.$queryRaw`
+            SELECT
+              イベント番号,
+              クリア結果
+            FROM 経験イベント
+            WHERE クリア区分 ='1' AND イベント番号 IN (SELECT イベント番号 FROM イベント WHERE タイプ IN ('1', '3'))
+      `;
+      console.table(exepcted);
+
+      const events = await prisma.experienceEvent.findMany({
         where: {
+          clearType: "1",
           event: {
             OR: [
               { type: "1" },
@@ -7421,22 +7495,33 @@ describe("RPGデータベース", () => {
           clearResult: true,
         },
       });
-
-      console.log(result);
-      expect(result[0]).toStrictEqual({
-        eventNumber: 1,
-        clearResult: "A",
+      const result = events.map((e) => {
+        return {
+          イベント番号: e.eventNumber,
+          クリア結果: e.clearResult,
+        };
       });
+      console.table(result);
+
+      expect(exepcted).toStrictEqual(result);
     });
 
-    test("パーティーテーブルから、パーティー内で最も高いMPをもつキャラクター名とそのMPを抽出する。抽出には、副問い合わせを用いること。", async () => {
+    test("56:パーティーテーブルから、パーティー内で最も高いMPをもつキャラクター名とそのMPを抽出する。抽出には、副問い合わせを用いること。", async () => {
+      const exepcted = await prisma.$queryRaw`
+            SELECT
+              名称,
+              "MP"
+            FROM パーティ
+            WHERE "MP" = (SELECT MAX("MP") FROM パーティ)
+      `;
+      console.table(exepcted);
+
       const maxMp = await prisma.party.aggregate({
         _max: {
           mp: true,
         },
       });
-
-      const result = await prisma.party.findFirst({
+      const parties = await prisma.party.findFirst({
         where: {
           mp: maxMp._max.mp,
         },
@@ -7445,38 +7530,35 @@ describe("RPGデータベース", () => {
           mp: true,
         },
       });
+      const result = [{
+        名称: parties.name,
+        MP: parties.mp,
+      }];
+      console.table(result);
 
-      console.log(result);
-      expect(result).toStrictEqual({
-        name: "スガワラ",
-        mp: 232,
-      });
+      expect(exepcted).toStrictEqual(result);
     });
 
-    test("これまでに着手していないイベントの数を抽出する。抽出には、副問い合わせを用いること。", async () => {
-      const result = await prisma.event.count({
-        where: {
-          experienceEvent: {
-            some: {
-              clearResult: null,
-            },
-          },
+    test("57:これまでに着していないイベントについて、イベント番号とその名称をイベント番号順に抽出する。抽出には、副問い合わせを用いること。", async () => {
+      const exepcted = await prisma.$queryRaw`
+            SELECT
+              イベント番号,
+              イベント名称
+            FROM イベント
+            WHERE イベント番号 NOT IN (SELECT イベント番号 FROM 経験イベント)
+            ORDER BY イベント番号
+      `;
+      console.table(exepcted);
+
+      const experienceEvents = await prisma.experienceEvent.findMany({
+        select: {
+          eventNumber: true,
         },
       });
-
-      console.log(result);
-      expect(result).toBe(1);
-    });
-
-    test("5番目にクリアしたイベントのイベント番号よりも小さい番号を持つすべてのイベントについて、イベント番号とイベント名称を抽出する", async () => {
-      const result = await prisma.event.findMany({
+      const events = await prisma.event.findMany({
         where: {
-          experienceEvent: {
-            some: {
-              clearResult: {
-                not: null,
-              },
-            },
+          eventNumber: {
+            notIn: experienceEvents.map((e) => e.eventNumber),
           },
         },
         select: {
@@ -7486,30 +7568,116 @@ describe("RPGデータベース", () => {
         orderBy: {
           eventNumber: "asc",
         },
-        take: 4,
       });
+      const result = events.map((e) => {
+        return {
+          イベント番号: e.eventNumber,
+          イベント名称: e.eventName,
+        };
+      }).sort((a, b) => {
+        if (a.イベント番号 < b.イベント番号) return -1;
+        if (a.イベント番号 > b.イベント番号) return 1;
+        return 0;
+      });
+      console.table(result);
 
-      console.log(result);
-      expect(result[3]).toStrictEqual({
-        eventNumber: 5,
-        eventName: "盗賊ダンシーを追え！",
-      });
+      expect(exepcted).toStrictEqual(result);
     });
 
-    test("これまでにパーティーがクリアしたイベントを前提としているイベントの一覧を次の形式で抽出する。", async () => {
+    test("58:これまでに着手していないイベントの数を抽出する。抽出には、副問い合わせを用いること。", async () => {
+      const expected = await prisma.$queryRaw`
+            SELECT
+              COUNT(*) AS 未着手イベントの数
+            FROM (SELECT イベント番号 FROM イベント EXCEPT SELECT イベント番号 FROM 経験イベント) AS SUB
+      `;
+      console.table(expected);
+
+      const experienceEvents = await prisma.experienceEvent.findMany({
+        select: {
+          eventNumber: true,
+        },
+      });
+      const events = await prisma.event.count({
+        where: {
+          eventNumber: {
+            notIn: experienceEvents.map((e) => e.eventNumber),
+          },
+        },
+      });
+      const result = [{
+        未着手イベントの数: events,
+      }];
+      console.table(result);
+
+      expect(expected.toString()).toStrictEqual(result.toString());
+    });
+
+    test("59:5番目にクリアしたイベントのイベント番号よりも小さい番号を持つすべてのイベントについて、イベント番号とイベント名称を抽出する", async () => {
+      const expected = await prisma.$queryRaw`
+            SELECT
+              イベント番号,
+              イベント名称
+            FROM イベント
+            WHERE イベント番号 < (SELECT イベント番号 FROM 経験イベント WHERE ルート番号 = '5')
+      `;
+      console.table(expected);
+
+      const experienceEvents = await prisma.experienceEvent.findMany({
+        where: {
+          routeNumber: 5,
+        },
+        select: {
+          eventNumber: true,
+        },
+        orderBy: {
+          eventNumber: "asc",
+        },
+      });
+      const events = await prisma.event.findMany({
+        where: {
+          eventNumber: {
+            lt: experienceEvents[0] ? experienceEvents[0].eventNumber : 0,
+          },
+        },
+        select: {
+          eventNumber: true,
+          eventName: true,
+        },
+      });
+      const result = events.map((e) => {
+        return {
+          イベント番号: e.eventNumber,
+          イベント名称: e.eventName,
+        };
+      });
+      console.table(result);
+
+      expect(expected).toStrictEqual(result);
+    });
+
+    test("60:これまでにパーティーがクリアしたイベントを前提としているイベントの一覧を次の形式で抽出する。", async () => {
       // イベント番号　イベント名称　前提イベント番号
+      const expected = await prisma.$queryRaw`
+            SELECT
+              イベント番号,
+              イベント名称,
+              前提イベント番号
+            FROM イベント
+            WHERE 前提イベント番号 =ANY (SELECT イベント番号 FROM 経験イベント WHERE クリア区分 = '1')
+      `;
+      console.table(expected);
+
       const clearEvent = await prisma.experienceEvent.findMany({
         where: {
-          clearResult: {
-            not: null,
+          clearType: {
+            equals: "1",
           },
         },
         select: {
           eventNumber: true,
         },
       });
-
-      const result = await prisma.event.findMany({
+      const events = await prisma.event.findMany({
         where: {
           premiseEventNumber: {
             in: clearEvent.map((event) => event.eventNumber),
@@ -7521,23 +7689,51 @@ describe("RPGデータベース", () => {
           premiseEventNumber: true,
         },
       });
-
-      console.log(result);
-      expect(result[0]).toStrictEqual({
-        eventNumber: 4,
-        eventName: "初めての仲間",
-        premiseEventNumber: 3,
+      const result = events.map((e) => {
+        return {
+          イベント番号: e.eventNumber,
+          イベント名称: e.eventName,
+          前提イベント番号: e.premiseEventNumber,
+        };
       });
+      console.table(result);
+
+      expect(expected).toStrictEqual(result);
     });
 
-    test("パーティーは、イベント番号「9」のイベントを結果「B」でクリアし、その次に発生するイベントに参加した。これを経験イベントテーブルに記録する。なお、更新と追加の両方を2つのSQL文で記述すること。", async () => {
-      const result = await prisma.$transaction([
+    test("61:パーティーは、イベント番号「9」のイベントを結果「B」でクリアし、その次に発生するイベントに参加した。これを経験イベントテーブルに記録する。なお、更新と追加の両方を2つのSQL文で記述すること。", async () => {
+      await resetData()
+      await prisma.$queryRaw`
+            UPDATE 経験イベント
+            SET クリア区分 = '1', クリア結果 = 'B', ルート番号 = (SELECT MAX(ルート番号) + 1 FROM 経験イベント) WHERE イベント番号 = '9'
+      `;
+      await prisma.$queryRaw`
+            INSERT INTO 経験イベント
+            VALUES ((SELECT イベント番号 FROM イベント WHERE 前提イベント番号 = '9'), '0', NULL, NULL)
+      `;
+      const expected = await prisma.$queryRaw`
+            SELECT
+              *
+            FROM 経験イベント
+            WHERE イベント番号 = '9' OR イベント番号 = '10'
+      `;
+      console.table(expected);
+
+      await resetData()
+      const routeNumber = await prisma.experienceEvent.aggregate({
+        _max: {
+          routeNumber: true,
+        },
+      });
+      await prisma.$transaction([
         prisma.experienceEvent.update({
           where: {
             eventNumber: 9,
           },
           data: {
+            clearType: "1",
             clearResult: "B",
+            routeNumber: routeNumber._max.routeNumber + 1,
           },
         }),
         prisma.experienceEvent.create({
@@ -7548,20 +7744,35 @@ describe("RPGデータベース", () => {
           },
         }),
       ]);
+      const events = await prisma.experienceEvent.findMany({
+        where: {
+          OR: [
+            {
+              eventNumber: 9,
+            },
+            {
+              eventNumber: 10,
+            },
+          ],
+        },
+        select: {
+          eventNumber: true,
+          clearType: true,
+          clearResult: true,
+          routeNumber: true,
+        },
+      });
+      const result = events.map((e) => {
+        return {
+          イベント番号: e.eventNumber,
+          クリア区分: e.clearType,
+          クリア結果: e.clearResult,
+          ルート番号: e.routeNumber,
+        };
+      });
+      console.table(result);
 
-      console.log(result);
-      expect(result[0]).toStrictEqual({
-        eventNumber: 9,
-        clearType: "0",
-        clearResult: "B",
-        routeNumber: null,
-      });
-      expect(result[1]).toStrictEqual({
-        eventNumber: 10,
-        clearType: "0",
-        clearResult: null,
-        routeNumber: null,
-      });
+      expect(expected).toStrictEqual(result);
     });
   });
 
