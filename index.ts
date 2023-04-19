@@ -1,12 +1,20 @@
 import "./src/style.css";
-import { App } from './src/app';
+import { App } from "./src/app";
 const app = new App();
 
-const dev = require('@k2works/full-stack-lab');
+const dev = require("@k2works/full-stack-lab");
 const contents = `
 ## 機能名
+
+販売管理システム
+
 ## 仕様
+
 ## TODOリスト
+
+- [ ] 部門／社員／商品マスタの設計
+- [ ] 取引先（顧客／仕入先）マスタの設計
+
 `;
 
 const usecase = `
@@ -39,7 +47,7 @@ const ui = `
 [Close]
 }
 @endsalt
-`
+`;
 
 const uml = `
 @startuml

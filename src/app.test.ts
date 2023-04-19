@@ -1,6 +1,9 @@
-import { sum } from "./app";
+describe("Part 1 業務システムの概要とマスタ設計", () => {
+  describe("Chapter 1 販売管理システム全体像", () => {});
 
-test("adds 1 + 2 to equal 3", () => {
-  const result = sum(1, 2);
-  expect(result).toBe(3);
+  describe("Chapter 2 基幹業務システム構築のポイント", () => {});
+
+  describe("Chapter 3 部門／社員／商品マスタ設計", () => {});
+
+  describe("Chapter 4 取引先(顧客／仕入先)マスタの設計", () => {});
 });
