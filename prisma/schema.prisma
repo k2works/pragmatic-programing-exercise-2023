@@ -7,6 +7,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model dept_mst {
+  dept_code     String          @db.VarChar(6)
+  start_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  end_date      DateTime?       @default(dbgenerated("'2100-12-31 00:00:00'::timestamp without time zone")) @db.Timestamp(6)
+  dep_name      String?         @db.VarChar(40)
+  dept_layer    Int             @default(0)
+  dept_psth     String          @db.VarChar(100)
+  bottom_type   Int             @default(0)
+  slit_yn       Int             @default(1)
+  create_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?         @db.VarChar(12)
+  update_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?         @db.VarChar(12)
+  bank_acut_mst bank_acut_mst[]
+  credit        credit[]
+  orders        orders[]
+  pay           pay[]
+  pu            pu[]
+  sales         sales[]
+  wh_dept_mst   wh_dept_mst[]
+
+  @@id([dept_code, start_date], map: "pk_dept_mst")
+}
+
 model alternate_products {
   prod_code     String   @db.VarChar(16)
   alt_prod_code String   @db.VarChar(16)
@@ -230,31 +254,6 @@ model customers_mst {
   orders             orders[]
 
   @@id([cust_code, cust_sub_no], map: "pk_customers_mst")
-}
-
-model dept_mst {
-  dept_code     String          @db.VarChar(6)
-  start_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  end_date      DateTime?       @default(dbgenerated("'2100-12-31 00:00:00'::timestamp without time zone")) @db.Timestamp(6)
-  dep_name      String?         @db.VarChar(40)
-  dept_layer    Int             @default(0)
-  dept_psth     String          @db.VarChar(100)
-  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
-  // 最下層区分 Int @default(0) @map("最下層区分")
-  slit_yn       Int             @default(1)
-  create_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator       String?         @db.VarChar(12)
-  update_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater       String?         @db.VarChar(12)
-  bank_acut_mst bank_acut_mst[]
-  credit        credit[]
-  orders        orders[]
-  pay           pay[]
-  pu            pu[]
-  sales         sales[]
-  wh_dept_mst   wh_dept_mst[]
-
-  @@id([dept_code, start_date], map: "pk_dept_mst")
 }
 
 model destinations_mst {

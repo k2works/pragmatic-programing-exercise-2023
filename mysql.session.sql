@@ -1607,7 +1607,7 @@ CREATE TABLE dept_mst
     dep_name                        VARCHAR(40),
     dept_layer                      INT(2) DEFAULT 0 NOT NULL,
     dept_psth                       VARCHAR(100) NOT NULL,
-    最下層区分                      INT(1) DEFAULT 0 NOT NULL,
+    bottom_type                      INT(1) DEFAULT 0 NOT NULL,
     slit_yn                         INT(1) DEFAULT 1 NOT NULL,
     create_date                     DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     creator                         VARCHAR(12),
@@ -1632,7 +1632,7 @@ ALTER TABLE dept_mst MODIFY dept_layer INT(2) NOT NULL  DEFAULT 0 COMMENT '組�
 ;
 ALTER TABLE dept_mst MODIFY dept_psth VARCHAR(100) NOT NULL  COMMENT '部門パス'
 ;
-ALTER TABLE dept_mst MODIFY 最下層区分 INT(1) NOT NULL  DEFAULT 0 COMMENT '最下層区分'
+ALTER TABLE dept_mst MODIFY bottom_type INT(1) NOT NULL  DEFAULT 0 COMMENT '最下層区分'
 ;
 ALTER TABLE dept_mst MODIFY slit_yn INT(1) NOT NULL  DEFAULT 1 COMMENT '伝票入力可否,0:不可 1:可能'
 ;
