@@ -1,30 +1,33 @@
 import { PrismaClient, dept_mst, employee } from "@prisma/client";
 const prisma = new PrismaClient();
 import { departments } from "./data/department";
+import { employees } from "./data/employee";
 
 async function main() {
   console.table(departments);
-  await prisma.dept_mst.deleteMany({});
-  await prisma.dept_mst.createMany({
-    data: departments,
-  });
+  for (const dept of departments) {
+    await prisma.dept_mst.upsert({
+      where: {
+        dept_code_start_date: {
+          dept_code: dept.dept_code,
+          start_date: dept.start_date,
+        },
+      },
+      create: dept,
+      update: dept,
+    });
+  }
 
-  await prisma.employee.deleteMany({});
-  const employee: employee = await prisma.employee.create({
-    data: {
-      emp_code: "EMP001",
-      emp_name: "John",
-      emp_kana: "ジョン",
-      login_password: "password",
-      tel: "090-1234-5678",
-      fax: "03-1234-5678",
-      dept_code: "000001",
-      start_date: new Date("2021-01-01"),
-      occu_code: "",
-      approval_code: "",
-    },
-  });
-  console.log({ employee });
+  console.table(employees);
+  for (const emp of employees) {
+    await prisma.employee.upsert({
+      where: {
+        emp_code: emp.emp_code,
+      },
+      create: emp,
+      update: emp,
+    });
+  }
 }
 main()
   .then(async () => {

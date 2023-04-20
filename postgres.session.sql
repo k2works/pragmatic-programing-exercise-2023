@@ -1,4 +1,101 @@
+CREATE TABLE dept_mst
+(
+    dept_code                       VARCHAR(6) NOT NULL,
+    start_date                      TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    end_date                        TIMESTAMP DEFAULT '2100/12/31',
+    dep_name                        VARCHAR(40),
+    dept_layer                      INTEGER DEFAULT 0 NOT NULL,
+    dept_psth                       VARCHAR(100) NOT NULL,
+    bottom_type                      INTEGER DEFAULT 0 NOT NULL,
+    slit_yn                         INTEGER DEFAULT 1 NOT NULL,
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE dept_mst
+    ADD CONSTRAINT pk_dept_mst PRIMARY KEY  (dept_code, start_date)
+;
+COMMENT ON TABLE dept_mst IS '部門マスタ'
+;
+COMMENT ON COLUMN dept_mst.dept_code IS '部門コード'
+;
+COMMENT ON COLUMN dept_mst.start_date IS '開始日'
+;
+COMMENT ON COLUMN dept_mst.end_date IS '終了日'
+;
+COMMENT ON COLUMN dept_mst.dep_name IS '部門名'
+;
+COMMENT ON COLUMN dept_mst.dept_layer IS '組織階層'
+;
+COMMENT ON COLUMN dept_mst.dept_psth IS '部門パス'
+;
+COMMENT ON COLUMN dept_mst.最下層区分 IS '最下層区分'
+;
+COMMENT ON COLUMN dept_mst.slit_yn IS '伝票入力可否,0:不可 1:可能'
+;
+COMMENT ON COLUMN dept_mst.create_date IS '作成日時'
+;
+COMMENT ON COLUMN dept_mst.creator IS '作成者名'
+;
+COMMENT ON COLUMN dept_mst.update_date IS '更新日時'
+;
+COMMENT ON COLUMN dept_mst.updater IS '更新者名'
+;
+CREATE TABLE employee
+(
+    emp_code                        VARCHAR(10) NOT NULL,
+    emp_name                        VARCHAR(20),
+    emp_kana                        VARCHAR(40),
+    login_password                  VARCHAR(8),
+    tel                             VARCHAR(13),
+    fax                             VARCHAR(13),
+    dept_code                       VARCHAR(6) NOT NULL,
+    start_date                      TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    occu_code                       VARCHAR(2) NOT NULL,
+    approval_code                   VARCHAR(2) NOT NULL,
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE employee
+    ADD CONSTRAINT pk_employee PRIMARY KEY  (emp_code)
+;
+COMMENT ON TABLE employee IS '社員マスタ'
+;
+COMMENT ON COLUMN employee.emp_code IS '社員コード'
+;
+COMMENT ON COLUMN employee.emp_name IS '社員名'
+;
+COMMENT ON COLUMN employee.emp_kana IS '社員名カナ'
+;
+COMMENT ON COLUMN employee.login_password IS 'パスワード'
+;
+COMMENT ON COLUMN employee.tel IS '電話番号'
+;
+COMMENT ON COLUMN employee.fax IS 'fax番号'
+;
+COMMENT ON COLUMN employee.dept_code IS '部門コード'
+;
+COMMENT ON COLUMN employee.start_date IS '開始日'
+;
+COMMENT ON COLUMN employee.occu_code IS '職種コード'
+;
+COMMENT ON COLUMN employee.approval_code IS '承認権限コード'
+;
+COMMENT ON COLUMN employee.create_date IS '作成日時'
+;
+COMMENT ON COLUMN employee.creator IS '作成者名'
+;
+COMMENT ON COLUMN employee.update_date IS '更新日時'
+;
+COMMENT ON COLUMN employee.updater IS '更新者名'
+;
 CREATE TABLE consumer
+
 (
     consumer_code                   VARCHAR(16) NOT NULL,
     last_name                       VARCHAR(20) NOT NULL,
@@ -494,57 +591,6 @@ COMMENT ON COLUMN auto_number.slip_type IS '伝票種別コード'
 COMMENT ON COLUMN auto_number.yearmonth IS '年月'
 ;
 COMMENT ON COLUMN auto_number.last_silp_no IS '最終伝票番号'
-;
-CREATE TABLE employee
-(
-    emp_code                        VARCHAR(10) NOT NULL,
-    emp_name                        VARCHAR(20),
-    emp_kana                        VARCHAR(40),
-    login_password                  VARCHAR(8),
-    tel                             VARCHAR(13),
-    fax                             VARCHAR(13),
-    dept_code                       VARCHAR(6) NOT NULL,
-    start_date                      TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    occu_code                       VARCHAR(2) NOT NULL,
-    approval_code                   VARCHAR(2) NOT NULL,
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE employee
-    ADD CONSTRAINT pk_employee PRIMARY KEY  (emp_code)
-;
-COMMENT ON TABLE employee IS '社員マスタ'
-;
-COMMENT ON COLUMN employee.emp_code IS '社員コード'
-;
-COMMENT ON COLUMN employee.emp_name IS '社員名'
-;
-COMMENT ON COLUMN employee.emp_kana IS '社員名カナ'
-;
-COMMENT ON COLUMN employee.login_password IS 'パスワード'
-;
-COMMENT ON COLUMN employee.tel IS '電話番号'
-;
-COMMENT ON COLUMN employee.fax IS 'fax番号'
-;
-COMMENT ON COLUMN employee.dept_code IS '部門コード'
-;
-COMMENT ON COLUMN employee.start_date IS '開始日'
-;
-COMMENT ON COLUMN employee.occu_code IS '職種コード'
-;
-COMMENT ON COLUMN employee.approval_code IS '承認権限コード'
-;
-COMMENT ON COLUMN employee.create_date IS '作成日時'
-;
-COMMENT ON COLUMN employee.creator IS '作成者名'
-;
-COMMENT ON COLUMN employee.update_date IS '更新日時'
-;
-COMMENT ON COLUMN employee.updater IS '更新者名'
 ;
 CREATE TABLE company_group_mst
 (
@@ -1625,51 +1671,6 @@ COMMENT ON COLUMN bom.creator IS '作成者名'
 COMMENT ON COLUMN bom.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN bom.updater IS '更新者名'
-;
-CREATE TABLE dept_mst
-(
-    dept_code                       VARCHAR(6) NOT NULL,
-    start_date                      TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    end_date                        TIMESTAMP DEFAULT '2100/12/31',
-    dep_name                        VARCHAR(40),
-    dept_layer                      INTEGER DEFAULT 0 NOT NULL,
-    dept_psth                       VARCHAR(100) NOT NULL,
-    最下層区分                      INTEGER DEFAULT 0 NOT NULL,
-    slit_yn                         INTEGER DEFAULT 1 NOT NULL,
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE dept_mst
-    ADD CONSTRAINT pk_dept_mst PRIMARY KEY  (dept_code, start_date)
-;
-COMMENT ON TABLE dept_mst IS '部門マスタ'
-;
-COMMENT ON COLUMN dept_mst.dept_code IS '部門コード'
-;
-COMMENT ON COLUMN dept_mst.start_date IS '開始日'
-;
-COMMENT ON COLUMN dept_mst.end_date IS '終了日'
-;
-COMMENT ON COLUMN dept_mst.dep_name IS '部門名'
-;
-COMMENT ON COLUMN dept_mst.dept_layer IS '組織階層'
-;
-COMMENT ON COLUMN dept_mst.dept_psth IS '部門パス'
-;
-COMMENT ON COLUMN dept_mst.最下層区分 IS '最下層区分'
-;
-COMMENT ON COLUMN dept_mst.slit_yn IS '伝票入力可否,0:不可 1:可能'
-;
-COMMENT ON COLUMN dept_mst.create_date IS '作成日時'
-;
-COMMENT ON COLUMN dept_mst.creator IS '作成者名'
-;
-COMMENT ON COLUMN dept_mst.update_date IS '更新日時'
-;
-COMMENT ON COLUMN dept_mst.updater IS '更新者名'
 ;
 CREATE TABLE credit_balance
 (

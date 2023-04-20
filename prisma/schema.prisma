@@ -27,6 +27,7 @@ model dept_mst {
   pu            pu[]
   sales         sales[]
   wh_dept_mst   wh_dept_mst[]
+  employee      employee[]
 
   @@id([dept_code, start_date], map: "pk_dept_mst")
 }
@@ -49,6 +50,7 @@ model employee {
   orders          orders[]
   pu              pu[]
   purchase_orders purchase_orders[]
+  dept_mst        dept_mst?         @relation(fields: [dept_code, start_date], references: [dept_code, start_date])
 }
 
 model alternate_products {
