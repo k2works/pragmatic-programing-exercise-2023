@@ -20,7 +20,7 @@ const contents = `
 const usecase = `
 left to right direction
 actor "ユーザー" as user
-rectangle "部門情報管理システム" {
+rectangle "部門管理" {
   usecase "部門情報の追加・変更・削除" as UC1
   usecase "部門情報の参照" as UC2
   usecase "部門階層の把握" as UC3
@@ -37,6 +37,15 @@ rectangle "部門情報管理システム" {
   usecase 電話番号やファックス番号などの連絡先情報の管理 as UC14
   usecase 従業員の業務履歴の管理 as UC15
 }
+rectangle "商品管理" {
+  usecase 商品データの検索フィルタリングソート as UC16
+  usecase 商品データの登録更新削除 as UC17
+  usecase 商品カテゴリーの操作 as UC18
+  usecase 顧客毎の価格設定の管理 as UC19
+  usecase 企業マスタの操作 as UC20
+  usecase 在庫管理関連の操作 as UC21
+  usecase データの分析レポート作成 as UC22
+}
 user --> UC1
 user --> UC2
 user --> UC3
@@ -52,6 +61,13 @@ user --> UC12
 user --> UC13
 user --> UC14
 user --> UC15
+user --> UC16
+user --> UC17
+user --> UC18
+user --> UC19
+user --> UC20
+user --> UC21
+user --> UC22
 `;
 
 const ui = `
@@ -102,41 +118,45 @@ hide circle
 ' avoid problems with angled crows feet
 skinparam linetype ortho
 
-entity "dept_mst" as dept_mst {
-  +dept_code [PK]
-  +start_date [PK]
-  --
-  dep_name
-  dept_layer
-  dept_psth
-  bottom_type
-  slit_yn
-  create_date
-  creator
-  update_date
-  updater
+package "部門管理" {
+  entity "dept_mst" as dept_mst {
+    +dept_code [PK]
+    +start_date [PK]
+    --
+    dep_name
+    dept_layer
+    dept_psth
+    bottom_type
+    slit_yn
+    create_date
+    creator
+    update_date
+    updater
+  }
+
+  entity "employee" as employee {
+    +emp_code [PK]
+    --
+    dept_code [FK]
+    start_date [FK]
+    emp_name
+    emp_kana
+    login_password
+    tel
+    fax
+    occu_code
+    approval_code
+    create_date
+    creator
+    update_date
+    updater
+  }
+
+  dept_mst ||--o{ employee
+
 }
 
-entity "employee" as employee {
-  +emp_code [PK]
-  --
-  dept_code [FK]
-  start_date [FK]
-  emp_name
-  emp_kana
-  login_password
-  tel
-  fax
-  occu_code
-  approval_code
-  create_date
-  creator
-  update_date
-  updater
-}
-
-dept_mst ||--o{ employee
-
+package "商品管理" {
   entity "products" as prod {
   *prod_code : varchar(16) <<PK>> <<map: "pk_products">>
   --
@@ -209,6 +229,7 @@ prod ||-o{ prod_cate : belongs to
 price }o-|| comp : has price
 prod }o--|| prod : has bom
 prod }o--o| price : has price
+}
 @enduml
 `;
 dev.default({ contents, ui, usecase, uml, erd });
