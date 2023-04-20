@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 import { departments } from "./data/department";
 
 async function main() {
+  console.table(departments);
   await prisma.dept_mst.deleteMany({});
   await prisma.dept_mst.createMany({
     data: departments,
