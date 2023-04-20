@@ -18,18 +18,30 @@ const contents = `
 `;
 
 const usecase = `
-@startuml
 left to right direction
-actor "Actor" as ac
-rectangle Application {
-  usecase "UseCase1" as UC1
-  usecase "UseCase2" as UC2
-  usecase "UseCase3" as UC3
+actor "ユーザー" as user
+rectangle "部門情報管理システム" {
+  usecase "部門情報の追加・変更・削除" as UC1
+  usecase "部門情報の参照" as UC2
+  usecase "部門階層の把握" as UC3
+  usecase "部門位置の把握" as UC4
+  usecase "従業員情報の参照" as UC5
+  usecase "従業員業績の分析" as UC6
+  usecase "部門業績の分析" as UC7
+  usecase "財務情報の分析" as UC8
+  usecase "人事施策の策定" as UC9
+  usecase "戦略・経営計画策定情報収集" as UC10
 }
-ac --> UC1
-ac --> UC2
-ac --> UC3
-@enduml
+user --> UC1
+user --> UC2
+user --> UC3
+user --> UC4
+user --> UC5
+user --> UC6
+user --> UC7
+user --> UC8
+user --> UC9
+user --> UC10
 `;
 
 const ui = `
