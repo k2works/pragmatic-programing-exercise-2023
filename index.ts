@@ -137,6 +137,78 @@ entity "employee" as employee {
 
 dept_mst ||--o{ employee
 
+  entity "products" as prod {
+  *prod_code : varchar(16) <<PK>> <<map: "pk_products">>
+  --
+  prod_fullname : varchar(40)
+  prod_name : varchar(10)
+  prod_kana : varchar(20)
+  prod_type : varchar(1)
+  serial_no : varchar(40)
+  unitprice : int <<default(0)>>
+  po_price : int <<default(0)>>
+  prime_cost : int <<default(0)>>
+  tax_type : int <<default(1)>>
+  category_code : varchar(8)
+  wide_use_type : int
+  stock_manage_type : int <<default(1)>>
+  stock_reserve_type : int
+  sup_code : varchar(8)
+  sup_sub_no : int
+  create_date : datetime <<default(dbgenerated("CURRENT_DATE"))>> <<Timestamp(6)>>
+  creator : varchar(12)
+  update_date : datetime <<default(dbgenerated("CURRENT_DATE"))>> <<Timestamp(6)>>
+  updater : varchar(12)
+}
+
+entity "product_category" as prod_cate {
+  *category_code : varchar(8) <<PK>> <<map: "pk_product_category">>
+  --
+  prod_cate_name : varchar(30)
+  category_layer : int <<default(0)>>
+  category_path : varchar(100)
+  lowest_flug : int <<default(0)>>
+  create_date : datetime <<default(dbgenerated("CURRENT_DATE"))>> <<Timestamp(6)>>
+  creator : varchar(12)
+  update_date : datetime <<default(dbgenerated("CURRENT_DATE"))>> <<Timestamp(6)>>
+  updater : varchar(12)
+}
+
+entity "pricebycustomer" as price {
+  *prod_code : varchar(16) <<FK>> ..o{ *comp_code : varchar(8) <<FK>> <<map: "pk_pricebycustomer">>
+  --
+  unitprice : int <<default(0)>>
+  create_date : datetime <<default(dbgenerated("CURRENT_DATE"))>> <<Timestamp(6)>>
+  creator : varchar(12)
+  update_date : datetime <<default(dbgenerated("CURRENT_DATE"))>> <<Timestamp(6)>>
+  updater : varchar(12)
+}
+
+entity "companys_mst" as comp {
+  *comp_code : varchar(8) <<PK>> <<map: "pk_companys_mst">>
+  --
+  comp_name : varchar(40)
+  comp_kana : varchar(40)
+  sup_type : int <<default(0)>>
+  zip_code : char(8)
+  state : varchar(4)
+  address1 : varchar(40)
+  address2 : varchar(40)
+  no_sales_flg : int <<default(0)>>
+  wide_use_type : int
+  comp_group_code : varchar(4)
+  max_credit : int
+  temp_credit_up : int <<default(0)>>
+  create_date : datetime <<default(dbgenerated("CURRENT_DATE"))>> <<Timestamp(6)>>
+  creator : varchar(12)
+  update_date : datetime <<default(dbgenerated("CURRENT_DATE"))>> <<Timestamp(6)>>
+  updater : varchar(12)
+}
+
+prod ||-o{ prod_cate : belongs to
+price }o-|| comp : has price
+prod }o--|| prod : has bom
+prod }o--o| price : has price
 @enduml
 `;
 dev.default({ contents, ui, usecase, uml, erd });
