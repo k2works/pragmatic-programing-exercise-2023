@@ -16,7 +16,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         });
       });
 
-      async function createDepartment() {
+      const createDepartment = async () => {
         const expected: dept_mst = {
           dept_code: "D0001",
           start_date: new Date("2021-01-01"),
@@ -35,11 +35,11 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           data: expected,
         });
         return expected;
-      }
+      };
 
-      async function deleteDepartment() {
+      const deleteDepartment = async () => {
         await prisma.dept_mst.deleteMany();
-      }
+      };
 
       describe("部門情報の追加・変更・削除", () => {
         test("部署情報の検索：部署コード、開始日時、終了日時、部署名、階層、親部署、末端タイプなどの条件で、部門マスタテーブルから部署情報を検索する。", async () => {
