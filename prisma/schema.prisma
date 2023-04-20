@@ -31,6 +31,26 @@ model dept_mst {
   @@id([dept_code, start_date], map: "pk_dept_mst")
 }
 
+model employee {
+  emp_code        String            @id(map: "pk_employee") @db.VarChar(10)
+  emp_name        String?           @db.VarChar(20)
+  emp_kana        String?           @db.VarChar(40)
+  login_password  String?           @db.VarChar(8)
+  tel             String?           @db.VarChar(13)
+  fax             String?           @db.VarChar(13)
+  dept_code       String            @db.VarChar(6)
+  start_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  occu_code       String            @db.VarChar(2)
+  approval_code   String            @db.VarChar(2)
+  create_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?           @db.VarChar(12)
+  update_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?           @db.VarChar(12)
+  orders          orders[]
+  pu              pu[]
+  purchase_orders purchase_orders[]
+}
+
 model alternate_products {
   prod_code     String   @db.VarChar(16)
   alt_prod_code String   @db.VarChar(16)
@@ -272,26 +292,6 @@ model destinations_mst {
   area_mst    area_mst @relation(fields: [area_code], references: [area_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_地域マスタ_destinations_mst")
 
   @@id([comp_code, dist_no, comp_sub_no], map: "pk_destinations_mst")
-}
-
-model employee {
-  emp_code        String            @id(map: "pk_employee") @db.VarChar(10)
-  emp_name        String?           @db.VarChar(20)
-  emp_kana        String?           @db.VarChar(40)
-  login_password  String?           @db.VarChar(8)
-  tel             String?           @db.VarChar(13)
-  fax             String?           @db.VarChar(13)
-  dept_code       String            @db.VarChar(6)
-  start_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  occu_code       String            @db.VarChar(2)
-  approval_code   String            @db.VarChar(2)
-  create_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator         String?           @db.VarChar(12)
-  update_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater         String?           @db.VarChar(12)
-  orders          orders[]
-  pu              pu[]
-  purchase_orders purchase_orders[]
 }
 
 model invoice {
