@@ -31,6 +31,11 @@ rectangle "部門情報管理システム" {
   usecase "財務情報の分析" as UC8
   usecase "人事施策の策定" as UC9
   usecase "戦略・経営計画策定情報収集" as UC10
+  usecase 従業員情報の管理 as UC11
+  usecase 所属部署ごとの従業員リストの作成 as UC12
+  usecase ログイン情報の管理 as UC13
+  usecase 電話番号やファックス番号などの連絡先情報の管理 as UC14
+  usecase 従業員の業務履歴の管理 as UC15
 }
 user --> UC1
 user --> UC2
@@ -42,6 +47,11 @@ user --> UC7
 user --> UC8
 user --> UC9
 user --> UC10
+user --> UC11
+user --> UC12
+user --> UC13
+user --> UC14
+user --> UC15
 `;
 
 const ui = `
@@ -91,26 +101,42 @@ const erd = `
 hide circle
 ' avoid problems with angled crows feet
 skinparam linetype ortho
-entity "Entity01" as e01 {
-  *e1_id : number <<generated>>
+
+entity "dept_mst" as dept_mst {
+  +dept_code [PK]
+  +start_date [PK]
   --
-  *name : text
-  description : text
+  dep_name
+  dept_layer
+  dept_psth
+  bottom_type
+  slit_yn
+  create_date
+  creator
+  update_date
+  updater
 }
-entity "Entity02" as e02 {
-  *e2_id : number <<generated>>
+
+entity "employee" as employee {
+  +emp_code [PK]
   --
-  *e1_id : number <<FK>>
-  other_details : text
+  dept_code [FK]
+  start_date [FK]
+  emp_name
+  emp_kana
+  login_password
+  tel
+  fax
+  occu_code
+  approval_code
+  create_date
+  creator
+  update_date
+  updater
 }
-entity "Entity03" as e03 {
-  *e3_id : number <<generated>>
-  --
-  e1_id : number <<FK>>
-  other_details : text
-}
-e01 ||..o{ e02
-e01 |o..o{ e03
+
+dept_mst ||--o{ employee
+
 @enduml
 `;
 dev.default({ contents, ui, usecase, uml, erd });
