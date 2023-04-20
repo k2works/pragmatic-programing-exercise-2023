@@ -1,4 +1,4 @@
-FROM schemaspy/schemaspy:snapshot
+FROM schemaspy/schemaspy:6.2.2
 USER root
 WORKDIR /
 RUN apk update && \
