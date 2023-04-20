@@ -1,6 +1,7 @@
-import { PrismaClient, dept_mst } from "@prisma/client";
-const prisma = new PrismaClient();
+import { PrismaClient, dept_mst, employee } from "@prisma/client";
+import { employees } from "../prisma/data/employee";
 import { departments } from "../prisma/data/department";
+const prisma = new PrismaClient();
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 1 販売管理システム全体像", () => {});
@@ -8,14 +9,18 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 2 基幹業務システム構築のポイント", () => {});
 
   describe("Chapter 3 部門／社員／商品マスタ設計", () => {
-    describe("部門マスタ", () => {
-      beforeAll(async () => {
-        await prisma.dept_mst.deleteMany();
-        await prisma.dept_mst.createMany({
-          data: departments,
-        });
+    beforeAll(async () => {
+      await prisma.employee.deleteMany();
+      await prisma.dept_mst.deleteMany();
+      await prisma.dept_mst.createMany({
+        data: departments,
       });
+      await prisma.employee.createMany({
+        data: employees,
+      });
+    });
 
+    describe("部門マスタ", () => {
       const createDepartment = async () => {
         const expected: dept_mst = {
           dept_code: "D0001",
@@ -38,6 +43,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       };
 
       const deleteDepartment = async () => {
+        await prisma.employee.deleteMany();
         await prisma.dept_mst.deleteMany();
       };
 
@@ -156,6 +162,8 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       describe("部門情報を参照して、その部門に対する人事施策を考える", () => {});
       describe("部門情報を参照して、その部門の戦略・経営計画を策定するための情報収集を行う。", () => {});
     });
+
+    describe("社員マスタ", () => {});
   });
 
   describe("Chapter 4 取引先(顧客／仕入先)マスタの設計", () => {});
