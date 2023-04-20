@@ -1,0 +1,3 @@
+category_code,prod_cate_name,category_layer,category_path,lowest_flug,create_date,creator,update_date,updater
+CATE001,Sample Category 1,1,/CATE001/,1,2022-04-20,User001,2022-04-20,User001
+CATE002,Sample Category 2,1,/CATE002/,1,2022-04-20,User001,2022-04-20,User001
