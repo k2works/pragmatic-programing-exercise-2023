@@ -9,18 +9,18 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 2 基幹業務システム構築のポイント", () => {});
 
   describe("Chapter 3 部門／社員／商品マスタ設計", () => {
-    beforeAll(async () => {
-      await prisma.employee.deleteMany();
-      await prisma.dept_mst.deleteMany();
-      await prisma.dept_mst.createMany({
-        data: departments,
-      });
-      await prisma.employee.createMany({
-        data: employees,
-      });
-    });
-
     describe("部門マスタ", () => {
+      beforeAll(async () => {
+        await prisma.employee.deleteMany();
+        await prisma.dept_mst.deleteMany();
+        await prisma.dept_mst.createMany({
+          data: departments,
+        });
+        await prisma.employee.createMany({
+          data: employees,
+        });
+      });
+
       const createDepartment = async () => {
         const expected: dept_mst = {
           dept_code: "D0001",
@@ -163,7 +163,77 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       describe("部門情報を参照して、その部門の戦略・経営計画を策定するための情報収集を行う。", () => {});
     });
 
-    describe("社員マスタ", () => {});
+    describe("社員マスタ", () => {
+      beforeAll(async () => {
+        await prisma.employee.deleteMany();
+        await prisma.dept_mst.deleteMany();
+        await prisma.dept_mst.createMany({
+          data: departments,
+        });
+        await prisma.employee.createMany({
+          data: employees,
+        });
+      });
+
+      test("従業員を検索する", async () => {
+        const employees = await prisma.employee.findMany();
+        expect(employees).toHaveLength(37);
+      });
+
+      test("従業員を追加する", async () => {
+        const employee: employee = await prisma.employee.create({
+          data: {
+            emp_code: "EMP999",
+            emp_name: "伊藤 裕子",
+            emp_kana: "イトウ ユウコ",
+            login_password: "password",
+            tel: "090-1234-5678",
+            fax: "03-1234-5678",
+            dept_code: "11101",
+            start_date: new Date("2021-01-01"),
+            occu_code: "",
+            approval_code: "",
+          },
+        });
+        expect(employee.emp_name).toBe("伊藤 裕子");
+      });
+
+      test("従業員を更新する", async () => {
+        const updatedEmployee = await prisma.employee.update({
+          where: { emp_code: "EMP013" },
+          data: { emp_name: "伊藤 由紀子" },
+        });
+        expect(updatedEmployee.emp_name).toBe("伊藤 由紀子");
+      });
+
+      test("従業員を削除する", async () => {
+        const deletedEmployee = await prisma.employee.delete({
+          where: { emp_code: "EMP013" },
+        });
+        expect(deletedEmployee.emp_code).toBe("EMP013");
+      });
+
+      test("部署に所属する従業員を検索する", async () => {
+        const employees = await prisma.employee.findMany({
+          where: { dept_code: "11101" },
+        });
+        expect(employees).toHaveLength(11);
+      });
+
+      test("従業員の名前を検索する", async () => {
+        const employees = await prisma.employee.findMany({
+          where: { emp_name: "山田 太郎" },
+        });
+        expect(employees).toHaveLength(6);
+      });
+
+      test("従業員のカナ名を検索する", async () => {
+        const employees = await prisma.employee.findMany({
+          where: { emp_kana: "ヤマダ タロウ" },
+        });
+        expect(employees).toHaveLength(5);
+      });
+    });
   });
 
   describe("Chapter 4 取引先(顧客／仕入先)マスタの設計", () => {});
