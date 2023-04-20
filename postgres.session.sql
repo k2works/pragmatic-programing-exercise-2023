@@ -94,6 +94,145 @@ COMMENT ON COLUMN employee.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN employee.updater IS '更新者名'
 ;
+CREATE TABLE products
+(
+    prod_code                       VARCHAR(16) NOT NULL,
+    prod_fullname                   VARCHAR(40) NOT NULL,
+    prod_name                       VARCHAR(10) NOT NULL,
+    prod_kana                       VARCHAR(20) NOT NULL,
+    prod_type                       VARCHAR(1),
+    serial_no                       VARCHAR(40),
+    unitprice                       INTEGER DEFAULT 0 NOT NULL,
+    po_price                        INTEGER DEFAULT 0,
+    prime_cost                      INTEGER DEFAULT 0 NOT NULL,
+    tax_type                        INTEGER DEFAULT 1 NOT NULL,
+    category_code                   VARCHAR(8),
+    wide_use_type                   INTEGER,
+    stock_manage_type               INTEGER DEFAULT 1,
+    stock_reserve_type              INTEGER,
+    sup_code                        VARCHAR(8) NOT NULL,
+    sup_sub_no                      INTEGER,
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE products
+    ADD CONSTRAINT pk_products PRIMARY KEY  (prod_code)
+;
+ALTER TABLE products
+    ADD CHECK (tax_type IN (0,1))
+;
+COMMENT ON TABLE products IS '商品マスタ'
+;
+COMMENT ON COLUMN products.prod_code IS '商品コード'
+;
+COMMENT ON COLUMN products.prod_fullname IS '商品正式名'
+;
+COMMENT ON COLUMN products.prod_name IS '商品名'
+;
+COMMENT ON COLUMN products.prod_kana IS '商品名カナ'
+;
+COMMENT ON COLUMN products.prod_type IS '商品区分,1:商品 2:製品 3:原材料 4:間接材'
+;
+COMMENT ON COLUMN products.serial_no IS '製品型番'
+;
+COMMENT ON COLUMN products.unitprice IS '販売単価'
+;
+COMMENT ON COLUMN products.po_price IS '仕入単価'
+;
+COMMENT ON COLUMN products.prime_cost IS '売上原価'
+;
+COMMENT ON COLUMN products.tax_type IS '税区分,1:外税 2:内税'
+;
+COMMENT ON COLUMN products.category_code IS '商品分類コード'
+;
+COMMENT ON COLUMN products.wide_use_type IS '雑区分'
+;
+COMMENT ON COLUMN products.stock_manage_type IS '在庫管理対象区分,0:対象外 1:在庫管理対象'
+;
+COMMENT ON COLUMN products.stock_reserve_type IS '在庫引当区分,0:対象外 1:即時 2:まとめ 3:手配品'
+;
+COMMENT ON COLUMN products.sup_code IS '仕入先コード'
+;
+COMMENT ON COLUMN products.sup_sub_no IS '仕入先枝番'
+;
+COMMENT ON COLUMN products.create_date IS '作成日時'
+;
+COMMENT ON COLUMN products.creator IS '作成者名'
+;
+COMMENT ON COLUMN products.update_date IS '更新日時'
+;
+COMMENT ON COLUMN products.updater IS '更新者名'
+;
+CREATE TABLE product_category
+(
+    category_code                   VARCHAR(8) NOT NULL,
+    prod_cate_name                  VARCHAR(30),
+    category_layer                  INTEGER DEFAULT 0 NOT NULL,
+    category_path                   VARCHAR(100),
+    lowest_flug                     INTEGER DEFAULT 0,
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE product_category
+    ADD CONSTRAINT pk_product_category PRIMARY KEY  (category_code)
+;
+COMMENT ON TABLE product_category IS '商品分類マスタ'
+;
+COMMENT ON COLUMN product_category.category_code IS '商品分類コード'
+;
+COMMENT ON COLUMN product_category.prod_cate_name IS '商品分類名'
+;
+COMMENT ON COLUMN product_category.category_layer IS '商品分類階層'
+;
+COMMENT ON COLUMN product_category.category_path IS '商品分類パス'
+;
+COMMENT ON COLUMN product_category.lowest_flug IS '最下層区分'
+;
+COMMENT ON COLUMN product_category.create_date IS '作成日時'
+;
+COMMENT ON COLUMN product_category.creator IS '作成者名'
+;
+COMMENT ON COLUMN product_category.update_date IS '更新日時'
+;
+COMMENT ON COLUMN product_category.updater IS '更新者名'
+;
+CREATE TABLE pricebycustomer
+(
+    prod_code                       VARCHAR(16) NOT NULL,
+    comp_code                       VARCHAR(8) NOT NULL,
+    unitprice                       INTEGER DEFAULT 0 NOT NULL,
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE pricebycustomer
+    ADD CONSTRAINT pk_pricebycustomer PRIMARY KEY  (prod_code, comp_code)
+;
+COMMENT ON TABLE pricebycustomer IS '顧客別販売単価'
+;
+COMMENT ON COLUMN pricebycustomer.prod_code IS '商品コード'
+;
+COMMENT ON COLUMN pricebycustomer.comp_code IS '取引先コード'
+;
+COMMENT ON COLUMN pricebycustomer.unitprice IS '販売単価'
+;
+COMMENT ON COLUMN pricebycustomer.create_date IS '作成日時'
+;
+COMMENT ON COLUMN pricebycustomer.creator IS '作成者名'
+;
+COMMENT ON COLUMN pricebycustomer.update_date IS '更新日時'
+;
+COMMENT ON COLUMN pricebycustomer.updater IS '更新者名'
+;
+
 CREATE TABLE consumer
 
 (
@@ -264,36 +403,6 @@ COMMENT ON COLUMN customers_mst.creator IS '作成者名'
 COMMENT ON COLUMN customers_mst.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN customers_mst.updater IS '更新者名'
-;
-CREATE TABLE pricebycustomer
-(
-    prod_code                       VARCHAR(16) NOT NULL,
-    comp_code                       VARCHAR(8) NOT NULL,
-    unitprice                       INTEGER DEFAULT 0 NOT NULL,
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE pricebycustomer
-    ADD CONSTRAINT pk_pricebycustomer PRIMARY KEY  (prod_code, comp_code)
-;
-COMMENT ON TABLE pricebycustomer IS '顧客別販売単価'
-;
-COMMENT ON COLUMN pricebycustomer.prod_code IS '商品コード'
-;
-COMMENT ON COLUMN pricebycustomer.comp_code IS '取引先コード'
-;
-COMMENT ON COLUMN pricebycustomer.unitprice IS '販売単価'
-;
-COMMENT ON COLUMN pricebycustomer.create_date IS '作成日時'
-;
-COMMENT ON COLUMN pricebycustomer.creator IS '作成者名'
-;
-COMMENT ON COLUMN pricebycustomer.update_date IS '更新日時'
-;
-COMMENT ON COLUMN pricebycustomer.updater IS '更新者名'
 ;
 CREATE TABLE stock
 (
@@ -939,114 +1048,6 @@ COMMENT ON COLUMN destinations_mst.creator IS '作成者名'
 COMMENT ON COLUMN destinations_mst.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN destinations_mst.updater IS '更新者名'
-;
-CREATE TABLE products
-(
-    prod_code                       VARCHAR(16) NOT NULL,
-    prod_fullname                   VARCHAR(40) NOT NULL,
-    prod_name                       VARCHAR(10) NOT NULL,
-    prod_kana                       VARCHAR(20) NOT NULL,
-    prod_type                       VARCHAR(1),
-    serial_no                       VARCHAR(40),
-    unitprice                       INTEGER DEFAULT 0 NOT NULL,
-    po_price                        INTEGER DEFAULT 0,
-    prime_cost                      INTEGER DEFAULT 0 NOT NULL,
-    tax_type                        INTEGER DEFAULT 1 NOT NULL,
-    category_code                   VARCHAR(8),
-    wide_use_type                   INTEGER,
-    stock_manage_type               INTEGER DEFAULT 1,
-    stock_reserve_type              INTEGER,
-    sup_code                        VARCHAR(8) NOT NULL,
-    sup_sub_no                      INTEGER,
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE products
-    ADD CONSTRAINT pk_products PRIMARY KEY  (prod_code)
-;
-ALTER TABLE products
-    ADD CHECK (tax_type IN (0,1))
-;
-COMMENT ON TABLE products IS '商品マスタ'
-;
-COMMENT ON COLUMN products.prod_code IS '商品コード'
-;
-COMMENT ON COLUMN products.prod_fullname IS '商品正式名'
-;
-COMMENT ON COLUMN products.prod_name IS '商品名'
-;
-COMMENT ON COLUMN products.prod_kana IS '商品名カナ'
-;
-COMMENT ON COLUMN products.prod_type IS '商品区分,1:商品 2:製品 3:原材料 4:間接材'
-;
-COMMENT ON COLUMN products.serial_no IS '製品型番'
-;
-COMMENT ON COLUMN products.unitprice IS '販売単価'
-;
-COMMENT ON COLUMN products.po_price IS '仕入単価'
-;
-COMMENT ON COLUMN products.prime_cost IS '売上原価'
-;
-COMMENT ON COLUMN products.tax_type IS '税区分,1:外税 2:内税'
-;
-COMMENT ON COLUMN products.category_code IS '商品分類コード'
-;
-COMMENT ON COLUMN products.wide_use_type IS '雑区分'
-;
-COMMENT ON COLUMN products.stock_manage_type IS '在庫管理対象区分,0:対象外 1:在庫管理対象'
-;
-COMMENT ON COLUMN products.stock_reserve_type IS '在庫引当区分,0:対象外 1:即時 2:まとめ 3:手配品'
-;
-COMMENT ON COLUMN products.sup_code IS '仕入先コード'
-;
-COMMENT ON COLUMN products.sup_sub_no IS '仕入先枝番'
-;
-COMMENT ON COLUMN products.create_date IS '作成日時'
-;
-COMMENT ON COLUMN products.creator IS '作成者名'
-;
-COMMENT ON COLUMN products.update_date IS '更新日時'
-;
-COMMENT ON COLUMN products.updater IS '更新者名'
-;
-CREATE TABLE product_category
-(
-    category_code                   VARCHAR(8) NOT NULL,
-    prod_cate_name                  VARCHAR(30),
-    category_layer                  INTEGER DEFAULT 0 NOT NULL,
-    category_path                   VARCHAR(100),
-    lowest_flug                     INTEGER DEFAULT 0,
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE product_category
-    ADD CONSTRAINT pk_product_category PRIMARY KEY  (category_code)
-;
-COMMENT ON TABLE product_category IS '商品分類マスタ'
-;
-COMMENT ON COLUMN product_category.category_code IS '商品分類コード'
-;
-COMMENT ON COLUMN product_category.prod_cate_name IS '商品分類名'
-;
-COMMENT ON COLUMN product_category.category_layer IS '商品分類階層'
-;
-COMMENT ON COLUMN product_category.category_path IS '商品分類パス'
-;
-COMMENT ON COLUMN product_category.lowest_flug IS '最下層区分'
-;
-COMMENT ON COLUMN product_category.create_date IS '作成日時'
-;
-COMMENT ON COLUMN product_category.creator IS '作成者名'
-;
-COMMENT ON COLUMN product_category.update_date IS '更新日時'
-;
-COMMENT ON COLUMN product_category.updater IS '更新者名'
 ;
 CREATE TABLE invoice
 (

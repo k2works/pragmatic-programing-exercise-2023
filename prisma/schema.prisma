@@ -53,6 +53,61 @@ model employee {
   dept_mst        dept_mst?         @relation(fields: [dept_code, start_date], references: [dept_code, start_date])
 }
 
+model products {
+  prod_code          String            @id(map: "pk_products") @db.VarChar(16)
+  prod_fullname      String            @db.VarChar(40)
+  prod_name          String            @db.VarChar(10)
+  prod_kana          String            @db.VarChar(20)
+  prod_type          String?           @db.VarChar(1)
+  serial_no          String?           @db.VarChar(40)
+  unitprice          Int               @default(0)
+  po_price           Int?              @default(0)
+  prime_cost         Int               @default(0)
+  tax_type           Int               @default(1)
+  category_code      String?           @db.VarChar(8)
+  wide_use_type      Int?
+  stock_manage_type  Int?              @default(1)
+  stock_reserve_type Int?
+  sup_code           String            @db.VarChar(8)
+  sup_sub_no         Int?
+  create_date        DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?           @db.VarChar(12)
+  update_date        DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?           @db.VarChar(12)
+  bom                bom?
+  location_mst       location_mst[]
+  pu_details         pu_details[]
+  product_category   product_category? @relation(fields: [category_code], references: [category_code])
+  pricebycustomer    pricebycustomer[]
+}
+
+model product_category {
+  category_code  String     @id(map: "pk_product_category") @db.VarChar(8)
+  prod_cate_name String?    @db.VarChar(30)
+  category_layer Int        @default(0)
+  category_path  String?    @db.VarChar(100)
+  lowest_flug    Int?       @default(0)
+  create_date    DateTime   @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator        String?    @db.VarChar(12)
+  update_date    DateTime   @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater        String?    @db.VarChar(12)
+  products       products[]
+}
+
+model pricebycustomer {
+  prod_code    String       @db.VarChar(16)
+  comp_code    String       @db.VarChar(8)
+  unitprice    Int          @default(0)
+  create_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator      String?      @db.VarChar(12)
+  update_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater      String?      @db.VarChar(12)
+  companys_mst companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_pricebycustome")
+  products     products?    @relation(fields: [prod_code], references: [prod_code])
+
+  @@id([prod_code, comp_code], map: "pk_pricebycustomer")
+}
+
 model alternate_products {
   prod_code     String   @db.VarChar(16)
   alt_prod_code String   @db.VarChar(16)
@@ -427,57 +482,6 @@ model po_details {
   purchase_orders purchase_orders @relation(fields: [po_no], references: [po_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_purchase_orders_po_details")
 
   @@id([po_row_no, po_no])
-}
-
-model pricebycustomer {
-  prod_code    String       @db.VarChar(16)
-  comp_code    String       @db.VarChar(8)
-  unitprice    Int          @default(0)
-  create_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator      String?      @db.VarChar(12)
-  update_date  DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater      String?      @db.VarChar(12)
-  companys_mst companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_pricebycustome")
-
-  @@id([prod_code, comp_code], map: "pk_pricebycustomer")
-}
-
-model product_category {
-  category_code  String   @id(map: "pk_product_category") @db.VarChar(8)
-  prod_cate_name String?  @db.VarChar(30)
-  category_layer Int      @default(0)
-  category_path  String?  @db.VarChar(100)
-  lowest_flug    Int?     @default(0)
-  create_date    DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator        String?  @db.VarChar(12)
-  update_date    DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater        String?  @db.VarChar(12)
-}
-
-model products {
-  prod_code          String         @id(map: "pk_products") @db.VarChar(16)
-  prod_fullname      String         @db.VarChar(40)
-  prod_name          String         @db.VarChar(10)
-  prod_kana          String         @db.VarChar(20)
-  prod_type          String?        @db.VarChar(1)
-  serial_no          String?        @db.VarChar(40)
-  unitprice          Int            @default(0)
-  po_price           Int?           @default(0)
-  prime_cost         Int            @default(0)
-  tax_type           Int            @default(1)
-  category_code      String?        @db.VarChar(8)
-  wide_use_type      Int?
-  stock_manage_type  Int?           @default(1)
-  stock_reserve_type Int?
-  sup_code           String         @db.VarChar(8)
-  sup_sub_no         Int?
-  create_date        DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator            String?        @db.VarChar(12)
-  update_date        DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater            String?        @db.VarChar(12)
-  bom                bom?
-  location_mst       location_mst[]
-  pu_details         pu_details[]
 }
 
 model pu {
