@@ -108,6 +108,30 @@ model pricebycustomer {
   @@id([prod_code, comp_code], map: "pk_pricebycustomer")
 }
 
+model companys_mst {
+  comp_code       String            @id(map: "pk_companys_mst") @db.VarChar(8)
+  comp_name       String            @db.VarChar(40)
+  comp_kana       String?           @db.VarChar(40)
+  sup_type        Int?              @default(0)
+  zip_code        String?           @db.Char(8)
+  state           String?           @db.VarChar(4)
+  address1        String?           @db.VarChar(40)
+  address2        String?           @db.VarChar(40)
+  no_sales_flg    Int?              @default(0)
+  wide_use_type   Int?
+  comp_group_code String            @db.VarChar(4)
+  max_credit      Int?
+  temp_credit_up  Int?              @default(0)
+  create_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?           @db.VarChar(12)
+  update_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?           @db.VarChar(12)
+  credit_balance  credit_balance?
+  customers_mst   customers_mst[]
+  pricebycustomer pricebycustomer[]
+  supplier_mst    supplier_mst[]
+}
+
 model alternate_products {
   prod_code     String   @db.VarChar(16)
   alt_prod_code String   @db.VarChar(16)
@@ -216,30 +240,6 @@ model company_group_mst {
   creator         String?  @db.VarChar(12)
   update_date     DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
   updater         String?  @db.VarChar(12)
-}
-
-model companys_mst {
-  comp_code       String            @id(map: "pk_companys_mst") @db.VarChar(8)
-  comp_name       String            @db.VarChar(40)
-  comp_kana       String?           @db.VarChar(40)
-  sup_type        Int?              @default(0)
-  zip_code        String?           @db.Char(8)
-  state           String?           @db.VarChar(4)
-  address1        String?           @db.VarChar(40)
-  address2        String?           @db.VarChar(40)
-  no_sales_flg    Int?              @default(0)
-  wide_use_type   Int?
-  comp_group_code String            @db.VarChar(4)
-  max_credit      Int?
-  temp_credit_up  Int?              @default(0)
-  create_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator         String?           @db.VarChar(12)
-  update_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater         String?           @db.VarChar(12)
-  credit_balance  credit_balance?
-  customers_mst   customers_mst[]
-  pricebycustomer pricebycustomer[]
-  supplier_mst    supplier_mst[]
 }
 
 model consumer {

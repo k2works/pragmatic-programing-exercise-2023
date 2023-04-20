@@ -232,6 +232,69 @@ COMMENT ON COLUMN pricebycustomer.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN pricebycustomer.updater IS '更新者名'
 ;
+CREATE TABLE companys_mst
+(
+    comp_code                       VARCHAR(8) NOT NULL,
+    comp_name                       VARCHAR(40) NOT NULL,
+    comp_kana                       VARCHAR(40),
+    sup_type                        INTEGER DEFAULT 0,
+    zip_code                        CHAR(8),
+    state                           VARCHAR(4),
+    address1                        VARCHAR(40),
+    address2                        VARCHAR(40),
+    no_sales_flg                    INTEGER DEFAULT 0,
+    wide_use_type                   INTEGER,
+    comp_group_code                 VARCHAR(4) NOT NULL,
+    max_credit                      INTEGER,
+    temp_credit_up                  INTEGER DEFAULT 0,
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE companys_mst
+    ADD CONSTRAINT pk_companys_mst PRIMARY KEY  (comp_code)
+;
+ALTER TABLE companys_mst
+    ADD CHECK (no_sales_flg IN (0,1))
+;
+COMMENT ON TABLE companys_mst IS '取引先マスタ'
+;
+COMMENT ON COLUMN companys_mst.comp_code IS '取引先コード'
+;
+COMMENT ON COLUMN companys_mst.comp_name IS '取引先名'
+;
+COMMENT ON COLUMN companys_mst.comp_kana IS '取引先名カナ'
+;
+COMMENT ON COLUMN companys_mst.sup_type IS '仕入先区分'
+;
+COMMENT ON COLUMN companys_mst.zip_code IS '郵便番号'
+;
+COMMENT ON COLUMN companys_mst.state IS '都道府県'
+;
+COMMENT ON COLUMN companys_mst.address1 IS '住所１'
+;
+COMMENT ON COLUMN companys_mst.address2 IS '住所２'
+;
+COMMENT ON COLUMN companys_mst.no_sales_flg IS '取引禁止フラグ'
+;
+COMMENT ON COLUMN companys_mst.wide_use_type IS '雑区分'
+;
+COMMENT ON COLUMN companys_mst.comp_group_code IS '取引先グループコード'
+;
+COMMENT ON COLUMN companys_mst.max_credit IS '与信限度額'
+;
+COMMENT ON COLUMN companys_mst.temp_credit_up IS '与信一時増加枠'
+;
+COMMENT ON COLUMN companys_mst.create_date IS '作成日時'
+;
+COMMENT ON COLUMN companys_mst.creator IS '作成者名'
+;
+COMMENT ON COLUMN companys_mst.update_date IS '更新日時'
+;
+COMMENT ON COLUMN companys_mst.updater IS '更新者名'
+;
 
 CREATE TABLE consumer
 
@@ -727,69 +790,6 @@ COMMENT ON COLUMN company_group_mst.creator IS '作成者名'
 COMMENT ON COLUMN company_group_mst.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN company_group_mst.updater IS '更新者名'
-;
-CREATE TABLE companys_mst
-(
-    comp_code                       VARCHAR(8) NOT NULL,
-    comp_name                       VARCHAR(40) NOT NULL,
-    comp_kana                       VARCHAR(40),
-    sup_type                        INTEGER DEFAULT 0,
-    zip_code                        CHAR(8),
-    state                           VARCHAR(4),
-    address1                        VARCHAR(40),
-    address2                        VARCHAR(40),
-    no_sales_flg                    INTEGER DEFAULT 0,
-    wide_use_type                   INTEGER,
-    comp_group_code                 VARCHAR(4) NOT NULL,
-    max_credit                      INTEGER,
-    temp_credit_up                  INTEGER DEFAULT 0,
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE companys_mst
-    ADD CONSTRAINT pk_companys_mst PRIMARY KEY  (comp_code)
-;
-ALTER TABLE companys_mst
-    ADD CHECK (no_sales_flg IN (0,1))
-;
-COMMENT ON TABLE companys_mst IS '取引先マスタ'
-;
-COMMENT ON COLUMN companys_mst.comp_code IS '取引先コード'
-;
-COMMENT ON COLUMN companys_mst.comp_name IS '取引先名'
-;
-COMMENT ON COLUMN companys_mst.comp_kana IS '取引先名カナ'
-;
-COMMENT ON COLUMN companys_mst.sup_type IS '仕入先区分'
-;
-COMMENT ON COLUMN companys_mst.zip_code IS '郵便番号'
-;
-COMMENT ON COLUMN companys_mst.state IS '都道府県'
-;
-COMMENT ON COLUMN companys_mst.address1 IS '住所１'
-;
-COMMENT ON COLUMN companys_mst.address2 IS '住所２'
-;
-COMMENT ON COLUMN companys_mst.no_sales_flg IS '取引禁止フラグ'
-;
-COMMENT ON COLUMN companys_mst.wide_use_type IS '雑区分'
-;
-COMMENT ON COLUMN companys_mst.comp_group_code IS '取引先グループコード'
-;
-COMMENT ON COLUMN companys_mst.max_credit IS '与信限度額'
-;
-COMMENT ON COLUMN companys_mst.temp_credit_up IS '与信一時増加枠'
-;
-COMMENT ON COLUMN companys_mst.create_date IS '作成日時'
-;
-COMMENT ON COLUMN companys_mst.creator IS '作成者名'
-;
-COMMENT ON COLUMN companys_mst.update_date IS '更新日時'
-;
-COMMENT ON COLUMN companys_mst.updater IS '更新者名'
 ;
 CREATE TABLE company_category
 (
