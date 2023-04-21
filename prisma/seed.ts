@@ -1,12 +1,14 @@
 import { PrismaClient, customers_mst, consumer, supplier_mst } from "@prisma/client";
 
 const prisma = new PrismaClient();
-import { departments } from "./data/department";
-import { employees } from "./data/employee";
-import { productCategories } from "./data/productCategory";
-import { products } from "./data/product";
-import { companys } from "./data/company";
-import { priceByCustomers } from "./data/priceByCustomer";
+import {
+  departments,
+  employees,
+  productCategories,
+  products,
+  priceByCustomers,
+  companys
+} from "./data/csvReader";
 
 async function main() {
   console.table(departments);
@@ -80,7 +82,7 @@ async function main() {
       update: price
     });
   }
-  await prisma.customers_mst.deleteMany()
+  await prisma.customers_mst.deleteMany();
   await prisma.customers_mst.createMany({
     data: [
       {
@@ -120,7 +122,7 @@ async function main() {
     ]
   });
 
-  await prisma.consumer.deleteMany()
+  await prisma.consumer.deleteMany();
   await prisma.consumer.createMany({
     data: [
       {
@@ -141,11 +143,11 @@ async function main() {
         creator: "admin",
         update_date: new Date(),
         updater: "admin"
-      },
-    ],
+      }
+    ]
   });
 
-  await prisma.supplier_mst.deleteMany()
+  await prisma.supplier_mst.deleteMany();
   await prisma.supplier_mst.createMany({
     data: [
       {
@@ -170,8 +172,8 @@ async function main() {
         creator: "admin",
         update_date: new Date(),
         updater: "admin"
-      },
-      ]
+      }
+    ]
   });
 }
 
