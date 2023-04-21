@@ -1,7 +1,9 @@
-import { PrismaClient, dept_mst, employee, products as product } from "@prisma/client";
+import { PrismaClient, dept_mst, employee, products as product, product_category } from "@prisma/client";
 import { employees } from "../prisma/data/employee";
 import { departments } from "../prisma/data/department";
 import { products } from "../prisma/data/product";
+import { productCategories } from "../prisma/data/productCategory";
+import { deflateRaw } from "zlib";
 const prisma = new PrismaClient();
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
@@ -239,9 +241,11 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
     describe("商品マスタ", () => {
       beforeAll(async () => {
         await prisma.$transaction( async(prisma) => {
-         await prisma.pricebycustomer.deleteMany(),
-         await prisma.products.deleteMany(),
-         await prisma.products.createMany({ data: products })
+          await prisma.product_category.deleteMany(),
+          await prisma.product_category.createMany({ data: productCategories }),
+          await prisma.pricebycustomer.deleteMany(),
+          await prisma.products.deleteMany(),
+          await prisma.products.createMany({ data: products })
         })
       });
 
@@ -398,24 +402,82 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       });
 
       describe("商品カテゴリーテーブル", () => {
-        test("全ての商品カテゴリーが正常に取得できる", () => {
-          // データベースから全ての商品カテゴリーを取得し、それが想定通りの件数であることを検証するテスト
+        test("全ての商品カテゴリーが正常に取得できる", async () => {
+          const expected : product_category[] = await prisma.$queryRaw`SELECT * FROM product_category`;
+          const result = await prisma.product_category.findMany();
+
+          expect(result).toHaveLength(expected.length);
         });
 
-        test("特定の商品カテゴリーが正常に取得できる", () => {
-          // データベースから特定の商品カテゴリーを取得し、それが想定通りの情報であることを検証するテスト
+        test("特定の商品カテゴリーが正常に取得できる", async () => {
+          const category_code = "00101001";
+          const expected : product_category[] = await prisma.$queryRaw`SELECT * FROM product_category WHERE category_code = ${category_code}`;
+
+          const result = await prisma.product_category.findUnique({
+            where: { category_code: category_code },
+          });
+          expect(result).toEqual(expected[0]);
         });
 
-        test("新しい商品カテゴリーを追加できる", () => {
+        test("新しい商品カテゴリーを追加できる", async () => {
           // 新しい商品カテゴリーをデータベースに追加し、その商品カテゴリーが正常に登録されたことを検証するテスト
+          const expected : product_category = {
+            category_code: "00101006",
+            prod_cate_name: "商品カテゴリー名",
+            category_layer: 1,
+            category_path: "00101001",
+            lowest_flug: 1,
+            create_date: new Date("2021-01-01"),
+            creator: "user",
+            update_date: new Date("2021-01-01"),
+            updater: "user",
+          }
+          await prisma.product_category.create({
+            data: expected,
+          });
+
+          const result = await prisma.product_category.findUnique({
+            where: { category_code: expected.category_code },
+          });
+          expect(result).toEqual(expected);
         });
 
-        test("商品カテゴリーの情報を正常に更新できる", () => {
+        test("商品カテゴリーの情報を正常に更新できる", async () => {
           // データベース内の商品カテゴリーの情報を更新し、その情報が正常に変更されたことを検証するテスト
+          const expected : product_category = {
+            category_code: "00101006",
+            prod_cate_name: "商品カテゴリー名1",
+            category_layer: 0,
+            category_path: "00101006",
+            lowest_flug: 0,
+            create_date: new Date("2021-01-02"),
+            creator: "user",
+            update_date: new Date("2021-01-02"),
+            updater: "user",
+          }
+          await prisma.product_category.update({
+            data: expected,
+            where: {
+              category_code: expected.category_code
+            }
+          });
+
+          const result = await prisma.product_category.findUnique({
+            where: { category_code: expected.category_code },
+          });
+          expect(result).toEqual(expected);
         });
 
-        test("商品カテゴリーを削除できる", () => {
-          // データベースから商品カテゴリーを削除し、その商品カテゴリーが正常に削除されたことを検証するテスト
+        test("商品カテゴリーを削除できる", async () => {
+          const category_code = "00101006";
+          await prisma.product_category.delete({
+            where: {category_code: category_code}
+          });
+
+          const result = await prisma.product_category.findUnique({
+            where: { category_code: category_code },
+          });
+          expect(result).toBeNull();
         });
       });
     });
