@@ -7,7 +7,10 @@ import {
   productCategories,
   products,
   priceByCustomers,
-  companys
+  companys,
+  customers,
+  consumers,
+  suppliers
 } from "./data/csvReader";
 
 async function main() {
@@ -82,99 +85,45 @@ async function main() {
       update: price
     });
   }
-  await prisma.customers_mst.deleteMany();
-  await prisma.customers_mst.createMany({
-    data: [
-      {
-        cust_code: "SUP001",
-        cust_sub_no: 1,
-        cust_type: 0,
-        ar_code: "AR0001",
-        ar_sub_no: 1,
-        payer_code: "CUST0001",
-        payer_sub_no: 1,
-        cust_name: "Customer 1",
-        cust_kana: "カスタマー1",
-        emp_code: "EMP0001",
-        cust_user_name: "Customer 1",
-        cust_user_dep_name: "Customer 1",
-        cust_zip_code: "1234567",
-        cust_state: "0001",
-        cust_address1: "Chiyoda-ku",
-        cust_address2: "1-1-1",
-        cust_tel: "0123456789",
-        cust_fax: "0123456789",
-        cust_email: "hoge@hoge.com",
-        cust_ar_flag: 0,
-        cust_close_date1: 1,
-        cust_pay_months1: 1,
-        cust_pay_dates1: 1,
-        cust_pay_method1: 1,
-        cust_close_date2: 1,
-        cust_pay_months2: 1,
-        cust_pay_dates2: 1,
-        cust_pay_method2: 1,
-        create_date: new Date(),
-        creator: "admin",
-        update_date: new Date(),
-        updater: "admin"
-      }
-    ]
-  });
 
-  await prisma.consumer.deleteMany();
-  await prisma.consumer.createMany({
-    data: [
-      {
-        consumer_code: "CON001",
-        last_name: "Consumer",
-        first_name: "1",
-        last_name_kana: "コンシューマー",
-        first_name_kana: "1",
-        login_id: "consumer1",
-        email: "hoge@hoge.com",
-        pwd: "123456",
-        birth_date: new Date("2000-01-01"),
-        sex: 1,
-        login_datetime: new Date(),
-        rest_point: 100,
-        withdrawal_date: new Date(),
-        create_date: new Date(),
-        creator: "admin",
-        update_date: new Date(),
-        updater: "admin"
-      }
-    ]
-  });
+  console.table(customers)
+  for (const cust of customers) {
+    await prisma.customers_mst.upsert({
+      where: {
+        cust_code_cust_sub_no: {
+          cust_code: cust.cust_code,
+          cust_sub_no: cust.cust_sub_no
+        }
+      },
+      create: cust,
+      update: cust
+    });
+  }
 
-  await prisma.supplier_mst.deleteMany();
-  await prisma.supplier_mst.createMany({
-    data: [
-      {
-        sup_code: "SUP001",
-        sup_sub_no: 1,
-        sup_name: "Supplier 1",
-        sup_kana: "スプライヤー1",
-        sup_emp_name: "Supplier 1",
-        sup_dep_name: "Supplier 1",
-        sup_zip_code: "1234567",
-        sup_state: "0001",
-        sup_address1: "Chiyoda-ku",
-        sup_address2: "1-1-1",
-        sup_tel: "0123456789",
-        sup_fax: "0123456789",
-        sup_email: "hoge@hoge.com",
-        sup_close_date: 1,
-        sup_pay_months: 1,
-        sup_pay_dates: 1,
-        pay_method_type: 1,
-        create_date: new Date(),
-        creator: "admin",
-        update_date: new Date(),
-        updater: "admin"
-      }
-    ]
-  });
+  console.table(consumers)
+  for (const consumer of consumers) {
+    await prisma.consumer.upsert({
+      where: {
+        consumer_code: consumer.consumer_code
+      },
+      create: consumer,
+      update: consumer
+    });
+  }
+
+  console.table(suppliers)
+  for (const supplier of suppliers) {
+    await prisma.supplier_mst.upsert({
+      where: {
+        sup_code_sup_sub_no: {
+          sup_code: supplier.sup_code,
+          sup_sub_no: supplier.sup_sub_no
+        }
+      },
+      create: supplier,
+      update: supplier
+    })
+  }
 }
 
 main()

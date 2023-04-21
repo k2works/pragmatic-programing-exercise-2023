@@ -1,7 +1,16 @@
-import { companys_mst, dept_mst, employee, pricebycustomer, product_category } from "@prisma/client";
+import {
+  companys_mst,
+  consumer,
+  customers_mst,
+  dept_mst,
+  employee,
+  pricebycustomer,
+  product_category, supplier_mst
+} from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import { products as product } from ".prisma/client";
+
 let filePath = "";
 
 filePath = path.join(__dirname, "department.csv");
@@ -151,7 +160,7 @@ export const productCategories: product_category[] = fs
       create_date,
       creator,
       update_date,
-      updater,
+      updater
     ] = line.split(",");
     return {
       category_code,
@@ -162,7 +171,7 @@ export const productCategories: product_category[] = fs
       create_date: new Date(create_date),
       creator,
       update_date: new Date(update_date),
-      updater,
+      updater
     };
   });
 
@@ -180,7 +189,7 @@ export const priceByCustomers: pricebycustomer[] = fs
       create_date,
       creator,
       update_date,
-      updater,
+      updater
     ] = line.split(",");
     return {
       prod_code,
@@ -189,7 +198,7 @@ export const priceByCustomers: pricebycustomer[] = fs
       create_date: new Date(create_date),
       creator,
       update_date: new Date(update_date),
-      updater,
+      updater
     };
   });
 
@@ -236,6 +245,185 @@ export const companys: companys_mst[] = fs
       create_date: new Date(create_date),
       creator,
       update_date: new Date(update_date),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "customer.csv");
+export const customers: customers_mst[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      cust_code,
+      cust_sub_no,
+      cust_type,
+      ar_code,
+      ar_sub_no,
+      payer_code,
+      payer_sub_no,
+      cust_name,
+      cust_kana,
+      emp_code,
+      cust_user_name,
+      cust_user_dep_name,
+      cust_zip_code,
+      cust_state,
+      cust_address1,
+      cust_address2,
+      cust_tel,
+      cust_fax,
+      cust_email,
+      cust_ar_flag,
+      cust_close_date1,
+      cust_pay_months1,
+      cust_pay_dates1,
+      cust_pay_method1,
+      cust_close_date2,
+      cust_pay_months2,
+      cust_pay_dates2,
+      cust_pay_method2,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      cust_code,
+      cust_sub_no: Number(cust_sub_no),
+      cust_type: Number(cust_type),
+      ar_code,
+      ar_sub_no: Number(ar_sub_no),
+      payer_code: payer_code,
+      payer_sub_no: Number(payer_sub_no),
+      cust_name,
+      cust_kana,
+      emp_code,
+      cust_user_name,
+      cust_user_dep_name,
+      cust_zip_code,
+      cust_state,
+      cust_address1,
+      cust_address2,
+      cust_tel,
+      cust_fax,
+      cust_email,
+      cust_ar_flag: Number(cust_ar_flag),
+      cust_close_date1: Number(cust_close_date1),
+      cust_pay_months1: Number(cust_pay_months1),
+      cust_pay_dates1: Number(cust_pay_dates1),
+      cust_pay_method1: Number(cust_pay_method1),
+      cust_close_date2: Number(cust_close_date2),
+      cust_pay_months2: Number(cust_pay_months2),
+      cust_pay_dates2: Number(cust_pay_dates2),
+      cust_pay_method2: Number(cust_pay_method2),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "consumer.csv");
+export const consumers: consumer[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      consumer_code,
+      last_name,
+      first_name,
+      last_name_kana,
+      first_name_kana,
+      login_id,
+      email,
+      pwd,
+      birth_date,
+      sex,
+      login_datetime,
+      rest_point,
+      withdrawal_date,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      consumer_code,
+      last_name,
+      first_name,
+      last_name_kana,
+      first_name_kana,
+      login_id,
+      email,
+      pwd,
+      birth_date: new Date(birth_date),
+      sex: Number(sex),
+      login_datetime: new Date(login_datetime),
+      rest_point: Number(rest_point),
+      withdrawal_date: new Date(withdrawal_date),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "supplier.csv");
+export const suppliers: supplier_mst[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      sup_code,
+      sup_sub_no,
+      sup_name,
+      sup_kana,
+      sup_emp_name,
+      sup_dep_name,
+      sup_zip_code,
+      sup_state,
+      sup_address1,
+      sup_address2,
+      sup_tel,
+      sup_fax,
+      sup_email,
+      sup_close_date,
+      sup_pay_months,
+      sup_pay_dates,
+      pay_method_type,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      sup_code,
+      sup_sub_no: Number(sup_sub_no),
+      sup_name,
+      sup_kana,
+      sup_emp_name,
+      sup_dep_name,
+      sup_zip_code,
+      sup_state,
+      sup_address1,
+      sup_address2,
+      sup_tel,
+      sup_fax,
+      sup_email,
+      sup_close_date: Number(sup_close_date),
+      sup_pay_months: Number(sup_pay_months),
+      sup_pay_dates: Number(sup_pay_dates),
+      pay_method_type: Number(pay_method_type),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
       updater
     };
   });

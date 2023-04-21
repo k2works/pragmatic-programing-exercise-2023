@@ -1,0 +1,2 @@
+sup_code,sup_sub_no,sup_name,sup_kana,sup_emp_name,sup_dep_name,sup_zip_code,sup_state,sup_address1,sup_address2,sup_tel,sup_fax,sup_email,sup_close_date,sup_pay_months,sup_pay_dates,pay_method_type,create_date,creator,update_date,updater
+SUP001,1,Supplier 1,スプライヤー1,Supplier 1,Supplier 1,1234567 ,0001,Chiyoda-ku,1-1-1,0123456789,0123456789,hoge@hoge.com,1,1,1,1,2023-04-21 09:11:05.986000,admin,2023-04-21 09:11:05.986000,admin
