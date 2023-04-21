@@ -238,9 +238,11 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
     describe("商品マスタ", () => {
       beforeAll(async () => {
+        await prisma.$transaction( async(prisma) => {
          await prisma.pricebycustomer.deleteMany(),
          await prisma.products.deleteMany(),
          await prisma.products.createMany({ data: products })
+        })
       });
 
       describe("商品テーブル", () => {
