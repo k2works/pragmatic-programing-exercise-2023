@@ -132,6 +132,93 @@ model companys_mst {
   supplier_mst    supplier_mst[]
 }
 
+model customers_mst {
+  cust_code          String       @db.VarChar(8)
+  cust_sub_no        Int
+  cust_type          Int?         @default(0)
+  ar_code            String       @db.VarChar(8)
+  ar_sub_no          Int?
+  payer_code         String       @db.VarChar(8)
+  payer_sub_no       Int?
+  cust_name          String       @db.VarChar(40)
+  cust_kana          String?      @db.VarChar(40)
+  emp_code           String       @db.VarChar(10)
+  cust_user_name     String?      @db.VarChar(20)
+  cust_user_dep_name String?      @db.VarChar(40)
+  cust_zip_code      String?      @db.Char(8)
+  cust_state         String?      @db.VarChar(4)
+  cust_address1      String?      @db.VarChar(40)
+  cust_address2      String?      @db.VarChar(40)
+  cust_tel           String?      @db.VarChar(13)
+  cust_fax           String?      @db.VarChar(13)
+  cust_email         String?      @db.VarChar(100)
+  cust_ar_flag       Int?
+  cust_close_date1   Int
+  cust_pay_months1   Int?         @default(1)
+  cust_pay_dates1    Int?
+  cust_pay_method1   Int?         @default(1)
+  cust_close_date2   Int
+  cust_pay_months2   Int?         @default(1)
+  cust_pay_dates2    Int?
+  cust_pay_method2   Int?         @default(1)
+  create_date        DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?      @db.VarChar(12)
+  update_date        DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?      @db.VarChar(12)
+  companys_mst       companys_mst @relation(fields: [cust_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_customers_mst")
+  orders             orders[]
+
+  @@id([cust_code, cust_sub_no], map: "pk_customers_mst")
+}
+
+model consumer {
+  consumer_code   String    @id(map: "customer_pk") @db.VarChar(16)
+  last_name       String    @db.VarChar(20)
+  first_name      String    @db.VarChar(20)
+  last_name_kana  String    @db.VarChar(40)
+  first_name_kana String    @db.VarChar(40)
+  login_id        String    @db.VarChar(256)
+  email           String    @db.VarChar(256)
+  pwd             String    @db.VarChar(16)
+  birth_date      DateTime  @db.Timestamp(6)
+  sex             Int
+  login_datetime  DateTime? @db.Timestamp(6)
+  rest_point      Int?
+  withdrawal_date DateTime? @db.Timestamp(6)
+  create_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?   @db.VarChar(12)
+  update_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?   @db.VarChar(12)
+}
+
+model supplier_mst {
+  sup_code        String       @db.VarChar(8)
+  sup_sub_no      Int
+  sup_name        String       @db.VarChar(40)
+  sup_kana        String?      @db.VarChar(40)
+  sup_emp_name    String?      @db.VarChar(20)
+  sup_dep_name    String?      @db.VarChar(40)
+  sup_zip_code    String?      @db.Char(8)
+  sup_state       String?      @db.VarChar(4)
+  sup_address1    String?      @db.VarChar(40)
+  sup_address2    String?      @db.VarChar(40)
+  sup_tel         String?      @db.VarChar(13)
+  sup_fax         String?      @db.VarChar(13)
+  sup_email       String?      @db.VarChar(100)
+  sup_close_date  Int
+  sup_pay_months  Int?         @default(1)
+  sup_pay_dates   Int?
+  pay_method_type Int?         @default(1)
+  create_date     DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?      @db.VarChar(12)
+  update_date     DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?      @db.VarChar(12)
+  pay             pay[]
+  companys_mst    companys_mst @relation(fields: [sup_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_supplier_mst")
+
+  @@id([sup_code, sup_sub_no], map: "pk_supplier_mst")
+}
+
 model alternate_products {
   prod_code     String   @db.VarChar(16)
   alt_prod_code String   @db.VarChar(16)
@@ -242,26 +329,6 @@ model company_group_mst {
   updater         String?  @db.VarChar(12)
 }
 
-model consumer {
-  consumer_code   String    @id(map: "customer_pk") @db.VarChar(16)
-  last_name       String    @db.VarChar(20)
-  first_name      String    @db.VarChar(20)
-  last_name_kana  String    @db.VarChar(40)
-  first_name_kana String    @db.VarChar(40)
-  login_id        String    @db.VarChar(256)
-  email           String    @db.VarChar(256)
-  pwd             String    @db.VarChar(16)
-  birth_date      DateTime  @db.Timestamp(6)
-  sex             Int
-  login_datetime  DateTime? @db.Timestamp(6)
-  rest_point      Int?
-  withdrawal_date DateTime? @db.Timestamp(6)
-  create_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator         String?   @db.VarChar(12)
-  update_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater         String?   @db.VarChar(12)
-}
-
 model credit {
   credit_no       String    @id(map: "pk_credit") @db.VarChar(10)
   credit_date     DateTime? @db.Timestamp(6)
@@ -292,45 +359,6 @@ model credit_balance {
   update_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
   updater       String?      @db.VarChar(12)
   companys_mst  companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_credit_balanc")
-}
-
-model customers_mst {
-  cust_code          String       @db.VarChar(8)
-  cust_sub_no        Int
-  cust_type          Int?         @default(0)
-  ar_code            String       @db.VarChar(8)
-  ar_sub_no          Int?
-  payer_code         String       @db.VarChar(8)
-  payer_sub_no       Int?
-  cust_name          String       @db.VarChar(40)
-  cust_kana          String?      @db.VarChar(40)
-  emp_code           String       @db.VarChar(10)
-  cust_user_name     String?      @db.VarChar(20)
-  cust_user_dep_name String?      @db.VarChar(40)
-  cust_zip_code      String?      @db.Char(8)
-  cust_state         String?      @db.VarChar(4)
-  cust_address1      String?      @db.VarChar(40)
-  cust_address2      String?      @db.VarChar(40)
-  cust_tel           String?      @db.VarChar(13)
-  cust_fax           String?      @db.VarChar(13)
-  cust_email         String?      @db.VarChar(100)
-  cust_ar_flag       Int?
-  cust_close_date1   Int
-  cust_pay_months1   Int?         @default(1)
-  cust_pay_dates1    Int?
-  cust_pay_method1   Int?         @default(1)
-  cust_close_date2   Int
-  cust_pay_months2   Int?         @default(1)
-  cust_pay_dates2    Int?
-  cust_pay_method2   Int?         @default(1)
-  create_date        DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator            String?      @db.VarChar(12)
-  update_date        DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater            String?      @db.VarChar(12)
-  companys_mst       companys_mst @relation(fields: [cust_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_customers_mst")
-  orders             orders[]
-
-  @@id([cust_code, cust_sub_no], map: "pk_customers_mst")
 }
 
 model destinations_mst {
@@ -606,34 +634,6 @@ model stock {
   wh_mst             wh_mst    @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_stock")
 
   @@id([wh_code, prod_code, rot_no, stock_type, quality_type], map: "pk_stock")
-}
-
-model supplier_mst {
-  sup_code        String       @db.VarChar(8)
-  sup_sub_no      Int
-  sup_name        String       @db.VarChar(40)
-  sup_kana        String?      @db.VarChar(40)
-  sup_emp_name    String?      @db.VarChar(20)
-  sup_dep_name    String?      @db.VarChar(40)
-  sup_zip_code    String?      @db.Char(8)
-  sup_state       String?      @db.VarChar(4)
-  sup_address1    String?      @db.VarChar(40)
-  sup_address2    String?      @db.VarChar(40)
-  sup_tel         String?      @db.VarChar(13)
-  sup_fax         String?      @db.VarChar(13)
-  sup_email       String?      @db.VarChar(100)
-  sup_close_date  Int
-  sup_pay_months  Int?         @default(1)
-  sup_pay_dates   Int?
-  pay_method_type Int?         @default(1)
-  create_date     DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator         String?      @db.VarChar(12)
-  update_date     DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater         String?      @db.VarChar(12)
-  pay             pay[]
-  companys_mst    companys_mst @relation(fields: [sup_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_supplier_mst")
-
-  @@id([sup_code, sup_sub_no], map: "pk_supplier_mst")
 }
 
 model wh_dept_mst {

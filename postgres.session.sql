@@ -295,73 +295,6 @@ COMMENT ON COLUMN companys_mst.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN companys_mst.updater IS '更新者名'
 ;
-
-CREATE TABLE consumer
-
-(
-    consumer_code                   VARCHAR(16) NOT NULL,
-    last_name                       VARCHAR(20) NOT NULL,
-    first_name                      VARCHAR(20) NOT NULL,
-    last_name_kana                  VARCHAR(40) NOT NULL,
-    first_name_kana                 VARCHAR(40) NOT NULL,
-    login_id                        VARCHAR(256) NOT NULL,
-    email                           VARCHAR(256) NOT NULL,
-    pwd                             VARCHAR(16) NOT NULL,
-    birth_date                      TIMESTAMP NOT NULL,
-    sex                             INTEGER NOT NULL,
-    login_datetime                  TIMESTAMP,
-    rest_point                      INTEGER,
-    withdrawal_date                 TIMESTAMP,
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE consumer
-    ADD CONSTRAINT customer_pk PRIMARY KEY  (consumer_code)
-;
-COMMENT ON TABLE consumer IS '個人客,顧客'
-;
-COMMENT ON COLUMN consumer.consumer_code IS '個人客コード'
-;
-COMMENT ON COLUMN consumer.last_name IS '姓'
-;
-COMMENT ON COLUMN consumer.first_name IS '名'
-;
-COMMENT ON COLUMN consumer.last_name_kana IS '姓カナ'
-;
-COMMENT ON COLUMN consumer.first_name_kana IS '名カナ'
-;
-COMMENT ON COLUMN consumer.login_id IS 'ログインid'
-;
-COMMENT ON COLUMN consumer.email IS 'メールアドレス'
-;
-COMMENT ON COLUMN consumer.pwd IS 'パスワード'
-;
-COMMENT ON COLUMN consumer.birth_date IS '生年月日'
-;
-COMMENT ON COLUMN consumer.sex IS '性別'
-;
-COMMENT ON COLUMN consumer.login_datetime IS 'ログイン日時'
-;
-COMMENT ON COLUMN consumer.rest_point IS 'ポイント残高'
-;
-COMMENT ON COLUMN consumer.withdrawal_date IS '退会日'
-;
-COMMENT ON COLUMN consumer.create_date IS '作成日時'
-;
-COMMENT ON COLUMN consumer.creator IS '作成者名'
-;
-COMMENT ON COLUMN consumer.update_date IS '更新日時'
-;
-COMMENT ON COLUMN consumer.updater IS '更新者名'
-;
--- CREATE INDEX CUSTOMER_IX4
---     ON CUSTOMER ("LAST_NAME"||"FIRST_NAME", "LAST_NAME_KANA"||"FIRST_NAME_KANA")
---     TABLESPACE TS_CUSTOMER_I01
--- /
-;
 CREATE TABLE customers_mst
 (
     cust_code                       VARCHAR(8) NOT NULL,
@@ -466,6 +399,147 @@ COMMENT ON COLUMN customers_mst.creator IS '作成者名'
 COMMENT ON COLUMN customers_mst.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN customers_mst.updater IS '更新者名'
+;
+CREATE TABLE consumer
+
+(
+    consumer_code                   VARCHAR(16) NOT NULL,
+    last_name                       VARCHAR(20) NOT NULL,
+    first_name                      VARCHAR(20) NOT NULL,
+    last_name_kana                  VARCHAR(40) NOT NULL,
+    first_name_kana                 VARCHAR(40) NOT NULL,
+    login_id                        VARCHAR(256) NOT NULL,
+    email                           VARCHAR(256) NOT NULL,
+    pwd                             VARCHAR(16) NOT NULL,
+    birth_date                      TIMESTAMP NOT NULL,
+    sex                             INTEGER NOT NULL,
+    login_datetime                  TIMESTAMP,
+    rest_point                      INTEGER,
+    withdrawal_date                 TIMESTAMP,
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE consumer
+    ADD CONSTRAINT customer_pk PRIMARY KEY  (consumer_code)
+;
+COMMENT ON TABLE consumer IS '個人客,顧客'
+;
+COMMENT ON COLUMN consumer.consumer_code IS '個人客コード'
+;
+COMMENT ON COLUMN consumer.last_name IS '姓'
+;
+COMMENT ON COLUMN consumer.first_name IS '名'
+;
+COMMENT ON COLUMN consumer.last_name_kana IS '姓カナ'
+;
+COMMENT ON COLUMN consumer.first_name_kana IS '名カナ'
+;
+COMMENT ON COLUMN consumer.login_id IS 'ログインid'
+;
+COMMENT ON COLUMN consumer.email IS 'メールアドレス'
+;
+COMMENT ON COLUMN consumer.pwd IS 'パスワード'
+;
+COMMENT ON COLUMN consumer.birth_date IS '生年月日'
+;
+COMMENT ON COLUMN consumer.sex IS '性別'
+;
+COMMENT ON COLUMN consumer.login_datetime IS 'ログイン日時'
+;
+COMMENT ON COLUMN consumer.rest_point IS 'ポイント残高'
+;
+COMMENT ON COLUMN consumer.withdrawal_date IS '退会日'
+;
+COMMENT ON COLUMN consumer.create_date IS '作成日時'
+;
+COMMENT ON COLUMN consumer.creator IS '作成者名'
+;
+COMMENT ON COLUMN consumer.update_date IS '更新日時'
+;
+COMMENT ON COLUMN consumer.updater IS '更新者名'
+;
+-- CREATE INDEX CUSTOMER_IX4
+--     ON CUSTOMER ("LAST_NAME"||"FIRST_NAME", "LAST_NAME_KANA"||"FIRST_NAME_KANA")
+--     TABLESPACE TS_CUSTOMER_I01
+-- /
+;
+CREATE TABLE supplier_mst
+(
+    sup_code                        VARCHAR(8) NOT NULL,
+    sup_sub_no                      INTEGER NOT NULL,
+    sup_name                        VARCHAR(40) NOT NULL,
+    sup_kana                        VARCHAR(40),
+    sup_emp_name                    VARCHAR(20),
+    sup_dep_name                    VARCHAR(40),
+    sup_zip_code                    CHAR(8),
+    sup_state                       VARCHAR(4),
+    sup_address1                    VARCHAR(40),
+    sup_address2                    VARCHAR(40),
+    sup_tel                         VARCHAR(13),
+    sup_fax                         VARCHAR(13),
+    sup_email                       VARCHAR(100),
+    sup_close_date                  INTEGER NOT NULL,
+    sup_pay_months                  INTEGER DEFAULT 1,
+    sup_pay_dates                   INTEGER,
+    pay_method_type                 INTEGER DEFAULT 1,
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE supplier_mst
+    ADD CONSTRAINT pk_supplier_mst PRIMARY KEY  (sup_code, sup_sub_no)
+;
+ALTER TABLE supplier_mst
+    ADD CHECK (pay_method_type IN (1,2))
+;
+COMMENT ON TABLE supplier_mst IS '仕入先マスタ'
+;
+COMMENT ON COLUMN supplier_mst.sup_code IS '仕入先コード'
+;
+COMMENT ON COLUMN supplier_mst.sup_sub_no IS '仕入先枝番'
+;
+COMMENT ON COLUMN supplier_mst.sup_name IS '仕入先名'
+;
+COMMENT ON COLUMN supplier_mst.sup_kana IS '仕入先名カナ'
+;
+COMMENT ON COLUMN supplier_mst.sup_emp_name IS '仕入先担当者名'
+;
+COMMENT ON COLUMN supplier_mst.sup_dep_name IS '仕入先部門名'
+;
+COMMENT ON COLUMN supplier_mst.sup_zip_code IS '仕入先郵便番号'
+;
+COMMENT ON COLUMN supplier_mst.sup_state IS '仕入先都道府県'
+;
+COMMENT ON COLUMN supplier_mst.sup_address1 IS '仕入先住所１'
+;
+COMMENT ON COLUMN supplier_mst.sup_address2 IS '仕入先住所２'
+;
+COMMENT ON COLUMN supplier_mst.sup_tel IS '仕入先電話番号'
+;
+COMMENT ON COLUMN supplier_mst.sup_fax IS '仕入先fax番号'
+;
+COMMENT ON COLUMN supplier_mst.sup_email IS '仕入先メールアドレス'
+;
+COMMENT ON COLUMN supplier_mst.sup_close_date IS '仕入先締日,15:15日締め'
+;
+COMMENT ON COLUMN supplier_mst.sup_pay_months IS '仕入先支払月,0:当月,1:翌月,2:翌々月'
+;
+COMMENT ON COLUMN supplier_mst.sup_pay_dates IS '仕入先支払日,10:10日払い,99：末日'
+;
+COMMENT ON COLUMN supplier_mst.pay_method_type IS '支払方法区分,1:振込,2:手形'
+;
+COMMENT ON COLUMN supplier_mst.create_date IS '作成日時'
+;
+COMMENT ON COLUMN supplier_mst.creator IS '作成者名'
+;
+COMMENT ON COLUMN supplier_mst.update_date IS '更新日時'
+;
+COMMENT ON COLUMN supplier_mst.updater IS '更新者名'
 ;
 CREATE TABLE stock
 (
@@ -613,81 +687,6 @@ COMMENT ON COLUMN pu_details.creator IS '作成者名'
 COMMENT ON COLUMN pu_details.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN pu_details.updater IS '更新者名'
-;
-CREATE TABLE supplier_mst
-(
-    sup_code                        VARCHAR(8) NOT NULL,
-    sup_sub_no                      INTEGER NOT NULL,
-    sup_name                        VARCHAR(40) NOT NULL,
-    sup_kana                        VARCHAR(40),
-    sup_emp_name                    VARCHAR(20),
-    sup_dep_name                    VARCHAR(40),
-    sup_zip_code                    CHAR(8),
-    sup_state                       VARCHAR(4),
-    sup_address1                    VARCHAR(40),
-    sup_address2                    VARCHAR(40),
-    sup_tel                         VARCHAR(13),
-    sup_fax                         VARCHAR(13),
-    sup_email                       VARCHAR(100),
-    sup_close_date                  INTEGER NOT NULL,
-    sup_pay_months                  INTEGER DEFAULT 1,
-    sup_pay_dates                   INTEGER,
-    pay_method_type                 INTEGER DEFAULT 1,
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE supplier_mst
-    ADD CONSTRAINT pk_supplier_mst PRIMARY KEY  (sup_code, sup_sub_no)
-;
-ALTER TABLE supplier_mst
-    ADD CHECK (pay_method_type IN (1,2))
-;
-COMMENT ON TABLE supplier_mst IS '仕入先マスタ'
-;
-COMMENT ON COLUMN supplier_mst.sup_code IS '仕入先コード'
-;
-COMMENT ON COLUMN supplier_mst.sup_sub_no IS '仕入先枝番'
-;
-COMMENT ON COLUMN supplier_mst.sup_name IS '仕入先名'
-;
-COMMENT ON COLUMN supplier_mst.sup_kana IS '仕入先名カナ'
-;
-COMMENT ON COLUMN supplier_mst.sup_emp_name IS '仕入先担当者名'
-;
-COMMENT ON COLUMN supplier_mst.sup_dep_name IS '仕入先部門名'
-;
-COMMENT ON COLUMN supplier_mst.sup_zip_code IS '仕入先郵便番号'
-;
-COMMENT ON COLUMN supplier_mst.sup_state IS '仕入先都道府県'
-;
-COMMENT ON COLUMN supplier_mst.sup_address1 IS '仕入先住所１'
-;
-COMMENT ON COLUMN supplier_mst.sup_address2 IS '仕入先住所２'
-;
-COMMENT ON COLUMN supplier_mst.sup_tel IS '仕入先電話番号'
-;
-COMMENT ON COLUMN supplier_mst.sup_fax IS '仕入先fax番号'
-;
-COMMENT ON COLUMN supplier_mst.sup_email IS '仕入先メールアドレス'
-;
-COMMENT ON COLUMN supplier_mst.sup_close_date IS '仕入先締日,15:15日締め'
-;
-COMMENT ON COLUMN supplier_mst.sup_pay_months IS '仕入先支払月,0:当月,1:翌月,2:翌々月'
-;
-COMMENT ON COLUMN supplier_mst.sup_pay_dates IS '仕入先支払日,10:10日払い,99：末日'
-;
-COMMENT ON COLUMN supplier_mst.pay_method_type IS '支払方法区分,1:振込,2:手形'
-;
-COMMENT ON COLUMN supplier_mst.create_date IS '作成日時'
-;
-COMMENT ON COLUMN supplier_mst.creator IS '作成者名'
-;
-COMMENT ON COLUMN supplier_mst.update_date IS '更新日時'
-;
-COMMENT ON COLUMN supplier_mst.updater IS '更新者名'
 ;
 CREATE TABLE pay
 (
