@@ -1,6 +1,7 @@
-import { PrismaClient, dept_mst, employee } from "@prisma/client";
+import { PrismaClient, dept_mst, employee, products as product } from "@prisma/client";
 import { employees } from "../prisma/data/employee";
 import { departments } from "../prisma/data/department";
+import { products } from "../prisma/data/product";
 const prisma = new PrismaClient();
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
@@ -236,25 +237,161 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
     });
 
     describe("商品マスタ", () => {
+      beforeAll(async () => {
+         await prisma.pricebycustomer.deleteMany(),
+         await prisma.products.deleteMany(),
+         await prisma.products.createMany({ data: products })
+      });
+
       describe("商品テーブル", () => {
-        test("全ての商品が正常に取得できる", () => {
-          // データベースから全ての商品を取得し、それが想定通りの件数であることを検証するテスト
+        test("全ての商品が正常に取得できる", async () => {
+          const expected : product[] = await prisma.$queryRaw`SELECT * FROM products`;
+          const result = await prisma.products.findMany();
+
+          expect(result).toEqual(expected);
         });
 
-        test("特定の商品が正常に取得できる", () => {
-          // データベースから特定の商品を取得し、それが想定通りの情報であることを検証するテスト
+        test("特定の商品が正常に取得できる", async () => {
+          const prod_code = "10101001";
+          const expected : product[] = await prisma.$queryRaw`SELECT *  FROM products WHERE prod_code = ${prod_code}`;
+          const result = await prisma.products.findUnique({
+            where: { prod_code: prod_code },
+          });
+
+          expect(result).toEqual(expected[0]);
         });
 
-        test("新しい商品を追加できる", () => {
-          // 新しい商品をデータベースに追加し、その商品が正常に登録されたことを検証するテスト
+        test("新しい商品を追加できる", async () => {
+          const expected : product[] = [{
+            prod_code: "10101004",
+            prod_fullname: "商品名",
+            prod_name: "商品名",
+            prod_kana: "ショウヒンメイ",
+            prod_type: "1",
+            serial_no: "1234567890123",
+            unitprice: 1000,
+            po_price: 800,
+            prime_cost: 500,
+            tax_type: 1,
+            category_code: "00101001",
+            wide_use_type: 1,
+            stock_manage_type: 1,
+            stock_reserve_type: 1,
+            sup_code: "00101001",
+            sup_sub_no: 1,
+            create_date: new Date("2021-01-01"),
+            creator: "user",
+            update_date: new Date("2021-01-01"),
+            updater: "user",
+          }]
+           await prisma.products.createMany({
+            data: expected,
+          });
+
+          const result = await prisma.products.findUnique({
+            where: { prod_code: expected[0].prod_code },
+          });
+
+          expect(result).toEqual(expected[0]);
         });
 
-        test("商品の情報を正常に更新できる", () => {
-          // データベース内の商品の情報を更新し、その情報が正常に変更されたことを検証するテスト
+        test("商品の情報を正常に更新できる", async () => {
+          const product : product[] = [{
+            prod_code: "10101005",
+            prod_fullname: "商品名",
+            prod_name: "商品名",
+            prod_kana: "ショウヒンメイ",
+            prod_type: "1",
+            serial_no: "1234567890123",
+            unitprice: 1000,
+            po_price: 800,
+            prime_cost: 500,
+            tax_type: 1,
+            category_code: "00101001",
+            wide_use_type: 1,
+            stock_manage_type: 1,
+            stock_reserve_type: 1,
+            sup_code: "00101001",
+            sup_sub_no: 1,
+            create_date: new Date("2021-01-01"),
+            creator: "user",
+            update_date: new Date("2021-01-01"),
+            updater: "user",
+          }]
+           await prisma.products.createMany({
+            data: product,
+          });
+
+          const expected : product[] = [{
+            prod_code: "10101005",
+            prod_fullname: "商品名2",
+            prod_name: "商品名2",
+            prod_kana: "ショウヒンメイ2",
+            prod_type: "2",
+            serial_no: "1234567890123",
+            unitprice: 1001,
+            po_price: 801,
+            prime_cost: 501,
+            tax_type: 2,
+            category_code: "00101002",
+            wide_use_type: 2,
+            stock_manage_type: 2,
+            stock_reserve_type: 2,
+            sup_code: "00101002",
+            sup_sub_no: 2,
+            create_date: new Date("2021-01-02"),
+            creator: "user",
+            update_date: new Date("2021-01-02"),
+            updater: "user",
+          }]
+          await prisma.products.update({
+            data: expected[0],
+            where: {
+              prod_code: product[0].prod_code
+            }
+          });
+
+          const result = await prisma.products.findUnique({
+            where: { prod_code: expected[0].prod_code },
+          });
+          expect(result).toEqual(expected[0]);
         });
 
-        test("商品を削除できる", () => {
-          // データベースから商品を削除し、その商品が正常に削除されたことを検証するテスト
+        test("商品を削除できる", async () => {
+          const product : product[] = [{
+            prod_code: "10101006",
+            prod_fullname: "商品名",
+            prod_name: "商品名",
+            prod_kana: "ショウヒンメイ",
+            prod_type: "1",
+            serial_no: "1234567890123",
+            unitprice: 1000,
+            po_price: 800,
+            prime_cost: 500,
+            tax_type: 1,
+            category_code: "00101001",
+            wide_use_type: 1,
+            stock_manage_type: 1,
+            stock_reserve_type: 1,
+            sup_code: "00101001",
+            sup_sub_no: 1,
+            create_date: new Date("2021-01-01"),
+            creator: "user",
+            update_date: new Date("2021-01-01"),
+            updater: "user",
+          }]
+           await prisma.products.createMany({
+            data: product,
+          });
+
+          await prisma.products.delete({
+            where: {prod_code: product[0].prod_code}
+          });
+
+          const result = await prisma.products.findUnique({
+            where: { prod_code: product[0].prod_code },
+          });
+          expect(result).toBeNull();
         });
       });
 
