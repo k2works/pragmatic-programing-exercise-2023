@@ -1,9 +1,9 @@
-import { PrismaClient, dept_mst, employee, products as product, product_category } from "@prisma/client";
+import { PrismaClient, dept_mst, employee, products as product, product_category, pricebycustomer } from "@prisma/client";
 import { employees } from "../prisma/data/employee";
 import { departments } from "../prisma/data/department";
 import { products } from "../prisma/data/product";
 import { productCategories } from "../prisma/data/productCategory";
-import { deflateRaw } from "zlib";
+import { priceByCustomers } from "../prisma/data/priceByCustomer";
 const prisma = new PrismaClient();
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
@@ -245,7 +245,8 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           await prisma.product_category.createMany({ data: productCategories }),
           await prisma.pricebycustomer.deleteMany(),
           await prisma.products.deleteMany(),
-          await prisma.products.createMany({ data: products })
+          await prisma.products.createMany({ data: products }),
+          await prisma.pricebycustomer.createMany({ data: priceByCustomers })
         })
       });
 
@@ -476,6 +477,113 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
           const result = await prisma.product_category.findUnique({
             where: { category_code: category_code },
+          });
+          expect(result).toBeNull();
+        });
+      });
+
+      describe("顧客別販売単価テーブル", () => {
+        test("全ての顧客別販売単価が正常に取得できる", async () => {
+          const expected : pricebycustomer[] = await prisma.$queryRaw`SELECT * FROM pricebycustomer`;
+          const result = await prisma.pricebycustomer.findMany();
+
+          expect(result).toHaveLength(expected.length);
+        });
+
+        test("特定の顧客別販売単価が正常に取得できる", async () => {
+          const prod_code = "10101001";
+          const comp_code = "SUP001";
+          const expected: pricebycustomer[] = await prisma.$queryRaw`SELECT *
+                                                                     FROM pricebycustomer
+                                                                     WHERE prod_code = ${prod_code}
+                                                                       AND comp_code = ${comp_code}`;
+
+          const result = await prisma.pricebycustomer.findUnique({
+            where: {
+              prod_code_comp_code: {
+                prod_code: prod_code,
+                comp_code: comp_code
+              }
+            }
+          });
+          expect(result).toEqual(expected[0]);
+        });
+
+        test("新しい顧客別販売単価を追加できる", async () => {
+          const expected: pricebycustomer = {
+            prod_code: "10101002",
+            comp_code: "SUP001",
+            unitprice: 1000,
+            create_date: new Date("2021-01-01"),
+            creator: "user",
+            update_date: new Date("2021-01-01"),
+            updater: "user",
+          }
+          await prisma.pricebycustomer.create({
+            data: expected,
+          });
+
+          const result = await prisma.pricebycustomer.findUnique({
+            where: {
+              prod_code_comp_code: {
+                prod_code: expected.prod_code,
+                comp_code: expected.comp_code
+              }
+            }
+          });
+          expect(result).toEqual(expected);
+        });
+
+        test("顧客別販売単価の情報を正常に更新できる", async () => {
+          const expected: pricebycustomer = {
+            prod_code: "10101002",
+            comp_code: "SUP001",
+            unitprice: 2000,
+            create_date: new Date("2021-01-02"),
+            creator: "user",
+            update_date: new Date("2021-01-02"),
+            updater: "user",
+          }
+          await prisma.pricebycustomer.update({
+            data: expected,
+            where: {
+              prod_code_comp_code: {
+                prod_code: expected.prod_code,
+                comp_code: expected.comp_code
+              }
+            }
+          });
+
+          const result = await prisma.pricebycustomer.findUnique({
+            where: {
+              prod_code_comp_code: {
+                prod_code: expected.prod_code,
+                comp_code: expected.comp_code
+              }
+            }
+          });
+          expect(result).toEqual(expected);
+        });
+
+        test("顧客別販売単価を削除できる", async () => {
+          const prod_code = "10101002";
+          const comp_code = "SUP001";
+          await prisma.pricebycustomer.delete({
+            where: {
+              prod_code_comp_code: {
+                prod_code: prod_code,
+                comp_code: comp_code
+              }
+            }
+          });
+
+          const result = await prisma.pricebycustomer.findUnique({
+            where: {
+              prod_code_comp_code: {
+                prod_code: prod_code,
+                comp_code: comp_code
+              }
+            }
           });
           expect(result).toBeNull();
         });
