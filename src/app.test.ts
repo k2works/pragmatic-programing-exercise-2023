@@ -6,11 +6,17 @@ import {
   product_category,
   pricebycustomer
 } from "@prisma/client";
-import { employees } from "../prisma/data/employee";
-import { departments } from "../prisma/data/department";
-import { products } from "../prisma/data/product";
-import { productCategories } from "../prisma/data/productCategory";
-import { priceByCustomers } from "../prisma/data/priceByCustomer";
+import {
+  departments,
+  employees,
+  productCategories,
+  products,
+  priceByCustomers,
+  companys,
+  customers,
+  consumers,
+  suppliers
+} from "../prisma/data/csvReader";
 
 const prisma = new PrismaClient();
 
