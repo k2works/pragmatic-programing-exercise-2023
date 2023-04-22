@@ -13,6 +13,7 @@ import {
   category_type,
   company_category,
   company_category_group,
+  supplier_mst,
 } from "@prisma/client";
 import {
   departments,
@@ -1384,6 +1385,152 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         expect(result4?.comp_group_code).toStrictEqual(company[0].comp_group_code);
         expect(result4?.company_category_group).toStrictEqual(companyCategoryGroups);
       });
+    });
+
+    describe("仕入先マスタ", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.destinations_mst.deleteMany()
+          await prisma.area_mst.deleteMany()
+          await prisma.customers_mst.deleteMany()
+          await prisma.supplier_mst.deleteMany()
+          await prisma.company_category_group.deleteMany()
+          await prisma.pricebycustomer.deleteMany()
+          await prisma.credit_balance.deleteMany()
+          await prisma.companys_mst.deleteMany()
+          await prisma.company_group_mst.deleteMany()
+          await prisma.company_category.deleteMany()
+          await prisma.category_type.deleteMany()
+        });
+      });
+
+      const day = new Date("2021-01-01");
+      const company: companys_mst[] = [{
+        comp_code: "00X",
+        comp_name: "顧客名1",
+        comp_kana: "クスキメイ1",
+        sup_type: 0,
+        zip_code: "000-0000",
+        state: "都道府県",
+        address1: "住所1",
+        address2: "住所2",
+        no_sales_flg: 0,
+        wide_use_type: 0,
+        comp_group_code: "001",
+        max_credit: 10000,
+        temp_credit_up: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+      const suppliers: supplier_mst[] = [{
+        sup_code: "00X",
+        sup_sub_no: 1,
+        sup_name: "仕入先名1",
+        sup_kana: "シスキメイ1",
+        sup_emp_name: "担当者名1",
+        sup_dep_name: "部署名1",
+        sup_zip_code: "000-0000",
+        sup_state: "都道府県",
+        sup_address1: "住所1",
+        sup_address2: "住所2",
+        sup_tel: "000-0000-0000",
+        sup_fax: "000-0000-0000",
+        sup_email: "hoge@hoegc.com",
+        sup_close_date: 1,
+        sup_pay_months: 1,
+        sup_pay_dates: 1,
+        pay_method_type: 1,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      test("仕入先を登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.companys_mst.create({ data: company[0] });
+          await prisma.supplier_mst.create({ data: suppliers[0] });
+        });
+
+        const result = await prisma.companys_mst.findUnique({
+          where: {
+            comp_code: company[0].comp_code,
+          },
+          include: {
+            supplier_mst: true,
+          },
+        });
+
+        expect(result?.comp_name).toStrictEqual(company[0].comp_name);
+        expect(result?.supplier_mst).toStrictEqual(suppliers);
+      });
+
+      test("仕入先を更新できる", async () => {
+        const expected: supplier_mst[] = suppliers.map((c) => {
+          return {
+            ...c,
+            sup_code: "00X",
+            sup_sub_no: 1,
+            sup_name: "仕入先名1",
+            sup_kana: "シスキメイ1",
+            sup_emp_name: "担当者名1",
+            sup_dep_name: "部署名1",
+            sup_zip_code: "000-0000",
+            sup_state: "都道府県",
+            sup_address1: "住所1",
+            sup_address2: "住所2",
+            sup_tel: "000-0000-0000",
+            sup_fax: "000-0000-0000",
+            sup_email: "hoge@hoegc.com",
+          };
+        });
+
+        await prisma.supplier_mst.update({
+          data: expected[0],
+          where: {
+            sup_code_sup_sub_no: {
+              sup_code: expected[0].sup_code,
+              sup_sub_no: expected[0].sup_sub_no,
+            },
+          },
+        });
+
+        const result = await prisma.companys_mst.findUnique({
+          where: {
+            comp_code: company[0].comp_code,
+          },
+          include: {
+            supplier_mst: true,
+          },
+        });
+
+        expect(result?.supplier_mst).toStrictEqual(expected);
+      });
+
+      test("仕入先を削除できる", async () => {
+        await prisma.supplier_mst.delete({
+          where: {
+            sup_code_sup_sub_no: {
+              sup_code: suppliers[0].sup_code,
+              sup_sub_no: suppliers[0].sup_sub_no,
+            },
+          },
+        });
+
+        const result = await prisma.companys_mst.findUnique({
+          where: {
+            comp_code: company[0].comp_code,
+          },
+          include: {
+            supplier_mst: true,
+          },
+        });
+
+        expect(result?.supplier_mst).toStrictEqual([]);
+      });
+
     });
   });
 });
