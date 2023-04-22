@@ -318,7 +318,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         const product = await prisma.products.findUnique({
           where: { prod_code: "10101001" },
         });
-        expect(product?.sup_code).toBe("SUP001");
+        expect(product?.sup_code).toBe("001");
         expect(product?.sup_sub_no).toBe(0);
       });
 
@@ -700,7 +700,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
         test("特定の顧客別販売単価が正常に取得できる", async () => {
           const prod_code = "10101001";
-          const comp_code = "SUP001";
+          const comp_code = "001";
           const expected: pricebycustomer[] = await prisma.$queryRaw`SELECT *
                                                                      FROM pricebycustomer
                                                                      WHERE prod_code = ${prod_code}
@@ -720,7 +720,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         test("新しい顧客別販売単価を追加できる", async () => {
           const expected: pricebycustomer = {
             prod_code: "10101002",
-            comp_code: "SUP001",
+            comp_code: "001",
             unitprice: 1000,
             create_date: new Date("2021-01-01"),
             creator: "user",
@@ -745,7 +745,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         test("顧客別販売単価の情報を正常に更新できる", async () => {
           const expected: pricebycustomer = {
             prod_code: "10101002",
-            comp_code: "SUP001",
+            comp_code: "001",
             unitprice: 2000,
             create_date: new Date("2021-01-02"),
             creator: "user",
@@ -775,7 +775,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
         test("顧客別販売単価を削除できる", async () => {
           const prod_code = "10101002";
-          const comp_code = "SUP001";
+          const comp_code = "001";
           await prisma.pricebycustomer.delete({
             where: {
               prod_code_comp_code: {
