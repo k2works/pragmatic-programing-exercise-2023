@@ -10,6 +10,9 @@ import {
   area_mst,
   destinations_mst,
   company_group_mst,
+  category_type,
+  company_category,
+  company_category_group
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -512,6 +515,85 @@ export const companyGroups: company_group_mst[] = fs
     return {
       comp_group_code,
       group_name,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "categoryType.csv");
+export const categoryTypes: category_type[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+       category_type_code,
+       cate_type_name,
+       create_date,
+       creator,
+       update_date,
+       updater
+    ] = line.split(",");
+    return {
+       category_type_code,
+       cate_type_name,
+       create_date: new Date("2021-01-01"),
+       creator,
+       update_date: new Date("2021-01-01"),
+       updater
+    };
+  });
+
+filePath = path.join(__dirname, "companyCategory.csv");
+export const companyCategories: company_category[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      category_type,
+      comp_cate_code,
+      comp_cate_name,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      category_type,
+      comp_cate_code,
+      comp_cate_name,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "companyCategoryGroup.csv");
+export const companyCategoryGroups: company_category_group[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      category_type,
+      comp_cate_code,
+      comp_code,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      category_type,
+      comp_cate_code,
+      comp_code,
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),

@@ -429,6 +429,61 @@ CREATE TABLE stock (
     update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
     updater VARCHAR(12)
 );
+CREATE TABLE category_type (
+    category_type_code VARCHAR(2) NOT NULL,
+    cate_type_name VARCHAR(20),
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE category_type
+ADD CONSTRAINT pk_category_type PRIMARY KEY (category_type_code);
+COMMENT ON TABLE category_type IS '取引先分類種別マスタ';
+COMMENT ON COLUMN category_type.category_type_code IS '取引先分類種別コード';
+COMMENT ON COLUMN category_type.cate_type_name IS '取引先分類種別名';
+COMMENT ON COLUMN category_type.create_date IS '作成日時';
+COMMENT ON COLUMN category_type.creator IS '作成者名';
+COMMENT ON COLUMN category_type.update_date IS '更新日時';
+COMMENT ON COLUMN category_type.updater IS '更新者名';
+CREATE TABLE company_category (
+    category_type VARCHAR(2) NOT NULL,
+    comp_cate_code VARCHAR(8) NOT NULL,
+    comp_cate_name VARCHAR(30),
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE company_category
+ADD CONSTRAINT pk_company_category PRIMARY KEY (comp_cate_code, category_type);
+COMMENT ON TABLE company_category IS '取引先分類マスタ';
+COMMENT ON COLUMN company_category.category_type IS '取引先分類種別コード';
+COMMENT ON COLUMN company_category.comp_cate_code IS '取引先分類コード';
+COMMENT ON COLUMN company_category.comp_cate_name IS '取引先分類名';
+COMMENT ON COLUMN company_category.create_date IS '作成日時';
+COMMENT ON COLUMN company_category.creator IS '作成者名';
+COMMENT ON COLUMN company_category.update_date IS '更新日時';
+COMMENT ON COLUMN company_category.updater IS '更新者名';
+CREATE TABLE company_category_group (
+    category_type VARCHAR(2) NOT NULL,
+    comp_cate_code VARCHAR(8) NOT NULL,
+    comp_code VARCHAR(8) NOT NULL,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE company_category_group
+ADD CONSTRAINT pk_company_category_group PRIMARY KEY (category_type, comp_code, comp_cate_code);
+COMMENT ON TABLE company_category_group IS '取引先分類所属マスタ';
+COMMENT ON COLUMN company_category_group.category_type IS '取引先分類種別コード';
+COMMENT ON COLUMN company_category_group.comp_cate_code IS '取引先分類コード';
+COMMENT ON COLUMN company_category_group.comp_code IS '取引先コード';
+COMMENT ON COLUMN company_category_group.create_date IS '作成日時';
+COMMENT ON COLUMN company_category_group.creator IS '作成者名';
+COMMENT ON COLUMN company_category_group.update_date IS '更新日時';
+COMMENT ON COLUMN company_category_group.updater IS '更新者名';
 ALTER TABLE stock
 ADD CONSTRAINT pk_stock PRIMARY KEY (
         wh_code,
@@ -564,61 +619,6 @@ COMMENT ON TABLE auto_number IS '自動採番マスタ';
 COMMENT ON COLUMN auto_number.slip_type IS '伝票種別コード';
 COMMENT ON COLUMN auto_number.yearmonth IS '年月';
 COMMENT ON COLUMN auto_number.last_silp_no IS '最終伝票番号';
-CREATE TABLE company_category (
-    category_type VARCHAR(2) NOT NULL,
-    comp_cate_code VARCHAR(8) NOT NULL,
-    comp_cate_name VARCHAR(30),
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE company_category
-ADD CONSTRAINT pk_company_category PRIMARY KEY (comp_cate_code, category_type);
-COMMENT ON TABLE company_category IS '取引先分類マスタ';
-COMMENT ON COLUMN company_category.category_type IS '取引先分類種別コード';
-COMMENT ON COLUMN company_category.comp_cate_code IS '取引先分類コード';
-COMMENT ON COLUMN company_category.comp_cate_name IS '取引先分類名';
-COMMENT ON COLUMN company_category.create_date IS '作成日時';
-COMMENT ON COLUMN company_category.creator IS '作成者名';
-COMMENT ON COLUMN company_category.update_date IS '更新日時';
-COMMENT ON COLUMN company_category.updater IS '更新者名';
-CREATE TABLE category_type (
-    category_type_code VARCHAR(2) NOT NULL,
-    cate_type_name VARCHAR(20),
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE category_type
-ADD CONSTRAINT pk_category_type PRIMARY KEY (category_type_code);
-COMMENT ON TABLE category_type IS '取引先分類種別マスタ';
-COMMENT ON COLUMN category_type.category_type_code IS '取引先分類種別コード';
-COMMENT ON COLUMN category_type.cate_type_name IS '取引先分類種別名';
-COMMENT ON COLUMN category_type.create_date IS '作成日時';
-COMMENT ON COLUMN category_type.creator IS '作成者名';
-COMMENT ON COLUMN category_type.update_date IS '更新日時';
-COMMENT ON COLUMN category_type.updater IS '更新者名';
-CREATE TABLE company_category_group (
-    category_type VARCHAR(2) NOT NULL,
-    comp_cate_code VARCHAR(8) NOT NULL,
-    comp_code VARCHAR(8) NOT NULL,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE company_category_group
-ADD CONSTRAINT pk_company_category_group PRIMARY KEY (category_type, comp_code, comp_cate_code);
-COMMENT ON TABLE company_category_group IS '取引先分類所属マスタ';
-COMMENT ON COLUMN company_category_group.category_type IS '取引先分類種別コード';
-COMMENT ON COLUMN company_category_group.comp_cate_code IS '取引先分類コード';
-COMMENT ON COLUMN company_category_group.comp_code IS '取引先コード';
-COMMENT ON COLUMN company_category_group.create_date IS '作成日時';
-COMMENT ON COLUMN company_category_group.creator IS '作成者名';
-COMMENT ON COLUMN company_category_group.update_date IS '更新日時';
-COMMENT ON COLUMN company_category_group.updater IS '更新者名';
 CREATE TABLE orders (
     order_no VARCHAR(10) NOT NULL,
     order_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,

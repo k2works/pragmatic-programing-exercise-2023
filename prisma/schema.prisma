@@ -130,6 +130,7 @@ model companys_mst {
   customers_mst   customers_mst[]
   pricebycustomer pricebycustomer[]
   supplier_mst    supplier_mst[]
+  company_category_group company_category_group[]
 }
 
 model customers_mst {
@@ -256,6 +257,44 @@ model company_group_mst {
   updater         String?  @db.VarChar(12)
 }
 
+model category_type {
+  category_type_code                                             String             @id(map: "pk_category_type") @db.VarChar(2)
+  cate_type_name                                                 String?            @db.VarChar(20)
+  create_date                                                    DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator                                                        String?            @db.VarChar(12)
+  update_date                                                    DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater                                                        String?            @db.VarChar(12)
+  company_category_company_category_category_typeTocategory_type company_category[] @relation("company_category_category_typeTocategory_type")
+}
+
+model company_category {
+  category_type                                               String                   @db.VarChar(2)
+  comp_cate_code                                              String                   @db.VarChar(8)
+  comp_cate_name                                              String?                  @db.VarChar(30)
+  create_date                                                 DateTime                 @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator                                                     String?                  @db.VarChar(12)
+  update_date                                                 DateTime                 @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater                                                     String?                  @db.VarChar(12)
+  category_type_company_category_category_typeTocategory_type category_type            @relation("company_category_category_typeTocategory_type", fields: [category_type], references: [category_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_type_company_categ")
+  company_category_group                                      company_category_group[]
+
+  @@id([comp_cate_code, category_type], map: "pk_company_category")
+}
+
+model company_category_group {
+  category_type    String           @db.VarChar(2)
+  comp_cate_code   String           @db.VarChar(8)
+  comp_code        String           @db.VarChar(8)
+  create_date      DateTime         @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator          String?          @db.VarChar(12)
+  update_date      DateTime         @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater          String?          @db.VarChar(12)
+  company_category company_category @relation(fields: [comp_cate_code, category_type], references: [comp_cate_code, category_type], onDelete: NoAction, onUpdate: NoAction, map: "fk_company_category_company_ca")
+  comany_mst       companys_mst     @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_company_mst_company_cate")
+
+  @@id([category_type, comp_code, comp_cate_code], map: "pk_company_category_group")
+}
+
 model alternate_products {
   prod_code     String   @db.VarChar(16)
   alt_prod_code String   @db.VarChar(16)
@@ -308,43 +347,6 @@ model bom {
   update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
   updater     String?  @db.VarChar(12)
   products    products @relation(fields: [prod_code], references: [prod_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_products_bom")
-}
-
-model category_type {
-  category_type_code                                             String             @id(map: "pk_category_type") @db.VarChar(2)
-  cate_type_name                                                 String?            @db.VarChar(20)
-  create_date                                                    DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator                                                        String?            @db.VarChar(12)
-  update_date                                                    DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater                                                        String?            @db.VarChar(12)
-  company_category_company_category_category_typeTocategory_type company_category[] @relation("company_category_category_typeTocategory_type")
-}
-
-model company_category {
-  category_type                                               String                   @db.VarChar(2)
-  comp_cate_code                                              String                   @db.VarChar(8)
-  comp_cate_name                                              String?                  @db.VarChar(30)
-  create_date                                                 DateTime                 @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator                                                     String?                  @db.VarChar(12)
-  update_date                                                 DateTime                 @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater                                                     String?                  @db.VarChar(12)
-  category_type_company_category_category_typeTocategory_type category_type            @relation("company_category_category_typeTocategory_type", fields: [category_type], references: [category_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_type_company_categ")
-  company_category_group                                      company_category_group[]
-
-  @@id([comp_cate_code, category_type], map: "pk_company_category")
-}
-
-model company_category_group {
-  category_type    String           @db.VarChar(2)
-  comp_cate_code   String           @db.VarChar(8)
-  comp_code        String           @db.VarChar(8)
-  create_date      DateTime         @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator          String?          @db.VarChar(12)
-  update_date      DateTime         @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater          String?          @db.VarChar(12)
-  company_category company_category @relation(fields: [comp_cate_code, category_type], references: [comp_cate_code, category_type], onDelete: NoAction, onUpdate: NoAction, map: "fk_company_category_company_ca")
-
-  @@id([category_type, comp_code, comp_cate_code], map: "pk_company_category_group")
 }
 
 model credit {

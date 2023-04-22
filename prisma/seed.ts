@@ -1,4 +1,4 @@
-import { PrismaClient, company_group_mst} from "@prisma/client";
+import { PrismaClient} from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -14,6 +14,9 @@ import {
   areas,
   destinations,
   companyGroups,
+  categoryTypes,
+  companyCategories,
+  companyCategoryGroups,
 } from "./data/csvReader";
 
 async function main() {
@@ -164,6 +167,47 @@ async function main() {
       update: group
     })
   }
+
+  console.table(categoryTypes)
+  for(const cateType of categoryTypes) {
+    await prisma.category_type.upsert({
+      where: {
+        category_type_code: cateType.category_type_code
+      },
+      create: cateType,
+      update: cateType
+    })
+  }
+
+  console.table(companyCategories)
+  for(const cate of companyCategories) {
+    await prisma.company_category.upsert({
+      where: {
+        comp_cate_code_category_type: {
+          category_type: cate.category_type,
+          comp_cate_code: cate.comp_cate_code
+        },
+      },
+      create: cate,
+      update: cate
+    })
+  }
+
+  console.table(companyCategoryGroups)
+  for(const group of companyCategoryGroups) {
+    await prisma.company_category_group.upsert({
+      where: {
+        category_type_comp_code_comp_cate_code: {
+          category_type: group.category_type,
+          comp_cate_code: group.comp_cate_code,
+          comp_code: group.comp_code,
+        },
+      },
+      create: group,
+      update: group
+    })
+  }
+
 }
 
 main()

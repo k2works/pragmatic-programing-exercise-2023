@@ -1,2 +1,5 @@
 comp_code,comp_name,comp_kana,sup_type,zip_code,state,address1,address2,no_sales_flg,wide_use_type,comp_group_code,max_credit,temp_credit_up,create_date,creator,update_date,updater
 SUP001,Sample Company 1,すぱむぷれい1,1,1234567 ,東京都,東京都港区,サンプル1-1-1,0,1,SUP,100000,100000,2022-04-20,User001,2022-04-20,User001
+001,Sample Company 1,すぱむぷれい1,1,1234567 ,東京都,東京都港区,サンプル1-1-1,0,1,SUP,100000,100000,2022-04-20,User001,2022-04-20,User001
+002,Sample Company 2,すぱむぷれい2,1,1234567 ,東京都,東京都港区,サンプル1-1-1,0,1,SUP,100000,100000,2022-04-20,User001,2022-04-20,User001
+003,Sample Company 3,すぱむぷれい3,1,1234567 ,東京都,東京都港区,サンプル1-1-1,0,1,SUP,100000,100000,2022-04-20,User001,2022-04-20,User001
