@@ -1,4 +1,4 @@
-import { PrismaClient, area_mst, destinations_mst } from "@prisma/client";
+import { PrismaClient, company_group_mst} from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -13,6 +13,7 @@ import {
   suppliers,
   areas,
   destinations,
+  companyGroups,
 } from "./data/csvReader";
 
 async function main() {
@@ -150,6 +151,17 @@ async function main() {
       },
       create: area,
       update: area
+    })
+  }
+
+  console.table(companyGroups)
+  for(const group of companyGroups) {
+    await prisma.company_group_mst.upsert({
+      where: {
+        comp_group_code: group.comp_group_code
+      },
+      create: group,
+      update: group
     })
   }
 }

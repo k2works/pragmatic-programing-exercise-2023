@@ -9,6 +9,7 @@ import {
   supplier_mst,
   area_mst,
   destinations_mst,
+  company_group_mst,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -486,6 +487,31 @@ export const destinations: destinations_mst[] = fs
       zip_code,
       address1,
       address2,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "companyGroup.csv");
+export const companyGroups: company_group_mst[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      comp_group_code,
+      group_name,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      comp_group_code,
+      group_name,
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),
