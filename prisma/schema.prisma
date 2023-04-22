@@ -109,65 +109,66 @@ model pricebycustomer {
 }
 
 model companys_mst {
-  comp_code       String            @id(map: "pk_companys_mst") @db.VarChar(8)
-  comp_name       String            @db.VarChar(40)
-  comp_kana       String?           @db.VarChar(40)
-  sup_type        Int?              @default(0)
-  zip_code        String?           @db.Char(8)
-  state           String?           @db.VarChar(4)
-  address1        String?           @db.VarChar(40)
-  address2        String?           @db.VarChar(40)
-  no_sales_flg    Int?              @default(0)
-  wide_use_type   Int?
-  comp_group_code String            @db.VarChar(4)
-  max_credit      Int?
-  temp_credit_up  Int?              @default(0)
-  create_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator         String?           @db.VarChar(12)
-  update_date     DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater         String?           @db.VarChar(12)
-  credit_balance  credit_balance?
-  customers_mst   customers_mst[]
-  pricebycustomer pricebycustomer[]
-  supplier_mst    supplier_mst[]
+  comp_code              String                   @id(map: "pk_companys_mst") @db.VarChar(8)
+  comp_name              String                   @db.VarChar(40)
+  comp_kana              String?                  @db.VarChar(40)
+  sup_type               Int?                     @default(0)
+  zip_code               String?                  @db.Char(8)
+  state                  String?                  @db.VarChar(4)
+  address1               String?                  @db.VarChar(40)
+  address2               String?                  @db.VarChar(40)
+  no_sales_flg           Int?                     @default(0)
+  wide_use_type          Int?
+  comp_group_code        String                   @db.VarChar(4)
+  max_credit             Int?
+  temp_credit_up         Int?                     @default(0)
+  create_date            DateTime                 @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator                String?                  @db.VarChar(12)
+  update_date            DateTime                 @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater                String?                  @db.VarChar(12)
+  credit_balance         credit_balance?
+  customers_mst          customers_mst[]
+  pricebycustomer        pricebycustomer[]
+  supplier_mst           supplier_mst[]
   company_category_group company_category_group[]
 }
 
 model customers_mst {
-  cust_code          String       @db.VarChar(8)
+  cust_code          String             @db.VarChar(8)
   cust_sub_no        Int
-  cust_type          Int?         @default(0)
-  ar_code            String       @db.VarChar(8)
+  cust_type          Int?               @default(0)
+  ar_code            String             @db.VarChar(8)
   ar_sub_no          Int?
-  payer_code         String       @db.VarChar(8)
+  payer_code         String             @db.VarChar(8)
   payer_sub_no       Int?
-  cust_name          String       @db.VarChar(40)
-  cust_kana          String?      @db.VarChar(40)
-  emp_code           String       @db.VarChar(10)
-  cust_user_name     String?      @db.VarChar(20)
-  cust_user_dep_name String?      @db.VarChar(40)
-  cust_zip_code      String?      @db.Char(8)
-  cust_state         String?      @db.VarChar(4)
-  cust_address1      String?      @db.VarChar(40)
-  cust_address2      String?      @db.VarChar(40)
-  cust_tel           String?      @db.VarChar(13)
-  cust_fax           String?      @db.VarChar(13)
-  cust_email         String?      @db.VarChar(100)
+  cust_name          String             @db.VarChar(40)
+  cust_kana          String?            @db.VarChar(40)
+  emp_code           String             @db.VarChar(10)
+  cust_user_name     String?            @db.VarChar(20)
+  cust_user_dep_name String?            @db.VarChar(40)
+  cust_zip_code      String?            @db.Char(8)
+  cust_state         String?            @db.VarChar(4)
+  cust_address1      String?            @db.VarChar(40)
+  cust_address2      String?            @db.VarChar(40)
+  cust_tel           String?            @db.VarChar(13)
+  cust_fax           String?            @db.VarChar(13)
+  cust_email         String?            @db.VarChar(100)
   cust_ar_flag       Int?
   cust_close_date1   Int
-  cust_pay_months1   Int?         @default(1)
+  cust_pay_months1   Int?               @default(1)
   cust_pay_dates1    Int?
-  cust_pay_method1   Int?         @default(1)
+  cust_pay_method1   Int?               @default(1)
   cust_close_date2   Int
-  cust_pay_months2   Int?         @default(1)
+  cust_pay_months2   Int?               @default(1)
   cust_pay_dates2    Int?
-  cust_pay_method2   Int?         @default(1)
-  create_date        DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator            String?      @db.VarChar(12)
-  update_date        DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater            String?      @db.VarChar(12)
-  companys_mst       companys_mst @relation(fields: [cust_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_customers_mst")
+  cust_pay_method2   Int?               @default(1)
+  create_date        DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?            @db.VarChar(12)
+  update_date        DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?            @db.VarChar(12)
+  companys_mst       companys_mst       @relation(fields: [cust_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_customers_mst")
   orders             orders[]
+  destinations       destinations_mst[]
 
   @@id([cust_code, cust_sub_no], map: "pk_customers_mst")
 }
@@ -221,19 +222,20 @@ model supplier_mst {
 }
 
 model destinations_mst {
-  comp_code   String   @db.VarChar(8)
-  comp_sub_no Int
-  dist_no     Int
-  dist_name   String   @db.VarChar(40)
-  area_code   String   @db.VarChar(10)
-  zip_code    String?  @db.Char(8)
-  address1    String?  @db.VarChar(40)
-  address2    String?  @db.VarChar(40)
-  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator     String?  @db.VarChar(12)
-  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater     String?  @db.VarChar(12)
-  area_mst    area_mst @relation(fields: [area_code], references: [area_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_area_mst_destinations_mst")
+  comp_code     String         @db.VarChar(8)
+  comp_sub_no   Int
+  dist_no       Int
+  dist_name     String         @db.VarChar(40)
+  area_code     String         @db.VarChar(10)
+  zip_code      String?        @db.Char(8)
+  address1      String?        @db.VarChar(40)
+  address2      String?        @db.VarChar(40)
+  create_date   DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?        @db.VarChar(12)
+  update_date   DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?        @db.VarChar(12)
+  area_mst      area_mst       @relation(fields: [area_code], references: [area_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_area_mst_destinations_mst")
+  customers_mst customers_mst? @relation(fields: [comp_code, comp_sub_no], references: [cust_code, cust_sub_no])
 
   @@id([comp_code, dist_no, comp_sub_no], map: "pk_destinations_mst")
 }

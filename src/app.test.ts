@@ -896,7 +896,8 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
     describe("顧客マスタ", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
-          await prisma.customers_mst.deleteMany(),
+          await prisma.destinations_mst.deleteMany(),
+            await prisma.customers_mst.deleteMany(),
             await prisma.supplier_mst.deleteMany(),
             await prisma.company_category_group.deleteMany(),
             await prisma.pricebycustomer.deleteMany(),
