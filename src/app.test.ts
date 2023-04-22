@@ -9,6 +9,7 @@ import {
   customers_mst,
   destinations_mst,
   area_mst,
+  company_group_mst,
 } from "@prisma/client";
 import {
   departments,
@@ -271,6 +272,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
             await prisma.destinations_mst.deleteMany(),
             await prisma.customers_mst.deleteMany(),
             await prisma.supplier_mst.deleteMany(),
+            await prisma.company_category_group.deleteMany(),
             await prisma.companys_mst.deleteMany(),
             await prisma.companys_mst.createMany({ data: companys }),
             await prisma.pricebycustomer.createMany({ data: priceByCustomers });
@@ -1151,6 +1153,108 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
         expect(result).toBeNull();
       });
+    });
+
+    describe("取引先グループマスタ", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.destinations_mst.deleteMany()
+          await prisma.area_mst.deleteMany()
+          await prisma.customers_mst.deleteMany()
+          await prisma.supplier_mst.deleteMany()
+          await prisma.company_category_group.deleteMany()
+          await prisma.pricebycustomer.deleteMany()
+          await prisma.credit_balance.deleteMany()
+          await prisma.companys_mst.deleteMany()
+          await prisma.company_group_mst.deleteMany()
+        });
+      });
+
+      const day = new Date("2021-01-01");
+      const company: companys_mst[] = [{
+        comp_code: "00X",
+        comp_name: "顧客名1",
+        comp_kana: "クスキメイ1",
+        sup_type: 0,
+        zip_code: "000-0000",
+        state: "都道府県",
+        address1: "住所1",
+        address2: "住所2",
+        no_sales_flg: 0,
+        wide_use_type: 0,
+        comp_group_code: "001",
+        max_credit: 10000,
+        temp_credit_up: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const comapnyGroups: company_group_mst[] = [{
+        comp_group_code: "001",
+        group_name: "グループ名1",
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      test("取引先グループを登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.company_group_mst.create({ data: comapnyGroups[0] });
+          await prisma.companys_mst.create({ data: company[0] });
+        });
+
+        const result = await prisma.companys_mst.findUnique({
+          where: {
+            comp_code: company[0].comp_code,
+          },
+        });
+
+        expect(result?.comp_group_code).toStrictEqual(comapnyGroups[0].comp_group_code);
+      });
+
+      test("取引先グループを更新できる", async () => {
+        const expected: companys_mst[] = company.map((c) => {
+          return {
+            ...c,
+            comp_group_code: "002",
+          };
+        });
+
+        await prisma.companys_mst.update({
+          data: expected[0],
+          where: {
+            comp_code: expected[0].comp_code,
+          },
+        });
+
+        const result = await prisma.companys_mst.findUnique({
+          where: {
+            comp_code: expected[0].comp_code,
+          },
+        });
+
+        expect(result?.comp_group_code).toStrictEqual(expected[0].comp_group_code);
+      });
+
+      test("取引先グループを削除できる", async () => {
+        await prisma.companys_mst.delete({
+          where: {
+            comp_code: company[0].comp_code,
+          },
+        });
+
+        const result = await prisma.companys_mst.findUnique({
+          where: {
+            comp_code: company[0].comp_code,
+          },
+        });
+
+        expect(result).toBeNull();
+      });
+
     });
   });
 });
