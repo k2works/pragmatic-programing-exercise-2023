@@ -10,6 +10,9 @@ import {
   destinations_mst,
   area_mst,
   company_group_mst,
+  category_type,
+  company_category,
+  company_category_group,
 } from "@prisma/client";
 import {
   departments,
@@ -1255,6 +1258,132 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         expect(result).toBeNull();
       });
 
+    });
+
+    describe("取引先分類マスタ", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.destinations_mst.deleteMany()
+          await prisma.area_mst.deleteMany()
+          await prisma.customers_mst.deleteMany()
+          await prisma.supplier_mst.deleteMany()
+          await prisma.company_category_group.deleteMany()
+          await prisma.pricebycustomer.deleteMany()
+          await prisma.credit_balance.deleteMany()
+          await prisma.companys_mst.deleteMany()
+          await prisma.company_group_mst.deleteMany()
+          await prisma.company_category.deleteMany()
+          await prisma.category_type.deleteMany()
+        });
+      });
+
+      const day = new Date("2021-01-01");
+      const company: companys_mst[] = [{
+        comp_code: "00X",
+        comp_name: "顧客名1",
+        comp_kana: "クスキメイ1",
+        sup_type: 0,
+        zip_code: "000-0000",
+        state: "都道府県",
+        address1: "住所1",
+        address2: "住所2",
+        no_sales_flg: 0,
+        wide_use_type: 0,
+        comp_group_code: "001",
+        max_credit: 10000,
+        temp_credit_up: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const cateoryTypes: category_type[] = [{
+        category_type_code: "01",
+        cate_type_name: "分類名1",
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const companyCategories: company_category[] = [{
+        category_type: "01",
+        comp_cate_code: "001",
+        comp_cate_name: "分類名1",
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const companyCategoryGroups: company_category_group[] = [{
+        category_type: "01",
+        comp_cate_code: "001",
+        comp_code: "00X",
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      test("取引先分類を登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.companys_mst.create({ data: company[0] });
+          await prisma.category_type.create({ data: cateoryTypes[0] });
+          await prisma.company_category.create({ data: companyCategories[0] });
+          await prisma.company_category_group.create({ data: companyCategoryGroups[0] });
+        });
+
+        const result1 = await prisma.category_type.findUnique({
+          where: {
+            category_type_code: cateoryTypes[0].category_type_code,
+          },
+          include: {
+            company_category_company_category_category_typeTocategory_type: true,
+          },
+        });
+        const result2 = await prisma.company_category.findUnique({
+          where: {
+            comp_cate_code_category_type: {
+              category_type: companyCategories[0].category_type,
+              comp_cate_code: companyCategories[0].comp_cate_code,
+            },
+          },
+          include: {
+            company_category_group: true,
+          },
+        });
+        const result3 = await prisma.company_category_group.findUnique({
+          where: {
+            category_type_comp_code_comp_cate_code: {
+              category_type: companyCategoryGroups[0].category_type,
+              comp_cate_code: companyCategoryGroups[0].comp_cate_code,
+              comp_code: companyCategoryGroups[0].comp_code,
+            },
+          },
+          include: {
+            company_category: true,
+          },
+        });
+        const result4 = await prisma.companys_mst.findUnique({
+          where: {
+            comp_code: company[0].comp_code,
+          },
+          include: {
+            company_category_group: true,
+          },
+        });
+
+        expect(result1?.cate_type_name).toStrictEqual(cateoryTypes[0].cate_type_name);
+        expect(result1?.company_category_company_category_category_typeTocategory_type).toStrictEqual(companyCategories);
+        expect(result2?.comp_cate_name).toStrictEqual(companyCategories[0].comp_cate_name);
+        expect(result2?.company_category_group).toStrictEqual(companyCategoryGroups);
+        expect(result3?.comp_code).toStrictEqual(companyCategoryGroups[0].comp_code);
+        expect(result3?.company_category).toStrictEqual(companyCategories[0]);
+        expect(result4?.comp_group_code).toStrictEqual(company[0].comp_group_code);
+        expect(result4?.company_category_group).toStrictEqual(companyCategoryGroups);
+      });
     });
   });
 });
