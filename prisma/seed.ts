@@ -131,6 +131,17 @@ async function main() {
     })
   }
 
+  console.table(areas)
+  for(const area of areas) {
+    await prisma.area_mst.upsert({
+      where: {
+        area_code: area.area_code
+      },
+      create: area,
+      update: area
+    })
+  }
+
   console.table(destinations)
   for(const dest of destinations) {
     await prisma.destinations_mst.upsert({
@@ -143,17 +154,6 @@ async function main() {
       },
       create: dest,
       update: dest
-    })
-  }
-
-  console.table(areas)
-  for(const area of areas) {
-    await prisma.area_mst.upsert({
-      where: {
-        area_code: area.area_code
-      },
-      create: area,
-      update: area
     })
   }
 
