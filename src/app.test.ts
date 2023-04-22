@@ -5,6 +5,8 @@ import {
   products as product,
   product_category,
   pricebycustomer,
+  companys_mst,
+  customers_mst,
 } from "@prisma/client";
 import {
   departments,
@@ -21,9 +23,9 @@ import {
 const prisma = new PrismaClient();
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
-  describe("Chapter 1 販売管理システム全体像", () => {});
+  describe("Chapter 1 販売管理システム全体像", () => { });
 
-  describe("Chapter 2 基幹業務システム構築のポイント", () => {});
+  describe("Chapter 2 基幹業務システム構築のポイント", () => { });
 
   describe("Chapter 3 部門／社員／商品マスタ設計", () => {
     describe("部門マスタ", () => {
@@ -152,9 +154,9 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           expect(result).toEqual(expected);
         });
 
-        test("部署の下位部署の一括更新：指定された部署の下位部署の情報をまとめて更新する。下位部署の末端タイプ、作成日時、更新日時、作成者、更新者などを更新できる。", () => {});
-        test("部署の上位部署の一括更新：指定された部署の上位部署の情報をまとめて更新する。上位部署の末端タイプ、作成日時、更新日時、作成者、更新者などを更新できる。", () => {});
-        test("部署コードの一括更新：指定された部署コードを持つ部署の情報をまとめて更新する。末端タイプ、作成日時、更新日時、作成者、更新者などを更新できる。", () => {});
+        test("部署の下位部署の一括更新：指定された部署の下位部署の情報をまとめて更新する。下位部署の末端タイプ、作成日時、更新日時、作成者、更新者などを更新できる。", () => { });
+        test("部署の上位部署の一括更新：指定された部署の上位部署の情報をまとめて更新する。上位部署の末端タイプ、作成日時、更新日時、作成者、更新者などを更新できる。", () => { });
+        test("部署コードの一括更新：指定された部署コードを持つ部署の情報をまとめて更新する。末端タイプ、作成日時、更新日時、作成者、更新者などを更新できる。", () => { });
       });
       describe("部門情報を参照して、それぞれの部門が所属する上位部門や下位部門を把握する", () => {
         test("部署階層の検索：部門マスタテーブルから、指定された部署の親部署、子部署、兄弟部署、孫部署など、部署階層に関連する情報を検索する。", async () => {
@@ -172,14 +174,14 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           expect(result).toEqual(expected);
         });
       });
-      describe("部門情報を参照して、その部門が所属する部門階層を把握する", () => {});
-      describe("部門情報を参照して、その部門が所属する部門階層の中での位置を把握する", () => {});
-      describe("部門情報を参照して、その部門に所属する従業員の情報を取得する", () => {});
-      describe("部門情報を参照して、その部門に所属する従業員の業績を分析する", () => {});
-      describe("部門情報を参照して、その部門の売上や利益などの業績を分析する", () => {});
-      describe("部門情報を参照して、その部門に関する予算や財務情報を分析する", () => {});
-      describe("部門情報を参照して、その部門に対する人事施策を考える", () => {});
-      describe("部門情報を参照して、その部門の戦略・経営計画を策定するための情報収集を行う。", () => {});
+      describe("部門情報を参照して、その部門が所属する部門階層を把握する", () => { });
+      describe("部門情報を参照して、その部門が所属する部門階層の中での位置を把握する", () => { });
+      describe("部門情報を参照して、その部門に所属する従業員の情報を取得する", () => { });
+      describe("部門情報を参照して、その部門に所属する従業員の業績を分析する", () => { });
+      describe("部門情報を参照して、その部門の売上や利益などの業績を分析する", () => { });
+      describe("部門情報を参照して、その部門に関する予算や財務情報を分析する", () => { });
+      describe("部門情報を参照して、その部門に対する人事施策を考える", () => { });
+      describe("部門情報を参照して、その部門の戦略・経営計画を策定するための情報収集を行う。", () => { });
     });
 
     describe("社員マスタ", () => {
@@ -264,6 +266,9 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
             await prisma.pricebycustomer.deleteMany(),
             await prisma.products.deleteMany(),
             await prisma.products.createMany({ data: products }),
+            await prisma.customers_mst.deleteMany(),
+            await prisma.companys_mst.deleteMany(),
+            await prisma.companys_mst.createMany({ data: companys }),
             await prisma.pricebycustomer.createMany({ data: priceByCustomers });
         });
       });
@@ -799,5 +804,243 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
     });
   });
 
-  describe("Chapter 4 取引先(顧客／仕入先)マスタの設計", () => {});
+  describe("Chapter 4 取引先(顧客／仕入先)マスタの設計", () => {
+    describe("取引先マスタ", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.customers_mst.deleteMany(),
+            await prisma.supplier_mst.deleteMany(),
+            await prisma.company_category_group.deleteMany(),
+            await prisma.pricebycustomer.deleteMany(),
+            await prisma.credit_balance.deleteMany(),
+            await prisma.companys_mst.deleteMany()
+        });
+      });
+
+      const day = new Date("2021-01-01");
+      const company: companys_mst[] = [{
+        comp_code: "00X",
+        comp_name: "顧客名1",
+        comp_kana: "クスキメイ1",
+        sup_type: 0,
+        zip_code: "000-0000",
+        state: "都道府県",
+        address1: "住所1",
+        address2: "住所2",
+        no_sales_flg: 0,
+        wide_use_type: 0,
+        comp_group_code: "001",
+        max_credit: 10000,
+        temp_credit_up: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      test("取引先を登録できる", async () => {
+        await prisma.companys_mst.create({ data: company[0] });
+
+        const result = await prisma.companys_mst.findMany(
+          { where: { comp_code: company[0].comp_code } }
+        );
+
+        expect(result).toStrictEqual(company);
+      });
+
+      test("取引先を更新できる", async () => {
+        const newCompany: companys_mst = {
+          comp_code: "00X",
+          comp_name: "顧客名2",
+          comp_kana: "クスキメイ2",
+          sup_type: 0,
+          zip_code: "000-0000",
+          state: "都道府県",
+          address1: "住所1",
+          address2: "住所2",
+          no_sales_flg: 0,
+          wide_use_type: 0,
+          comp_group_code: "001",
+          max_credit: 10000,
+          temp_credit_up: 0,
+          create_date: day,
+          creator: null,
+          update_date: day,
+          updater: null
+        }
+        await prisma.companys_mst.update({
+          where: { comp_code: newCompany.comp_code },
+          data: newCompany
+        });
+
+        const result = await prisma.companys_mst.findMany(
+          { where: { comp_code: newCompany.comp_code } }
+        );
+
+        expect(result).toStrictEqual([newCompany]);
+      });
+
+      test("取引先を削除できる", async () => {
+        await prisma.companys_mst.delete({
+          where: { comp_code: company[0].comp_code }
+        });
+
+        const result = await prisma.companys_mst.findMany(
+          { where: { comp_code: company[0].comp_code } }
+        );
+
+        expect(result).toStrictEqual([]);
+      });
+    });
+
+    describe("顧客マスタ", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.customers_mst.deleteMany(),
+            await prisma.supplier_mst.deleteMany(),
+            await prisma.company_category_group.deleteMany(),
+            await prisma.pricebycustomer.deleteMany(),
+            await prisma.credit_balance.deleteMany(),
+            await prisma.companys_mst.deleteMany()
+        });
+      });
+
+      const day = new Date("2021-01-01");
+      const company: companys_mst[] = [{
+        comp_code: "00X",
+        comp_name: "顧客名1",
+        comp_kana: "クスキメイ1",
+        sup_type: 0,
+        zip_code: "000-0000",
+        state: "都道府県",
+        address1: "住所1",
+        address2: "住所2",
+        no_sales_flg: 0,
+        wide_use_type: 0,
+        comp_group_code: "001",
+        max_credit: 10000,
+        temp_credit_up: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const customer: customers_mst[] = [{
+        cust_code: "00X",
+        cust_sub_no: 1,
+        cust_type: 0,
+        ar_code: "001",
+        ar_sub_no: 1,
+        payer_code: "001",
+        payer_sub_no: 1,
+        cust_name: "顧客名1",
+        cust_kana: "クスキメイ1",
+        emp_code: "001",
+        cust_user_name: "顧客担当者名1",
+        cust_user_dep_name: "顧客担当者部署名1",
+        cust_zip_code: "000-0000",
+        cust_state: "都道府県",
+        cust_address1: "住所1",
+        cust_address2: "住所2",
+        cust_tel: "000-0000-0000",
+        cust_fax: "000-0000-0000",
+        cust_email: "hoge@hoge.com",
+        cust_ar_flag: 0,
+        cust_close_date1: 1,
+        cust_pay_months1: 0,
+        cust_pay_dates1: 1,
+        cust_pay_method1: 0,
+        cust_pay_dates2: 1,
+        cust_pay_method2: 0,
+        cust_close_date2: 1,
+        cust_pay_months2: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      test("顧客を登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.companys_mst.create({ data: company[0] });
+          await prisma.customers_mst.create({ data: customer[0] });
+        });
+
+        const result = await prisma.customers_mst.findUnique({
+          where: {
+            cust_code_cust_sub_no: {
+              cust_code: "00X",
+              cust_sub_no: 1,
+            },
+          },
+        });
+
+        expect(result).toStrictEqual(customer[0]);
+      });
+
+      test("顧客を更新できる", async () => {
+        const expected: customers_mst[] = customer.map((c) => {
+          return {
+            ...c,
+            cust_name: "顧客名2",
+            cust_kana: "クスキメイ2",
+            cust_user_name: "顧客担当者名2",
+            cust_user_dep_name: "顧客担当者部署名2",
+            cust_zip_code: "000-0000",
+            cust_state: "都道府県",
+            cust_address1: "住所1",
+            cust_address2: "住所2",
+            cust_tel: "000-0000-0000",
+            cust_fax: "000-0000-0000",
+            cust_email: "hoge@hoge",
+          };
+        });
+
+        await prisma.customers_mst.update({
+          data: expected[0],
+          where: {
+            cust_code_cust_sub_no: {
+              cust_code: expected[0].cust_code,
+              cust_sub_no: expected[0].cust_sub_no,
+            },
+          },
+        });
+
+        const result = await prisma.customers_mst.findUnique({
+          where: {
+            cust_code_cust_sub_no: {
+              cust_code: expected[0].cust_code,
+              cust_sub_no: expected[0].cust_sub_no,
+            },
+          },
+        });
+
+        expect(result).toStrictEqual(expected[0]);
+      });
+
+      test("顧客を削除できる", async () => {
+        await prisma.customers_mst.delete({
+          where: {
+            cust_code_cust_sub_no: {
+              cust_code: "00X",
+              cust_sub_no: 1,
+            },
+          },
+        });
+
+        const result = await prisma.customers_mst.findUnique({
+          where: {
+            cust_code_cust_sub_no: {
+              cust_code: "00X",
+              cust_sub_no: 1,
+            },
+          },
+        });
+
+        expect(result).toBeNull();
+      });
+
+    });
+  });
 });
