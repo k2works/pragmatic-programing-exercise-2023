@@ -270,6 +270,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
             await prisma.products.createMany({ data: products }),
             await prisma.destinations_mst.deleteMany(),
             await prisma.customers_mst.deleteMany(),
+            await prisma.supplier_mst.deleteMany(),
             await prisma.companys_mst.deleteMany(),
             await prisma.companys_mst.createMany({ data: companys }),
             await prisma.pricebycustomer.createMany({ data: priceByCustomers });
