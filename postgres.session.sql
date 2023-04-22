@@ -541,6 +541,78 @@ COMMENT ON COLUMN supplier_mst.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN supplier_mst.updater IS '更新者名'
 ;
+CREATE TABLE destinations_mst
+(
+    comp_code                       VARCHAR(8) NOT NULL,
+    comp_sub_no                     INTEGER NOT NULL,
+    dist_no                         INTEGER NOT NULL,
+    dist_name                       VARCHAR(40) NOT NULL,
+    area_code                       VARCHAR(10) NOT NULL,
+    zip_code                        CHAR(8),
+    address1                        VARCHAR(40),
+    address2                        VARCHAR(40),
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE destinations_mst
+    ADD CONSTRAINT pk_destinations_mst PRIMARY KEY  (comp_code, dist_no, comp_sub_no)
+;
+COMMENT ON TABLE destinations_mst IS '出荷先マスタ'
+;
+COMMENT ON COLUMN destinations_mst.comp_code IS '取引先コード'
+;
+COMMENT ON COLUMN destinations_mst.comp_sub_no IS '顧客枝番'
+;
+COMMENT ON COLUMN destinations_mst.dist_no IS '出荷先番号'
+;
+COMMENT ON COLUMN destinations_mst.dist_name IS '出荷先名'
+;
+COMMENT ON COLUMN destinations_mst.area_code IS '地域コード'
+;
+COMMENT ON COLUMN destinations_mst.zip_code IS '出荷先郵便番号'
+;
+COMMENT ON COLUMN destinations_mst.address1 IS '出荷先住所１'
+;
+COMMENT ON COLUMN destinations_mst.address2 IS '出荷先住所２'
+;
+COMMENT ON COLUMN destinations_mst.create_date IS '作成日時'
+;
+COMMENT ON COLUMN destinations_mst.creator IS '作成者名'
+;
+COMMENT ON COLUMN destinations_mst.update_date IS '更新日時'
+;
+COMMENT ON COLUMN destinations_mst.updater IS '更新者名'
+;
+CREATE TABLE area_mst
+(
+    area_code                       VARCHAR(10) NOT NULL,
+    area_name                       VARCHAR(20),
+    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator                         VARCHAR(12),
+    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater                         VARCHAR(12)
+)
+;
+ALTER TABLE area_mst
+    ADD CONSTRAINT pk_area_mst PRIMARY KEY  (area_code)
+;
+COMMENT ON TABLE area_mst IS '地域マスタ'
+;
+COMMENT ON COLUMN area_mst.area_code IS '地域コード'
+;
+COMMENT ON COLUMN area_mst.area_name IS '地域名'
+;
+COMMENT ON COLUMN area_mst.create_date IS '作成日時'
+;
+COMMENT ON COLUMN area_mst.creator IS '作成者名'
+;
+COMMENT ON COLUMN area_mst.update_date IS '更新日時'
+;
+COMMENT ON COLUMN area_mst.updater IS '更新者名'
+;
 CREATE TABLE stock
 (
     wh_code                         VARCHAR(3) NOT NULL,
@@ -1003,51 +1075,6 @@ COMMENT ON COLUMN order_details.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN order_details.updater IS '更新者名'
 ;
-CREATE TABLE destinations_mst
-(
-    comp_code                       VARCHAR(8) NOT NULL,
-    comp_sub_no                     INTEGER NOT NULL,
-    dist_no                         INTEGER NOT NULL,
-    dist_name                       VARCHAR(40) NOT NULL,
-    area_code                       VARCHAR(10) NOT NULL,
-    zip_code                        CHAR(8),
-    address1                        VARCHAR(40),
-    address2                        VARCHAR(40),
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE destinations_mst
-    ADD CONSTRAINT pk_destinations_mst PRIMARY KEY  (comp_code, dist_no, comp_sub_no)
-;
-COMMENT ON TABLE destinations_mst IS '出荷先マスタ'
-;
-COMMENT ON COLUMN destinations_mst.comp_code IS '取引先コード'
-;
-COMMENT ON COLUMN destinations_mst.comp_sub_no IS '顧客枝番'
-;
-COMMENT ON COLUMN destinations_mst.dist_no IS '出荷先番号'
-;
-COMMENT ON COLUMN destinations_mst.dist_name IS '出荷先名'
-;
-COMMENT ON COLUMN destinations_mst.area_code IS '地域コード'
-;
-COMMENT ON COLUMN destinations_mst.zip_code IS '出荷先郵便番号'
-;
-COMMENT ON COLUMN destinations_mst.address1 IS '出荷先住所１'
-;
-COMMENT ON COLUMN destinations_mst.address2 IS '出荷先住所２'
-;
-COMMENT ON COLUMN destinations_mst.create_date IS '作成日時'
-;
-COMMENT ON COLUMN destinations_mst.creator IS '作成者名'
-;
-COMMENT ON COLUMN destinations_mst.update_date IS '更新日時'
-;
-COMMENT ON COLUMN destinations_mst.updater IS '更新者名'
-;
 CREATE TABLE invoice
 (
     invoice_no                      VARCHAR(10) NOT NULL,
@@ -1260,33 +1287,6 @@ COMMENT ON COLUMN location_mst.creator IS '作成者名'
 COMMENT ON COLUMN location_mst.update_date IS '更新日時'
 ;
 COMMENT ON COLUMN location_mst.updater IS '更新者名'
-;
-CREATE TABLE area_mst
-(
-    area_code                       VARCHAR(10) NOT NULL,
-    area_name                       VARCHAR(20),
-    create_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator                         VARCHAR(12),
-    update_date                     TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater                         VARCHAR(12)
-)
-;
-ALTER TABLE area_mst
-    ADD CONSTRAINT pk_地域マスタ PRIMARY KEY  (area_code)
-;
-COMMENT ON TABLE area_mst IS '地域マスタ'
-;
-COMMENT ON COLUMN area_mst.area_code IS '地域コード'
-;
-COMMENT ON COLUMN area_mst.area_name IS '地域名'
-;
-COMMENT ON COLUMN area_mst.create_date IS '作成日時'
-;
-COMMENT ON COLUMN area_mst.creator IS '作成者名'
-;
-COMMENT ON COLUMN area_mst.update_date IS '更新日時'
-;
-COMMENT ON COLUMN area_mst.updater IS '更新者名'
 ;
 CREATE TABLE credit
 (
@@ -1793,25 +1793,15 @@ ALTER TABLE bank_acut_mst
     ADD CONSTRAINT FK_DEPT_MST_入金口座マスタ FOREIGN KEY(dept_code, start_date) REFERENCES dept_mst (dept_code, start_date) ON UPDATE NO ACTION ON DELETE NO ACTION
 ;
 ALTER TABLE destinations_mst
-    ADD CONSTRAINT FK_地域マスタ_DESTINATIONS_MST FOREIGN KEY(area_code) REFERENCES area_mst (area_code) ON UPDATE NO ACTION ON DELETE NO ACTION
+    ADD CONSTRAINT FK_AREA_MST_DESTINATIONS_MST FOREIGN KEY(area_code) REFERENCES area_mst (area_code) ON UPDATE NO ACTION ON DELETE NO ACTION
 ;
 ALTER TABLE orders
     ADD CONSTRAINT FK_DEPT_MST_ORDERS FOREIGN KEY(dept_code, start_date) REFERENCES dept_mst (dept_code, start_date) ON UPDATE NO ACTION ON DELETE NO ACTION
 ;
 ALTER TABLE sales
     ADD CONSTRAINT FK_DEPT_MST_SALES FOREIGN KEY(dept_code, start_date) REFERENCES dept_mst (dept_code, start_date) ON UPDATE NO ACTION ON DELETE NO ACTION
-;
--- CREATE OR REPLACE VIEW products_v2
---     (PROD_CODE,PROD_FULLNAME,PROD_NAME,PROD_KANA,PROD_TYPE,SERIAL_NO,UNITPRICE,
---     PO_PRICE,COST,TAX_TYPE,PROD_CATE_NAME,LAYER)
--- AS
--- SELECT
---     A.PROD_CODE PROD_CODE,
---     A.PROD_FULLNAME PROD_FULLNAME,
---     A.PROD_NAME PROD_NAME,
---     A.PROD_KANA PROD_KANA,
---     A.PROD_TYPE PROD_TYPE,
---     A.SERIAL_NO SERIAL_NO,
+ area_mst.updater IS '更新者名';
+CREATE TABLE
 --     A.UNITPRICE UNITPRICE,
 --     A.PO_PRICE PO_PRICE,
 --     A.prime_cost COST,

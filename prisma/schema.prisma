@@ -219,6 +219,35 @@ model supplier_mst {
   @@id([sup_code, sup_sub_no], map: "pk_supplier_mst")
 }
 
+model destinations_mst {
+  comp_code   String   @db.VarChar(8)
+  comp_sub_no Int
+  dist_no     Int
+  dist_name   String   @db.VarChar(40)
+  area_code   String   @db.VarChar(10)
+  zip_code    String?  @db.Char(8)
+  address1    String?  @db.VarChar(40)
+  address2    String?  @db.VarChar(40)
+  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator     String?  @db.VarChar(12)
+  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater     String?  @db.VarChar(12)
+  area_mst    area_mst @relation(fields: [area_code], references: [area_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_area_mst_destinations_mst")
+
+  @@id([comp_code, dist_no, comp_sub_no], map: "pk_destinations_mst")
+}
+
+model area_mst {
+  area_code        String             @id(map: "pk_area_mst") @db.VarChar(10)
+  area_name        String?            @db.VarChar(20)
+  create_date      DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator          String?            @db.VarChar(12)
+  update_date      DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater          String?            @db.VarChar(12)
+  destinations_mst destinations_mst[]
+}
+
+
 model alternate_products {
   prod_code     String   @db.VarChar(16)
   alt_prod_code String   @db.VarChar(16)
@@ -229,16 +258,6 @@ model alternate_products {
   updater       String?  @db.VarChar(12)
 
   @@id([prod_code, alt_prod_code], map: "pk_alternate_products")
-}
-
-model area_mst {
-  area_code        String             @id(map: "pk_地域マスタ") @db.VarChar(10)
-  area_name        String?            @db.VarChar(20)
-  create_date      DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator          String?            @db.VarChar(12)
-  update_date      DateTime           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater          String?            @db.VarChar(12)
-  destinations_mst destinations_mst[]
 }
 
 model auto_number {
@@ -359,24 +378,6 @@ model credit_balance {
   update_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
   updater       String?      @db.VarChar(12)
   companys_mst  companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_credit_balanc")
-}
-
-model destinations_mst {
-  comp_code   String   @db.VarChar(8)
-  comp_sub_no Int
-  dist_no     Int
-  dist_name   String   @db.VarChar(40)
-  area_code   String   @db.VarChar(10)
-  zip_code    String?  @db.Char(8)
-  address1    String?  @db.VarChar(40)
-  address2    String?  @db.VarChar(40)
-  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator     String?  @db.VarChar(12)
-  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater     String?  @db.VarChar(12)
-  area_mst    area_mst @relation(fields: [area_code], references: [area_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_地域マスタ_destinations_mst")
-
-  @@id([comp_code, dist_no, comp_sub_no], map: "pk_destinations_mst")
 }
 
 model invoice {

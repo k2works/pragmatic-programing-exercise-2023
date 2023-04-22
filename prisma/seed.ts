@@ -1,4 +1,4 @@
-import { PrismaClient, customers_mst, consumer, supplier_mst } from "@prisma/client";
+import { PrismaClient, area_mst, destinations_mst } from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -10,7 +10,9 @@ import {
   companys,
   customers,
   consumers,
-  suppliers
+  suppliers,
+  areas,
+  destinations,
 } from "./data/csvReader";
 
 async function main() {
@@ -122,6 +124,32 @@ async function main() {
       },
       create: supplier,
       update: supplier
+    })
+  }
+
+  console.table(destinations)
+  for(const dest of destinations) {
+    await prisma.destinations_mst.upsert({
+      where: {
+        comp_code_dist_no_comp_sub_no: {
+          comp_code: dest.comp_code,
+          comp_sub_no: dest.comp_sub_no,
+          dist_no: dest.dist_no
+        }
+      },
+      create: dest,
+      update: dest
+    })
+  }
+
+  console.table(areas)
+  for(const area of areas) {
+    await prisma.area_mst.upsert({
+      where: {
+        area_code: area.area_code
+      },
+      create: area,
+      update: area
     })
   }
 }

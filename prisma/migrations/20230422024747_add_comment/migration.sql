@@ -1,0 +1,21 @@
+COMMENT ON TABLE destinations_mst IS '出荷先マスタ';
+COMMENT ON COLUMN destinations_mst.comp_code IS '取引先コード';
+COMMENT ON COLUMN destinations_mst.comp_sub_no IS '顧客枝番';
+COMMENT ON COLUMN destinations_mst.dist_no IS '出荷先番号';
+COMMENT ON COLUMN destinations_mst.dist_name IS '出荷先名';
+COMMENT ON COLUMN destinations_mst.area_code IS '地域コード';
+COMMENT ON COLUMN destinations_mst.zip_code IS '出荷先郵便番号';
+COMMENT ON COLUMN destinations_mst.address1 IS '出荷先住所１';
+COMMENT ON COLUMN destinations_mst.address2 IS '出荷先住所２';
+COMMENT ON COLUMN destinations_mst.create_date IS '作成日時';
+COMMENT ON COLUMN destinations_mst.creator IS '作成者名';
+COMMENT ON COLUMN destinations_mst.update_date IS '更新日時';
+COMMENT ON COLUMN destinations_mst.updater IS '更新者名';
+---
+COMMENT ON TABLE area_mst IS '地域マスタ';
+COMMENT ON COLUMN area_mst.area_code IS '地域コード';
+COMMENT ON COLUMN area_mst.area_name IS '地域名';
+COMMENT ON COLUMN area_mst.create_date IS '作成日時';
+COMMENT ON COLUMN area_mst.creator IS '作成者名';
+COMMENT ON COLUMN area_mst.update_date IS '更新日時';
+COMMENT ON COLUMN area_mst.updater IS '更新者名';

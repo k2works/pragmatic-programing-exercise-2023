@@ -5,7 +5,10 @@ import {
   dept_mst,
   employee,
   pricebycustomer,
-  product_category, supplier_mst
+  product_category,
+  supplier_mst,
+  area_mst,
+  destinations_mst,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -421,6 +424,68 @@ export const suppliers: supplier_mst[] = fs
       sup_pay_months: Number(sup_pay_months),
       sup_pay_dates: Number(sup_pay_dates),
       pay_method_type: Number(pay_method_type),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "area.csv");
+export const areas: area_mst[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      area_code,
+      area_name,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      area_code,
+      area_name,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "destination.csv");
+export const destinations: destinations_mst[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      comp_code,
+      comp_sub_no,
+      dist_no,
+      dist_name,
+      area_code,
+      zip_code,
+      address1,
+      address2,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      comp_code,
+      comp_sub_no: Number(comp_sub_no),
+      dist_no: Number(dist_no),
+      dist_name,
+      area_code,
+      zip_code,
+      address1,
+      address2,
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),
