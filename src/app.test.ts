@@ -7,6 +7,8 @@ import {
   pricebycustomer,
   companys_mst,
   customers_mst,
+  destinations_mst,
+  area_mst,
 } from "@prisma/client";
 import {
   departments,
@@ -266,6 +268,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
             await prisma.pricebycustomer.deleteMany(),
             await prisma.products.deleteMany(),
             await prisma.products.createMany({ data: products }),
+            await prisma.destinations_mst.deleteMany(),
             await prisma.customers_mst.deleteMany(),
             await prisma.companys_mst.deleteMany(),
             await prisma.companys_mst.createMany({ data: companys }),
@@ -808,7 +811,8 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
     describe("取引先マスタ", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
-          await prisma.customers_mst.deleteMany(),
+          await prisma.destinations_mst.deleteMany(),
+            await prisma.customers_mst.deleteMany(),
             await prisma.supplier_mst.deleteMany(),
             await prisma.company_category_group.deleteMany(),
             await prisma.pricebycustomer.deleteMany(),
@@ -897,6 +901,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
           await prisma.destinations_mst.deleteMany(),
+            await prisma.area_mst.deleteMany(),
             await prisma.customers_mst.deleteMany(),
             await prisma.supplier_mst.deleteMany(),
             await prisma.company_category_group.deleteMany(),
@@ -956,6 +961,30 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         cust_pay_method2: 0,
         cust_close_date2: 1,
         cust_pay_months2: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const areas: area_mst[] = [{
+        area_code: "00X",
+        area_name: "エリア名1",
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const destinations: destinations_mst[] = [{
+        comp_code: "00X",
+        comp_sub_no: 1,
+        dist_no: 1,
+        dist_name: "配送先名1",
+        area_code: "00X",
+        zip_code: "000-0000",
+        address1: "住所1",
+        address2: "住所2",
         create_date: day,
         creator: null,
         update_date: day,
@@ -1042,6 +1071,85 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         expect(result).toBeNull();
       });
 
+      test("出荷先を登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.customers_mst.create({ data: customer[0] });
+          await prisma.area_mst.create({ data: areas[0] });
+          await prisma.destinations_mst.create({ data: destinations[0] });
+        });
+
+        const result = await prisma.destinations_mst.findUnique({
+          where: {
+            comp_code_dist_no_comp_sub_no: {
+              comp_code: "00X",
+              dist_no: 1,
+              comp_sub_no: 1,
+            },
+          },
+        });
+
+        expect(result).toStrictEqual(destinations[0]);
+      });
+
+      test("出荷先を更新できる", async () => {
+        const expected: destinations_mst[] = destinations.map((d) => {
+          return {
+            ...d,
+            dist_name: "配送先名2",
+            area_code: "00X",
+            zip_code: "000-0000",
+            address1: "住所1",
+            address2: "住所2",
+          };
+        });
+
+        await prisma.destinations_mst.update({
+          data: expected[0],
+          where: {
+            comp_code_dist_no_comp_sub_no: {
+              comp_code: expected[0].comp_code,
+              dist_no: expected[0].dist_no,
+              comp_sub_no: expected[0].comp_sub_no,
+            },
+          },
+        });
+
+        const result = await prisma.destinations_mst.findUnique({
+          where: {
+            comp_code_dist_no_comp_sub_no: {
+              comp_code: expected[0].comp_code,
+              dist_no: expected[0].dist_no,
+              comp_sub_no: expected[0].comp_sub_no,
+            },
+          },
+        });
+
+        expect(result).toStrictEqual(expected[0]);
+      });
+
+      test("出荷先を削除できる", async () => {
+        await prisma.destinations_mst.delete({
+          where: {
+            comp_code_dist_no_comp_sub_no: {
+              comp_code: "00X",
+              dist_no: 1,
+              comp_sub_no: 1,
+            },
+          },
+        });
+
+        const result = await prisma.destinations_mst.findUnique({
+          where: {
+            comp_code_dist_no_comp_sub_no: {
+              comp_code: "00X",
+              dist_no: 1,
+              comp_sub_no: 1,
+            },
+          },
+        });
+
+        expect(result).toBeNull();
+      });
     });
   });
 });
