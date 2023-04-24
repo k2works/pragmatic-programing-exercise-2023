@@ -15,17 +15,7 @@ import {
   company_category_group,
   supplier_mst,
 } from "@prisma/client";
-import {
-  departments,
-  employees,
-  productCategories,
-  products,
-  priceByCustomers,
-  companys,
-  customers,
-  consumers,
-  suppliers,
-} from "../prisma/data/csvReader";
+import { priceByCustomers } from "../prisma/data/csvReader";
 
 const prisma = new PrismaClient();
 
@@ -39,16 +29,10 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       beforeAll(async () => {
         await prisma.employee.deleteMany();
         await prisma.dept_mst.deleteMany();
-        await prisma.dept_mst.createMany({
-          data: departments,
-        });
-        await prisma.employee.createMany({
-          data: employees,
-        });
       });
 
-      const createDepartment = async () => {
-        const expected: dept_mst = {
+      const departments: dept_mst[] = [
+        {
           dept_code: "D0001",
           start_date: new Date("2021-01-01"),
           end_date: new Date("2021-12-31"),
@@ -61,156 +45,134 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           creator: "admin",
           update_date: new Date("2021-01-01"),
           updater: "admin",
-        };
-        await prisma.dept_mst.create({
-          data: expected,
-        });
-        return expected;
-      };
+        }
+      ]
 
-      const deleteDepartment = async () => {
-        await prisma.employee.deleteMany();
-        await prisma.dept_mst.deleteMany();
-      };
-
-      describe("部門情報の追加・変更・削除", () => {
-        test("部署情報の検索：部署コード、開始日時、終了日時、部署名、階層、親部署、末端タイプなどの条件で、部門マスタテーブルから部署情報を検索する。", async () => {
-          const exepcted = await prisma.$queryRaw`SELECT *
-                                                  FROM dept_mst`;
-          const departments = await prisma.dept_mst.findMany();
-          const result: dept_mst[] = departments.map((dept) => {
-            return {
-              ...dept,
-            };
-          });
-          expect(result).toEqual(exepcted);
+      test("部門を登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.dept_mst.createMany({ data: departments });
         });
 
-        test("部署情報の追加：新しい部署情報を部門マスタテーブルに追加する。", async () => {
-          const expected: dept_mst = await createDepartment();
+        const result = await prisma.dept_mst.findMany();
 
-          const result = await prisma.dept_mst.findUnique({
-            where: {
-              dept_code_start_date: {
-                dept_code: "D0001",
-                start_date: new Date("2021-01-01"),
-              },
-            },
-          });
-          expect(result).toEqual(expected);
-        });
+        expect(result).toEqual(departments);
+      });
 
-        test("部署情報の更新：部門マスタテーブルの部署情報を更新する。部署コード、開始日時、終了日時、部署名、階層、親部署、末端タイプなどの情報を更新できる。", async () => {
-          await deleteDepartment();
-          await createDepartment();
-
-          const expected: dept_mst = {
+      test("部門を更新できる", async () => {
+        const expected: dept_mst[] = departments.map((c) => {
+          return {
+            ...c,
             dept_code: "D0001",
             start_date: new Date("2021-01-01"),
             end_date: new Date("2021-12-31"),
-            dep_name: "新規部署",
-            dept_layer: 1,
-            dept_psth: "D0001",
-            bottom_type: 1,
-            slit_yn: 0,
-            create_date: new Date("2021-01-01"),
-            creator: "admin",
-            update_date: new Date("2021-01-01"),
-            updater: "admin",
+            dep_name: "新規部署2",
+            dept_layer: 2,
+            dept_psth: "D0002",
+            bottom_type: 2,
+            slit_yn: 1,
           };
-
-          await prisma.dept_mst.update({
-            where: {
-              dept_code_start_date: {
-                dept_code: "D0001",
-                start_date: new Date("2021-01-01"),
-              },
-            },
-            data: expected,
-          });
-
-          const result = await prisma.dept_mst.findUnique({
-            where: {
-              dept_code_start_date: {
-                dept_code: "D0001",
-                start_date: new Date("2021-01-01"),
-              },
-            },
-          });
-          expect(result).toEqual(expected);
         });
 
-        test("部署情報の削除：部門マスタテーブルから部署情報を削除する。", async () => {
-          await deleteDepartment();
-          await createDepartment();
-
-          const expected = 0;
-          await prisma.dept_mst.deleteMany({
+        await prisma.$transaction(async (prisma) => {
+          await prisma.dept_mst.updateMany({
+            data: expected[0],
             where: {
               dept_code: "D0001",
-              start_date: new Date("2021-01-01"),
             },
           });
-
-          const result = await prisma.dept_mst.count({
-            where: {
-              dept_code: "D0001",
-              start_date: new Date("2021-01-01"),
-            },
-          });
-          expect(result).toEqual(expected);
         });
 
-        test("部署の下位部署の一括更新：指定された部署の下位部署の情報をまとめて更新する。下位部署の末端タイプ、作成日時、更新日時、作成者、更新者などを更新できる。", () => { });
-        test("部署の上位部署の一括更新：指定された部署の上位部署の情報をまとめて更新する。上位部署の末端タイプ、作成日時、更新日時、作成者、更新者などを更新できる。", () => { });
-        test("部署コードの一括更新：指定された部署コードを持つ部署の情報をまとめて更新する。末端タイプ、作成日時、更新日時、作成者、更新者などを更新できる。", () => { });
+        const result = await prisma.dept_mst.findMany();
+
+        expect(result).toEqual(expected);
       });
-      describe("部門情報を参照して、それぞれの部門が所属する上位部門や下位部門を把握する", () => {
-        test("部署階層の検索：部門マスタテーブルから、指定された部署の親部署、子部署、兄弟部署、孫部署など、部署階層に関連する情報を検索する。", async () => {
-          const expected = await prisma.$queryRaw`SELECT *
+
+      test("部門を削除できる", async () => {
+        await prisma.dept_mst.deleteMany({
+          where: {
+            dept_code: "D0001",
+          },
+        });
+
+        const result = await prisma.dept_mst.findMany();
+
+        expect(result).toEqual([]);
+      });
+
+
+      test("部署階層の検索：部門マスタテーブルから、指定された部署の親部署、子部署、兄弟部署、孫部署など、部署階層に関連する情報を検索する。", async () => {
+        const expected = await prisma.$queryRaw`SELECT *
                                    FROM dept_mst
                                    WHERE dept_psth LIKE '10000~11000%'`;
-          const result = await prisma.dept_mst.findMany({
-            where: {
-              dept_psth: {
-                contains: "10000~11000",
-              },
+        const result = await prisma.dept_mst.findMany({
+          where: {
+            dept_psth: {
+              contains: "10000~11000",
             },
-          });
-
-          expect(result).toEqual(expected);
+          },
         });
+
+        expect(result).toEqual(expected);
       });
-      describe("部門情報を参照して、その部門が所属する部門階層を把握する", () => { });
-      describe("部門情報を参照して、その部門が所属する部門階層の中での位置を把握する", () => { });
-      describe("部門情報を参照して、その部門に所属する従業員の情報を取得する", () => { });
-      describe("部門情報を参照して、その部門に所属する従業員の業績を分析する", () => { });
-      describe("部門情報を参照して、その部門の売上や利益などの業績を分析する", () => { });
-      describe("部門情報を参照して、その部門に関する予算や財務情報を分析する", () => { });
-      describe("部門情報を参照して、その部門に対する人事施策を考える", () => { });
-      describe("部門情報を参照して、その部門の戦略・経営計画を策定するための情報収集を行う。", () => { });
     });
 
     describe("社員マスタ", () => {
       beforeAll(async () => {
         await prisma.employee.deleteMany();
         await prisma.dept_mst.deleteMany();
-        await prisma.dept_mst.createMany({
-          data: departments,
-        });
-        await prisma.employee.createMany({
-          data: employees,
-        });
       });
 
-      test("従業員を検索する", async () => {
-        const employees = await prisma.employee.findMany();
-        expect(employees).toHaveLength(37);
+      const departments: dept_mst[] = [
+        {
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          end_date: new Date("2021-12-31"),
+          dep_name: "新規部署",
+          dept_layer: 1,
+          dept_psth: "10000~11000~11100~11101~",
+          bottom_type: 1,
+          slit_yn: 0,
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
+        }
+      ];
+
+      const employees = [
+        {
+          emp_code: "EMP999",
+          emp_name: "伊藤 裕子",
+          emp_kana: "イトウ ユウコ",
+          login_password: "password",
+          tel: "090-1234-5678",
+          fax: "03-1234-5678",
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          occu_code: "",
+          approval_code: "",
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
+        }
+      ];
+
+      test("従業員を登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.dept_mst.createMany({ data: departments });
+          await prisma.employee.createMany({ data: employees });
+        });
+
+        const result = await prisma.employee.findMany();
+
+        expect(result).toEqual(employees);
       });
 
-      test("従業員を追加する", async () => {
-        const employee: employee = await prisma.employee.create({
-          data: {
+      test("従業員を更新できる", async () => {
+        const expected: employee[] = employees.map((c) => {
+          return {
+            ...c,
             emp_code: "EMP999",
             emp_name: "伊藤 裕子",
             emp_kana: "イトウ ユウコ",
@@ -221,71 +183,382 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
             start_date: new Date("2021-01-01"),
             occu_code: "",
             approval_code: "",
+          }
+        });
+
+        await prisma.employee.updateMany({
+          data: expected[0],
+          where: {
+            emp_code: "EMP999",
           },
         });
-        expect(employee.emp_name).toBe("伊藤 裕子");
-      });
 
-      test("従業員を更新する", async () => {
-        const updatedEmployee = await prisma.employee.update({
-          where: { emp_code: "EMP013" },
-          data: { emp_name: "伊藤 由紀子" },
-        });
-        expect(updatedEmployee.emp_name).toBe("伊藤 由紀子");
-      });
+        const result = await prisma.employee.findMany();
 
-      test("従業員を削除する", async () => {
-        const deletedEmployee = await prisma.employee.delete({
-          where: { emp_code: "EMP013" },
-        });
-        expect(deletedEmployee.emp_code).toBe("EMP013");
+        expect(result).toEqual(expected);
       });
 
       test("部署に所属する従業員を検索する", async () => {
         const employees = await prisma.employee.findMany({
           where: { dept_code: "11101" },
         });
-        expect(employees).toHaveLength(11);
+        expect(employees).toHaveLength(1);
       });
 
       test("従業員の名前を検索する", async () => {
         const employees = await prisma.employee.findMany({
-          where: { emp_name: "山田 太郎" },
+          where: { emp_name: "伊藤 裕子" },
         });
-        expect(employees).toHaveLength(6);
+        expect(employees).toHaveLength(1);
       });
 
       test("従業員のカナ名を検索する", async () => {
         const employees = await prisma.employee.findMany({
-          where: { emp_kana: "ヤマダ タロウ" },
+          where: { emp_kana: "イトウ ユウコ" },
         });
-        expect(employees).toHaveLength(5);
+        expect(employees).toHaveLength(1);
+      });
+
+      test("従業員を削除できる", async () => {
+        await prisma.employee.deleteMany({
+          where: {
+            emp_code: "EMP999",
+          },
+        });
+
+        const result = await prisma.employee.findMany();
+
+        expect(result).toEqual([]);
       });
     });
 
     describe("商品マスタ", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
-          await prisma.product_category.deleteMany(),
-            await prisma.product_category.createMany({
-              data: productCategories,
-            }),
-            await prisma.pricebycustomer.deleteMany(),
-            await prisma.products.deleteMany(),
-            await prisma.products.createMany({ data: products }),
-            await prisma.destinations_mst.deleteMany(),
-            await prisma.customers_mst.deleteMany(),
-            await prisma.supplier_mst.deleteMany(),
-            await prisma.company_category_group.deleteMany(),
-            await prisma.companys_mst.deleteMany(),
-            await prisma.companys_mst.createMany({ data: companys }),
-            await prisma.pricebycustomer.createMany({ data: priceByCustomers });
+          await prisma.product_category.deleteMany()
+          await prisma.pricebycustomer.deleteMany()
+          await prisma.products.deleteMany()
+          await prisma.destinations_mst.deleteMany()
+          await prisma.customers_mst.deleteMany()
+          await prisma.supplier_mst.deleteMany()
+          await prisma.company_category_group.deleteMany()
+          await prisma.companys_mst.deleteMany()
         });
+      });
+
+      const productCategories = [
+        {
+          category_code: "00101001",
+          prod_cate_name: "牛肉",
+          category_layer: 0,
+          category_path: "00100000~00101000~00101001",
+          lowest_flug: 1,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        },
+        {
+          category_code: "00101002",
+          prod_cate_name: "豚肉",
+          category_layer: 0,
+          category_path: "00100000~00101000~00101002",
+          lowest_flug: 1,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        },
+        {
+          category_code: "00102001",
+          prod_cate_name: "まぐろ",
+          category_layer: 0,
+          category_path: "00100000~00101000~00101001",
+          lowest_flug: 1,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        },
+        {
+          category_code: "00102002",
+          prod_cate_name: "えび",
+          category_layer: 0,
+          category_path: "00100000~00101000~00101001",
+          lowest_flug: 1,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        },
+        {
+          category_code: "00101000",
+          prod_cate_name: "食肉",
+          category_layer: 1,
+          category_path: "00100000~00101000",
+          lowest_flug: 0,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        },
+        {
+          category_code: "00102000",
+          prod_cate_name: "水産物",
+          category_layer: 1,
+          category_path: "00100000~00102000",
+          lowest_flug: 0,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        },
+        {
+          category_code: "00100000",
+          prod_cate_name: "生鮮食品",
+          category_layer: 2,
+          category_path: "00100000~00102000",
+          lowest_flug: 0,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        }
+      ]
+
+      const products = [
+        {
+          prod_code: "1010100X",
+          prod_fullname: "商品名",
+          prod_name: "商品名",
+          prod_kana: "ショウヒンメイ",
+          prod_type: "1",
+          serial_no: "1234567890",
+          unitprice: 1000,
+          po_price: 900,
+          prime_cost: 500,
+          tax_type: 1,
+          category_code: "00101001",
+          wide_use_type: 1,
+          stock_manage_type: 1,
+          stock_reserve_type: 1,
+          sup_code: "001",
+          sup_sub_no: 1,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        }
+      ];
+
+      test("商品を登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.product_category.createMany({ data: productCategories });
+          await prisma.products.createMany({ data: products });
+        });
+
+        const result = await prisma.products.findMany();
+
+        expect(result).toEqual(products);
+      });
+
+      test("商品を更新できる", async () => {
+        const expected: product[] = products.map((c) => {
+          return {
+            ...c,
+            prod_code: "1010100X",
+            prod_fullname: "商品名2",
+            prod_name: "商品名2",
+            prod_kana: "ショウヒンメイ2",
+            prod_type: "2",
+            serial_no: "1234567890123",
+            unitprice: 1000,
+            po_price: 800,
+            prime_cost: 500,
+            tax_type: 1,
+            category_code: "00101001",
+            wide_use_type: 1,
+            stock_manage_type: 1,
+            stock_reserve_type: 1,
+            sup_code: "001",
+            sup_sub_no: 1,
+          }
+        });
+
+        await prisma.products.updateMany({
+          data: expected[0],
+          where: {
+            prod_code: "1010100X",
+          },
+        });
+
+        const result = await prisma.products.findMany();
+
+        expect(result).toEqual(expected);
+      });
+
+      test("商品を削除できる", async () => {
+        await prisma.products.deleteMany({
+          where: {
+            prod_code: "1010100X",
+          },
+        });
+
+        const result = await prisma.products.findMany();
+
+        expect(result).toEqual([]);
+      });
+
+      test("商品分類を登録できる", async () => {
+        const productCategory = productCategories.map((c) => {
+          return {
+            ...c,
+            category_code: "00200000",
+            prod_cate_name: "商品カテゴリー名",
+            category_layer: 2,
+            category_path: "00100000",
+          }
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.product_category.create({
+            data: productCategory[0],
+          });
+        });
+
+        const result = await prisma.product_category.findMany(
+          {
+            where: {
+              category_code: "00200000",
+            },
+          }
+        );
+
+        expect(result[0]).toEqual(productCategory[0]);
+      });
+
+      test("商品分類を更新できる", async () => {
+        const expected: product_category[] = productCategories.map((c) => {
+          return {
+            ...c,
+            category_code: "0010200X",
+            prod_cate_name: "商品カテゴリー名2",
+          }
+        });
+
+        await prisma.product_category.updateMany({
+          data: expected[0],
+          where: {
+            category_code: "0010200X",
+          },
+        });
+
+        const result = await prisma.product_category.findMany();
+      });
+
+      test("商品分類を削除できる", async () => {
+        await prisma.product_category.deleteMany({
+          where: {
+            category_code: "0010200X",
+          },
+        });
+
+        const result = await prisma.product_category.findMany(
+          {
+            where: {
+              category_code: "0010200X",
+            },
+          }
+        );
+
+        expect(result).toEqual([]);
+      });
+
+      test("顧客別販売単価を登録できる", async () => {
+        const day = new Date("2021-01-01");
+        const companies: companys_mst[] = [
+          {
+            comp_code: "00X",
+            comp_name: "顧客名1",
+            comp_kana: "クスキメイ1",
+            sup_type: 0,
+            zip_code: "000-0000",
+            state: "都道府県",
+            address1: "住所1",
+            address2: "住所2",
+            no_sales_flg: 0,
+            wide_use_type: 0,
+            comp_group_code: "001",
+            max_credit: 10000,
+            temp_credit_up: 0,
+            create_date: day,
+            creator: null,
+            update_date: day,
+            updater: null
+          }
+        ]
+
+        const priceByCustomers: pricebycustomer[] = [
+          {
+            prod_code: "1010100X",
+            comp_code: "00X",
+            unitprice: 1000,
+            create_date: new Date("2021-01-01"),
+            creator: "user",
+            update_date: new Date("2021-01-01"),
+            updater: "user",
+          }
+        ];
+
+        await prisma.$transaction(async (prisma) => {
+          await prisma.companys_mst.createMany({ data: companies });
+          await prisma.products.createMany({ data: products });
+          await prisma.pricebycustomer.createMany({ data: priceByCustomers });
+        });
+
+        const result = await prisma.pricebycustomer.findMany();
+
+        expect(result).toEqual(priceByCustomers);
+      });
+
+      test("顧客別販売単価を更新できる", async () => {
+        const expected: pricebycustomer[] = priceByCustomers.map((c) => {
+          return {
+            ...c,
+            prod_code: "1010100X",
+            comp_code: "00X",
+            unitprice: 2000,
+          }
+        });
+
+        await prisma.pricebycustomer.updateMany({
+          data: expected[0],
+          where: {
+            prod_code: "1010100X",
+            comp_code: "00X",
+          },
+        });
+
+        const result = await prisma.pricebycustomer.findMany();
+
+        expect(result).toEqual(expected);
+      });
+
+      test("顧客別販売単価を削除できる", async () => {
+        await prisma.pricebycustomer.deleteMany({
+          where: {
+            prod_code: "1010100X",
+            comp_code: "00X",
+          },
+        });
+
+        const result = await prisma.pricebycustomer.findMany();
+
+        expect(result).toEqual([]);
       });
 
       test("商品コードの意味付けの例", async () => {
         const product = await prisma.products.findUnique({
-          where: { prod_code: "10101001" },
+          where: { prod_code: "1010100X" },
         });
         expect(product?.category_code).toBe("00101001");
         //商品コードの先頭1桁目は事業（01:生鮮食料品 02:缶詰...)
@@ -301,7 +574,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           product?.prod_code.slice(3, 5),
         );
         //商品コードの先頭6-8桁目は連番
-        expect(product?.prod_code.slice(5, 8)).toBe("001");
+        expect(product?.prod_code.slice(5, 8)).toBe("00X");
       });
 
       test("商品分類の階層構造", async () => {
@@ -324,22 +597,22 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
       test("製品（メーカー）型番", async () => {
         const product = await prisma.products.findUnique({
-          where: { prod_code: "10101001" },
+          where: { prod_code: "1010100X" },
         });
         expect(product?.serial_no).toBe("1234567890");
       });
 
       test("顧客商品コード対応", async () => {
         const product = await prisma.products.findUnique({
-          where: { prod_code: "10101001" },
+          where: { prod_code: "1010100X" },
         });
         expect(product?.sup_code).toBe("001");
-        expect(product?.sup_sub_no).toBe(0);
+        expect(product?.sup_sub_no).toBe(1);
       });
 
       test("販売単価と仕入単価", async () => {
         const product = await prisma.products.findUnique({
-          where: { prod_code: "10101001" },
+          where: { prod_code: "1010100X" },
         });
         expect(product?.unitprice).toBe(1000);
         expect(product?.po_price).toBe(900);
@@ -348,7 +621,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       describe("売上原価", () => {
         test("売上原価", async () => {
           const product = await prisma.products.findUnique({
-            where: { prod_code: "10101001" },
+            where: { prod_code: "1010100X" },
           });
           expect(product?.prime_cost).toBe(500);
         });
@@ -427,7 +700,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       describe("税区分", () => {
         test("税区分", async () => {
           const product = await prisma.products.findUnique({
-            where: { prod_code: "10101001" },
+            where: { prod_code: "1010100X" },
           });
           expect(product?.tax_type).toBe(1);
         });
@@ -458,359 +731,6 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         });
       });
 
-      describe("商品テーブル", () => {
-        test("全ての商品が正常に取得できる", async () => {
-          const expected: product[] = await prisma.$queryRaw`SELECT *
-                                                             FROM products`;
-          const result = await prisma.products.findMany();
-
-          expect(result).toEqual(expected);
-        });
-
-        test("特定の商品が正常に取得できる", async () => {
-          const prod_code = "10101001";
-          const expected: product[] = await prisma.$queryRaw`SELECT *
-                                                             FROM products
-                                                             WHERE prod_code = ${prod_code}`;
-          const result = await prisma.products.findUnique({
-            where: { prod_code: prod_code },
-          });
-
-          expect(result).toEqual(expected[0]);
-        });
-
-        test("新しい商品を追加できる", async () => {
-          const expected: product[] = [
-            {
-              prod_code: "10101004",
-              prod_fullname: "商品名",
-              prod_name: "商品名",
-              prod_kana: "ショウヒンメイ",
-              prod_type: "1",
-              serial_no: "1234567890123",
-              unitprice: 1000,
-              po_price: 800,
-              prime_cost: 500,
-              tax_type: 1,
-              category_code: "00101001",
-              wide_use_type: 1,
-              stock_manage_type: 1,
-              stock_reserve_type: 1,
-              sup_code: "00101001",
-              sup_sub_no: 1,
-              create_date: new Date("2021-01-01"),
-              creator: "user",
-              update_date: new Date("2021-01-01"),
-              updater: "user",
-            },
-          ];
-          await prisma.products.createMany({
-            data: expected,
-          });
-
-          const result = await prisma.products.findUnique({
-            where: { prod_code: expected[0].prod_code },
-          });
-
-          expect(result).toEqual(expected[0]);
-        });
-
-        test("商品の情報を正常に更新できる", async () => {
-          const product: product[] = [
-            {
-              prod_code: "10101005",
-              prod_fullname: "商品名",
-              prod_name: "商品名",
-              prod_kana: "ショウヒンメイ",
-              prod_type: "1",
-              serial_no: "1234567890123",
-              unitprice: 1000,
-              po_price: 800,
-              prime_cost: 500,
-              tax_type: 1,
-              category_code: "00101001",
-              wide_use_type: 1,
-              stock_manage_type: 1,
-              stock_reserve_type: 1,
-              sup_code: "00101001",
-              sup_sub_no: 1,
-              create_date: new Date("2021-01-01"),
-              creator: "user",
-              update_date: new Date("2021-01-01"),
-              updater: "user",
-            },
-          ];
-          await prisma.products.createMany({
-            data: product,
-          });
-
-          const expected: product[] = [
-            {
-              prod_code: "10101005",
-              prod_fullname: "商品名2",
-              prod_name: "商品名2",
-              prod_kana: "ショウヒンメイ2",
-              prod_type: "2",
-              serial_no: "1234567890123",
-              unitprice: 1001,
-              po_price: 801,
-              prime_cost: 501,
-              tax_type: 2,
-              category_code: "00101002",
-              wide_use_type: 2,
-              stock_manage_type: 2,
-              stock_reserve_type: 2,
-              sup_code: "00101002",
-              sup_sub_no: 2,
-              create_date: new Date("2021-01-02"),
-              creator: "user",
-              update_date: new Date("2021-01-02"),
-              updater: "user",
-            },
-          ];
-          await prisma.products.update({
-            data: expected[0],
-            where: {
-              prod_code: product[0].prod_code,
-            },
-          });
-
-          const result = await prisma.products.findUnique({
-            where: { prod_code: expected[0].prod_code },
-          });
-          expect(result).toEqual(expected[0]);
-        });
-
-        test("商品を削除できる", async () => {
-          const product: product[] = [
-            {
-              prod_code: "10101006",
-              prod_fullname: "商品名",
-              prod_name: "商品名",
-              prod_kana: "ショウヒンメイ",
-              prod_type: "1",
-              serial_no: "1234567890123",
-              unitprice: 1000,
-              po_price: 800,
-              prime_cost: 500,
-              tax_type: 1,
-              category_code: "00101001",
-              wide_use_type: 1,
-              stock_manage_type: 1,
-              stock_reserve_type: 1,
-              sup_code: "00101001",
-              sup_sub_no: 1,
-              create_date: new Date("2021-01-01"),
-              creator: "user",
-              update_date: new Date("2021-01-01"),
-              updater: "user",
-            },
-          ];
-          await prisma.products.createMany({
-            data: product,
-          });
-
-          await prisma.products.delete({
-            where: { prod_code: product[0].prod_code },
-          });
-
-          const result = await prisma.products.findUnique({
-            where: { prod_code: product[0].prod_code },
-          });
-          expect(result).toBeNull();
-        });
-      });
-
-      describe("商品カテゴリーテーブル", () => {
-        test("全ての商品カテゴリーが正常に取得できる", async () => {
-          const expected: product_category[] = await prisma.$queryRaw`SELECT *
-                                                                      FROM product_category`;
-          const result = await prisma.product_category.findMany();
-
-          expect(result).toHaveLength(expected.length);
-        });
-
-        test("特定の商品カテゴリーが正常に取得できる", async () => {
-          const category_code = "00101001";
-          const expected: product_category[] = await prisma.$queryRaw`SELECT *
-                                                                      FROM product_category
-                                                                      WHERE category_code = ${category_code}`;
-
-          const result = await prisma.product_category.findUnique({
-            where: { category_code: category_code },
-          });
-          expect(result).toEqual(expected[0]);
-        });
-
-        test("新しい商品カテゴリーを追加できる", async () => {
-          // 新しい商品カテゴリーをデータベースに追加し、その商品カテゴリーが正常に登録されたことを検証するテスト
-          const expected: product_category = {
-            category_code: "00101006",
-            prod_cate_name: "商品カテゴリー名",
-            category_layer: 1,
-            category_path: "00101001",
-            lowest_flug: 1,
-            create_date: new Date("2021-01-01"),
-            creator: "user",
-            update_date: new Date("2021-01-01"),
-            updater: "user",
-          };
-          await prisma.product_category.create({
-            data: expected,
-          });
-
-          const result = await prisma.product_category.findUnique({
-            where: { category_code: expected.category_code },
-          });
-          expect(result).toEqual(expected);
-        });
-
-        test("商品カテゴリーの情報を正常に更新できる", async () => {
-          // データベース内の商品カテゴリーの情報を更新し、その情報が正常に変更されたことを検証するテスト
-          const expected: product_category = {
-            category_code: "00101006",
-            prod_cate_name: "商品カテゴリー名1",
-            category_layer: 0,
-            category_path: "00101006",
-            lowest_flug: 0,
-            create_date: new Date("2021-01-02"),
-            creator: "user",
-            update_date: new Date("2021-01-02"),
-            updater: "user",
-          };
-          await prisma.product_category.update({
-            data: expected,
-            where: {
-              category_code: expected.category_code,
-            },
-          });
-
-          const result = await prisma.product_category.findUnique({
-            where: { category_code: expected.category_code },
-          });
-          expect(result).toEqual(expected);
-        });
-
-        test("商品カテゴリーを削除できる", async () => {
-          const category_code = "00101006";
-          await prisma.product_category.delete({
-            where: { category_code: category_code },
-          });
-
-          const result = await prisma.product_category.findUnique({
-            where: { category_code: category_code },
-          });
-          expect(result).toBeNull();
-        });
-      });
-
-      describe("顧客別販売単価テーブル", () => {
-        test("全ての顧客別販売単価が正常に取得できる", async () => {
-          const expected: pricebycustomer[] = await prisma.$queryRaw`SELECT *
-                                                                     FROM pricebycustomer`;
-          const result = await prisma.pricebycustomer.findMany();
-
-          expect(result).toHaveLength(expected.length);
-        });
-
-        test("特定の顧客別販売単価が正常に取得できる", async () => {
-          const prod_code = "10101001";
-          const comp_code = "001";
-          const expected: pricebycustomer[] = await prisma.$queryRaw`SELECT *
-                                                                     FROM pricebycustomer
-                                                                     WHERE prod_code = ${prod_code}
-                                                                       AND comp_code = ${comp_code}`;
-
-          const result = await prisma.pricebycustomer.findUnique({
-            where: {
-              prod_code_comp_code: {
-                prod_code: prod_code,
-                comp_code: comp_code,
-              },
-            },
-          });
-          expect(result).toEqual(expected[0]);
-        });
-
-        test("新しい顧客別販売単価を追加できる", async () => {
-          const expected: pricebycustomer = {
-            prod_code: "10101002",
-            comp_code: "001",
-            unitprice: 1000,
-            create_date: new Date("2021-01-01"),
-            creator: "user",
-            update_date: new Date("2021-01-01"),
-            updater: "user",
-          };
-          await prisma.pricebycustomer.create({
-            data: expected,
-          });
-
-          const result = await prisma.pricebycustomer.findUnique({
-            where: {
-              prod_code_comp_code: {
-                prod_code: expected.prod_code,
-                comp_code: expected.comp_code,
-              },
-            },
-          });
-          expect(result).toEqual(expected);
-        });
-
-        test("顧客別販売単価の情報を正常に更新できる", async () => {
-          const expected: pricebycustomer = {
-            prod_code: "10101002",
-            comp_code: "001",
-            unitprice: 2000,
-            create_date: new Date("2021-01-02"),
-            creator: "user",
-            update_date: new Date("2021-01-02"),
-            updater: "user",
-          };
-          await prisma.pricebycustomer.update({
-            data: expected,
-            where: {
-              prod_code_comp_code: {
-                prod_code: expected.prod_code,
-                comp_code: expected.comp_code,
-              },
-            },
-          });
-
-          const result = await prisma.pricebycustomer.findUnique({
-            where: {
-              prod_code_comp_code: {
-                prod_code: expected.prod_code,
-                comp_code: expected.comp_code,
-              },
-            },
-          });
-          expect(result).toEqual(expected);
-        });
-
-        test("顧客別販売単価を削除できる", async () => {
-          const prod_code = "10101002";
-          const comp_code = "001";
-          await prisma.pricebycustomer.delete({
-            where: {
-              prod_code_comp_code: {
-                prod_code: prod_code,
-                comp_code: comp_code,
-              },
-            },
-          });
-
-          const result = await prisma.pricebycustomer.findUnique({
-            where: {
-              prod_code_comp_code: {
-                prod_code: prod_code,
-                comp_code: comp_code,
-              },
-            },
-          });
-          expect(result).toBeNull();
-        });
-      });
     });
   });
 
