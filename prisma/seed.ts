@@ -1,4 +1,4 @@
-import { PrismaClient} from "@prisma/client";
+import { PrismaClient, order_details, orders, wh_mst } from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -132,7 +132,7 @@ async function main() {
   }
 
   console.table(areas)
-  for(const area of areas) {
+  for (const area of areas) {
     await prisma.area_mst.upsert({
       where: {
         area_code: area.area_code
@@ -143,7 +143,7 @@ async function main() {
   }
 
   console.table(destinations)
-  for(const dest of destinations) {
+  for (const dest of destinations) {
     await prisma.destinations_mst.upsert({
       where: {
         comp_code_dist_no_comp_sub_no: {
@@ -158,7 +158,7 @@ async function main() {
   }
 
   console.table(companyGroups)
-  for(const group of companyGroups) {
+  for (const group of companyGroups) {
     await prisma.company_group_mst.upsert({
       where: {
         comp_group_code: group.comp_group_code
@@ -169,7 +169,7 @@ async function main() {
   }
 
   console.table(categoryTypes)
-  for(const cateType of categoryTypes) {
+  for (const cateType of categoryTypes) {
     await prisma.category_type.upsert({
       where: {
         category_type_code: cateType.category_type_code
@@ -180,7 +180,7 @@ async function main() {
   }
 
   console.table(companyCategories)
-  for(const cate of companyCategories) {
+  for (const cate of companyCategories) {
     await prisma.company_category.upsert({
       where: {
         comp_cate_code_category_type: {
@@ -194,7 +194,7 @@ async function main() {
   }
 
   console.table(companyCategoryGroups)
-  for(const group of companyCategoryGroups) {
+  for (const group of companyCategoryGroups) {
     await prisma.company_category_group.upsert({
       where: {
         category_type_comp_code_comp_cate_code: {
@@ -207,6 +207,116 @@ async function main() {
       update: group
     })
   }
+
+  await prisma.order_details.deleteMany({});
+  await prisma.orders.deleteMany({});
+  await prisma.wh_mst.deleteMany({});
+
+  const wharehouses: wh_mst[] = [{
+    wh_code: "001",
+    wh_name: "本社倉庫",
+    wh_type: "1",
+    zip_code: "000-0000",
+    state: "東京都",
+    address1: "千代田区",
+    address2: "千代田1-1-1",
+    create_date: new Date(),
+    creator: "0001",
+    update_date: new Date(),
+    updater: "0001",
+  }];
+  await prisma.wh_mst.createMany({
+    data: wharehouses
+  });
+
+  const orders: orders[] = [{
+    order_no: "0000000001",
+    order_date: new Date(),
+    dept_code: "11101",
+    start_date: new Date("2021-01-01"),
+    cust_code: "001",
+    cust_sub_no: 1,
+    emp_code: "EMP001",
+    required_date: new Date(),
+    custorder_no: "0000000001",
+    wh_code: "001",
+    order_amnt: 1000,
+    cmp_tax: 10,
+    slip_comment: "test",
+    create_date: new Date(),
+    creator: "0001",
+    update_date: new Date(),
+    updater: "0001",
+  }];
+
+  const order_details: order_details[] = [{
+    order_no: "0000000001",
+    so_row_no: 1,
+    prod_code: "0001",
+    prod_name: "test",
+    unitprice: 100,
+    quantity: 10,
+    cmp_tax_rate: 10,
+    reserve_qty: 0,
+    delivery_order_qty: 0,
+    delivered_qty: 0,
+    complete_flg: 0,
+    discount: 0,
+    delivery_date: new Date(),
+    create_date: new Date(),
+    creator: "0001",
+    update_date: new Date(),
+    updater: "0001",
+  },
+  {
+    order_no: "0000000001",
+    so_row_no: 2,
+    prod_code: "0001",
+    prod_name: "test",
+    unitprice: 100,
+    quantity: 10,
+    cmp_tax_rate: 10,
+    reserve_qty: 0,
+    delivery_order_qty: 0,
+    delivered_qty: 0,
+    complete_flg: 0,
+    discount: 0,
+    delivery_date: new Date(),
+    create_date: new Date(),
+    creator: "0001",
+    update_date: new Date(),
+    updater: "0001",
+  },
+  {
+    order_no: "0000000001",
+    so_row_no: 3,
+    prod_code: "0001",
+    prod_name: "test",
+    unitprice: 100,
+    quantity: 10,
+    cmp_tax_rate: 10,
+    reserve_qty: 0,
+    delivery_order_qty: 0,
+    delivered_qty: 0,
+    complete_flg: 0,
+    discount: 0,
+    delivery_date: new Date(),
+    create_date: new Date(),
+    creator: "0001",
+    update_date: new Date(),
+    updater: "0001",
+  }
+  ];
+
+  await prisma.$transaction(async (prisma) => {
+    await prisma.orders.createMany({
+      data: orders
+    });
+    await prisma.order_details.createMany({
+      data: order_details
+    });
+  });
+
 
 }
 

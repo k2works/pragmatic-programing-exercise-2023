@@ -415,6 +415,134 @@ COMMENT ON COLUMN company_group_mst.create_date IS '作成日時';
 COMMENT ON COLUMN company_group_mst.creator IS '作成者名';
 COMMENT ON COLUMN company_group_mst.update_date IS '更新日時';
 COMMENT ON COLUMN company_group_mst.updater IS '更新者名';
+CREATE TABLE orders (
+    order_no VARCHAR(10) NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    dept_code VARCHAR(6) NOT NULL,
+    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    cust_code VARCHAR(8) NOT NULL,
+    cust_sub_no INTEGER,
+    emp_code VARCHAR(10) NOT NULL,
+    required_date TIMESTAMP,
+    custorder_no VARCHAR(20),
+    wh_code VARCHAR(3) NOT NULL,
+    order_amnt INTEGER DEFAULT 0 NOT NULL,
+    cmp_tax INTEGER DEFAULT 0 NOT NULL,
+    slip_comment VARCHAR(1000),
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE orders
+ADD CONSTRAINT pk_orders PRIMARY KEY (order_no);
+COMMENT ON TABLE orders IS '受注データ';
+COMMENT ON COLUMN orders.order_no IS '受注番号';
+COMMENT ON COLUMN orders.order_date IS '受注日';
+COMMENT ON COLUMN orders.dept_code IS '部門コード';
+COMMENT ON COLUMN orders.start_date IS '部門開始日';
+COMMENT ON COLUMN orders.cust_code IS '顧客コード';
+COMMENT ON COLUMN orders.cust_sub_no IS '顧客枝番';
+COMMENT ON COLUMN orders.emp_code IS '社員コード';
+COMMENT ON COLUMN orders.required_date IS '希望納期';
+COMMENT ON COLUMN orders.custorder_no IS '客先注文番号';
+COMMENT ON COLUMN orders.wh_code IS '倉庫コード';
+COMMENT ON COLUMN orders.order_amnt IS '受注金額合計';
+COMMENT ON COLUMN orders.cmp_tax IS '消費税金額';
+COMMENT ON COLUMN orders.slip_comment IS '備考';
+COMMENT ON COLUMN orders.create_date IS '作成日時';
+COMMENT ON COLUMN orders.creator IS '作成者名';
+COMMENT ON COLUMN orders.update_date IS '更新日時';
+COMMENT ON COLUMN orders.updater IS '更新者名';
+CREATE TABLE order_details (
+    order_no VARCHAR(10) NOT NULL,
+    so_row_no INTEGER NOT NULL,
+    prod_code VARCHAR(16) NOT NULL,
+    prod_name VARCHAR(10) NOT NULL,
+    unitprice INTEGER DEFAULT 0 NOT NULL,
+    quantity INTEGER DEFAULT 1 NOT NULL,
+    cmp_tax_rate INTEGER,
+    reserve_qty INTEGER DEFAULT 0,
+    delivery_order_qty INTEGER DEFAULT 0,
+    delivered_qty INTEGER DEFAULT 0,
+    complete_flg INTEGER DEFAULT 0 NOT NULL,
+    discount INTEGER DEFAULT 0 NOT NULL,
+    delivery_date TIMESTAMP,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE order_details
+ADD CONSTRAINT order_details_pkey PRIMARY KEY (order_no, so_row_no);
+ALTER TABLE order_details
+ADD CHECK (delivered_qty >= 0);
+ALTER TABLE order_details
+ADD CHECK (complete_flg IN (0, 1));
+COMMENT ON TABLE order_details IS '受注データ明細';
+COMMENT ON COLUMN order_details.order_no IS '受注番号';
+COMMENT ON COLUMN order_details.so_row_no IS '受注行番号';
+COMMENT ON COLUMN order_details.prod_code IS '商品コード';
+COMMENT ON COLUMN order_details.prod_name IS '商品名';
+COMMENT ON COLUMN order_details.unitprice IS '販売単価';
+COMMENT ON COLUMN order_details.quantity IS '受注数量';
+COMMENT ON COLUMN order_details.cmp_tax_rate IS '消費税率';
+COMMENT ON COLUMN order_details.reserve_qty IS '引当数量';
+COMMENT ON COLUMN order_details.delivery_order_qty IS '出荷指示数量';
+COMMENT ON COLUMN order_details.delivered_qty IS '出荷済数量';
+COMMENT ON COLUMN order_details.complete_flg IS '完了フラグ,0:未完了, 1:完了';
+COMMENT ON COLUMN order_details.discount IS '値引金額';
+COMMENT ON COLUMN order_details.delivery_date IS '納期';
+COMMENT ON COLUMN order_details.create_date IS '作成日時';
+COMMENT ON COLUMN order_details.creator IS '作成者名';
+COMMENT ON COLUMN order_details.update_date IS '更新日時';
+COMMENT ON COLUMN order_details.updater IS '更新者名';
+CREATE TABLE wh_mst (
+    wh_code VARCHAR(3) NOT NULL,
+    wh_name VARCHAR(20),
+    wh_type VARCHAR(1) DEFAULT 'N',
+    zip_code CHAR(8),
+    state VARCHAR(4),
+    address1 VARCHAR(40),
+    address2 VARCHAR(40),
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE wh_mst
+ADD CONSTRAINT pk_wh_mst PRIMARY KEY (wh_code);
+COMMENT ON TABLE wh_mst IS '倉庫マスタ';
+COMMENT ON COLUMN wh_mst.wh_code IS '倉庫コード';
+COMMENT ON COLUMN wh_mst.wh_name IS '倉庫名';
+COMMENT ON COLUMN wh_mst.wh_type IS '倉庫区分,N:通常倉庫 C:得意先 S:仕入先 D:部門倉庫 P:製品倉庫 M:原材料倉庫';
+COMMENT ON COLUMN wh_mst.zip_code IS '郵便番号';
+COMMENT ON COLUMN wh_mst.state IS '都道府県';
+COMMENT ON COLUMN wh_mst.address1 IS '住所１';
+COMMENT ON COLUMN wh_mst.address2 IS '住所２';
+COMMENT ON COLUMN wh_mst.create_date IS '作成日時';
+COMMENT ON COLUMN wh_mst.creator IS '作成者名';
+COMMENT ON COLUMN wh_mst.update_date IS '更新日時';
+COMMENT ON COLUMN wh_mst.updater IS '更新者名';
+CREATE TABLE wh_dept_mst (
+    wh_code VARCHAR(3) NOT NULL,
+    dept_code VARCHAR(6) NOT NULL,
+    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE wh_dept_mst
+ADD CONSTRAINT pk_wh_dept_mst PRIMARY KEY (wh_code, dept_code, start_date);
+COMMENT ON TABLE wh_dept_mst IS '倉庫部門マスタ';
+COMMENT ON COLUMN wh_dept_mst.wh_code IS '倉庫コード';
+COMMENT ON COLUMN wh_dept_mst.dept_code IS '部門コード';
+COMMENT ON COLUMN wh_dept_mst.start_date IS '開始日';
+COMMENT ON COLUMN wh_dept_mst.create_date IS '作成日時';
+COMMENT ON COLUMN wh_dept_mst.creator IS '作成者名';
+COMMENT ON COLUMN wh_dept_mst.update_date IS '更新日時';
+COMMENT ON COLUMN wh_dept_mst.updater IS '更新者名';
 CREATE TABLE stock (
     wh_code VARCHAR(3) NOT NULL,
     prod_code VARCHAR(16) NOT NULL,
@@ -619,88 +747,6 @@ COMMENT ON TABLE auto_number IS '自動採番マスタ';
 COMMENT ON COLUMN auto_number.slip_type IS '伝票種別コード';
 COMMENT ON COLUMN auto_number.yearmonth IS '年月';
 COMMENT ON COLUMN auto_number.last_silp_no IS '最終伝票番号';
-CREATE TABLE orders (
-    order_no VARCHAR(10) NOT NULL,
-    order_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    dept_code VARCHAR(6) NOT NULL,
-    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    cust_code VARCHAR(8) NOT NULL,
-    cust_sub_no INTEGER,
-    emp_code VARCHAR(10) NOT NULL,
-    required_date TIMESTAMP,
-    custorder_no VARCHAR(20),
-    wh_code VARCHAR(3) NOT NULL,
-    order_amnt INTEGER DEFAULT 0 NOT NULL,
-    cmp_tax INTEGER DEFAULT 0 NOT NULL,
-    slip_comment VARCHAR(1000),
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE orders
-ADD CONSTRAINT pk_orders PRIMARY KEY (order_no);
-COMMENT ON TABLE orders IS '受注データ';
-COMMENT ON COLUMN orders.order_no IS '受注番号';
-COMMENT ON COLUMN orders.order_date IS '受注日';
-COMMENT ON COLUMN orders.dept_code IS '部門コード';
-COMMENT ON COLUMN orders.start_date IS '部門開始日';
-COMMENT ON COLUMN orders.cust_code IS '顧客コード';
-COMMENT ON COLUMN orders.cust_sub_no IS '顧客枝番';
-COMMENT ON COLUMN orders.emp_code IS '社員コード';
-COMMENT ON COLUMN orders.required_date IS '希望納期';
-COMMENT ON COLUMN orders.custorder_no IS '客先注文番号';
-COMMENT ON COLUMN orders.wh_code IS '倉庫コード';
-COMMENT ON COLUMN orders.order_amnt IS '受注金額合計';
-COMMENT ON COLUMN orders.cmp_tax IS '消費税金額';
-COMMENT ON COLUMN orders.slip_comment IS '備考';
-COMMENT ON COLUMN orders.create_date IS '作成日時';
-COMMENT ON COLUMN orders.creator IS '作成者名';
-COMMENT ON COLUMN orders.update_date IS '更新日時';
-COMMENT ON COLUMN orders.updater IS '更新者名';
-CREATE TABLE order_details (
-    order_no VARCHAR(10) NOT NULL,
-    so_row_no INTEGER NOT NULL,
-    prod_code VARCHAR(16) NOT NULL,
-    prod_name VARCHAR(10) NOT NULL,
-    unitprice INTEGER DEFAULT 0 NOT NULL,
-    quantity INTEGER DEFAULT 1 NOT NULL,
-    cmp_tax_rate INTEGER,
-    reserve_qty INTEGER DEFAULT 0,
-    delivery_order_qty INTEGER DEFAULT 0,
-    delivered_qty INTEGER DEFAULT 0,
-    complete_flg INTEGER DEFAULT 0 NOT NULL,
-    discount INTEGER DEFAULT 0 NOT NULL,
-    delivery_date TIMESTAMP,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE order_details
-ADD CONSTRAINT order_details_pkey PRIMARY KEY (order_no, so_row_no);
-ALTER TABLE order_details
-ADD CHECK (delivered_qty >= 0);
-ALTER TABLE order_details
-ADD CHECK (complete_flg IN (0, 1));
-COMMENT ON TABLE order_details IS '受注データ明細';
-COMMENT ON COLUMN order_details.order_no IS '受注番号';
-COMMENT ON COLUMN order_details.so_row_no IS '受注行番号';
-COMMENT ON COLUMN order_details.prod_code IS '商品コード';
-COMMENT ON COLUMN order_details.prod_name IS '商品名';
-COMMENT ON COLUMN order_details.unitprice IS '販売単価';
-COMMENT ON COLUMN order_details.quantity IS '受注数量';
-COMMENT ON COLUMN order_details.cmp_tax_rate IS '消費税率';
-COMMENT ON COLUMN order_details.reserve_qty IS '引当数量';
-COMMENT ON COLUMN order_details.delivery_order_qty IS '出荷指示数量';
-COMMENT ON COLUMN order_details.delivered_qty IS '出荷済数量';
-COMMENT ON COLUMN order_details.complete_flg IS '完了フラグ,0:未完了, 1:完了';
-COMMENT ON COLUMN order_details.discount IS '値引金額';
-COMMENT ON COLUMN order_details.delivery_date IS '納期';
-COMMENT ON COLUMN order_details.create_date IS '作成日時';
-COMMENT ON COLUMN order_details.creator IS '作成者名';
-COMMENT ON COLUMN order_details.update_date IS '更新日時';
-COMMENT ON COLUMN order_details.updater IS '更新者名';
 CREATE TABLE invoice (
     invoice_no VARCHAR(10) NOT NULL,
     invoiced_date TIMESTAMP,
@@ -753,52 +799,6 @@ COMMENT ON COLUMN invoice_details.create_date IS '作成日時';
 COMMENT ON COLUMN invoice_details.creator IS '作成者名';
 COMMENT ON COLUMN invoice_details.update_date IS '更新日時';
 COMMENT ON COLUMN invoice_details.updater IS '更新者名';
-CREATE TABLE wh_mst (
-    wh_code VARCHAR(3) NOT NULL,
-    wh_name VARCHAR(20),
-    wh_type VARCHAR(1) DEFAULT 'N',
-    zip_code CHAR(8),
-    state VARCHAR(4),
-    address1 VARCHAR(40),
-    address2 VARCHAR(40),
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE wh_mst
-ADD CONSTRAINT pk_wh_mst PRIMARY KEY (wh_code);
-COMMENT ON TABLE wh_mst IS '倉庫マスタ';
-COMMENT ON COLUMN wh_mst.wh_code IS '倉庫コード';
-COMMENT ON COLUMN wh_mst.wh_name IS '倉庫名';
-COMMENT ON COLUMN wh_mst.wh_type IS '倉庫区分,N:通常倉庫 C:得意先 S:仕入先 D:部門倉庫 P:製品倉庫 M:原材料倉庫';
-COMMENT ON COLUMN wh_mst.zip_code IS '郵便番号';
-COMMENT ON COLUMN wh_mst.state IS '都道府県';
-COMMENT ON COLUMN wh_mst.address1 IS '住所１';
-COMMENT ON COLUMN wh_mst.address2 IS '住所２';
-COMMENT ON COLUMN wh_mst.create_date IS '作成日時';
-COMMENT ON COLUMN wh_mst.creator IS '作成者名';
-COMMENT ON COLUMN wh_mst.update_date IS '更新日時';
-COMMENT ON COLUMN wh_mst.updater IS '更新者名';
-CREATE TABLE wh_dept_mst (
-    wh_code VARCHAR(3) NOT NULL,
-    dept_code VARCHAR(6) NOT NULL,
-    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE wh_dept_mst
-ADD CONSTRAINT pk_wh_dept_mst PRIMARY KEY (wh_code, dept_code, start_date);
-COMMENT ON TABLE wh_dept_mst IS '倉庫部門マスタ';
-COMMENT ON COLUMN wh_dept_mst.wh_code IS '倉庫コード';
-COMMENT ON COLUMN wh_dept_mst.dept_code IS '部門コード';
-COMMENT ON COLUMN wh_dept_mst.start_date IS '開始日';
-COMMENT ON COLUMN wh_dept_mst.create_date IS '作成日時';
-COMMENT ON COLUMN wh_dept_mst.creator IS '作成者名';
-COMMENT ON COLUMN wh_dept_mst.update_date IS '更新日時';
-COMMENT ON COLUMN wh_dept_mst.updater IS '更新者名';
 CREATE TABLE alternate_products (
     prod_code VARCHAR(16) NOT NULL,
     alt_prod_code VARCHAR(16) NOT NULL,

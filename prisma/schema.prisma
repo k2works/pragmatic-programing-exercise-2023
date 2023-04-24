@@ -297,6 +297,87 @@ model company_category_group {
   @@id([category_type, comp_code, comp_cate_code], map: "pk_company_category_group")
 }
 
+model orders {
+  order_no      String          @id(map: "pk_orders") @db.VarChar(10)
+  order_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  dept_code     String          @db.VarChar(6)
+  start_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  cust_code     String          @db.VarChar(8)
+  cust_sub_no   Int?
+  emp_code      String          @db.VarChar(10)
+  required_date DateTime?       @db.Timestamp(6)
+  custorder_no  String?         @db.VarChar(20)
+  wh_code       String          @db.VarChar(3)
+  order_amnt    Int             @default(0)
+  cmp_tax       Int             @default(0)
+  slip_comment  String?         @db.VarChar(1000)
+  create_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?         @db.VarChar(12)
+  update_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?         @db.VarChar(12)
+  order_details order_details[]
+  customers_mst customers_mst?  @relation(fields: [cust_code, cust_sub_no], references: [cust_code, cust_sub_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_customers_mst_orders")
+  dept_mst      dept_mst        @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_orders")
+  employee      employee        @relation(fields: [emp_code], references: [emp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_orders")
+  wh_mst        wh_mst          @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_orders")
+}
+
+model order_details {
+  order_no           String    @db.VarChar(10)
+  so_row_no          Int
+  prod_code          String    @db.VarChar(16)
+  prod_name          String    @db.VarChar(10)
+  unitprice          Int       @default(0)
+  quantity           Int       @default(1)
+  cmp_tax_rate       Int?
+  reserve_qty        Int?      @default(0)
+  delivery_order_qty Int?      @default(0)
+  delivered_qty      Int?      @default(0)
+  complete_flg       Int       @default(0)
+  discount           Int       @default(0)
+  delivery_date      DateTime? @db.Timestamp(6)
+  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?   @db.VarChar(12)
+  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?   @db.VarChar(12)
+  orders             orders    @relation(fields: [order_no], references: [order_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_order_details")
+
+  @@id([order_no, so_row_no])
+}
+
+model wh_mst {
+  wh_code      String         @id(map: "pk_wh_mst") @db.VarChar(3)
+  wh_name      String?        @db.VarChar(20)
+  wh_type      String?        @default("N") @db.VarChar(1)
+  zip_code     String?        @db.Char(8)
+  state        String?        @db.VarChar(4)
+  address1     String?        @db.VarChar(40)
+  address2     String?        @db.VarChar(40)
+  create_date  DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator      String?        @db.VarChar(12)
+  update_date  DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater      String?        @db.VarChar(12)
+  location_mst location_mst[]
+  orders       orders[]
+  pu_details   pu_details[]
+  stock        stock[]
+  wh_dept_mst  wh_dept_mst[]
+}
+
+model wh_dept_mst {
+  wh_code     String   @db.VarChar(3)
+  dept_code   String   @db.VarChar(6)
+  start_date  DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator     String?  @db.VarChar(12)
+  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater     String?  @db.VarChar(12)
+  dept_mst    dept_mst @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_wh_dept_mst")
+  wh_mst      wh_mst   @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_wh_dept_mst")
+
+  @@id([wh_code, dept_code, start_date], map: "pk_wh_dept_mst")
+}
+
 model alternate_products {
   prod_code     String   @db.VarChar(16)
   alt_prod_code String   @db.VarChar(16)
@@ -426,54 +507,6 @@ model location_mst {
   wh_mst        wh_mst   @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_棚番マスタ")
 
   @@id([wh_code, location_code, prod_code], map: "pk_location_mst")
-}
-
-model order_details {
-  order_no           String    @db.VarChar(10)
-  so_row_no          Int
-  prod_code          String    @db.VarChar(16)
-  prod_name          String    @db.VarChar(10)
-  unitprice          Int       @default(0)
-  quantity           Int       @default(1)
-  cmp_tax_rate       Int?
-  reserve_qty        Int?      @default(0)
-  delivery_order_qty Int?      @default(0)
-  delivered_qty      Int?      @default(0)
-  complete_flg       Int       @default(0)
-  discount           Int       @default(0)
-  delivery_date      DateTime? @db.Timestamp(6)
-  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator            String?   @db.VarChar(12)
-  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater            String?   @db.VarChar(12)
-  orders             orders    @relation(fields: [order_no], references: [order_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_orders_order_details")
-
-  @@id([order_no, so_row_no])
-}
-
-model orders {
-  order_no      String          @id(map: "pk_orders") @db.VarChar(10)
-  order_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  dept_code     String          @db.VarChar(6)
-  start_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  cust_code     String          @db.VarChar(8)
-  cust_sub_no   Int?
-  emp_code      String          @db.VarChar(10)
-  required_date DateTime?       @db.Timestamp(6)
-  custorder_no  String?         @db.VarChar(20)
-  wh_code       String          @db.VarChar(3)
-  order_amnt    Int             @default(0)
-  cmp_tax       Int             @default(0)
-  slip_comment  String?         @db.VarChar(1000)
-  create_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator       String?         @db.VarChar(12)
-  update_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater       String?         @db.VarChar(12)
-  order_details order_details[]
-  customers_mst customers_mst?  @relation(fields: [cust_code, cust_sub_no], references: [cust_code, cust_sub_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_customers_mst_orders")
-  dept_mst      dept_mst        @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_orders")
-  employee      employee        @relation(fields: [emp_code], references: [emp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_orders")
-  wh_mst        wh_mst          @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_orders")
 }
 
 model pay {
@@ -638,37 +671,4 @@ model stock {
   wh_mst             wh_mst    @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_stock")
 
   @@id([wh_code, prod_code, rot_no, stock_type, quality_type], map: "pk_stock")
-}
-
-model wh_dept_mst {
-  wh_code     String   @db.VarChar(3)
-  dept_code   String   @db.VarChar(6)
-  start_date  DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator     String?  @db.VarChar(12)
-  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater     String?  @db.VarChar(12)
-  dept_mst    dept_mst @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_wh_dept_mst")
-  wh_mst      wh_mst   @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_wh_dept_mst")
-
-  @@id([wh_code, dept_code, start_date], map: "pk_wh_dept_mst")
-}
-
-model wh_mst {
-  wh_code      String         @id(map: "pk_wh_mst") @db.VarChar(3)
-  wh_name      String?        @db.VarChar(20)
-  wh_type      String?        @default("N") @db.VarChar(1)
-  zip_code     String?        @db.Char(8)
-  state        String?        @db.VarChar(4)
-  address1     String?        @db.VarChar(40)
-  address2     String?        @db.VarChar(40)
-  create_date  DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator      String?        @db.VarChar(12)
-  update_date  DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater      String?        @db.VarChar(12)
-  location_mst location_mst[]
-  orders       orders[]
-  pu_details   pu_details[]
-  stock        stock[]
-  wh_dept_mst  wh_dept_mst[]
 }
