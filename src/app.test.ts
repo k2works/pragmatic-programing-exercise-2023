@@ -1476,290 +1476,292 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
 describe("Part 2 販売システムのDB設計", () => {
   describe("Chapter 5 受注業務のDB設計", () => {
-    beforeAll(async () => {
-      await prisma.order_details.deleteMany({});
-      await prisma.orders.deleteMany({});
-      await prisma.wh_mst.deleteMany({});
-      await prisma.customers_mst.deleteMany({});
-      await prisma.companys_mst.deleteMany({});
-      await prisma.employee.deleteMany({});
-      await prisma.dept_mst.deleteMany({});
-    });
-
-    const departments: dept_mst[] = [
-      {
-        dept_code: "11101",
-        start_date: new Date("2021-01-01"),
-        end_date: new Date("2021-12-31"),
-        dep_name: "新規部署",
-        dept_layer: 1,
-        dept_psth: "10000~11000~11100~11101~",
-        bottom_type: 1,
-        slit_yn: 0,
-        create_date: new Date("2021-01-01"),
-        creator: "admin",
-        update_date: new Date("2021-01-01"),
-        updater: "admin",
-      }
-    ];
-    const employees = [
-      {
-        emp_code: "EMP999",
-        emp_name: "伊藤 裕子",
-        emp_kana: "イトウ ユウコ",
-        login_password: "password",
-        tel: "090-1234-5678",
-        fax: "03-1234-5678",
-        dept_code: "11101",
-        start_date: new Date("2021-01-01"),
-        occu_code: "",
-        approval_code: "",
-        create_date: new Date("2021-01-01"),
-        creator: "admin",
-        update_date: new Date("2021-01-01"),
-        updater: "admin",
-      }
-    ];
-
-    const day = new Date("2021-01-01");
-    const company: companys_mst[] = [{
-      comp_code: "00X",
-      comp_name: "顧客名1",
-      comp_kana: "クスキメイ1",
-      sup_type: 0,
-      zip_code: "000-0000",
-      state: "都道府県",
-      address1: "住所1",
-      address2: "住所2",
-      no_sales_flg: 0,
-      wide_use_type: 0,
-      comp_group_code: "001",
-      max_credit: 10000,
-      temp_credit_up: 0,
-      create_date: day,
-      creator: null,
-      update_date: day,
-      updater: null
-    }]
-    const customer: customers_mst[] = [{
-      cust_code: "00X",
-      cust_sub_no: 1,
-      cust_type: 0,
-      ar_code: "001",
-      ar_sub_no: 1,
-      payer_code: "001",
-      payer_sub_no: 1,
-      cust_name: "顧客名1",
-      cust_kana: "クスキメイ1",
-      emp_code: "001",
-      cust_user_name: "顧客担当者名1",
-      cust_user_dep_name: "顧客担当者部署名1",
-      cust_zip_code: "000-0000",
-      cust_state: "都道府県",
-      cust_address1: "住所1",
-      cust_address2: "住所2",
-      cust_tel: "000-0000-0000",
-      cust_fax: "000-0000-0000",
-      cust_email: "hoge@hoge.com",
-      cust_ar_flag: 0,
-      cust_close_date1: 1,
-      cust_pay_months1: 0,
-      cust_pay_dates1: 1,
-      cust_pay_method1: 0,
-      cust_pay_dates2: 1,
-      cust_pay_method2: 0,
-      cust_close_date2: 1,
-      cust_pay_months2: 0,
-      create_date: day,
-      creator: null,
-      update_date: day,
-      updater: null
-    }]
-
-    const wharehouses: wh_mst[] = [{
-      wh_code: "001",
-      wh_name: "本社倉庫",
-      wh_type: "1",
-      zip_code: "000-0000",
-      state: "東京都",
-      address1: "千代田区",
-      address2: "千代田1-1-1",
-      create_date: new Date(),
-      creator: "0001",
-      update_date: new Date(),
-      updater: "0001",
-    }];
-
-    const orders: order[] = [{
-      order_no: "0000000001",
-      order_date: new Date(),
-      dept_code: "11101",
-      start_date: new Date("2021-01-01"),
-      cust_code: "00X",
-      cust_sub_no: 1,
-      emp_code: "EMP999",
-      required_date: new Date(),
-      custorder_no: "0000000001",
-      wh_code: "001",
-      order_amnt: 1000,
-      cmp_tax: 10,
-      slip_comment: "test",
-      create_date: new Date(),
-      creator: "0001",
-      update_date: new Date(),
-      updater: "0001",
-    }];
-
-    const orderDetails: order_detail[] = [{
-      order_no: "0000000001",
-      so_row_no: 1,
-      prod_code: "0001",
-      prod_name: "test",
-      unitprice: 100,
-      quantity: 10,
-      cmp_tax_rate: 10,
-      reserve_qty: 0,
-      delivery_order_qty: 0,
-      delivered_qty: 0,
-      complete_flg: 0,
-      discount: 0,
-      delivery_date: new Date(),
-      create_date: new Date(),
-      creator: "0001",
-      update_date: new Date(),
-      updater: "0001",
-    },
-    {
-      order_no: "0000000001",
-      so_row_no: 2,
-      prod_code: "0001",
-      prod_name: "test",
-      unitprice: 100,
-      quantity: 10,
-      cmp_tax_rate: 10,
-      reserve_qty: 0,
-      delivery_order_qty: 0,
-      delivered_qty: 0,
-      complete_flg: 0,
-      discount: 0,
-      delivery_date: new Date(),
-      create_date: new Date(),
-      creator: "0001",
-      update_date: new Date(),
-      updater: "0001",
-    },
-    {
-      order_no: "0000000001",
-      so_row_no: 3,
-      prod_code: "0001",
-      prod_name: "test",
-      unitprice: 100,
-      quantity: 10,
-      cmp_tax_rate: 10,
-      reserve_qty: 0,
-      delivery_order_qty: 0,
-      delivered_qty: 0,
-      complete_flg: 0,
-      discount: 0,
-      delivery_date: new Date(),
-      create_date: new Date(),
-      creator: "0001",
-      update_date: new Date(),
-      updater: "0001",
-    }
-    ];
-
-    test("受注を登録できる", async () => {
-      await prisma.$transaction(async (prisma) => {
-        await prisma.dept_mst.createMany({ data: departments });
-        await prisma.employee.createMany({ data: employees });
-        await prisma.companys_mst.createMany({ data: company });
-        await prisma.customers_mst.createMany({ data: customer });
-        await prisma.wh_mst.createMany({ data: wharehouses });
-        await prisma.orders.createMany({ data: orders });
-        await prisma.order_details.createMany({ data: orderDetails });
-      })
-      const expected = { ...orders[0], order_details: orderDetails };
-
-      const result = await prisma.orders.findUnique({
-        where: {
-          order_no: orders[0].order_no
-        },
-        include: {
-          order_details: true
-        }
+    describe("受注と受注明細", () => {
+      beforeAll(async () => {
+        await prisma.order_details.deleteMany({});
+        await prisma.orders.deleteMany({});
+        await prisma.wh_mst.deleteMany({});
+        await prisma.customers_mst.deleteMany({});
+        await prisma.companys_mst.deleteMany({});
+        await prisma.employee.deleteMany({});
+        await prisma.dept_mst.deleteMany({});
       });
 
-      expect(result).toEqual(expected);
-    });
-
-    test("受注を更新できる", async () => {
-      const order: order = { ...orders[0], order_amnt: 2000 };
-      const expected = {
-        ...order,
-        order_details: orderDetails.map((orderDetail) => {
-          return {
-            ...orderDetail,
-            order_no: order.order_no, quantity: 20
-          }
-        })
-      };
-      const { order_details, ...expectedWithoutOrderDetails } = expected;
-      await prisma.$transaction(async (prisma) => {
-        for (const orderDetail of expected.order_details) {
-          await prisma.order_details.update({
-            where: {
-              order_no_so_row_no: {
-                order_no: order.order_no,
-                so_row_no: orderDetail.so_row_no
-              }
-            },
-            data: orderDetail
-          });
+      const departments: dept_mst[] = [
+        {
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          end_date: new Date("2021-12-31"),
+          dep_name: "新規部署",
+          dept_layer: 1,
+          dept_psth: "10000~11000~11100~11101~",
+          bottom_type: 1,
+          slit_yn: 0,
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
         }
+      ];
+      const employees = [
+        {
+          emp_code: "EMP999",
+          emp_name: "伊藤 裕子",
+          emp_kana: "イトウ ユウコ",
+          login_password: "password",
+          tel: "090-1234-5678",
+          fax: "03-1234-5678",
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          occu_code: "",
+          approval_code: "",
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
+        }
+      ];
 
-        await prisma.orders.update({
+      const day = new Date("2021-01-01");
+      const company: companys_mst[] = [{
+        comp_code: "00X",
+        comp_name: "顧客名1",
+        comp_kana: "クスキメイ1",
+        sup_type: 0,
+        zip_code: "000-0000",
+        state: "都道府県",
+        address1: "住所1",
+        address2: "住所2",
+        no_sales_flg: 0,
+        wide_use_type: 0,
+        comp_group_code: "001",
+        max_credit: 10000,
+        temp_credit_up: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+      const customer: customers_mst[] = [{
+        cust_code: "00X",
+        cust_sub_no: 1,
+        cust_type: 0,
+        ar_code: "001",
+        ar_sub_no: 1,
+        payer_code: "001",
+        payer_sub_no: 1,
+        cust_name: "顧客名1",
+        cust_kana: "クスキメイ1",
+        emp_code: "001",
+        cust_user_name: "顧客担当者名1",
+        cust_user_dep_name: "顧客担当者部署名1",
+        cust_zip_code: "000-0000",
+        cust_state: "都道府県",
+        cust_address1: "住所1",
+        cust_address2: "住所2",
+        cust_tel: "000-0000-0000",
+        cust_fax: "000-0000-0000",
+        cust_email: "hoge@hoge.com",
+        cust_ar_flag: 0,
+        cust_close_date1: 1,
+        cust_pay_months1: 0,
+        cust_pay_dates1: 1,
+        cust_pay_method1: 0,
+        cust_pay_dates2: 1,
+        cust_pay_method2: 0,
+        cust_close_date2: 1,
+        cust_pay_months2: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const wharehouses: wh_mst[] = [{
+        wh_code: "001",
+        wh_name: "本社倉庫",
+        wh_type: "1",
+        zip_code: "000-0000",
+        state: "東京都",
+        address1: "千代田区",
+        address2: "千代田1-1-1",
+        create_date: new Date(),
+        creator: "0001",
+        update_date: new Date(),
+        updater: "0001",
+      }];
+
+      const orders: order[] = [{
+        order_no: "0000000001",
+        order_date: new Date(),
+        dept_code: "11101",
+        start_date: new Date("2021-01-01"),
+        cust_code: "00X",
+        cust_sub_no: 1,
+        emp_code: "EMP999",
+        required_date: new Date(),
+        custorder_no: "0000000001",
+        wh_code: "001",
+        order_amnt: 1000,
+        cmp_tax: 10,
+        slip_comment: "test",
+        create_date: new Date(),
+        creator: "0001",
+        update_date: new Date(),
+        updater: "0001",
+      }];
+
+      const orderDetails: order_detail[] = [{
+        order_no: "0000000001",
+        so_row_no: 1,
+        prod_code: "0001",
+        prod_name: "test",
+        unitprice: 100,
+        quantity: 10,
+        cmp_tax_rate: 10,
+        reserve_qty: 0,
+        delivery_order_qty: 0,
+        delivered_qty: 0,
+        complete_flg: 0,
+        discount: 0,
+        delivery_date: new Date(),
+        create_date: new Date(),
+        creator: "0001",
+        update_date: new Date(),
+        updater: "0001",
+      },
+      {
+        order_no: "0000000001",
+        so_row_no: 2,
+        prod_code: "0001",
+        prod_name: "test",
+        unitprice: 100,
+        quantity: 10,
+        cmp_tax_rate: 10,
+        reserve_qty: 0,
+        delivery_order_qty: 0,
+        delivered_qty: 0,
+        complete_flg: 0,
+        discount: 0,
+        delivery_date: new Date(),
+        create_date: new Date(),
+        creator: "0001",
+        update_date: new Date(),
+        updater: "0001",
+      },
+      {
+        order_no: "0000000001",
+        so_row_no: 3,
+        prod_code: "0001",
+        prod_name: "test",
+        unitprice: 100,
+        quantity: 10,
+        cmp_tax_rate: 10,
+        reserve_qty: 0,
+        delivery_order_qty: 0,
+        delivered_qty: 0,
+        complete_flg: 0,
+        discount: 0,
+        delivery_date: new Date(),
+        create_date: new Date(),
+        creator: "0001",
+        update_date: new Date(),
+        updater: "0001",
+      }
+      ];
+
+      test("受注を登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.dept_mst.createMany({ data: departments });
+          await prisma.employee.createMany({ data: employees });
+          await prisma.companys_mst.createMany({ data: company });
+          await prisma.customers_mst.createMany({ data: customer });
+          await prisma.wh_mst.createMany({ data: wharehouses });
+          await prisma.orders.createMany({ data: orders });
+          await prisma.order_details.createMany({ data: orderDetails });
+        })
+        const expected = { ...orders[0], order_details: orderDetails };
+
+        const result = await prisma.orders.findUnique({
+          where: {
+            order_no: orders[0].order_no
+          },
+          include: {
+            order_details: true
+          }
+        });
+
+        expect(result).toEqual(expected);
+      });
+
+      test("受注を更新できる", async () => {
+        const order: order = { ...orders[0], order_amnt: 2000 };
+        const expected = {
+          ...order,
+          order_details: orderDetails.map((orderDetail) => {
+            return {
+              ...orderDetail,
+              order_no: order.order_no, quantity: 20
+            }
+          })
+        };
+        const { order_details, ...expectedWithoutOrderDetails } = expected;
+        await prisma.$transaction(async (prisma) => {
+          for (const orderDetail of expected.order_details) {
+            await prisma.order_details.update({
+              where: {
+                order_no_so_row_no: {
+                  order_no: order.order_no,
+                  so_row_no: orderDetail.so_row_no
+                }
+              },
+              data: orderDetail
+            });
+          }
+
+          await prisma.orders.update({
+            where: {
+              order_no: expected.order_no
+            },
+            data: expectedWithoutOrderDetails
+          });
+        });
+
+        const result = await prisma.orders.findUnique({
           where: {
             order_no: expected.order_no
           },
-          data: expectedWithoutOrderDetails
+          include: {
+            order_details: true
+          }
         });
+
+        expect(result).toEqual(expected);
+        expect(result?.order_details).toEqual(expected.order_details);
       });
 
-      const result = await prisma.orders.findUnique({
-        where: {
-          order_no: expected.order_no
-        },
-        include: {
-          order_details: true
-        }
-      });
+      test("受注を削除できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.order_details.deleteMany({
+            where: {
+              order_no: orders[0].order_no
+            }
+          });
+          await prisma.orders.delete({
+            where: {
+              order_no: orders[0].order_no
+            }
+          });
+        });
 
-      expect(result).toEqual(expected);
-      expect(result?.order_details).toEqual(expected.order_details);
-    });
-
-    test("受注を削除できる", async () => {
-      await prisma.$transaction(async (prisma) => {
-        await prisma.order_details.deleteMany({
+        const result = await prisma.orders.findMany({
           where: {
             order_no: orders[0].order_no
           }
         });
-        await prisma.orders.delete({
-          where: {
-            order_no: orders[0].order_no
-          }
-        });
-      });
 
-      const result = await prisma.orders.findMany({
-        where: {
-          order_no: orders[0].order_no
-        }
+        expect(result).toEqual([]);
       });
-
-      expect(result).toEqual([]);
     });
   });
 });
