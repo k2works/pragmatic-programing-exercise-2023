@@ -130,6 +130,34 @@ COMMENT ON COLUMN product_category.create_date IS '作成日時';
 COMMENT ON COLUMN product_category.creator IS '作成者名';
 COMMENT ON COLUMN product_category.update_date IS '更新日時';
 COMMENT ON COLUMN product_category.updater IS '更新者名';
+CREATE TABLE alternate_products (
+    prod_code VARCHAR(16) NOT NULL,
+    alt_prod_code VARCHAR(16) NOT NULL,
+    priority INTEGER DEFAULT 1,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE alternate_products
+ADD CONSTRAINT pk_alternate_products PRIMARY KEY (prod_code, alt_prod_code);
+COMMENT ON TABLE alternate_products IS '代替商品';
+COMMENT ON COLUMN alternate_products.prod_code IS '商品コード';
+COMMENT ON COLUMN alternate_products.alt_prod_code IS '代替商品コード';
+COMMENT ON COLUMN alternate_products.priority IS '優先順位';
+COMMENT ON COLUMN alternate_products.create_date IS '作成日時';
+COMMENT ON COLUMN alternate_products.creator IS '作成者名';
+COMMENT ON COLUMN alternate_products.update_date IS '更新日時';
+COMMENT ON COLUMN alternate_products.updater IS '更新者名';
+CREATE TABLE location_mst (
+    wh_code VARCHAR(3) NOT NULL,
+    location_code VARCHAR(4) NOT NULL,
+    prod_code VARCHAR(16) NOT NULL,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
 CREATE TABLE pricebycustomer (
     prod_code VARCHAR(16) NOT NULL,
     comp_code VARCHAR(8) NOT NULL,
@@ -957,34 +985,6 @@ COMMENT ON TABLE auto_number IS '自動採番マスタ';
 COMMENT ON COLUMN auto_number.slip_type IS '伝票種別コード';
 COMMENT ON COLUMN auto_number.yearmonth IS '年月';
 COMMENT ON COLUMN auto_number.last_silp_no IS '最終伝票番号';
-CREATE TABLE alternate_products (
-    prod_code VARCHAR(16) NOT NULL,
-    alt_prod_code VARCHAR(16) NOT NULL,
-    priority INTEGER DEFAULT 1,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE alternate_products
-ADD CONSTRAINT pk_alternate_products PRIMARY KEY (prod_code, alt_prod_code);
-COMMENT ON TABLE alternate_products IS '代替商品';
-COMMENT ON COLUMN alternate_products.prod_code IS '商品コード';
-COMMENT ON COLUMN alternate_products.alt_prod_code IS '代替商品コード';
-COMMENT ON COLUMN alternate_products.priority IS '優先順位';
-COMMENT ON COLUMN alternate_products.create_date IS '作成日時';
-COMMENT ON COLUMN alternate_products.creator IS '作成者名';
-COMMENT ON COLUMN alternate_products.update_date IS '更新日時';
-COMMENT ON COLUMN alternate_products.updater IS '更新者名';
-CREATE TABLE location_mst (
-    wh_code VARCHAR(3) NOT NULL,
-    location_code VARCHAR(4) NOT NULL,
-    prod_code VARCHAR(16) NOT NULL,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
 ALTER TABLE location_mst
 ADD CONSTRAINT pk_location_mst PRIMARY KEY (wh_code, location_code, prod_code);
 COMMENT ON TABLE location_mst IS '棚番マスタ';

@@ -23,6 +23,7 @@ import {
   invoice_details,
   bank_acut_mst,
   credit,
+  alternate_products,
 } from "@prisma/client";
 import { priceByCustomers } from "../prisma/data/csvReader";
 
@@ -264,6 +265,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           await prisma.orders.deleteMany()
           await prisma.product_category.deleteMany()
           await prisma.pricebycustomer.deleteMany()
+          await prisma.alternate_products.deleteMany()
           await prisma.products.deleteMany()
           await prisma.destinations_mst.deleteMany()
           await prisma.customers_mst.deleteMany()
@@ -378,10 +380,23 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         }
       ];
 
+      const alternateProducts: alternate_products[] = [
+        {
+          prod_code: '1010100X',
+          alt_prod_code: 'P0000001',
+          priority: 1,
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        }
+      ];
+
       test("商品を登録できる", async () => {
         await prisma.$transaction(async (prisma) => {
           await prisma.product_category.createMany({ data: productCategories });
           await prisma.products.createMany({ data: products });
+          await prisma.alternate_products.createMany({ data: alternateProducts });
         });
 
         const result = await prisma.products.findMany();
@@ -425,10 +440,18 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       });
 
       test("商品を削除できる", async () => {
-        await prisma.products.deleteMany({
-          where: {
-            prod_code: "1010100X",
-          },
+        await prisma.$transaction(async (prisma) => {
+          await prisma.alternate_products.deleteMany({
+            where: {
+              prod_code: "1010100X",
+            },
+          });
+
+          await prisma.products.deleteMany({
+            where: {
+              prod_code: "1010100X",
+            },
+          });
         });
 
         const result = await prisma.products.findMany();

@@ -26,6 +26,7 @@ import {
   invoiceDetails,
   bankAccounts,
   credits,
+  alterNateProducts,
 } from "./data/csvReader";
 import { waitForDebugger } from "inspector";
 
@@ -74,6 +75,20 @@ async function main() {
       },
       create: prod,
       update: prod
+    });
+  }
+
+  console.table(alterNateProducts);
+  for (const altProd of alterNateProducts) {
+    await prisma.alternate_products.upsert({
+      where: {
+        prod_code_alt_prod_code: {
+          prod_code: altProd.prod_code,
+          alt_prod_code: altProd.alt_prod_code
+        }
+      },
+      create: altProd,
+      update: altProd
     });
   }
 

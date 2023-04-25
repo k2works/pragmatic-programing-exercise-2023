@@ -22,6 +22,7 @@ import {
   invoice_details,
   bank_acut_mst,
   credit,
+  alternate_products,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -992,5 +993,32 @@ export const credits: credit[] = fs
       updater,
       update_plg_date: new Date("2021-01-01"),
       update_pgm
+    };
+  });
+
+filePath = path.join(__dirname, "alternateProduct.csv");
+export const alterNateProducts: alternate_products[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      prod_code,
+      alt_prod_code,
+      priority,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      prod_code,
+      alt_prod_code,
+      priority: Number(priority),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater,
     };
   });

@@ -54,31 +54,32 @@ model employee {
 }
 
 model products {
-  prod_code          String            @id(map: "pk_products") @db.VarChar(16)
-  prod_fullname      String            @db.VarChar(40)
-  prod_name          String            @db.VarChar(10)
-  prod_kana          String            @db.VarChar(20)
-  prod_type          String?           @db.VarChar(1)
-  serial_no          String?           @db.VarChar(40)
-  unitprice          Int               @default(0)
-  po_price           Int?              @default(0)
-  prime_cost         Int               @default(0)
-  tax_type           Int               @default(1)
-  category_code      String?           @db.VarChar(8)
+  prod_code          String               @id(map: "pk_products") @db.VarChar(16)
+  prod_fullname      String               @db.VarChar(40)
+  prod_name          String               @db.VarChar(10)
+  prod_kana          String               @db.VarChar(20)
+  prod_type          String?              @db.VarChar(1)
+  serial_no          String?              @db.VarChar(40)
+  unitprice          Int                  @default(0)
+  po_price           Int?                 @default(0)
+  prime_cost         Int                  @default(0)
+  tax_type           Int                  @default(1)
+  category_code      String?              @db.VarChar(8)
   wide_use_type      Int?
-  stock_manage_type  Int?              @default(1)
+  stock_manage_type  Int?                 @default(1)
   stock_reserve_type Int?
-  sup_code           String            @db.VarChar(8)
+  sup_code           String               @db.VarChar(8)
   sup_sub_no         Int?
-  create_date        DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator            String?           @db.VarChar(12)
-  update_date        DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater            String?           @db.VarChar(12)
+  create_date        DateTime             @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?              @db.VarChar(12)
+  update_date        DateTime             @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?              @db.VarChar(12)
   bom                bom?
   location_mst       location_mst[]
   pu_details         pu_details[]
-  product_category   product_category? @relation(fields: [category_code], references: [category_code])
+  product_category   product_category?    @relation(fields: [category_code], references: [category_code])
   pricebycustomer    pricebycustomer[]
+  alternate_products alternate_products[]
 }
 
 model product_category {
@@ -92,6 +93,19 @@ model product_category {
   update_date    DateTime   @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
   updater        String?    @db.VarChar(12)
   products       products[]
+}
+
+model alternate_products {
+  prod_code     String    @db.VarChar(16)
+  alt_prod_code String    @db.VarChar(16)
+  priority      Int?      @default(1)
+  create_date   DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?   @db.VarChar(12)
+  update_date   DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?   @db.VarChar(12)
+  products      products? @relation(fields: [prod_code], references: [prod_code])
+
+  @@id([prod_code, alt_prod_code], map: "pk_alternate_products")
 }
 
 model pricebycustomer {
@@ -503,18 +517,6 @@ model bank_acut_mst {
   dept_mst             dept_mst  @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_入金口座マスタ")
 
   credit credit[]
-}
-
-model alternate_products {
-  prod_code     String   @db.VarChar(16)
-  alt_prod_code String   @db.VarChar(16)
-  priority      Int?     @default(1)
-  create_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator       String?  @db.VarChar(12)
-  update_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater       String?  @db.VarChar(12)
-
-  @@id([prod_code, alt_prod_code], map: "pk_alternate_products")
 }
 
 model auto_number {
