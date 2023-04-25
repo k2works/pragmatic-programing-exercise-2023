@@ -1,10 +1,11 @@
 # Doctest
+import bisect
 from collections import deque
 from typing import Any, MutableSequence
 import unittest
 import doctest
 
-# 単純交換ソート（バブルソート）
+# ソート
 
 
 class TestSort(unittest.TestCase):
@@ -26,6 +27,36 @@ class TestSort(unittest.TestCase):
     def test_buble_sort3(self):
         a = [6, 4, 3, 7, 1, 9, 8]
         bubble_sort3(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_shaker_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        shaker_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_select_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        selection_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_insertion_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        insertion_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_binary_insertion_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        binary_insertion_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_binary_insertion2(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        binary_insertion_sort2(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_shell_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        shell_sort(a)
         self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
 
 
@@ -86,6 +117,94 @@ def bubble_sort3(a: MutableSequence) -> None:
                 a[j - 1], a[j] = a[j], a[j - 1]
                 last = j
         k = last
+
+
+def shaker_sort(a: MutableSequence) -> None:
+    """シェーカーソート（双方向バブルソート）"""
+    left = 0
+    right = len(a) - 1
+    last = right
+    while left < right:
+        for j in range(right, left, -1):
+            if a[j - 1] > a[j]:
+                a[j - 1], a[j] = a[j], a[j - 1]
+                last = j
+            left = last
+
+        for j in range(left, right):
+            if a[j] > a[j + 1]:
+                a[j], a[j + 1] = a[j + 1], a[j]
+                last = j
+            right = last
+
+
+def selection_sort(a: MutableSequence) -> None:
+    """単純選択ソート"""
+    n = len(a)
+    for i in range(n - 1):
+        min = i        # 未ソート部分から最小要素の添字
+        for j in range(i + 1, n):
+            if a[j] < a[min]:
+                min = j
+        a[i], a[min] = a[min], a[i]  # 未ソート部分の先頭要素と最小要素を交換
+
+
+def insertion_sort(a: MutableSequence) -> None:
+    """単純挿入ソート"""
+    n = len(a)
+    for i in range(1, n):
+        j = i
+        tmp = a[i]
+        while j > 0 and a[j - 1] > tmp:
+            a[j] = a[j - 1]
+            j -= 1
+        a[j] = tmp
+
+
+def binary_insertion_sort(a: MutableSequence) -> None:
+    """２分挿入ソート"""
+    n = len(a)
+    for i in range(1, n):
+        key = a[i]
+        pl = 0       # 探索範囲の先頭要素の添字
+        pr = i - 1   # 探索範囲の末尾要素の添字
+
+        while True:
+            pc = (pl + pr) // 2  # 探索範囲の中央要素の添字
+            if a[pc] == key:    # 探索成功
+                break
+            elif a[pc] < key:
+                pl = pc + 1
+            else:
+                pr = pc - 1
+            if pl > pr:
+                break
+        # 挿入すべき位置の添字
+        pd = pc + 1 if pl <= pr else pr + 1
+        for j in range(i, pd, -1):
+            a[j] = a[j - 1]
+        a[pd] = key
+
+
+def binary_insertion_sort2(a: MutableSequence) -> None:
+    """２分挿入ソート（bisect.insortを利用）"""
+    for i in range(1, len(a)):
+        bisect.insort(a, a.pop(i), 0, i)
+
+
+def shell_sort(a: MutableSequence) -> None:
+    """シェルソート"""
+    n = len(a)
+    h = n // 2
+    while h > 0:
+        for i in range(h, n):
+            j = i - h
+            tmp = a[i]
+            while j >= 0 and a[j] > tmp:
+                a[j + h] = a[j]
+                j -= h
+            a[j + h] = tmp
+        h //= 2
 
 
 unittest.main(argv=[''], verbosity=2, exit=False)
