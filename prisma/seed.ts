@@ -1,4 +1,4 @@
-import { PrismaClient, invoice, invoice_details } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -22,6 +22,8 @@ import {
   orderDetails,
   sales,
   salesDetails,
+  invoices,
+  invoiceDetails,
 } from "./data/csvReader";
 import { waitForDebugger } from "inspector";
 
@@ -279,56 +281,9 @@ async function main() {
     }
   });
 
-  const invoice: invoice[] = [
-    {
-      invoice_no: '0000000001',
-      invoiced_date: new Date(),
-      comp_code: '0001',
-      cust_sub_no: 1,
-      last_received: 1,
-      month_sales: 1,
-      month_received: 1,
-      month_invoice: 1,
-      cmp_tax: 1,
-      invoice_received: 1,
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-    }
-  ];
-  const invoiceDetails: invoice_details[] = [
-    {
-      invoice_no: '0000000001',
-      sales_no: '0000000001',
-      row_no: 1,
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-    },
-    {
-      invoice_no: '0000000001',
-      sales_no: '0000000001',
-      row_no: 2,
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-    },
-    {
-      invoice_no: '0000000001',
-      sales_no: '0000000001',
-      row_no: 3,
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-    },
-  ];
-
   await prisma.$transaction(async (prisma) => {
-    for (const i of invoice) {
+    console.table(invoices)
+    for (const i of invoices) {
       await prisma.invoice.upsert({
         where: {
           invoice_no: i.invoice_no
@@ -337,6 +292,7 @@ async function main() {
         update: i
       })
     }
+    console.table(invoiceDetails)
     for (const invoiceDetail of invoiceDetails) {
       await prisma.invoice_details.upsert({
         where: {

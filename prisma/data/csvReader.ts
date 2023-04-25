@@ -18,6 +18,8 @@ import {
   order_details as order_detail,
   sales as sale,
   sales_details as sale_detail,
+  invoice,
+  invoice_details,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -820,6 +822,74 @@ export const salesDetails: sale_detail[] = fs
       invoice_no,
       invoice_delay_type: Number(invoice_delay_type),
       auto_journal_date: new Date(auto_journal_date),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "invoice.csv");
+export const invoices: invoice[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      invoice_no,
+      invoiced_date,
+      comp_code,
+      cust_sub_no,
+      last_received,
+      month_sales,
+      month_received,
+      month_invoice,
+      cmp_tax,
+      invoice_received,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      invoice_no,
+      invoiced_date: new Date(invoiced_date),
+      comp_code,
+      cust_sub_no: Number(cust_sub_no),
+      last_received: Number(last_received),
+      month_sales: Number(month_sales),
+      month_received: Number(month_received),
+      month_invoice: Number(month_invoice),
+      cmp_tax: Number(cmp_tax),
+      invoice_received: Number(invoice_received),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "invoiceDetail.csv");
+export const invoiceDetails: invoice_details[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      invoice_no,
+      sales_no,
+      row_no,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      invoice_no,
+      sales_no,
+      row_no: Number(row_no),
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),

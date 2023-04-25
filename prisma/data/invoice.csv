@@ -1,0 +1,2 @@
+invoice_no,invoiced_date,comp_code,cust_sub_no,last_received,month_sales,month_received,month_invoice,cmp_tax,invoice_received,create_date,creator,update_date,updater
+0000000001,2023-04-25 06:28:02.077,0001,1,1,1,1,1,1,1,2023-04-25 06:28:02.077,admin,2023-04-25 06:28:02.077,admin
