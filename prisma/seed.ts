@@ -1,4 +1,4 @@
-import { PrismaClient, sales as sale, sales_details as sales_detail } from "@prisma/client";
+import { PrismaClient, invoice, invoice_details } from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -275,6 +275,79 @@ async function main() {
         },
         create: salesDetail,
         update: salesDetail
+      })
+    }
+  });
+
+  const invoice: invoice[] = [
+    {
+      invoice_no: '0000000001',
+      invoiced_date: new Date(),
+      comp_code: '0001',
+      cust_sub_no: 1,
+      last_received: 1,
+      month_sales: 1,
+      month_received: 1,
+      month_invoice: 1,
+      cmp_tax: 1,
+      invoice_received: 1,
+      create_date: new Date(),
+      creator: 'admin',
+      update_date: new Date(),
+      updater: 'admin',
+    }
+  ];
+  const invoiceDetails: invoice_details[] = [
+    {
+      invoice_no: '0000000001',
+      sales_no: '0000000001',
+      row_no: 1,
+      create_date: new Date(),
+      creator: 'admin',
+      update_date: new Date(),
+      updater: 'admin',
+    },
+    {
+      invoice_no: '0000000001',
+      sales_no: '0000000001',
+      row_no: 2,
+      create_date: new Date(),
+      creator: 'admin',
+      update_date: new Date(),
+      updater: 'admin',
+    },
+    {
+      invoice_no: '0000000001',
+      sales_no: '0000000001',
+      row_no: 3,
+      create_date: new Date(),
+      creator: 'admin',
+      update_date: new Date(),
+      updater: 'admin',
+    },
+  ];
+
+  await prisma.$transaction(async (prisma) => {
+    for (const i of invoice) {
+      await prisma.invoice.upsert({
+        where: {
+          invoice_no: i.invoice_no
+        },
+        create: i,
+        update: i
+      })
+    }
+    for (const invoiceDetail of invoiceDetails) {
+      await prisma.invoice_details.upsert({
+        where: {
+          invoice_no_sales_no_row_no: {
+            invoice_no: invoiceDetail.invoice_no,
+            sales_no: invoiceDetail.sales_no,
+            row_no: invoiceDetail.row_no
+          }
+        },
+        create: invoiceDetail,
+        update: invoiceDetail
       })
     }
   });
