@@ -20,6 +20,8 @@ import {
   sales_details as sale_detail,
   invoice,
   invoice_details,
+  bank_acut_mst,
+  credit,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -894,5 +896,101 @@ export const invoiceDetails: invoice_details[] = fs
       creator,
       update_date: new Date("2021-01-01"),
       updater
+    };
+  });
+
+filePath = path.join(__dirname, "bankAccount.csv");
+export const bankAccounts: bank_acut_mst[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      bank_acut_code,
+      recive_act_name,
+      appl_start_date,
+      appl_end_date,
+      start_act_name,
+      recive_bank_act_type,
+      recive_act_no,
+      bank_act_type,
+      act_name,
+      dept_code,
+      start_date,
+      a_bank_code,
+      a_bank_blnc_code,
+      create_date,
+      creator,
+      update_date,
+      updater,
+      update_plg_date,
+      update_pgm
+    ] = line.split(",");
+    return {
+      bank_acut_code,
+      recive_act_name,
+      appl_start_date: new Date(appl_start_date),
+      appl_end_date: new Date(appl_end_date),
+      start_act_name,
+      recive_bank_act_type,
+      recive_act_no,
+      bank_act_type,
+      act_name,
+      dept_code,
+      start_date: new Date(start_date),
+      a_bank_code,
+      a_bank_blnc_code,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater,
+      update_plg_date: new Date("2021-01-01"),
+      update_pgm
+    };
+  });
+
+filePath = path.join(__dirname, "credit.csv");
+export const credits: credit[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      credit_no,
+      credit_date,
+      dept_code,
+      start_date,
+      comp_code,
+      comp_sub_no,
+      pay_method_type,
+      bank_acut_code,
+      received_amnt,
+      received,
+      create_date,
+      creator,
+      update_date,
+      updater,
+      update_plg_date,
+      update_pgm
+    ] = line.split(",");
+    return {
+      credit_no,
+      credit_date: new Date(credit_date),
+      dept_code,
+      start_date: new Date(start_date),
+      comp_code,
+      comp_sub_no: Number(comp_sub_no),
+      pay_method_type: Number(pay_method_type),
+      bank_acut_code,
+      received_amnt: Number(received_amnt),
+      received: Number(received),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater,
+      update_plg_date: new Date("2021-01-01"),
+      update_pgm
     };
   });

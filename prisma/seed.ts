@@ -1,4 +1,4 @@
-import { PrismaClient, credit, bank_acut_mst } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -24,6 +24,8 @@ import {
   salesDetails,
   invoices,
   invoiceDetails,
+  bankAccounts,
+  credits,
 } from "./data/csvReader";
 import { waitForDebugger } from "inspector";
 
@@ -308,29 +310,7 @@ async function main() {
     }
   });
 
-  const bankAccounts: bank_acut_mst[] = [
-    {
-      bank_acut_code: '00000001',
-      recive_act_name: 'test',
-      appl_start_date: new Date(),
-      appl_end_date: new Date(),
-      start_act_name: 'test',
-      recive_bank_act_type: '1',
-      recive_act_no: '00000001',
-      bank_act_type: '1',
-      act_name: 'test',
-      dept_code: '11101',
-      start_date: new Date("2021-01-01"),
-      a_bank_code: '0001',
-      a_bank_blnc_code: '001',
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-      update_plg_date: new Date(),
-      update_pgm: 'main',
-    }
-  ]
+  console.table(bankAccounts)
   for (const bankAccount of bankAccounts) {
     await prisma.bank_acut_mst.upsert({
       where: {
@@ -341,27 +321,7 @@ async function main() {
     })
   }
 
-
-  const credits: credit[] = [
-    {
-      credit_no: '0000000001',
-      credit_date: new Date(),
-      dept_code: '11101',
-      start_date: new Date("2021-01-01"),
-      comp_code: '001',
-      comp_sub_no: 1,
-      pay_method_type: 1,
-      bank_acut_code: '00000001',
-      received_amnt: 1000,
-      received: 1,
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-      update_plg_date: new Date(),
-      update_pgm: 'main',
-    }
-  ]
+  console.table(credits)
   for (const credit of credits) {
     await prisma.credit.upsert({
       where: {

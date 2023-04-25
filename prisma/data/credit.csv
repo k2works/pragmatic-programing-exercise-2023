@@ -1,0 +1,2 @@
+credit_no,credit_date,dept_code,start_date,comp_code,comp_sub_no,pay_method_type,bank_acut_code,received_amnt,received,create_date,creator,update_date,updater,update_plg_date,update_pgm
+0000000001,2023-04-25 07:38:01.427,11101,2021-01-01,001,1,1,00000001,1000,1,2023-04-25 07:38:01.427,admin,2023-04-25 07:38:01.427,admin,2023-04-25 07:38:01.427,main
