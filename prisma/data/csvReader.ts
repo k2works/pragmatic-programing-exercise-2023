@@ -16,6 +16,8 @@ import {
   wh_mst,
   orders as order,
   order_details as order_detail,
+  sales as sale,
+  sales_details as sale_detail,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -726,6 +728,98 @@ export const orderDetails: order_detail[] = fs
       complete_flg: Number(complete_flg),
       discount: Number(discount),
       delivery_date: new Date(delivery_date),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "sales.csv");
+export const sales: sale[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      sales_no,
+      order_no,
+      sales_date,
+      sales_type,
+      dept_code,
+      start_date,
+      comp_code,
+      emp_code,
+      sales_amnt,
+      cmp_tax,
+      slip_comment,
+      updated_no,
+      orgnl_no,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      sales_no,
+      order_no,
+      sales_date: new Date(sales_date),
+      sales_type: Number(sales_type),
+      dept_code,
+      start_date: new Date(start_date),
+      comp_code,
+      emp_code,
+      sales_amnt: Number(sales_amnt),
+      cmp_tax: Number(cmp_tax),
+      slip_comment,
+      updated_no: Number(updated_no),
+      orgnl_no,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "salesDetail.csv");
+export const salesDetails: sale_detail[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      sales_no,
+      row_no,
+      prod_code,
+      prod_name,
+      unitprice,
+      delivered_qty,
+      quantity,
+      discount,
+      invoiced_date,
+      invoice_no,
+      invoice_delay_type,
+      auto_journal_date,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      sales_no,
+      row_no: Number(row_no),
+      prod_code,
+      prod_name,
+      unitprice: Number(unitprice),
+      delivered_qty: Number(delivered_qty),
+      quantity: Number(quantity),
+      discount: Number(discount),
+      invoiced_date: new Date(invoiced_date),
+      invoice_no,
+      invoice_delay_type: Number(invoice_delay_type),
+      auto_journal_date: new Date(auto_journal_date),
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),
