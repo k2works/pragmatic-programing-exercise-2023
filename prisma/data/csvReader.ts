@@ -12,7 +12,10 @@ import {
   company_group_mst,
   category_type,
   company_category,
-  company_category_group
+  company_category_group,
+  wh_mst,
+  orders as order,
+  order_details as order_detail,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -530,20 +533,20 @@ export const categoryTypes: category_type[] = fs
   .slice(1) // ヘッダー行を除外
   .map((line) => {
     const [
-       category_type_code,
-       cate_type_name,
-       create_date,
-       creator,
-       update_date,
-       updater
+      category_type_code,
+      cate_type_name,
+      create_date,
+      creator,
+      update_date,
+      updater
     ] = line.split(",");
     return {
-       category_type_code,
-       cate_type_name,
-       create_date: new Date("2021-01-01"),
-       creator,
-       update_date: new Date("2021-01-01"),
-       updater
+      category_type_code,
+      cate_type_name,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
     };
   });
 
@@ -594,6 +597,135 @@ export const companyCategoryGroups: company_category_group[] = fs
       category_type,
       comp_cate_code,
       comp_code,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "wharehouse.csv");
+export const wharehouses: wh_mst[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      wh_code,
+      wh_name,
+      wh_type,
+      zip_code,
+      state,
+      address1,
+      address2,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      wh_code,
+      wh_name,
+      wh_type,
+      zip_code,
+      state,
+      address1,
+      address2,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "order.csv");
+export const orders: order[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      order_no,
+      order_date,
+      dept_code,
+      start_date,
+      cust_code,
+      cust_sub_no,
+      emp_code,
+      required_date,
+      custorder_no,
+      wh_code,
+      order_amnt,
+      cmp_tax,
+      slip_comment,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      order_no,
+      order_date: new Date(order_date),
+      dept_code,
+      start_date: new Date(start_date),
+      cust_code,
+      cust_sub_no: Number(cust_sub_no),
+      emp_code,
+      required_date: new Date(required_date),
+      custorder_no,
+      wh_code,
+      order_amnt: Number(order_amnt),
+      cmp_tax: Number(cmp_tax),
+      slip_comment,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "orderDetail.csv");
+export const orderDetails: order_detail[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      order_no,
+      so_row_no,
+      prod_code,
+      prod_name,
+      unitprice,
+      quantity,
+      cmp_tax_rate,
+      reserve_qty,
+      delivery_order_qty,
+      delivered_qty,
+      complete_flg,
+      discount,
+      delivery_date,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      order_no,
+      so_row_no: Number(so_row_no),
+      prod_code,
+      prod_name,
+      unitprice: Number(unitprice),
+      quantity: Number(quantity),
+      cmp_tax_rate: Number(cmp_tax_rate),
+      reserve_qty: Number(reserve_qty),
+      delivery_order_qty: Number(delivery_order_qty),
+      delivered_qty: Number(delivered_qty),
+      complete_flg: Number(complete_flg),
+      discount: Number(discount),
+      delivery_date: new Date(delivery_date),
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),
