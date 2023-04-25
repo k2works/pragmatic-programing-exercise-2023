@@ -401,25 +401,58 @@ model sales {
 }
 
 model sales_details {
-  sales_no           String    @db.VarChar(10)
+  sales_no           String            @db.VarChar(10)
   row_no             Int
-  prod_code          String    @db.VarChar(16)
-  prod_name          String    @db.VarChar(10)
-  unitprice          Int       @default(0)
-  delivered_qty      Int?      @default(0)
-  quantity           Int       @default(1)
-  discount           Int       @default(0)
-  invoiced_date      DateTime? @db.Timestamp(6)
-  invoice_no         String?   @db.VarChar(10)
+  prod_code          String            @db.VarChar(16)
+  prod_name          String            @db.VarChar(10)
+  unitprice          Int               @default(0)
+  delivered_qty      Int?              @default(0)
+  quantity           Int               @default(1)
+  discount           Int               @default(0)
+  invoiced_date      DateTime?         @db.Timestamp(6)
+  invoice_no         String?           @db.VarChar(10)
   invoice_delay_type Int?
-  auto_journal_date  DateTime? @db.Timestamp(6)
-  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator            String?   @db.VarChar(12)
-  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater            String?   @db.VarChar(12)
-  sales              sales     @relation(fields: [sales_no], references: [sales_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_sales_details")
+  auto_journal_date  DateTime?         @db.Timestamp(6)
+  create_date        DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?           @db.VarChar(12)
+  update_date        DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?           @db.VarChar(12)
+  sales              sales             @relation(fields: [sales_no], references: [sales_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_sales_details")
+  invoice_dtails     invoice_details[]
 
   @@id([sales_no, row_no], map: "pk_sales_details")
+}
+
+model invoice {
+  invoice_no       String            @id(map: "pk_invoice") @db.VarChar(10)
+  invoiced_date    DateTime?         @db.Timestamp(6)
+  comp_code        String            @db.VarChar(8)
+  cust_sub_no      Int?
+  last_received    Int?
+  month_sales      Int?
+  month_received   Int?
+  month_invoice    Int?
+  cmp_tax          Int               @default(0)
+  invoice_received Int?              @default(0)
+  create_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator          String?           @db.VarChar(12)
+  update_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater          String?           @db.VarChar(12)
+  invoice_details  invoice_details[]
+}
+
+model invoice_details {
+  invoice_no    String         @db.VarChar(10)
+  sales_no      String         @db.VarChar(10)
+  row_no        Int
+  create_date   DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?        @db.VarChar(12)
+  update_date   DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?        @db.VarChar(12)
+  invoice       invoice        @relation(fields: [invoice_no], references: [invoice_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_invoce_dtails")
+  sales_details sales_details? @relation(fields: [sales_no, row_no], references: [sales_no, row_no])
+
+  @@id([invoice_no, sales_no, row_no], map: "pk_invoice_details")
 }
 
 model alternate_products {
@@ -506,37 +539,6 @@ model credit_balance {
   update_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
   updater       String?      @db.VarChar(12)
   companys_mst  companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_credit_balanc")
-}
-
-model invoice {
-  invoice_no       String            @id(map: "pk_invoice") @db.VarChar(10)
-  invoiced_date    DateTime?         @db.Timestamp(6)
-  comp_code        String            @db.VarChar(8)
-  cust_sub_no      Int?
-  last_received    Int?
-  month_sales      Int?
-  month_received   Int?
-  month_invoice    Int?
-  cmp_tax          Int               @default(0)
-  invoice_received Int?              @default(0)
-  create_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator          String?           @db.VarChar(12)
-  update_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater          String?           @db.VarChar(12)
-  invoice_details  invoice_details[]
-}
-
-model invoice_details {
-  invoice_no  String   @db.VarChar(10)
-  sales_no    String   @db.VarChar(10)
-  row_no      Int
-  create_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator     String?  @db.VarChar(12)
-  update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater     String?  @db.VarChar(12)
-  invoice     invoice  @relation(fields: [invoice_no], references: [invoice_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_invoice_請求データ明細")
-
-  @@id([invoice_no, sales_no, row_no], map: "pk_invoice_details")
 }
 
 model location_mst {

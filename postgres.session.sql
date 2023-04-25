@@ -598,20 +598,6 @@ COMMENT ON COLUMN wh_dept_mst.create_date IS '作成日時';
 COMMENT ON COLUMN wh_dept_mst.creator IS '作成者名';
 COMMENT ON COLUMN wh_dept_mst.update_date IS '更新日時';
 COMMENT ON COLUMN wh_dept_mst.updater IS '更新者名';
-CREATE TABLE stock (
-    wh_code VARCHAR(3) NOT NULL,
-    prod_code VARCHAR(16) NOT NULL,
-    rot_no VARCHAR(20) NOT NULL,
-    stock_type VARCHAR(1) DEFAULT '1' NOT NULL,
-    quality_type VARCHAR(1) DEFAULT 'G' NOT NULL,
-    actual INTEGER DEFAULT 1 NOT NULL,
-    valid INTEGER DEFAULT 1 NOT NULL,
-    last_delivery_date TIMESTAMP,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
 CREATE TABLE sales (
     sales_no VARCHAR(10) NOT NULL,
     order_no VARCHAR(10) NOT NULL,
@@ -688,6 +674,72 @@ COMMENT ON COLUMN sales_details.create_date IS '作成日時';
 COMMENT ON COLUMN sales_details.creator IS '作成者名';
 COMMENT ON COLUMN sales_details.update_date IS '更新日時';
 COMMENT ON COLUMN sales_details.updater IS '更新者名';
+CREATE TABLE invoice (
+    invoice_no VARCHAR(10) NOT NULL,
+    invoiced_date TIMESTAMP,
+    comp_code VARCHAR(8) NOT NULL,
+    cust_sub_no INTEGER,
+    last_received INTEGER,
+    month_sales INTEGER,
+    month_received INTEGER,
+    month_invoice INTEGER,
+    cmp_tax INTEGER DEFAULT 0 NOT NULL,
+    invoice_received INTEGER DEFAULT 0,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE invoice
+ADD CONSTRAINT pk_invoice PRIMARY KEY (invoice_no);
+COMMENT ON TABLE invoice IS '請求データ';
+COMMENT ON COLUMN invoice.invoice_no IS '請求番号';
+COMMENT ON COLUMN invoice.invoiced_date IS '請求日';
+COMMENT ON COLUMN invoice.comp_code IS '取引先コード';
+COMMENT ON COLUMN invoice.cust_sub_no IS '顧客枝番';
+COMMENT ON COLUMN invoice.last_received IS '前回入金額';
+COMMENT ON COLUMN invoice.month_sales IS '当月売上額';
+COMMENT ON COLUMN invoice.month_received IS '当月入金額';
+COMMENT ON COLUMN invoice.month_invoice IS '当月請求額';
+COMMENT ON COLUMN invoice.cmp_tax IS '消費税金額';
+COMMENT ON COLUMN invoice.invoice_received IS '請求消込金額';
+COMMENT ON COLUMN invoice.create_date IS '作成日時';
+COMMENT ON COLUMN invoice.creator IS '作成者名';
+COMMENT ON COLUMN invoice.update_date IS '更新日時';
+COMMENT ON COLUMN invoice.updater IS '更新者名';
+CREATE TABLE invoice_details (
+    invoice_no VARCHAR(10) NOT NULL,
+    sales_no VARCHAR(10) NOT NULL,
+    row_no INTEGER NOT NULL,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE invoice_details
+ADD CONSTRAINT pk_invoice_details PRIMARY KEY (invoice_no, sales_no, row_no);
+COMMENT ON TABLE invoice_details IS '請求データ明細';
+COMMENT ON COLUMN invoice_details.invoice_no IS '請求番号';
+COMMENT ON COLUMN invoice_details.sales_no IS '売上番号';
+COMMENT ON COLUMN invoice_details.row_no IS '売上行番号';
+COMMENT ON COLUMN invoice_details.create_date IS '作成日時';
+COMMENT ON COLUMN invoice_details.creator IS '作成者名';
+COMMENT ON COLUMN invoice_details.update_date IS '更新日時';
+COMMENT ON COLUMN invoice_details.updater IS '更新者名';
+CREATE TABLE stock (
+    wh_code VARCHAR(3) NOT NULL,
+    prod_code VARCHAR(16) NOT NULL,
+    rot_no VARCHAR(20) NOT NULL,
+    stock_type VARCHAR(1) DEFAULT '1' NOT NULL,
+    quality_type VARCHAR(1) DEFAULT 'G' NOT NULL,
+    actual INTEGER DEFAULT 1 NOT NULL,
+    valid INTEGER DEFAULT 1 NOT NULL,
+    last_delivery_date TIMESTAMP,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
 ALTER TABLE stock
 ADD CONSTRAINT pk_stock PRIMARY KEY (
         wh_code,
@@ -823,58 +875,6 @@ COMMENT ON TABLE auto_number IS '自動採番マスタ';
 COMMENT ON COLUMN auto_number.slip_type IS '伝票種別コード';
 COMMENT ON COLUMN auto_number.yearmonth IS '年月';
 COMMENT ON COLUMN auto_number.last_silp_no IS '最終伝票番号';
-CREATE TABLE invoice (
-    invoice_no VARCHAR(10) NOT NULL,
-    invoiced_date TIMESTAMP,
-    comp_code VARCHAR(8) NOT NULL,
-    cust_sub_no INTEGER,
-    last_received INTEGER,
-    month_sales INTEGER,
-    month_received INTEGER,
-    month_invoice INTEGER,
-    cmp_tax INTEGER DEFAULT 0 NOT NULL,
-    invoice_received INTEGER DEFAULT 0,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE invoice
-ADD CONSTRAINT pk_invoice PRIMARY KEY (invoice_no);
-COMMENT ON TABLE invoice IS '請求データ';
-COMMENT ON COLUMN invoice.invoice_no IS '請求番号';
-COMMENT ON COLUMN invoice.invoiced_date IS '請求日';
-COMMENT ON COLUMN invoice.comp_code IS '取引先コード';
-COMMENT ON COLUMN invoice.cust_sub_no IS '顧客枝番';
-COMMENT ON COLUMN invoice.last_received IS '前回入金額';
-COMMENT ON COLUMN invoice.month_sales IS '当月売上額';
-COMMENT ON COLUMN invoice.month_received IS '当月入金額';
-COMMENT ON COLUMN invoice.month_invoice IS '当月請求額';
-COMMENT ON COLUMN invoice.cmp_tax IS '消費税金額';
-COMMENT ON COLUMN invoice.invoice_received IS '請求消込金額';
-COMMENT ON COLUMN invoice.create_date IS '作成日時';
-COMMENT ON COLUMN invoice.creator IS '作成者名';
-COMMENT ON COLUMN invoice.update_date IS '更新日時';
-COMMENT ON COLUMN invoice.updater IS '更新者名';
-CREATE TABLE invoice_details (
-    invoice_no VARCHAR(10) NOT NULL,
-    sales_no VARCHAR(10) NOT NULL,
-    row_no INTEGER NOT NULL,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE invoice_details
-ADD CONSTRAINT pk_invoice_details PRIMARY KEY (invoice_no, sales_no, row_no);
-COMMENT ON TABLE invoice_details IS '請求データ明細';
-COMMENT ON COLUMN invoice_details.invoice_no IS '請求番号';
-COMMENT ON COLUMN invoice_details.sales_no IS '売上番号';
-COMMENT ON COLUMN invoice_details.row_no IS '売上行番号';
-COMMENT ON COLUMN invoice_details.create_date IS '作成日時';
-COMMENT ON COLUMN invoice_details.creator IS '作成者名';
-COMMENT ON COLUMN invoice_details.update_date IS '更新日時';
-COMMENT ON COLUMN invoice_details.updater IS '更新者名';
 CREATE TABLE alternate_products (
     prod_code VARCHAR(16) NOT NULL,
     alt_prod_code VARCHAR(16) NOT NULL,
