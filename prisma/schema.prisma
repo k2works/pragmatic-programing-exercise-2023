@@ -378,6 +378,50 @@ model wh_dept_mst {
   @@id([wh_code, dept_code, start_date], map: "pk_wh_dept_mst")
 }
 
+model sales {
+  sales_no      String          @id(map: "pk_sales") @db.VarChar(10)
+  order_no      String          @db.VarChar(10)
+  sales_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  sales_type    Int?            @default(1)
+  dept_code     String          @db.VarChar(6)
+  start_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  comp_code     String          @db.VarChar(8)
+  emp_code      String          @db.VarChar(10)
+  sales_amnt    Int             @default(0)
+  cmp_tax       Int             @default(0)
+  slip_comment  String?         @db.VarChar(1000)
+  updated_no    Int?
+  orgnl_no      String?         @db.VarChar(10)
+  create_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?         @db.VarChar(12)
+  update_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?         @db.VarChar(12)
+  dept_mst      dept_mst        @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_sales")
+  sales_details sales_details[]
+}
+
+model sales_details {
+  sales_no           String    @db.VarChar(10)
+  row_no             Int
+  prod_code          String    @db.VarChar(16)
+  prod_name          String    @db.VarChar(10)
+  unitprice          Int       @default(0)
+  delivered_qty      Int?      @default(0)
+  quantity           Int       @default(1)
+  discount           Int       @default(0)
+  invoiced_date      DateTime? @db.Timestamp(6)
+  invoice_no         String?   @db.VarChar(10)
+  invoice_delay_type Int?
+  auto_journal_date  DateTime? @db.Timestamp(6)
+  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?   @db.VarChar(12)
+  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?   @db.VarChar(12)
+  sales              sales     @relation(fields: [sales_no], references: [sales_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_sales_details")
+
+  @@id([sales_no, row_no], map: "pk_sales_details")
+}
+
 model alternate_products {
   prod_code     String   @db.VarChar(16)
   alt_prod_code String   @db.VarChar(16)
@@ -609,50 +653,6 @@ model purchase_orders {
   updater      String?      @db.VarChar(12)
   po_details   po_details[]
   employee     employee     @relation(fields: [emp_code], references: [emp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_employee_purchase_orders")
-}
-
-model sales {
-  sales_no      String          @id(map: "pk_sales") @db.VarChar(10)
-  order_no      String          @db.VarChar(10)
-  sales_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  sales_type    Int?            @default(1)
-  dept_code     String          @db.VarChar(6)
-  start_date    DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  comp_code     String          @db.VarChar(8)
-  emp_code      String          @db.VarChar(10)
-  sales_amnt    Int             @default(0)
-  cmp_tax       Int             @default(0)
-  slip_comment  String?         @db.VarChar(1000)
-  updated_no    Int?
-  orgnl_no      String?         @db.VarChar(10)
-  create_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator       String?         @db.VarChar(12)
-  update_date   DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater       String?         @db.VarChar(12)
-  dept_mst      dept_mst        @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_sales")
-  sales_details sales_details[]
-}
-
-model sales_details {
-  sales_no           String    @db.VarChar(10)
-  row_no             Int
-  prod_code          String    @db.VarChar(16)
-  prod_name          String    @db.VarChar(10)
-  unitprice          Int       @default(0)
-  delivered_qty      Int?      @default(0)
-  quantity           Int       @default(1)
-  discount           Int       @default(0)
-  invoiced_date      DateTime? @db.Timestamp(6)
-  invoice_no         String?   @db.VarChar(10)
-  invoice_delay_type Int?
-  auto_journal_date  DateTime? @db.Timestamp(6)
-  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator            String?   @db.VarChar(12)
-  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater            String?   @db.VarChar(12)
-  sales              sales     @relation(fields: [sales_no], references: [sales_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_sales_details")
-
-  @@id([sales_no, row_no], map: "pk_sales_details")
 }
 
 model stock {

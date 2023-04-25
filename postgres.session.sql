@@ -303,6 +303,61 @@ COMMENT ON COLUMN consumer.updater IS '更新者名';
 --     TABLESPACE TS_CUSTOMER_I01
 -- /
 ;
+CREATE TABLE category_type (
+    category_type_code VARCHAR(2) NOT NULL,
+    cate_type_name VARCHAR(20),
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE category_type
+ADD CONSTRAINT pk_category_type PRIMARY KEY (category_type_code);
+COMMENT ON TABLE category_type IS '取引先分類種別マスタ';
+COMMENT ON COLUMN category_type.category_type_code IS '取引先分類種別コード';
+COMMENT ON COLUMN category_type.cate_type_name IS '取引先分類種別名';
+COMMENT ON COLUMN category_type.create_date IS '作成日時';
+COMMENT ON COLUMN category_type.creator IS '作成者名';
+COMMENT ON COLUMN category_type.update_date IS '更新日時';
+COMMENT ON COLUMN category_type.updater IS '更新者名';
+CREATE TABLE company_category (
+    category_type VARCHAR(2) NOT NULL,
+    comp_cate_code VARCHAR(8) NOT NULL,
+    comp_cate_name VARCHAR(30),
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE company_category
+ADD CONSTRAINT pk_company_category PRIMARY KEY (comp_cate_code, category_type);
+COMMENT ON TABLE company_category IS '取引先分類マスタ';
+COMMENT ON COLUMN company_category.category_type IS '取引先分類種別コード';
+COMMENT ON COLUMN company_category.comp_cate_code IS '取引先分類コード';
+COMMENT ON COLUMN company_category.comp_cate_name IS '取引先分類名';
+COMMENT ON COLUMN company_category.create_date IS '作成日時';
+COMMENT ON COLUMN company_category.creator IS '作成者名';
+COMMENT ON COLUMN company_category.update_date IS '更新日時';
+COMMENT ON COLUMN company_category.updater IS '更新者名';
+CREATE TABLE company_category_group (
+    category_type VARCHAR(2) NOT NULL,
+    comp_cate_code VARCHAR(8) NOT NULL,
+    comp_code VARCHAR(8) NOT NULL,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE company_category_group
+ADD CONSTRAINT pk_company_category_group PRIMARY KEY (category_type, comp_code, comp_cate_code);
+COMMENT ON TABLE company_category_group IS '取引先分類所属マスタ';
+COMMENT ON COLUMN company_category_group.category_type IS '取引先分類種別コード';
+COMMENT ON COLUMN company_category_group.comp_cate_code IS '取引先分類コード';
+COMMENT ON COLUMN company_category_group.comp_code IS '取引先コード';
+COMMENT ON COLUMN company_category_group.create_date IS '作成日時';
+COMMENT ON COLUMN company_category_group.creator IS '作成者名';
+COMMENT ON COLUMN company_category_group.update_date IS '更新日時';
+COMMENT ON COLUMN company_category_group.updater IS '更新者名';
 CREATE TABLE supplier_mst (
     sup_code VARCHAR(8) NOT NULL,
     sup_sub_no INTEGER NOT NULL,
@@ -557,61 +612,82 @@ CREATE TABLE stock (
     update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
     updater VARCHAR(12)
 );
-CREATE TABLE category_type (
-    category_type_code VARCHAR(2) NOT NULL,
-    cate_type_name VARCHAR(20),
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE category_type
-ADD CONSTRAINT pk_category_type PRIMARY KEY (category_type_code);
-COMMENT ON TABLE category_type IS '取引先分類種別マスタ';
-COMMENT ON COLUMN category_type.category_type_code IS '取引先分類種別コード';
-COMMENT ON COLUMN category_type.cate_type_name IS '取引先分類種別名';
-COMMENT ON COLUMN category_type.create_date IS '作成日時';
-COMMENT ON COLUMN category_type.creator IS '作成者名';
-COMMENT ON COLUMN category_type.update_date IS '更新日時';
-COMMENT ON COLUMN category_type.updater IS '更新者名';
-CREATE TABLE company_category (
-    category_type VARCHAR(2) NOT NULL,
-    comp_cate_code VARCHAR(8) NOT NULL,
-    comp_cate_name VARCHAR(30),
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE company_category
-ADD CONSTRAINT pk_company_category PRIMARY KEY (comp_cate_code, category_type);
-COMMENT ON TABLE company_category IS '取引先分類マスタ';
-COMMENT ON COLUMN company_category.category_type IS '取引先分類種別コード';
-COMMENT ON COLUMN company_category.comp_cate_code IS '取引先分類コード';
-COMMENT ON COLUMN company_category.comp_cate_name IS '取引先分類名';
-COMMENT ON COLUMN company_category.create_date IS '作成日時';
-COMMENT ON COLUMN company_category.creator IS '作成者名';
-COMMENT ON COLUMN company_category.update_date IS '更新日時';
-COMMENT ON COLUMN company_category.updater IS '更新者名';
-CREATE TABLE company_category_group (
-    category_type VARCHAR(2) NOT NULL,
-    comp_cate_code VARCHAR(8) NOT NULL,
+CREATE TABLE sales (
+    sales_no VARCHAR(10) NOT NULL,
+    order_no VARCHAR(10) NOT NULL,
+    sales_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    sales_type INTEGER DEFAULT 1,
+    dept_code VARCHAR(6) NOT NULL,
+    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
     comp_code VARCHAR(8) NOT NULL,
+    emp_code VARCHAR(10) NOT NULL,
+    sales_amnt INTEGER DEFAULT 0 NOT NULL,
+    cmp_tax INTEGER DEFAULT 0 NOT NULL,
+    slip_comment VARCHAR(1000),
+    updated_no INTEGER,
+    orgnl_no VARCHAR(10),
     create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
     creator VARCHAR(12),
     update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
     updater VARCHAR(12)
 );
-ALTER TABLE company_category_group
-ADD CONSTRAINT pk_company_category_group PRIMARY KEY (category_type, comp_code, comp_cate_code);
-COMMENT ON TABLE company_category_group IS '取引先分類所属マスタ';
-COMMENT ON COLUMN company_category_group.category_type IS '取引先分類種別コード';
-COMMENT ON COLUMN company_category_group.comp_cate_code IS '取引先分類コード';
-COMMENT ON COLUMN company_category_group.comp_code IS '取引先コード';
-COMMENT ON COLUMN company_category_group.create_date IS '作成日時';
-COMMENT ON COLUMN company_category_group.creator IS '作成者名';
-COMMENT ON COLUMN company_category_group.update_date IS '更新日時';
-COMMENT ON COLUMN company_category_group.updater IS '更新者名';
+ALTER TABLE sales
+ADD CONSTRAINT pk_sales PRIMARY KEY (sales_no);
+COMMENT ON TABLE sales IS '売上データ';
+COMMENT ON COLUMN sales.sales_no IS '売上番号';
+COMMENT ON COLUMN sales.order_no IS '受注番号';
+COMMENT ON COLUMN sales.sales_date IS '売上日,出荷日';
+COMMENT ON COLUMN sales.sales_type IS '売上区分,1:売上 2:売上返品';
+COMMENT ON COLUMN sales.dept_code IS '部門コード';
+COMMENT ON COLUMN sales.start_date IS '部門開始日';
+COMMENT ON COLUMN sales.comp_code IS '取引先コード';
+COMMENT ON COLUMN sales.emp_code IS '社員コード';
+COMMENT ON COLUMN sales.sales_amnt IS '売上金額合計';
+COMMENT ON COLUMN sales.cmp_tax IS '消費税合計';
+COMMENT ON COLUMN sales.slip_comment IS '備考';
+COMMENT ON COLUMN sales.updated_no IS '赤黒伝票番号';
+COMMENT ON COLUMN sales.orgnl_no IS '元伝票番号';
+COMMENT ON COLUMN sales.create_date IS '作成日時';
+COMMENT ON COLUMN sales.creator IS '作成者名';
+COMMENT ON COLUMN sales.update_date IS '更新日時';
+COMMENT ON COLUMN sales.updater IS '更新者名';
+CREATE TABLE sales_details (
+    sales_no VARCHAR(10) NOT NULL,
+    row_no INTEGER NOT NULL,
+    prod_code VARCHAR(16) NOT NULL,
+    prod_name VARCHAR(10) NOT NULL,
+    unitprice INTEGER DEFAULT 0 NOT NULL,
+    delivered_qty INTEGER DEFAULT 0,
+    quantity INTEGER DEFAULT 1 NOT NULL,
+    discount INTEGER DEFAULT 0 NOT NULL,
+    invoiced_date TIMESTAMP,
+    invoice_no VARCHAR(10),
+    invoice_delay_type INTEGER,
+    auto_journal_date TIMESTAMP,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE sales_details
+ADD CONSTRAINT pk_sales_details PRIMARY KEY (sales_no, row_no);
+COMMENT ON TABLE sales_details IS '売上データ明細';
+COMMENT ON COLUMN sales_details.sales_no IS '売上番号';
+COMMENT ON COLUMN sales_details.row_no IS '売上行番号';
+COMMENT ON COLUMN sales_details.prod_code IS '商品コード';
+COMMENT ON COLUMN sales_details.prod_name IS '商品名';
+COMMENT ON COLUMN sales_details.unitprice IS '販売単価';
+COMMENT ON COLUMN sales_details.delivered_qty IS '出荷数量';
+COMMENT ON COLUMN sales_details.quantity IS '売上数量';
+COMMENT ON COLUMN sales_details.discount IS '値引金額';
+COMMENT ON COLUMN sales_details.invoiced_date IS '請求日';
+COMMENT ON COLUMN sales_details.invoice_no IS '請求番号';
+COMMENT ON COLUMN sales_details.invoice_delay_type IS '請求遅延区分';
+COMMENT ON COLUMN sales_details.auto_journal_date IS '自動仕訳処理日';
+COMMENT ON COLUMN sales_details.create_date IS '作成日時';
+COMMENT ON COLUMN sales_details.creator IS '作成者名';
+COMMENT ON COLUMN sales_details.update_date IS '更新日時';
+COMMENT ON COLUMN sales_details.updater IS '更新者名';
 ALTER TABLE stock
 ADD CONSTRAINT pk_stock PRIMARY KEY (
         wh_code,
@@ -919,82 +995,6 @@ COMMENT ON COLUMN bank_acut_mst.update_date IS '更新日時';
 COMMENT ON COLUMN bank_acut_mst.updater IS '更新者名';
 COMMENT ON COLUMN bank_acut_mst.update_plg_date IS 'プログラム更新日時';
 COMMENT ON COLUMN bank_acut_mst.update_pgm IS '更新プログラム名';
-CREATE TABLE sales (
-    sales_no VARCHAR(10) NOT NULL,
-    order_no VARCHAR(10) NOT NULL,
-    sales_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    sales_type INTEGER DEFAULT 1,
-    dept_code VARCHAR(6) NOT NULL,
-    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    comp_code VARCHAR(8) NOT NULL,
-    emp_code VARCHAR(10) NOT NULL,
-    sales_amnt INTEGER DEFAULT 0 NOT NULL,
-    cmp_tax INTEGER DEFAULT 0 NOT NULL,
-    slip_comment VARCHAR(1000),
-    updated_no INTEGER,
-    orgnl_no VARCHAR(10),
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE sales
-ADD CONSTRAINT pk_sales PRIMARY KEY (sales_no);
-COMMENT ON TABLE sales IS '売上データ';
-COMMENT ON COLUMN sales.sales_no IS '売上番号';
-COMMENT ON COLUMN sales.order_no IS '受注番号';
-COMMENT ON COLUMN sales.sales_date IS '売上日,出荷日';
-COMMENT ON COLUMN sales.sales_type IS '売上区分,1:売上 2:売上返品';
-COMMENT ON COLUMN sales.dept_code IS '部門コード';
-COMMENT ON COLUMN sales.start_date IS '部門開始日';
-COMMENT ON COLUMN sales.comp_code IS '取引先コード';
-COMMENT ON COLUMN sales.emp_code IS '社員コード';
-COMMENT ON COLUMN sales.sales_amnt IS '売上金額合計';
-COMMENT ON COLUMN sales.cmp_tax IS '消費税合計';
-COMMENT ON COLUMN sales.slip_comment IS '備考';
-COMMENT ON COLUMN sales.updated_no IS '赤黒伝票番号';
-COMMENT ON COLUMN sales.orgnl_no IS '元伝票番号';
-COMMENT ON COLUMN sales.create_date IS '作成日時';
-COMMENT ON COLUMN sales.creator IS '作成者名';
-COMMENT ON COLUMN sales.update_date IS '更新日時';
-COMMENT ON COLUMN sales.updater IS '更新者名';
-CREATE TABLE sales_details (
-    sales_no VARCHAR(10) NOT NULL,
-    row_no INTEGER NOT NULL,
-    prod_code VARCHAR(16) NOT NULL,
-    prod_name VARCHAR(10) NOT NULL,
-    unitprice INTEGER DEFAULT 0 NOT NULL,
-    delivered_qty INTEGER DEFAULT 0,
-    quantity INTEGER DEFAULT 1 NOT NULL,
-    discount INTEGER DEFAULT 0 NOT NULL,
-    invoiced_date TIMESTAMP,
-    invoice_no VARCHAR(10),
-    invoice_delay_type INTEGER,
-    auto_journal_date TIMESTAMP,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE sales_details
-ADD CONSTRAINT pk_sales_details PRIMARY KEY (sales_no, row_no);
-COMMENT ON TABLE sales_details IS '売上データ明細';
-COMMENT ON COLUMN sales_details.sales_no IS '売上番号';
-COMMENT ON COLUMN sales_details.row_no IS '売上行番号';
-COMMENT ON COLUMN sales_details.prod_code IS '商品コード';
-COMMENT ON COLUMN sales_details.prod_name IS '商品名';
-COMMENT ON COLUMN sales_details.unitprice IS '販売単価';
-COMMENT ON COLUMN sales_details.delivered_qty IS '出荷数量';
-COMMENT ON COLUMN sales_details.quantity IS '売上数量';
-COMMENT ON COLUMN sales_details.discount IS '値引金額';
-COMMENT ON COLUMN sales_details.invoiced_date IS '請求日';
-COMMENT ON COLUMN sales_details.invoice_no IS '請求番号';
-COMMENT ON COLUMN sales_details.invoice_delay_type IS '請求遅延区分';
-COMMENT ON COLUMN sales_details.auto_journal_date IS '自動仕訳処理日';
-COMMENT ON COLUMN sales_details.create_date IS '作成日時';
-COMMENT ON COLUMN sales_details.creator IS '作成者名';
-COMMENT ON COLUMN sales_details.update_date IS '更新日時';
-COMMENT ON COLUMN sales_details.updater IS '更新者名';
 CREATE TABLE purchase_orders (
     po_no VARCHAR(10) NOT NULL,
     po_date TIMESTAMP,

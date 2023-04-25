@@ -1,4 +1,4 @@
-import { PrismaClient, order_details, orders as order, wh_mst } from "@prisma/client";
+import { PrismaClient, sales, sales_details } from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -250,7 +250,107 @@ async function main() {
     }
   });
 
+  await prisma.sales_details.deleteMany({})
+  await prisma.sales.deleteMany({})
 
+  const sales: sales = {
+    sales_no: '0000000001',
+    order_no: '0000000001',
+    sales_date: new Date(),
+    sales_type: 1,
+    dept_code: '11101',
+    start_date: new Date('2021-01-01'),
+    comp_code: '1',
+    emp_code: '1',
+    sales_amnt: 1000,
+    cmp_tax: 100,
+    slip_comment: 'test',
+    updated_no: 1,
+    orgnl_no: '1',
+    create_date: new Date(),
+    creator: 'admin',
+    update_date: new Date(),
+    updater: 'admin',
+  }
+  const salesDetails: sales_details[] = [
+    {
+      sales_no: '0000000001',
+      row_no: 1,
+      prod_code: '10101001',
+      prod_name: 'test',
+      unitprice: 1000,
+      delivered_qty: 1,
+      quantity: 1,
+      discount: 1,
+      invoiced_date: new Date(),
+      invoice_no: '1',
+      invoice_delay_type: 1,
+      auto_journal_date: new Date(),
+      create_date: new Date(),
+      creator: 'admin',
+      update_date: new Date(),
+      updater: 'admin',
+    },
+    {
+      sales_no: '0000000001',
+      row_no: 2,
+      prod_code: '10101001',
+      prod_name: 'test',
+      unitprice: 1000,
+      delivered_qty: 1,
+      quantity: 1,
+      discount: 1,
+      invoiced_date: new Date(),
+      invoice_no: '1',
+      invoice_delay_type: 1,
+      auto_journal_date: new Date(),
+      create_date: new Date(),
+      creator: 'admin',
+      update_date: new Date(),
+      updater: 'admin',
+    },
+    {
+      sales_no: '0000000001',
+      row_no: 3,
+      prod_code: '10101001',
+      prod_name: 'test',
+      unitprice: 1000,
+      delivered_qty: 1,
+      quantity: 1,
+      discount: 1,
+      invoiced_date: new Date(),
+      invoice_no: '1',
+      invoice_delay_type: 1,
+      auto_journal_date: new Date(),
+      create_date: new Date(),
+      creator: 'admin',
+      update_date: new Date(),
+      updater: 'admin',
+    },
+  ]
+
+  await prisma.$transaction(async (prisma) => {
+    await prisma.sales.upsert({
+      where: {
+        sales_no: sales.sales_no
+      },
+      create: sales,
+      update: sales
+    })
+
+    for (const salesDetail of salesDetails) {
+      await prisma.sales_details.upsert({
+        where: {
+          sales_no_row_no: {
+            sales_no: salesDetail.sales_no,
+            row_no: salesDetail.row_no
+          }
+        },
+        create: salesDetail,
+        update: salesDetail
+      })
+    }
+  });
 }
 
 main()
