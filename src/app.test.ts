@@ -1784,6 +1784,8 @@ describe("Part 2 販売システムのDB設計", () => {
   describe("Chapter 6 出荷／売上業務のDB設計", () => {
     describe("売上と売上明細", () => {
       beforeAll(async () => {
+        await prisma.bank_acut_mst.deleteMany({});
+        await prisma.credit.deleteMany({});
         await prisma.invoice_details.deleteMany({});
         await prisma.invoice.deleteMany({});
         await prisma.sales_details.deleteMany({})
@@ -2154,6 +2156,8 @@ describe("Part 2 販売システムのDB設計", () => {
   describe("Chapter 7 請求業務のDB設計", () => {
     describe("請求業務の処理", () => {
       beforeAll(async () => {
+        await prisma.bank_acut_mst.deleteMany({});
+        await prisma.credit.deleteMany({});
         await prisma.invoice_details.deleteMany({});
         await prisma.invoice.deleteMany({});
         await prisma.sales_details.deleteMany({})
@@ -2427,7 +2431,7 @@ describe("Part 2 販売システムのDB設計", () => {
         {
           invoice_no: '0000000001',
           invoiced_date: new Date(),
-          comp_code: '0001',
+          comp_code: '00X',
           cust_sub_no: 1,
           last_received: 1,
           month_sales: 1,

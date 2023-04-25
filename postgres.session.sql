@@ -726,6 +726,88 @@ COMMENT ON COLUMN invoice_details.create_date IS '作成日時';
 COMMENT ON COLUMN invoice_details.creator IS '作成者名';
 COMMENT ON COLUMN invoice_details.update_date IS '更新日時';
 COMMENT ON COLUMN invoice_details.updater IS '更新者名';
+CREATE TABLE credit (
+    credit_no VARCHAR(10) NOT NULL,
+    credit_date TIMESTAMP,
+    dept_code VARCHAR(6) NOT NULL,
+    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    comp_code VARCHAR(8) NOT NULL,
+    comp_sub_no INTEGER,
+    pay_method_type INTEGER DEFAULT 1,
+    bank_acut_code VARCHAR(8),
+    received_amnt INTEGER DEFAULT 0,
+    received INTEGER DEFAULT 0,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12),
+    update_plg_date TIMESTAMP DEFAULT CURRENT_DATE,
+    update_pgm VARCHAR(50)
+);
+ALTER TABLE credit
+ADD CONSTRAINT pk_credit PRIMARY KEY (credit_no);
+ALTER TABLE credit
+ADD CHECK (pay_method_type IN (1, 2));
+COMMENT ON TABLE credit IS '入金データ';
+COMMENT ON COLUMN credit.credit_no IS '入金番号';
+COMMENT ON COLUMN credit.credit_date IS '入金日';
+COMMENT ON COLUMN credit.dept_code IS '部門コード';
+COMMENT ON COLUMN credit.start_date IS '開始日';
+COMMENT ON COLUMN credit.comp_code IS '顧客コード';
+COMMENT ON COLUMN credit.comp_sub_no IS '顧客枝番';
+COMMENT ON COLUMN credit.pay_method_type IS '支払方法区分,1:振込,2:手形';
+COMMENT ON COLUMN credit.bank_acut_code IS '入金口座コード';
+COMMENT ON COLUMN credit.received_amnt IS '入金金額';
+COMMENT ON COLUMN credit.received IS '消込金額';
+COMMENT ON COLUMN credit.create_date IS '作成日時';
+COMMENT ON COLUMN credit.creator IS '作成者名';
+COMMENT ON COLUMN credit.update_date IS '更新日時';
+COMMENT ON COLUMN credit.updater IS '更新者名';
+COMMENT ON COLUMN credit.update_plg_date IS 'プログラム更新日時';
+COMMENT ON COLUMN credit.update_pgm IS '更新プログラム名';
+CREATE TABLE bank_acut_mst (
+    bank_acut_code VARCHAR(8) NOT NULL,
+    recive_act_name VARCHAR(30),
+    appl_start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    appl_end_date TIMESTAMP DEFAULT '2100/12/31',
+    start_act_name VARCHAR(30),
+    recive_bank_act_type VARCHAR(1),
+    recive_act_no VARCHAR(12),
+    bank_act_type VARCHAR(1),
+    act_name VARCHAR(20),
+    dept_code VARCHAR(6) NOT NULL,
+    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    a_bank_code VARCHAR(4),
+    a_bank_blnc_code VARCHAR(3),
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12),
+    update_plg_date TIMESTAMP DEFAULT CURRENT_DATE,
+    update_pgm VARCHAR(50)
+);
+ALTER TABLE bank_acut_mst
+ADD CONSTRAINT pk_bank_acut_mst PRIMARY KEY (bank_acut_code);
+COMMENT ON TABLE bank_acut_mst IS '入金口座マスタ';
+COMMENT ON COLUMN bank_acut_mst.bank_acut_code IS '入金口座コード';
+COMMENT ON COLUMN bank_acut_mst.recive_act_name IS '入金口座名';
+COMMENT ON COLUMN bank_acut_mst.appl_start_date IS '適用開始日';
+COMMENT ON COLUMN bank_acut_mst.appl_end_date IS '適用終了日';
+COMMENT ON COLUMN bank_acut_mst.start_act_name IS '適用開始後入金口座名';
+COMMENT ON COLUMN bank_acut_mst.recive_bank_act_type IS '入金口座区分,B:銀行 P:郵便局';
+COMMENT ON COLUMN bank_acut_mst.recive_act_no IS '入金口座番号,銀行:7桁 郵便局:12桁';
+COMMENT ON COLUMN bank_acut_mst.bank_act_type IS '銀行口座種別,O:普通 C:当座';
+COMMENT ON COLUMN bank_acut_mst.act_name IS '口座名義人';
+COMMENT ON COLUMN bank_acut_mst.dept_code IS '部門コード';
+COMMENT ON COLUMN bank_acut_mst.start_date IS '部門開始日';
+COMMENT ON COLUMN bank_acut_mst.a_bank_code IS '全銀協銀行コード';
+COMMENT ON COLUMN bank_acut_mst.a_bank_blnc_code IS '全銀協支店コード';
+COMMENT ON COLUMN bank_acut_mst.create_date IS '作成日時';
+COMMENT ON COLUMN bank_acut_mst.creator IS '作成者名';
+COMMENT ON COLUMN bank_acut_mst.update_date IS '更新日時';
+COMMENT ON COLUMN bank_acut_mst.updater IS '更新者名';
+COMMENT ON COLUMN bank_acut_mst.update_plg_date IS 'プログラム更新日時';
+COMMENT ON COLUMN bank_acut_mst.update_pgm IS '更新プログラム名';
 CREATE TABLE stock (
     wh_code VARCHAR(3) NOT NULL,
     prod_code VARCHAR(16) NOT NULL,
@@ -913,88 +995,6 @@ COMMENT ON COLUMN location_mst.create_date IS '作成日時';
 COMMENT ON COLUMN location_mst.creator IS '作成者名';
 COMMENT ON COLUMN location_mst.update_date IS '更新日時';
 COMMENT ON COLUMN location_mst.updater IS '更新者名';
-CREATE TABLE credit (
-    credit_no VARCHAR(10) NOT NULL,
-    credit_date TIMESTAMP,
-    dept_code VARCHAR(6) NOT NULL,
-    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    comp_code VARCHAR(8) NOT NULL,
-    comp_sub_no INTEGER,
-    pay_method_type INTEGER DEFAULT 1,
-    bank_acut_code VARCHAR(8),
-    received_amnt INTEGER DEFAULT 0,
-    received INTEGER DEFAULT 0,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12),
-    update_plg_date TIMESTAMP DEFAULT CURRENT_DATE,
-    update_pgm VARCHAR(50)
-);
-ALTER TABLE credit
-ADD CONSTRAINT pk_credit PRIMARY KEY (credit_no);
-ALTER TABLE credit
-ADD CHECK (pay_method_type IN (1, 2));
-COMMENT ON TABLE credit IS '入金データ';
-COMMENT ON COLUMN credit.credit_no IS '入金番号';
-COMMENT ON COLUMN credit.credit_date IS '入金日';
-COMMENT ON COLUMN credit.dept_code IS '部門コード';
-COMMENT ON COLUMN credit.start_date IS '開始日';
-COMMENT ON COLUMN credit.comp_code IS '顧客コード';
-COMMENT ON COLUMN credit.comp_sub_no IS '顧客枝番';
-COMMENT ON COLUMN credit.pay_method_type IS '支払方法区分,1:振込,2:手形';
-COMMENT ON COLUMN credit.bank_acut_code IS '入金口座コード';
-COMMENT ON COLUMN credit.received_amnt IS '入金金額';
-COMMENT ON COLUMN credit.received IS '消込金額';
-COMMENT ON COLUMN credit.create_date IS '作成日時';
-COMMENT ON COLUMN credit.creator IS '作成者名';
-COMMENT ON COLUMN credit.update_date IS '更新日時';
-COMMENT ON COLUMN credit.updater IS '更新者名';
-COMMENT ON COLUMN credit.update_plg_date IS 'プログラム更新日時';
-COMMENT ON COLUMN credit.update_pgm IS '更新プログラム名';
-CREATE TABLE bank_acut_mst (
-    bank_acut_code VARCHAR(8) NOT NULL,
-    recive_act_name VARCHAR(30),
-    appl_start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    appl_end_date TIMESTAMP DEFAULT '2100/12/31',
-    start_act_name VARCHAR(30),
-    recive_bank_act_type VARCHAR(1),
-    recive_act_no VARCHAR(12),
-    bank_act_type VARCHAR(1),
-    act_name VARCHAR(20),
-    dept_code VARCHAR(6) NOT NULL,
-    start_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    a_bank_code VARCHAR(4),
-    a_bank_blnc_code VARCHAR(3),
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12),
-    update_plg_date TIMESTAMP DEFAULT CURRENT_DATE,
-    update_pgm VARCHAR(50)
-);
-ALTER TABLE bank_acut_mst
-ADD CONSTRAINT pk_bank_acut_mst PRIMARY KEY (bank_acut_code);
-COMMENT ON TABLE bank_acut_mst IS '入金口座マスタ';
-COMMENT ON COLUMN bank_acut_mst.bank_acut_code IS '入金口座コード';
-COMMENT ON COLUMN bank_acut_mst.recive_act_name IS '入金口座名';
-COMMENT ON COLUMN bank_acut_mst.appl_start_date IS '適用開始日';
-COMMENT ON COLUMN bank_acut_mst.appl_end_date IS '適用終了日';
-COMMENT ON COLUMN bank_acut_mst.start_act_name IS '適用開始後入金口座名';
-COMMENT ON COLUMN bank_acut_mst.recive_bank_act_type IS '入金口座区分,B:銀行 P:郵便局';
-COMMENT ON COLUMN bank_acut_mst.recive_act_no IS '入金口座番号,銀行:7桁 郵便局:12桁';
-COMMENT ON COLUMN bank_acut_mst.bank_act_type IS '銀行口座種別,O:普通 C:当座';
-COMMENT ON COLUMN bank_acut_mst.act_name IS '口座名義人';
-COMMENT ON COLUMN bank_acut_mst.dept_code IS '部門コード';
-COMMENT ON COLUMN bank_acut_mst.start_date IS '部門開始日';
-COMMENT ON COLUMN bank_acut_mst.a_bank_code IS '全銀協銀行コード';
-COMMENT ON COLUMN bank_acut_mst.a_bank_blnc_code IS '全銀協支店コード';
-COMMENT ON COLUMN bank_acut_mst.create_date IS '作成日時';
-COMMENT ON COLUMN bank_acut_mst.creator IS '作成者名';
-COMMENT ON COLUMN bank_acut_mst.update_date IS '更新日時';
-COMMENT ON COLUMN bank_acut_mst.updater IS '更新者名';
-COMMENT ON COLUMN bank_acut_mst.update_plg_date IS 'プログラム更新日時';
-COMMENT ON COLUMN bank_acut_mst.update_pgm IS '更新プログラム名';
 CREATE TABLE purchase_orders (
     po_no VARCHAR(10) NOT NULL,
     po_date TIMESTAMP,

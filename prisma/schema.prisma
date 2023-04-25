@@ -169,6 +169,8 @@ model customers_mst {
   companys_mst       companys_mst       @relation(fields: [cust_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_customers_mst")
   orders             orders[]
   destinations       destinations_mst[]
+  invoice            invoice[]
+  credit             credit[]
 
   @@id([cust_code, cust_sub_no], map: "pk_customers_mst")
 }
@@ -439,6 +441,7 @@ model invoice {
   update_date      DateTime          @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
   updater          String?           @db.VarChar(12)
   invoice_details  invoice_details[]
+  customers_mst    customers_mst?    @relation(fields: [comp_code, cust_sub_no], references: [cust_code, cust_sub_no])
 }
 
 model invoice_details {
@@ -455,24 +458,26 @@ model invoice_details {
   @@id([invoice_no, sales_no, row_no], map: "pk_invoice_details")
 }
 
-model alternate_products {
-  prod_code     String   @db.VarChar(16)
-  alt_prod_code String   @db.VarChar(16)
-  priority      Int?     @default(1)
-  create_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator       String?  @db.VarChar(12)
-  update_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater       String?  @db.VarChar(12)
-
-  @@id([prod_code, alt_prod_code], map: "pk_alternate_products")
-}
-
-model auto_number {
-  slip_type    String   @db.VarChar(2)
-  yearmonth    DateTime @db.Timestamp(6)
-  last_silp_no Int      @default(0)
-
-  @@id([slip_type, yearmonth])
+model credit {
+  credit_no       String         @id(map: "pk_credit") @db.VarChar(10)
+  credit_date     DateTime?      @db.Timestamp(6)
+  dept_code       String         @db.VarChar(6)
+  start_date      DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  comp_code       String         @db.VarChar(8)
+  comp_sub_no     Int?
+  pay_method_type Int?           @default(1)
+  bank_acut_code  String?        @db.VarChar(8)
+  received_amnt   Int?           @default(0)
+  received        Int?           @default(0)
+  create_date     DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?        @db.VarChar(12)
+  update_date     DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?        @db.VarChar(12)
+  update_plg_date DateTime?      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  update_pgm      String?        @db.VarChar(50)
+  dept_mst        dept_mst       @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_credit")
+  bank_acut_mst   bank_acut_mst? @relation(fields: [bank_acut_code], references: [bank_acut_code])
+  customers_mst   customers_mst? @relation(fields: [comp_code, comp_sub_no], references: [cust_code, cust_sub_no])
 }
 
 model bank_acut_mst {
@@ -496,6 +501,28 @@ model bank_acut_mst {
   update_plg_date      DateTime? @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
   update_pgm           String?   @db.VarChar(50)
   dept_mst             dept_mst  @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_入金口座マスタ")
+
+  credit credit[]
+}
+
+model alternate_products {
+  prod_code     String   @db.VarChar(16)
+  alt_prod_code String   @db.VarChar(16)
+  priority      Int?     @default(1)
+  create_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?  @db.VarChar(12)
+  update_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?  @db.VarChar(12)
+
+  @@id([prod_code, alt_prod_code], map: "pk_alternate_products")
+}
+
+model auto_number {
+  slip_type    String   @db.VarChar(2)
+  yearmonth    DateTime @db.Timestamp(6)
+  last_silp_no Int      @default(0)
+
+  @@id([slip_type, yearmonth])
 }
 
 model bom {
@@ -507,26 +534,6 @@ model bom {
   update_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
   updater     String?  @db.VarChar(12)
   products    products @relation(fields: [prod_code], references: [prod_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_products_bom")
-}
-
-model credit {
-  credit_no       String    @id(map: "pk_credit") @db.VarChar(10)
-  credit_date     DateTime? @db.Timestamp(6)
-  dept_code       String    @db.VarChar(6)
-  start_date      DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  comp_code       String    @db.VarChar(8)
-  comp_sub_no     Int?
-  pay_method_type Int?      @default(1)
-  bank_acut_code  String?   @db.VarChar(8)
-  received_amnt   Int?      @default(0)
-  received        Int?      @default(0)
-  create_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator         String?   @db.VarChar(12)
-  update_date     DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater         String?   @db.VarChar(12)
-  update_plg_date DateTime? @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  update_pgm      String?   @db.VarChar(50)
-  dept_mst        dept_mst  @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_credit")
 }
 
 model credit_balance {
