@@ -59,6 +59,15 @@ class TestSort(unittest.TestCase):
         shell_sort(a)
         self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
 
+    def test_partition(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        partition(a)
+
+    def test_quick_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        quick_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
 
 def bubble_sort(a: MutableSequence) -> None:
     """単純交換ソート(バブルソート)"""
@@ -205,6 +214,63 @@ def shell_sort(a: MutableSequence) -> None:
                 j -= h
             a[j + h] = tmp
         h //= 2
+
+
+def partition(a: MutableSequence) -> None:
+    """配列を分割して表示"""
+    n = len(a)
+    pl = 0           # 左カーソル
+    pr = n - 1       # 右カーソル
+    x = a[n // 2]    # 枢軸（中央の要素）
+
+    while pl <= pr:
+        while a[pl] < x:
+            pl += 1
+        while a[pr] > x:
+            pr -= 1
+        if pl <= pr:
+            a[pl], a[pr] = a[pr], a[pl]
+            pl += 1
+            pr -= 1
+
+    print(f'枢軸の値は{x}です。')
+
+    print('枢軸以下のグループ')
+    print(*a[0:pl])  # a[0]～a[pl - 1]
+
+    if pl > pr + 1:
+        print('枢軸と等しいグループ')
+        print(*a[pr + 1:pl])
+
+    print('枢軸以上のグループ')
+    print(*a[pr + 1:n])  # a[pr + 1]～a[n - 1]
+
+
+def qsort(a: MutableSequence, left: int, right: int) -> None:
+    """a[left]～a[right]をクイックソート"""
+    pl = left                   # 左カーソル
+    pr = right                  # 右カーソル
+    x = a[(left + right) // 2]  # 枢軸（中央の要素）
+
+    while pl <= pr:
+        while a[pl] < x:
+            pl += 1
+        while a[pr] > x:
+            pr -= 1
+        if pl <= pr:
+            a[pl], a[pr] = a[pr], a[pl]
+            pl += 1
+            pr -= 1
+
+    if left < pr:
+        qsort(a, left, pr)
+    if pl < right:
+        qsort(a, pl, right)
+
+
+def quick_sort(a: MutableSequence) -> None:
+    """クイックソート"""
+    qsort(a, 0, len(a) - 1)
 
 
 unittest.main(argv=[''], verbosity=2, exit=False)
