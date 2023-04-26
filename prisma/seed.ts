@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, bom } from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -28,7 +28,6 @@ import {
   credits,
   alterNateProducts,
 } from "./data/csvReader";
-import { waitForDebugger } from "inspector";
 
 async function main() {
   console.table(departments);
@@ -89,6 +88,81 @@ async function main() {
       },
       create: altProd,
       update: altProd
+    });
+  }
+
+  const boms: bom[] = [
+    {
+      prod_code: "X01",
+      bom_code: "X01",
+      quantity: 1,
+      create_date: new Date(),
+      creator: "admin",
+      update_date: new Date(),
+      updater: "admin",
+    },
+    {
+      prod_code: "X02",
+      bom_code: "X02",
+      quantity: 1,
+      create_date: new Date(),
+      creator: "admin",
+      update_date: new Date(),
+      updater: "admin",
+    },
+    {
+      prod_code: "Z01",
+      bom_code: "Z01",
+      quantity: 1,
+      create_date: new Date(),
+      creator: "admin",
+      update_date: new Date(),
+      updater: "admin",
+    },
+    {
+      prod_code: "001",
+      bom_code: "X01",
+      quantity: 2,
+      create_date: new Date(),
+      creator: "admin",
+      update_date: new Date(),
+      updater: "admin",
+    },
+    {
+      prod_code: "001",
+      bom_code: "X02",
+      quantity: 1,
+      create_date: new Date(),
+      creator: "admin",
+      update_date: new Date(),
+      updater: "admin",
+    },
+    {
+      prod_code: "001",
+      bom_code: "Z01",
+      quantity: 1,
+      create_date: new Date(),
+      creator: "admin",
+      update_date: new Date(),
+      updater: "admin",
+    },
+    {
+      prod_code: "002",
+      bom_code: "001",
+      quantity: 2,
+      create_date: new Date(),
+      creator: "admin",
+      update_date: new Date(),
+      updater: "admin",
+    }
+  ];
+  for (const bom of boms) {
+    await prisma.bom.upsert({
+      where: {
+        prod_code: bom.prod_code
+      },
+      create: bom,
+      update: bom
     });
   }
 

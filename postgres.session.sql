@@ -149,6 +149,35 @@ COMMENT ON COLUMN alternate_products.create_date IS '作成日時';
 COMMENT ON COLUMN alternate_products.creator IS '作成者名';
 COMMENT ON COLUMN alternate_products.update_date IS '更新日時';
 COMMENT ON COLUMN alternate_products.updater IS '更新者名';
+CREATE TABLE bom (
+    prod_code VARCHAR(16) NOT NULL,
+    bom_code VARCHAR(16) NOT NULL,
+    quantity INTEGER DEFAULT 1 NOT NULL,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE bom
+ADD CONSTRAINT pk_bom PRIMARY KEY (prod_code);
+COMMENT ON TABLE bom IS '部品表';
+COMMENT ON COLUMN bom.prod_code IS '商品コード';
+COMMENT ON COLUMN bom.bom_code IS '部品コード';
+COMMENT ON COLUMN bom.quantity IS '部品数量';
+COMMENT ON COLUMN bom.create_date IS '作成日時';
+COMMENT ON COLUMN bom.creator IS '作成者名';
+COMMENT ON COLUMN bom.update_date IS '更新日時';
+COMMENT ON COLUMN bom.updater IS '更新者名';
+CREATE TABLE credit_balance (
+    comp_code VARCHAR(8) NOT NULL,
+    order_balance INTEGER DEFAULT 0,
+    rec_balance INTEGER DEFAULT 0,
+    pay_balance INTEGER DEFAULT 0,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
 CREATE TABLE location_mst (
     wh_code VARCHAR(3) NOT NULL,
     location_code VARCHAR(4) NOT NULL,
@@ -1067,35 +1096,6 @@ COMMENT ON COLUMN po_details.create_date IS '作成日時';
 COMMENT ON COLUMN po_details.creator IS '作成者名';
 COMMENT ON COLUMN po_details.update_date IS '更新日時';
 COMMENT ON COLUMN po_details.updater IS '更新者名';
-CREATE TABLE bom (
-    prod_code VARCHAR(16) NOT NULL,
-    bom_code VARCHAR(16) NOT NULL,
-    quantity INTEGER DEFAULT 1 NOT NULL,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE bom
-ADD CONSTRAINT pk_bom PRIMARY KEY (prod_code);
-COMMENT ON TABLE bom IS '部品表';
-COMMENT ON COLUMN bom.prod_code IS '商品コード';
-COMMENT ON COLUMN bom.bom_code IS '部品コード';
-COMMENT ON COLUMN bom.quantity IS '部品数量';
-COMMENT ON COLUMN bom.create_date IS '作成日時';
-COMMENT ON COLUMN bom.creator IS '作成者名';
-COMMENT ON COLUMN bom.update_date IS '更新日時';
-COMMENT ON COLUMN bom.updater IS '更新者名';
-CREATE TABLE credit_balance (
-    comp_code VARCHAR(8) NOT NULL,
-    order_balance INTEGER DEFAULT 0,
-    rec_balance INTEGER DEFAULT 0,
-    pay_balance INTEGER DEFAULT 0,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
 ALTER TABLE credit_balance
 ADD CONSTRAINT pk_credit_balance PRIMARY KEY (comp_code);
 COMMENT ON TABLE credit_balance IS '与信残高データ';
