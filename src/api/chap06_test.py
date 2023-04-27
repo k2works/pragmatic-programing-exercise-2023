@@ -5,6 +5,8 @@ from typing import Any, MutableSequence
 import unittest
 import doctest
 
+from chap04_test import Stack
+
 # ソート
 
 
@@ -59,14 +61,26 @@ class TestSort(unittest.TestCase):
         shell_sort(a)
         self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
 
-    def test_partition(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        partition(a)
-
     def test_quick_sort(self):
         a = [6, 4, 3, 7, 1, 9, 8]
+        partition(a)
         quick_sort(a)
         self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_quick_sort_stack(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        quick_sort_stack(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_quick_sort2(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        quick_sort2(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_sorted(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        self.assertEqual(sorted(a), [1, 3, 4, 6, 7, 8, 9])
+        self.assertEqual(sorted(a, reverse=True), [9, 8, 7, 6, 4, 3, 1])
 
 
 def bubble_sort(a: MutableSequence) -> None:
@@ -271,6 +285,92 @@ def qsort(a: MutableSequence, left: int, right: int) -> None:
 def quick_sort(a: MutableSequence) -> None:
     """クイックソート"""
     qsort(a, 0, len(a) - 1)
+
+
+def qsort_stack(a: MutableSequence, left: int, right: int) -> None:
+    """a[left]～a[right]をクイックソート（非再帰版）"""
+    range = Stack(right - left + 1)  # スタックを生成
+
+    range.push((left, right))
+
+    while not range.is_empty():
+        pl, pr = left, right = range.pop()  # 左右カーソルを取り出す
+        x = a[(left + right) // 2]         # 枢軸（中央の要素）
+
+        while pl <= pr:
+            while a[pl] < x:
+                pl += 1
+            while a[pr] > x:
+                pr -= 1
+            if pl <= pr:
+                a[pl], a[pr] = a[pr], a[pl]
+                pl += 1
+                pr -= 1
+
+        if left < pr:
+            range.push((left, pr))  # 左グループのカーソルを保存
+        if pl < right:
+            range.push((pl, right))  # 右グループのカーソルを保存
+
+
+def quick_sort_stack(a: MutableSequence) -> None:
+    """クイックソート(非再帰版))"""
+    qsort_stack(a, 0, len(a) - 1)
+
+
+def sort3(a: MutableSequence, idx1: int, idx2: int, idx3: int):
+    """a[idx1], a[idx2], a[idx3]を昇順にソートして中央値の添字を返却"""
+    if a[idx2] < a[idx1]:
+        a[idx2], a[idx1] = a[idx1], a[idx2]
+    if a[idx3] < a[idx2]:
+        a[idx3], a[idx2] = a[idx2], a[idx3]
+    if a[idx2] < a[idx1]:
+        a[idx2], a[idx1] = a[idx1], a[idx2]
+
+
+def insertion_sort(a: MutableSequence, left: int, right: int) -> None:
+    """a[left]～a[right]を挿入ソート"""
+    for i in range(left + 1, right + 1):
+        j = i
+        tmp = a[i]
+        while j > left and a[j - 1] > tmp:
+            a[j] = a[j - 1]
+            j -= 1
+        a[j] = tmp
+
+
+def qsort2(a: MutableSequence, left: int, right: int) -> None:
+    """a[left]～a[right]をクイックソート"""
+    if right - left < 9:  # 要素数が9未満であれば単純挿入ソートに切り替え
+        insertion_sort(a, left, right)
+    else:
+        pl = left      # 左カーソル
+        pr = right     # 右カーソル
+        m = sort3(a, pl, (pl + pr) // 2, pr)
+        x = a[m]
+
+        a[m], a[pr - 1] = a[pr - 1], a[m]
+        pl += 1
+        pr -= 2
+        while pl <= pr:
+            while a[pl] < x:
+                pl += 1
+            while a[pr] > x:
+                pr -= 1
+            if pl <= pr:
+                a[pl], a[pr] = a[pr], a[pl]
+                pl += 1
+                pr -= 1
+
+        if left < pr:
+            qsort(a, left, pr)
+        if pl < right:
+            qsort(a, pl, right)
+
+
+def quick_sort2(a: MutableSequence) -> None:
+    """クイックソート"""
+    qsort2(a, 0, len(a) - 1)
 
 
 unittest.main(argv=[''], verbosity=2, exit=False)
