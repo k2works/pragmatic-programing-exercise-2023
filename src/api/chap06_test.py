@@ -328,7 +328,7 @@ def sort3(a: MutableSequence, idx1: int, idx2: int, idx3: int):
         a[idx2], a[idx1] = a[idx1], a[idx2]
 
 
-def insertion_sort(a: MutableSequence, left: int, right: int) -> None:
+def insertion_sort2(a: MutableSequence, left: int, right: int) -> None:
     """a[left]～a[right]を挿入ソート"""
     for i in range(left + 1, right + 1):
         j = i
@@ -342,7 +342,7 @@ def insertion_sort(a: MutableSequence, left: int, right: int) -> None:
 def qsort2(a: MutableSequence, left: int, right: int) -> None:
     """a[left]～a[right]をクイックソート"""
     if right - left < 9:  # 要素数が9未満であれば単純挿入ソートに切り替え
-        insertion_sort(a, left, right)
+        insertion_sort2(a, left, right)
     else:
         pl = left      # 左カーソル
         pr = right     # 右カーソル
@@ -371,6 +371,7 @@ def qsort2(a: MutableSequence, left: int, right: int) -> None:
 def quick_sort2(a: MutableSequence) -> None:
     """クイックソート"""
     qsort2(a, 0, len(a) - 1)
+    
 
 
 unittest.main(argv=[''], verbosity=2, exit=False)
