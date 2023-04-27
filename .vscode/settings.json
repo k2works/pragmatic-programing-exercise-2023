@@ -22,6 +22,21 @@
       "database": "test",
       "username": "root",
       "password": "root"
+    },
+    {
+      "mssqlOptions": {
+        "appName": "SQLTools",
+        "useUTC": true,
+        "encrypt": true
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 1433,
+      "driver": "MSSQL",
+      "name": "mssql",
+      "username": "sa",
+      "password": "Jko3va-D9821jhsvGD",
+      "database": "master"
     }
   ]
 }
