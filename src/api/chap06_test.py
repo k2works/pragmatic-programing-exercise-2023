@@ -469,6 +469,80 @@ def merge_sort(a: MutableSequence) -> None:
     _merge_sort(a, 0, n - 1)    # 配列全体をマージソート
     del buff                    # 作業用配列を破棄
 
+# %% [markdown]
+# ## ヒープソート
+
+
+class TestHeapSort(unittest.TestCase):
+    def test_heap_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        heap_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def heap_sort(a: MutableSequence) -> None:
+    """ヒープソート"""
+    def down_heap(a: MutableSequence, left: int, right: int) -> None:
+        """a[left]～a[right]をヒープソート"""
+        temp = a[left]  # 根
+
+        parent = left
+        while parent < (right + 1) // 2:
+            cl = parent * 2 + 1  # 左の子
+            cr = cl + 1          # 右の子
+            child = cr if cr <= right and a[cr] > a[cl] else cl  # 大きいほう
+            if temp >= a[child]:
+                break
+            a[parent] = a[child]
+            parent = child
+        a[parent] = temp
+
+    n = len(a)
+
+    for i in range((n - 1) // 2, -1, -1):   # a[i]～a[n-1]をヒープ化
+        down_heap(a, i, n - 1)
+
+    for i in range(n - 1, 0, -1):
+        a[0], a[i] = a[i], a[0]     # 最大要素と未ソート部末尾要素を交換
+        down_heap(a, 0, i - 1)      # a[0]～a[i-1]をヒープ化
+
+# %% [markdown]
+# ## 度数ソート
+
+
+class TestCountingSort(unittest.TestCase):
+    def test_counting_sort(self):
+        x = [22, 5, 11, 32, 120, 68, 70]
+        counting_sort(x)
+        self.assertEqual(x, [5, 11, 22, 32, 68, 70, 120])
+
+
+def fsort(a: MutableSequence, max: int) -> None:
+    """度数ソート(配列要素の値は0以上max以下)"""
+    n = len(a)
+    f = [0] * (max + 1)     # 累積度数
+    b = [0] * n             # 作業用目的配列
+
+    for i in range(n):      # 各要素の度数をカウント
+        f[a[i]] += 1
+
+    for i in range(1, max + 1):  # 累積度数を計算
+        f[i] += f[i - 1]
+
+    for i in range(n - 1, -1, -1):  # 各要素を作業用配列に格納
+        f[a[i]] -= 1
+        b[f[a[i]]] = a[i]
+
+    for i in range(n):      # 作業用配列をaに移動
+        a[i] = b[i]
+
+
+def counting_sort(a: MutableSequence) -> None:
+    """度数ソート"""
+    fsort(a, max(a))
+
 
 unittest.main(argv=[''], verbosity=2, exit=False)
 doctest.testmod(verbose=True)
+
+# %%
