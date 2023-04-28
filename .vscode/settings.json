@@ -36,7 +36,7 @@
       "name": "mssql",
       "username": "sa",
       "password": "Jko3va-D9821jhsvGD",
-      "database": "master"
+      "database": "test"
     }
   ]
 }
