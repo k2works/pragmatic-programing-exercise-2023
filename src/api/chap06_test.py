@@ -1,7 +1,7 @@
 # Doctest
 import bisect
 from collections import deque
-from typing import Any, MutableSequence
+from typing import Any, MutableSequence, Sequence
 import unittest
 import doctest
 
@@ -81,6 +81,18 @@ class TestSort(unittest.TestCase):
         a = [6, 4, 3, 7, 1, 9, 8]
         self.assertEqual(sorted(a), [1, 3, 4, 6, 7, 8, 9])
         self.assertEqual(sorted(a, reverse=True), [9, 8, 7, 6, 4, 3, 1])
+
+    def test_merge_sort_list(self):
+        a = [2,4,6,8,11,13]
+        b = [1,2,3,4,9,16,21]
+        c = [None] * (len(a) + len(b))
+        merge_sorted_list(a, b, c)
+        self.assertEqual(c, [1,2,2,3,4,4,6,8,9,11,13,16,21])
+
+    def test_merge_sort(self):
+        a = [5,8,4,2,6,1,3,9,7]
+        merge_sort(a)
+        self.assertEqual(a, [1,2,3,4,5,6,7,8,9])
 
 
 def bubble_sort(a: MutableSequence) -> None:
@@ -371,7 +383,69 @@ def qsort2(a: MutableSequence, left: int, right: int) -> None:
 def quick_sort2(a: MutableSequence) -> None:
     """クイックソート"""
     qsort2(a, 0, len(a) - 1)
-    
+
+
+def merge_sorted_list(a: Sequence, b: Sequence, c: MutableSequence) -> None:
+    """ソート済み配列aとbをマージしてcに格納"""
+    pa, pb, pc = 0, 0, 0   # カーソルを
+    na, nb, nc = len(a), len(b), len(c) # 要素数
+
+    while pa < na and pb < nb:  # 小さいほうを格納
+        if a[pa] <= b[pb]:
+            c[pc] = a[pa]
+            pa += 1
+        else:
+            c[pc] = b[pb]
+            pb += 1
+        pc += 1
+
+    while pa < na:              # aに残った要素をコピー
+        c[pc] = a[pa]
+        pa += 1
+        pc += 1
+
+    while pb < nb:
+        c[pc] = b[pb]
+        pb += 1
+        pc += 1
+
+def merge_sort(a: MutableSequence) -> None:
+    """マージソート"""
+    def _merge_sort(a: MutableSequence, left: int, right: int) -> None:
+        """a[left]～a[right]を再帰的にマージソート"""
+        if left < right:
+            center = (left + right) // 2
+
+            _merge_sort(a, left, center)    # 前半をマージソート
+            _merge_sort(a, center + 1, right)   # 後半をマージソート
+
+            p = j = 0
+            i = k = left
+
+            while i <= center:
+                buff[p] = a[i]
+                p += 1
+                i += 1
+
+            while i <= right and j < p:
+                if buff[j] <= a[i]:
+                    a[k] = buff[j]
+                    j += 1
+                else:
+                    a[k] = a[i]
+                    i += 1
+                k += 1
+
+            while j < p:
+                a[k] = buff[j]
+                k += 1
+                j += 1
+
+    n = len(a)
+    buff = [None] * n           # 作業用配列を生成
+    _merge_sort(a, 0, n - 1)    # 配列全体をマージソート
+    del buff                    # 作業用配列を破棄
+                
 
 
 unittest.main(argv=[''], verbosity=2, exit=False)
