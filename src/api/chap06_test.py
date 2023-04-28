@@ -1,4 +1,6 @@
-# Doctest
+# %% [markdown]
+# # ソート
+# %%
 import bisect
 from collections import deque
 from typing import Any, MutableSequence, Sequence
@@ -7,10 +9,11 @@ import doctest
 
 from chap04_test import Stack
 
-# ソート
+# %% [markdown]
+# ## 単純挿入ソート
 
 
-class TestSort(unittest.TestCase):
+class TestBubleSort(unittest.TestCase):
     def test_buble_sort(self):
         a = [6, 4, 3, 7, 1, 9, 8]
         bubble_sort(a)
@@ -35,64 +38,6 @@ class TestSort(unittest.TestCase):
         a = [6, 4, 3, 7, 1, 9, 8]
         shaker_sort(a)
         self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_select_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        selection_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_insertion_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        insertion_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_binary_insertion_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        binary_insertion_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_binary_insertion2(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        binary_insertion_sort2(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_shell_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        shell_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_quick_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        partition(a)
-        quick_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_quick_sort_stack(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        quick_sort_stack(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_quick_sort2(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        quick_sort2(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_sorted(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        self.assertEqual(sorted(a), [1, 3, 4, 6, 7, 8, 9])
-        self.assertEqual(sorted(a, reverse=True), [9, 8, 7, 6, 4, 3, 1])
-
-    def test_merge_sort_list(self):
-        a = [2,4,6,8,11,13]
-        b = [1,2,3,4,9,16,21]
-        c = [None] * (len(a) + len(b))
-        merge_sorted_list(a, b, c)
-        self.assertEqual(c, [1,2,2,3,4,4,6,8,9,11,13,16,21])
-
-    def test_merge_sort(self):
-        a = [5,8,4,2,6,1,3,9,7]
-        merge_sort(a)
-        self.assertEqual(a, [1,2,3,4,5,6,7,8,9])
 
 
 def bubble_sort(a: MutableSequence) -> None:
@@ -172,6 +117,31 @@ def shaker_sort(a: MutableSequence) -> None:
                 last = j
             right = last
 
+# %% [markdown]
+# ## 単純選択ソート
+
+
+class TestSelectSort(unittest.TestCase):
+    def test_select_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        selection_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_insertion_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        insertion_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_binary_insertion_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        binary_insertion_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_binary_insertion2(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        binary_insertion_sort2(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
 
 def selection_sort(a: MutableSequence) -> None:
     """単純選択ソート"""
@@ -226,6 +196,16 @@ def binary_insertion_sort2(a: MutableSequence) -> None:
     for i in range(1, len(a)):
         bisect.insort(a, a.pop(i), 0, i)
 
+# %% [markdown]
+# ## シェルソート
+
+
+class TestShellSort(unittest.TestCase):
+    def test_shell_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        shell_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
 
 def shell_sort(a: MutableSequence) -> None:
     """シェルソート"""
@@ -240,6 +220,32 @@ def shell_sort(a: MutableSequence) -> None:
                 j -= h
             a[j + h] = tmp
         h //= 2
+
+# %% [markdown]
+# ## クイックソート
+
+
+class TestQuickSort(unittest.TestCase):
+    def test_quick_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        partition(a)
+        quick_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_quick_sort_stack(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        quick_sort_stack(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_quick_sort2(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        quick_sort2(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+    def test_sorted(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        self.assertEqual(sorted(a), [1, 3, 4, 6, 7, 8, 9])
+        self.assertEqual(sorted(a, reverse=True), [9, 8, 7, 6, 4, 3, 1])
 
 
 def partition(a: MutableSequence) -> None:
@@ -385,10 +391,26 @@ def quick_sort2(a: MutableSequence) -> None:
     qsort2(a, 0, len(a) - 1)
 
 
+# %% [markdown]
+# ## マージソート
+class TestMergeSort(unittest.TestCase):
+    def test_merge_sort_list(self):
+        a = [2, 4, 6, 8, 11, 13]
+        b = [1, 2, 3, 4, 9, 16, 21]
+        c = [None] * (len(a) + len(b))
+        merge_sorted_list(a, b, c)
+        self.assertEqual(c, [1, 2, 2, 3, 4, 4, 6, 8, 9, 11, 13, 16, 21])
+
+    def test_merge_sort(self):
+        a = [5, 8, 4, 2, 6, 1, 3, 9, 7]
+        merge_sort(a)
+        self.assertEqual(a, [1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+
 def merge_sorted_list(a: Sequence, b: Sequence, c: MutableSequence) -> None:
     """ソート済み配列aとbをマージしてcに格納"""
     pa, pb, pc = 0, 0, 0   # カーソルを
-    na, nb, nc = len(a), len(b), len(c) # 要素数
+    na, nb, nc = len(a), len(b), len(c)  # 要素数
 
     while pa < na and pb < nb:  # 小さいほうを格納
         if a[pa] <= b[pb]:
@@ -408,6 +430,7 @@ def merge_sorted_list(a: Sequence, b: Sequence, c: MutableSequence) -> None:
         c[pc] = b[pb]
         pb += 1
         pc += 1
+
 
 def merge_sort(a: MutableSequence) -> None:
     """マージソート"""
@@ -445,7 +468,6 @@ def merge_sort(a: MutableSequence) -> None:
     buff = [None] * n           # 作業用配列を生成
     _merge_sort(a, 0, n - 1)    # 配列全体をマージソート
     del buff                    # 作業用配列を破棄
-                
 
 
 unittest.main(argv=[''], verbosity=2, exit=False)
