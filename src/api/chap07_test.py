@@ -82,6 +82,37 @@ def kmp_match(txt: str, pat: str) -> int:
 # %%
 
 
+class TestBm(unittest.TestCase):
+    def test_bm_match(self):
+        self.assertEqual(bm_match("ABC", "ABC"), 0)
+        self.assertEqual(bm_match("ABC", "ABD"), -1)
+        self.assertEqual(bm_match("ABC", "ABABC"), -1)
+
+
+def bm_match(txt: str, pat: str) -> int:
+    """Boyer-Moore法による文字列探索"""
+    skip = [None] * 256  # スキップテーブル
+
+    # スキップテーブルの作成
+    for pt in range(256):
+        skip[pt] = len(pat)
+    for pt in range(len(pat)):
+        skip[ord(pat[pt])] = len(pat) - pt - 1
+
+    # 探索
+    while pt < len(txt):
+        pp = len(pat) - 1
+        while txt[pt] == pat[pp]:
+            if pp == 0:
+                return pt
+            pt -= 1
+            pp -= 1
+        pt += skip[ord(txt[pt])] if skip[ord(txt[pt])] > len(pat) - pp \
+            else len(pat) - pp
+
+    return -1
+
+
 unittest.main(argv=[''], verbosity=2, exit=False)
 doctest.testmod(verbose=True)
 # %%
