@@ -93,27 +93,18 @@ async function main() {
 
   const boms: bom[] = [
     {
-      prod_code: "X01",
-      bom_code: "X01",
-      quantity: 1,
+      prod_code: "002",
+      bom_code: "002",
+      quantity: 0,
       create_date: new Date(),
       creator: "admin",
       update_date: new Date(),
       updater: "admin",
     },
     {
-      prod_code: "X02",
-      bom_code: "X02",
-      quantity: 1,
-      create_date: new Date(),
-      creator: "admin",
-      update_date: new Date(),
-      updater: "admin",
-    },
-    {
-      prod_code: "Z01",
-      bom_code: "Z01",
-      quantity: 1,
+      prod_code: "001",
+      bom_code: "001",
+      quantity: 0,
       create_date: new Date(),
       creator: "admin",
       update_date: new Date(),
@@ -154,12 +145,13 @@ async function main() {
       creator: "admin",
       update_date: new Date(),
       updater: "admin",
-    }
+    },
   ];
   for (const bom of boms) {
+    console.log(bom)
     await prisma.bom.upsert({
       where: {
-        prod_code: bom.prod_code
+        bom_code: bom.bom_code
       },
       create: bom,
       update: bom

@@ -24,6 +24,7 @@ import {
   bank_acut_mst,
   credit,
   alternate_products,
+  bom,
 } from "@prisma/client";
 import { priceByCustomers } from "../prisma/data/csvReader";
 
@@ -266,6 +267,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           await prisma.product_category.deleteMany()
           await prisma.pricebycustomer.deleteMany()
           await prisma.alternate_products.deleteMany()
+          await prisma.bom.deleteMany()
           await prisma.products.deleteMany()
           await prisma.destinations_mst.deleteMany()
           await prisma.customers_mst.deleteMany()
@@ -3037,6 +3039,188 @@ describe("Part 2 販売システムのDB設計", () => {
         });
 
         expect(result).toBeNull();
+      });
+
+    });
+  });
+
+  describe("Chapter 9 発注／仕入業務のDB設計", () => {
+    describe("MRP所要量計算", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.bom.deleteMany()
+          await prisma.products.deleteMany()
+        });
+      });
+
+      const boms: bom[] = [
+        {
+          prod_code: "1010100X",
+          bom_code: "2010100X",
+          quantity: 0,
+          create_date: new Date(),
+          creator: "admin",
+          update_date: new Date(),
+          updater: "admin",
+        },
+        {
+          prod_code: "1010100X",
+          bom_code: "X01",
+          quantity: 2,
+          create_date: new Date(),
+          creator: "admin",
+          update_date: new Date(),
+          updater: "admin",
+        },
+        {
+          prod_code: "1010100X",
+          bom_code: "X02",
+          quantity: 1,
+          create_date: new Date(),
+          creator: "admin",
+          update_date: new Date(),
+          updater: "admin",
+        },
+        {
+          prod_code: "1010100X",
+          bom_code: "Z01",
+          quantity: 1,
+          create_date: new Date(),
+          creator: "admin",
+          update_date: new Date(),
+          updater: "admin",
+        },
+        {
+          prod_code: "2010100X",
+          bom_code: "1010100X",
+          quantity: 2,
+          create_date: new Date(),
+          creator: "admin",
+          update_date: new Date(),
+          updater: "admin",
+        },
+      ];
+
+      const products = [
+        {
+          prod_code: "1010100X",
+          prod_fullname: "商品名",
+          prod_name: "商品名",
+          prod_kana: "ショウヒンメイ",
+          prod_type: "1",
+          serial_no: "1234567890",
+          unitprice: 1000,
+          po_price: 900,
+          prime_cost: 500,
+          tax_type: 1,
+          category_code: "00101001",
+          wide_use_type: 1,
+          stock_manage_type: 1,
+          stock_reserve_type: 1,
+          sup_code: "001",
+          sup_sub_no: 1,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        },
+        {
+          prod_code: "2010100X",
+          prod_fullname: "商品名2",
+          prod_name: "商品名2",
+          prod_kana: "ショウヒンメイ2",
+          prod_type: "1",
+          serial_no: "1234567890",
+          unitprice: 1000,
+          po_price: 900,
+          prime_cost: 500,
+          tax_type: 1,
+          category_code: "00101001",
+          wide_use_type: 1,
+          stock_manage_type: 1,
+          stock_reserve_type: 1,
+          sup_code: "001",
+          sup_sub_no: 1,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        }
+      ];
+
+      it("部品表を登録できる", async () => {
+        const expected = boms.filter(bom => bom.bom_code === "1010100X").map(bom => {
+          return {
+            ...bom,
+            child_boms: boms.filter(bom2 => bom2.prod_code === bom.bom_code)
+          }
+        });
+
+        await prisma.$transaction(async (prisma) => {
+          await prisma.products.createMany({ data: products });
+          await prisma.bom.createMany({ data: boms });
+        });
+        const result = await prisma.bom.findMany(
+          {
+            where: {
+              bom_code: "1010100X"
+            },
+            include: {
+              child_boms: true,
+            }
+          }
+        );
+
+        expect(result).toEqual(expected);
+      });
+
+      it("部品表を更新できる", async () => {
+        const expected = boms.filter(bom => bom.bom_code === "1010100X").map(bom => {
+          return {
+            ...bom,
+            child_boms: boms.filter(bom2 => bom2.prod_code === bom.bom_code),
+            quantity: 1,
+          }
+        });
+
+        await prisma.bom.updateMany({
+          where: {
+            bom_code: "1010100X"
+          },
+          data: {
+            quantity: 1
+          }
+        });
+
+        const result = await prisma.bom.findMany(
+          {
+            where: {
+              bom_code: "1010100X"
+            },
+            include: {
+              child_boms: true,
+            }
+          }
+        );
+
+        expect(result).toEqual(expected);
+      });
+
+      it("部品表を削除できる", async () => {
+        await prisma.bom.deleteMany({});
+
+        const result = await prisma.bom.findMany(
+          {
+            where: {
+              bom_code: "1010100X"
+            },
+            include: {
+              child_boms: true,
+            }
+          }
+        );
+
+        expect(result).toEqual([]);
       });
 
     });
