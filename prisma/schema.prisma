@@ -612,45 +612,6 @@ model po_details {
   @@id([po_row_no, po_no])
 }
 
-model auto_number {
-  slip_type    String   @db.VarChar(2)
-  yearmonth    DateTime @db.Timestamp(6)
-  last_silp_no Int      @default(0)
-
-  @@id([slip_type, yearmonth])
-}
-
-model credit_balance {
-  comp_code     String       @id(map: "pk_credit_balance") @db.VarChar(8)
-  order_balance Int?         @default(0)
-  rec_balance   Int?         @default(0)
-  pay_balance   Int?         @default(0)
-  create_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator       String?      @db.VarChar(12)
-  update_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater       String?      @db.VarChar(12)
-  companys_mst  companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_credit_balanc")
-}
-
-model pay {
-  pay_no          String        @id(map: "pk_pay") @db.VarChar(10)
-  pay_date        Int?
-  dept_code       String        @db.VarChar(6)
-  start_date      DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  sup_code        String        @db.VarChar(8)
-  sup_sub_no      Int?
-  pay_method_type Int?          @default(1)
-  pay_amnt        Int?
-  cmp_tax         Int           @default(0)
-  complete_flg    Int           @default(0)
-  create_date     DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator         String?       @db.VarChar(12)
-  update_date     DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater         String?       @db.VarChar(12)
-  dept_mst        dept_mst      @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_pay")
-  supplier_mst    supplier_mst? @relation(fields: [sup_code, sup_sub_no], references: [sup_code, sup_sub_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_supplier_mst_pay")
-}
-
 model pu {
   pu_no        String       @id(map: "pk_pu") @db.VarChar(10)
   pu_date      DateTime?    @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
@@ -691,4 +652,43 @@ model pu_details {
   pu            pu       @relation(fields: [pu_no], references: [pu_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_仕入データ_pu_details")
 
   @@id([pu_row_no, pu_no], map: "pk_pu_details")
+}
+
+model auto_number {
+  slip_type    String   @db.VarChar(2)
+  yearmonth    DateTime @db.Timestamp(6)
+  last_silp_no Int      @default(0)
+
+  @@id([slip_type, yearmonth])
+}
+
+model credit_balance {
+  comp_code     String       @id(map: "pk_credit_balance") @db.VarChar(8)
+  order_balance Int?         @default(0)
+  rec_balance   Int?         @default(0)
+  pay_balance   Int?         @default(0)
+  create_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?      @db.VarChar(12)
+  update_date   DateTime     @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?      @db.VarChar(12)
+  companys_mst  companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_credit_balanc")
+}
+
+model pay {
+  pay_no          String        @id(map: "pk_pay") @db.VarChar(10)
+  pay_date        Int?
+  dept_code       String        @db.VarChar(6)
+  start_date      DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  sup_code        String        @db.VarChar(8)
+  sup_sub_no      Int?
+  pay_method_type Int?          @default(1)
+  pay_amnt        Int?
+  cmp_tax         Int           @default(0)
+  complete_flg    Int           @default(0)
+  create_date     DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator         String?       @db.VarChar(12)
+  update_date     DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater         String?       @db.VarChar(12)
+  dept_mst        dept_mst      @relation(fields: [dept_code, start_date], references: [dept_code, start_date], onDelete: NoAction, onUpdate: NoAction, map: "fk_dept_mst_pay")
+  supplier_mst    supplier_mst? @relation(fields: [sup_code, sup_sub_no], references: [sup_code, sup_sub_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_supplier_mst_pay")
 }

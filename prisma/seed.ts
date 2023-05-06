@@ -33,6 +33,8 @@ import {
   boms,
   purchaseOrders,
   purchaseOrderDetails,
+  buyingins,
+  buyinginDetails,
 } from "./data/csvReader";
 
 async function main() {
@@ -434,6 +436,33 @@ async function main() {
         },
         create: poDetail,
         update: poDetail
+      })
+    }
+  });
+
+  await prisma.$transaction(async (prisma) => {
+    console.table(buyingins)
+    for (const buyingin of buyingins) {
+      await prisma.pu.upsert({
+        where: {
+          pu_no: buyingin.pu_no
+        },
+        create: buyingin,
+        update: buyingin
+      })
+    }
+
+    console.table(buyinginDetails)
+    for (const buyinginDetail of buyinginDetails) {
+      await prisma.pu_details.upsert({
+        where: {
+          pu_row_no_pu_no: {
+            pu_row_no: buyinginDetail.pu_row_no,
+            pu_no: buyinginDetail.pu_no
+          }
+        },
+        create: buyinginDetail,
+        update: buyinginDetail
       })
     }
   });
