@@ -1,4 +1,4 @@
-import { PrismaClient, purchase_orders, po_details } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -28,6 +28,8 @@ import {
   credits,
   alterNateProducts,
   boms,
+  purchaseOrders,
+  purchaseOrderDetails,
 } from "./data/csvReader";
 
 async function main() {
@@ -358,81 +360,9 @@ async function main() {
     })
   }
 
-  const purchaseOrders: purchase_orders[] = [
-    {
-      po_no: 'PO0000001',
-      po_date: new Date(),
-      order_no: '0000000001',
-      sup_code: '001',
-      sup_sub_no: 1,
-      emp_code: 'EMP001',
-      due_date: new Date(),
-      wh_code: '001',
-      po_amnt: 1000,
-      cmp_tax: 100,
-      slip_comment: 'test',
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-    }
-  ]
-
-  const purchaseOrderDetails: po_details[] = [
-    {
-      po_no: 'PO0000001',
-      po_row_no: 1,
-      po_row_dsp_no: 1,
-      order_no: '0000000001',
-      so_row_no: 1,
-      prod_code: '10101001',
-      prod_name: '牛ひれ',
-      po_price: 100,
-      po_qt: 10,
-      recived_qt: 10,
-      complete_flg: 1,
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-    },
-    {
-      po_no: 'PO0000001',
-      po_row_no: 2,
-      po_row_dsp_no: 2,
-      order_no: '0000000001',
-      so_row_no: 1,
-      prod_code: '10101001',
-      prod_name: '牛ひれ',
-      po_price: 100,
-      po_qt: 10,
-      recived_qt: 10,
-      complete_flg: 1,
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-    },
-    {
-      po_no: 'PO0000001',
-      po_row_no: 3,
-      po_row_dsp_no: 3,
-      order_no: '0000000001',
-      so_row_no: 1,
-      prod_code: '10101001',
-      prod_name: '牛ひれ',
-      po_price: 100,
-      po_qt: 10,
-      recived_qt: 10,
-      complete_flg: 1,
-      create_date: new Date(),
-      creator: 'admin',
-      update_date: new Date(),
-      updater: 'admin',
-    }
-  ]
 
   await prisma.$transaction(async (prisma) => {
+    console.table(purchaseOrders)
     for (const po of purchaseOrders) {
       await prisma.purchase_orders.upsert({
         where: {
@@ -443,6 +373,7 @@ async function main() {
       })
     }
 
+    console.table(purchaseOrderDetails)
     for (const poDetail of purchaseOrderDetails) {
       await prisma.po_details.upsert({
         where: {

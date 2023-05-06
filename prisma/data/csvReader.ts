@@ -24,6 +24,8 @@ import {
   credit,
   alternate_products,
   bom,
+  purchase_orders,
+  po_details,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -1044,6 +1046,92 @@ export const boms: bom[] = fs
       prod_code,
       bom_code,
       quantity: Number(quantity),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater,
+    };
+  });
+
+filePath = path.join(__dirname, "purchaseOrder.csv");
+export const purchaseOrders: purchase_orders[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      po_no,
+      po_date,
+      order_no,
+      sup_code,
+      sup_sub_no,
+      emp_code,
+      due_date,
+      wh_code,
+      po_amnt,
+      cmp_tax,
+      slip_comment,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      po_no,
+      po_date: new Date(po_date),
+      order_no,
+      sup_code,
+      sup_sub_no: Number(sup_sub_no),
+      emp_code,
+      due_date: new Date(due_date),
+      wh_code,
+      po_amnt: Number(po_amnt),
+      cmp_tax: Number(cmp_tax),
+      slip_comment,
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater,
+    };
+  });
+
+filePath = path.join(__dirname, "purchaseOrderDetail.csv");
+export const purchaseOrderDetails: po_details[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      po_no,
+      po_row_no,
+      po_row_dsp_no,
+      order_no,
+      so_row_no,
+      prod_code,
+      prod_name,
+      po_price,
+      po_qt,
+      recived_qt,
+      complete_flg,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      po_no,
+      po_row_no: Number(po_row_no),
+      po_row_dsp_no: Number(po_row_dsp_no),
+      order_no,
+      so_row_no: Number(so_row_no),
+      prod_code,
+      prod_name,
+      po_price: Number(po_price),
+      po_qt: Number(po_qt),
+      recived_qt: Number(recived_qt),
+      complete_flg: Number(complete_flg),
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),
