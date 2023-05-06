@@ -33,6 +33,7 @@ import {
   pu,
   pu_details,
   pay,
+  credit_balance,
 } from "@prisma/client";
 import { priceByCustomers } from "../prisma/data/csvReader";
 
@@ -282,6 +283,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
     describe("商品マスタ", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
+          await prisma.credit_balance.deleteMany({});
           await prisma.pay.deleteMany({});
           await prisma.order_details.deleteMany()
           await prisma.orders.deleteMany()
@@ -4572,6 +4574,146 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const result = await prisma.pay.findMany({
           where: {
             pay_no: '000000001'
+          }
+        });
+
+        expect(result).toEqual(expected);
+      });
+
+    });
+  });
+
+  describe("Chapter 13 業務全般に関連する処理のDB設計", () => {
+    describe("与信チェック", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.supplier_mst.deleteMany({});
+          await prisma.customers_mst.deleteMany({});
+          await prisma.companys_mst.deleteMany({});
+        });
+      });
+
+      const day = new Date("2021-01-01");
+      const company: companys_mst[] = [{
+        comp_code: "00X",
+        comp_name: "顧客名1",
+        comp_kana: "クスキメイ1",
+        sup_type: 0,
+        zip_code: "000-0000",
+        state: "都道府県",
+        address1: "住所1",
+        address2: "住所2",
+        no_sales_flg: 0,
+        wide_use_type: 0,
+        comp_group_code: "001",
+        max_credit: 10000,
+        temp_credit_up: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+      const suppliers: supplier_mst[] = [{
+        sup_code: "00X",
+        sup_sub_no: 1,
+        sup_name: "仕入先名1",
+        sup_kana: "シスキメイ1",
+        sup_emp_name: "担当者名1",
+        sup_dep_name: "部署名1",
+        sup_zip_code: "000-0000",
+        sup_state: "都道府県",
+        sup_address1: "住所1",
+        sup_address2: "住所2",
+        sup_tel: "000-0000-0000",
+        sup_fax: "000-0000-0000",
+        sup_email: "hoge@hoegc.com",
+        sup_close_date: 1,
+        sup_pay_months: 1,
+        sup_pay_dates: 1,
+        pay_method_type: 1,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const creditBalances: credit_balance[] = [
+        {
+          comp_code: '00X',
+          order_balance: 0,
+          rec_balance: 0,
+          pay_balance: 0,
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        }
+      ]
+
+      test("与信残高データを登録できる", async () => {
+        const expected = creditBalances.map((creditBalance) => {
+          return {
+            ...creditBalance,
+          }
+        });
+
+        await prisma.$transaction(async (prisma) => {
+          await prisma.companys_mst.createMany({
+            data: company
+          });
+          await prisma.supplier_mst.createMany({
+            data: suppliers
+          });
+          await prisma.credit_balance.createMany({
+            data: creditBalances
+          });
+        });
+
+        const result = await prisma.credit_balance.findMany({
+          where: {
+            comp_code: '00X'
+          }
+        });
+
+        expect(result).toEqual(expected);
+      });
+
+      test("与信残高データを更新できる", async () => {
+        const expected = creditBalances.map((creditBalance) => {
+          return {
+            ...creditBalance,
+            order_balance: 1,
+          }
+        });
+
+        await prisma.credit_balance.update({
+          where: {
+            comp_code: '00X'
+          },
+          data: expected[0]
+        });
+
+        const result = await prisma.credit_balance.findMany({
+          where: {
+            comp_code: '00X'
+          }
+        });
+
+        expect(result).toEqual(expected);
+      });
+
+      test("与信残高データを削除できる", async () => {
+        const expected: credit_balance[] = [];
+
+        await prisma.credit_balance.delete({
+          where: {
+            comp_code: '00X'
+          }
+        });
+
+        const result = await prisma.credit_balance.findMany({
+          where: {
+            comp_code: '00X'
           }
         });
 

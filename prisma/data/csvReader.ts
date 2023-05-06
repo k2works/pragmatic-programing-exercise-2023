@@ -32,6 +32,7 @@ import {
   pu,
   pu_details,
   pay,
+  credit_balance,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -1351,6 +1352,35 @@ export const pays: pay[] = fs
       pay_amnt: Number(pay_amnt),
       cmp_tax: Number(cmp_tax),
       complete_flg: Number(complete_flg),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater,
+    };
+  });
+
+filePath = path.join(__dirname, "creditBalance.csv");
+export const creditBalances: credit_balance[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      comp_code,
+      order_balance,
+      rec_balance,
+      pay_balance,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      comp_code,
+      order_balance: Number(order_balance),
+      rec_balance: Number(rec_balance),
+      pay_balance: Number(pay_balance),
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),

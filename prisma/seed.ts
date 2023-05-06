@@ -36,6 +36,7 @@ import {
   buyingins,
   buyinginDetails,
   pays,
+  creditBalances,
 } from "./data/csvReader";
 
 async function main() {
@@ -476,6 +477,17 @@ async function main() {
       },
       create: pay,
       update: pay
+    })
+  }
+
+  console.table(creditBalances)
+  for (const creditBalance of creditBalances) {
+    await prisma.credit_balance.upsert({
+      where: {
+        comp_code: creditBalance.comp_code
+      },
+      create: creditBalance,
+      update: creditBalance
     })
   }
 }
