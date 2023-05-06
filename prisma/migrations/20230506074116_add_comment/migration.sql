@@ -1,0 +1,15 @@
+COMMENT ON TABLE pay IS '支払データ';
+COMMENT ON COLUMN pay.pay_no IS '支払番号';
+COMMENT ON COLUMN pay.pay_date IS '支払日,10:10日払い,99：末日';
+COMMENT ON COLUMN pay.dept_code IS '部門コード';
+COMMENT ON COLUMN pay.start_date IS '部門開始日';
+COMMENT ON COLUMN pay.sup_code IS '仕入先コード';
+COMMENT ON COLUMN pay.sup_sub_no IS '仕入先枝番';
+COMMENT ON COLUMN pay.pay_method_type IS '支払方法区分,1:振込,2:手形';
+COMMENT ON COLUMN pay.pay_amnt IS '支払金額';
+COMMENT ON COLUMN pay.cmp_tax IS '消費税金額';
+COMMENT ON COLUMN pay.complete_flg IS '支払完了フラグ,0:未完了, 1:完了';
+COMMENT ON COLUMN pay.create_date IS '作成日時';
+COMMENT ON COLUMN pay.creator IS '作成者名';
+COMMENT ON COLUMN pay.update_date IS '更新日時';
+COMMENT ON COLUMN pay.updater IS '更新者名';

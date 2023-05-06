@@ -32,6 +32,7 @@ import {
   location_mst,
   pu,
   pu_details,
+  pay,
 } from "@prisma/client";
 import { priceByCustomers } from "../prisma/data/csvReader";
 
@@ -45,6 +46,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 3 部門／社員／商品マスタ設計", () => {
     describe("部門マスタ", () => {
       beforeAll(async () => {
+        await prisma.pay.deleteMany({});
         await prisma.bank_acut_mst.deleteMany({});
         await prisma.credit.deleteMany({});
         await prisma.invoice_details.deleteMany({});
@@ -150,6 +152,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
     describe("社員マスタ", () => {
       beforeAll(async () => {
+        await prisma.pay.deleteMany({});
         await prisma.bank_acut_mst.deleteMany({});
         await prisma.credit.deleteMany({});
         await prisma.invoice_details.deleteMany({});
@@ -279,6 +282,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
     describe("商品マスタ", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
+          await prisma.pay.deleteMany({});
           await prisma.order_details.deleteMany()
           await prisma.orders.deleteMany()
           await prisma.product_category.deleteMany()
@@ -3700,6 +3704,7 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
     describe("棚番管理", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
+          await prisma.pay.deleteMany({});
           await prisma.stock.deleteMany({});
           await prisma.location_mst.deleteMany({});
           await prisma.wh_dept_mst.deleteMany();
@@ -3911,6 +3916,7 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
     describe("仕入データのテーブル設計", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
+          await prisma.pay.deleteMany({});
           await prisma.pu_details.deleteMany({});
           await prisma.pu.deleteMany({});
           await prisma.employee.deleteMany({});
@@ -4299,6 +4305,277 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         });
 
         expect(result).toEqual([]);
+      });
+
+    });
+
+    describe("支払いデータのテーブル設計", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.pay.deleteMany({});
+          await prisma.po_details.deleteMany({});
+          await prisma.purchase_orders.deleteMany({});
+          await prisma.employee.deleteMany({});
+          await prisma.dept_mst.deleteMany({});
+          await prisma.supplier_mst.deleteMany({});
+          await prisma.customers_mst.deleteMany({});
+          await prisma.companys_mst.deleteMany({});
+        });
+      });
+
+      const departments: dept_mst[] = [
+        {
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          end_date: new Date("2021-12-31"),
+          dep_name: "新規部署",
+          dept_layer: 1,
+          dept_psth: "10000~11000~11100~11101~",
+          bottom_type: 1,
+          slit_yn: 0,
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
+        }
+      ];
+
+      const employees = [
+        {
+          emp_code: "EMP999",
+          emp_name: "伊藤 裕子",
+          emp_kana: "イトウ ユウコ",
+          login_password: "password",
+          tel: "090-1234-5678",
+          fax: "03-1234-5678",
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          occu_code: "",
+          approval_code: "",
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
+        }
+      ];
+
+      const purchaseOrders: purchase_orders[] = [
+        {
+          po_no: 'PO0000001',
+          po_date: new Date(),
+          order_no: '0000000001',
+          sup_code: '001',
+          sup_sub_no: 1,
+          emp_code: 'EMP999',
+          due_date: new Date(),
+          wh_code: '001',
+          po_amnt: 1000,
+          cmp_tax: 100,
+          slip_comment: 'test',
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        }
+      ]
+
+      const purchaseOrderDetails: po_details[] = [
+        {
+          po_no: 'PO0000001',
+          po_row_no: 1,
+          po_row_dsp_no: 1,
+          order_no: '0000000001',
+          so_row_no: 1,
+          prod_code: '10101001',
+          prod_name: '牛ひれ',
+          po_price: 100,
+          po_qt: 10,
+          recived_qt: 10,
+          complete_flg: 1,
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        },
+        {
+          po_no: 'PO0000001',
+          po_row_no: 2,
+          po_row_dsp_no: 2,
+          order_no: '0000000001',
+          so_row_no: 1,
+          prod_code: '10101001',
+          prod_name: '牛ひれ',
+          po_price: 100,
+          po_qt: 10,
+          recived_qt: 10,
+          complete_flg: 1,
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        },
+        {
+          po_no: 'PO0000001',
+          po_row_no: 3,
+          po_row_dsp_no: 3,
+          order_no: '0000000001',
+          so_row_no: 1,
+          prod_code: '10101001',
+          prod_name: '牛ひれ',
+          po_price: 100,
+          po_qt: 10,
+          recived_qt: 10,
+          complete_flg: 1,
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        }
+      ]
+
+      const day = new Date("2021-01-01");
+      const company: companys_mst[] = [{
+        comp_code: "00X",
+        comp_name: "顧客名1",
+        comp_kana: "クスキメイ1",
+        sup_type: 0,
+        zip_code: "000-0000",
+        state: "都道府県",
+        address1: "住所1",
+        address2: "住所2",
+        no_sales_flg: 0,
+        wide_use_type: 0,
+        comp_group_code: "001",
+        max_credit: 10000,
+        temp_credit_up: 0,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+      const suppliers: supplier_mst[] = [{
+        sup_code: "00X",
+        sup_sub_no: 1,
+        sup_name: "仕入先名1",
+        sup_kana: "シスキメイ1",
+        sup_emp_name: "担当者名1",
+        sup_dep_name: "部署名1",
+        sup_zip_code: "000-0000",
+        sup_state: "都道府県",
+        sup_address1: "住所1",
+        sup_address2: "住所2",
+        sup_tel: "000-0000-0000",
+        sup_fax: "000-0000-0000",
+        sup_email: "hoge@hoegc.com",
+        sup_close_date: 1,
+        sup_pay_months: 1,
+        sup_pay_dates: 1,
+        pay_method_type: 1,
+        create_date: day,
+        creator: null,
+        update_date: day,
+        updater: null
+      }]
+
+      const pays: pay[] = [
+        {
+          pay_no: '000000001',
+          pay_date: 1,
+          dept_code: '11101',
+          start_date: new Date('2021-01-01'),
+          sup_code: '00X',
+          sup_sub_no: 1,
+          pay_method_type: 1,
+          pay_amnt: 1000,
+          cmp_tax: 100,
+          complete_flg: 0,
+          create_date: new Date('2021-02-02'),
+          creator: '001',
+          update_date: new Date('2021-02-02'),
+          updater: '001'
+        }
+      ]
+
+      test("支払いデータを登録できる", async () => {
+        const expected = pays.map((pay) => {
+          return {
+            ...pay,
+          }
+        });
+
+        await prisma.$transaction(async (prisma) => {
+          await prisma.dept_mst.createMany({
+            data: departments
+          });
+          await prisma.employee.createMany({
+            data: employees
+          })
+          await prisma.purchase_orders.createMany({
+            data: purchaseOrders
+          });
+          await prisma.po_details.createMany({
+            data: purchaseOrderDetails
+          });
+          await prisma.companys_mst.createMany({
+            data: company
+          });
+          await prisma.supplier_mst.createMany({
+            data: suppliers
+          });
+          await prisma.pay.createMany({
+            data: pays
+          });
+        });
+
+        const result = await prisma.pay.findMany({
+          where: {
+            pay_no: '000000001'
+          }
+        });
+
+        expect(result).toEqual(expected);
+      });
+
+      test("支払いデータを更新できる", async () => {
+        const expected = pays.map((pay) => {
+          return {
+            ...pay,
+            pay_date: 2,
+          }
+        });
+
+        await prisma.pay.update({
+          where: {
+            pay_no: '000000001'
+          },
+          data: expected[0]
+        });
+
+        const result = await prisma.pay.findMany({
+          where: {
+            pay_no: '000000001'
+          }
+        });
+
+        expect(result).toEqual(expected);
+      });
+
+      test("支払いデータを削除できる", async () => {
+        const expected: pay[] = [];
+
+        await prisma.pay.delete({
+          where: {
+            pay_no: '000000001'
+          }
+        });
+
+        const result = await prisma.pay.findMany({
+          where: {
+            pay_no: '000000001'
+          }
+        });
+
+        expect(result).toEqual(expected);
       });
 
     });

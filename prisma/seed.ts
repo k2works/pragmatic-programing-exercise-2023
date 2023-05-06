@@ -35,6 +35,7 @@ import {
   purchaseOrderDetails,
   buyingins,
   buyinginDetails,
+  pays,
 } from "./data/csvReader";
 
 async function main() {
@@ -466,6 +467,17 @@ async function main() {
       })
     }
   });
+
+  console.table(pays)
+  for (const pay of pays) {
+    await prisma.pay.upsert({
+      where: {
+        pay_no: pay.pay_no
+      },
+      create: pay,
+      update: pay
+    })
+  }
 }
 
 main()

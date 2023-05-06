@@ -31,6 +31,7 @@ import {
   location_mst,
   pu,
   pu_details,
+  pay,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -1309,6 +1310,47 @@ export const buyinginDetails: pu_details[] = fs
       prod_name,
       po_price: Number(po_price),
       pu_quantity: Number(pu_quantity),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater,
+    };
+  });
+
+filePath = path.join(__dirname, "pay.csv");
+export const pays: pay[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      pay_no,
+      pay_date,
+      dept_code,
+      start_date,
+      sup_code,
+      sup_sub_no,
+      pay_method_type,
+      pay_amnt,
+      cmp_tax,
+      complete_flg,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      pay_no,
+      pay_date: Number(pay_date),
+      dept_code,
+      start_date: new Date(start_date),
+      sup_code,
+      sup_sub_no: Number(sup_sub_no),
+      pay_method_type: Number(pay_method_type),
+      pay_amnt: Number(pay_amnt),
+      cmp_tax: Number(cmp_tax),
+      complete_flg: Number(complete_flg),
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),
