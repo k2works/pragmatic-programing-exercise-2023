@@ -1,4 +1,4 @@
-import { PrismaClient, bom } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 import {
@@ -27,6 +27,7 @@ import {
   bankAccounts,
   credits,
   alterNateProducts,
+  boms,
 } from "./data/csvReader";
 
 async function main() {
@@ -91,64 +92,8 @@ async function main() {
     });
   }
 
-  const boms: bom[] = [
-    {
-      prod_code: "002",
-      bom_code: "002",
-      quantity: 0,
-      create_date: new Date(),
-      creator: "admin",
-      update_date: new Date(),
-      updater: "admin",
-    },
-    {
-      prod_code: "001",
-      bom_code: "001",
-      quantity: 0,
-      create_date: new Date(),
-      creator: "admin",
-      update_date: new Date(),
-      updater: "admin",
-    },
-    {
-      prod_code: "001",
-      bom_code: "X01",
-      quantity: 2,
-      create_date: new Date(),
-      creator: "admin",
-      update_date: new Date(),
-      updater: "admin",
-    },
-    {
-      prod_code: "001",
-      bom_code: "X02",
-      quantity: 1,
-      create_date: new Date(),
-      creator: "admin",
-      update_date: new Date(),
-      updater: "admin",
-    },
-    {
-      prod_code: "001",
-      bom_code: "Z01",
-      quantity: 1,
-      create_date: new Date(),
-      creator: "admin",
-      update_date: new Date(),
-      updater: "admin",
-    },
-    {
-      prod_code: "002",
-      bom_code: "001",
-      quantity: 2,
-      create_date: new Date(),
-      creator: "admin",
-      update_date: new Date(),
-      updater: "admin",
-    },
-  ];
+  console.table(boms);
   for (const bom of boms) {
-    console.log(bom)
     await prisma.bom.upsert({
       where: {
         bom_code: bom.bom_code
