@@ -25,6 +25,8 @@ import {
   credit,
   alternate_products,
   bom,
+  purchase_orders,
+  po_details,
 } from "@prisma/client";
 import { priceByCustomers } from "../prisma/data/csvReader";
 
@@ -46,6 +48,8 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         await prisma.sales.deleteMany()
         await prisma.order_details.deleteMany()
         await prisma.orders.deleteMany()
+        await prisma.po_details.deleteMany()
+        await prisma.purchase_orders.deleteMany();
         await prisma.employee.deleteMany();
         await prisma.dept_mst.deleteMany();
       });
@@ -145,6 +149,8 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         await prisma.sales.deleteMany()
         await prisma.order_details.deleteMany()
         await prisma.orders.deleteMany()
+        await prisma.po_details.deleteMany()
+        await prisma.purchase_orders.deleteMany();
         await prisma.employee.deleteMany();
         await prisma.dept_mst.deleteMany();
       });
@@ -1825,6 +1831,8 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.sales.deleteMany({})
         await prisma.order_details.deleteMany({});
         await prisma.orders.deleteMany({});
+        await prisma.po_details.deleteMany({});
+        await prisma.purchase_orders.deleteMany({});
         await prisma.wh_mst.deleteMany({});
         await prisma.customers_mst.deleteMany({});
         await prisma.companys_mst.deleteMany({});
@@ -2197,6 +2205,8 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.sales.deleteMany({})
         await prisma.order_details.deleteMany({});
         await prisma.orders.deleteMany({});
+        await prisma.po_details.deleteMany({});
+        await prisma.purchase_orders.deleteMany({});
         await prisma.wh_mst.deleteMany({});
         await prisma.customers_mst.deleteMany({});
         await prisma.companys_mst.deleteMany({});
@@ -2620,6 +2630,8 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.sales.deleteMany({})
         await prisma.order_details.deleteMany({});
         await prisma.orders.deleteMany({});
+        await prisma.po_details.deleteMany({});
+        await prisma.purchase_orders.deleteMany({});
         await prisma.wh_mst.deleteMany({});
         await prisma.customers_mst.deleteMany({});
         await prisma.companys_mst.deleteMany({});
@@ -3221,6 +3233,240 @@ describe("Part 2 販売システムのDB設計", () => {
             }
           }
         );
+
+        expect(result).toEqual([]);
+      });
+
+    });
+
+    describe("発注データのテーブ設計", () => {
+      beforeAll(async () => {
+        await prisma.bank_acut_mst.deleteMany({});
+        await prisma.credit.deleteMany({});
+        await prisma.invoice_details.deleteMany({});
+        await prisma.invoice.deleteMany({});
+        await prisma.sales_details.deleteMany({})
+        await prisma.sales.deleteMany({})
+        await prisma.order_details.deleteMany({});
+        await prisma.orders.deleteMany({});
+        await prisma.po_details.deleteMany()
+        await prisma.purchase_orders.deleteMany();
+        await prisma.employee.deleteMany();
+        await prisma.dept_mst.deleteMany();
+      });
+
+      const departments: dept_mst[] = [
+        {
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          end_date: new Date("2021-12-31"),
+          dep_name: "新規部署",
+          dept_layer: 1,
+          dept_psth: "10000~11000~11100~11101~",
+          bottom_type: 1,
+          slit_yn: 0,
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
+        }
+      ];
+
+      const employees = [
+        {
+          emp_code: "EMP999",
+          emp_name: "伊藤 裕子",
+          emp_kana: "イトウ ユウコ",
+          login_password: "password",
+          tel: "090-1234-5678",
+          fax: "03-1234-5678",
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          occu_code: "",
+          approval_code: "",
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
+        }
+      ];
+      const purchaseOrders: purchase_orders[] = [
+        {
+          po_no: 'PO0000001',
+          po_date: new Date(),
+          order_no: '0000000001',
+          sup_code: '001',
+          sup_sub_no: 1,
+          emp_code: 'EMP999',
+          due_date: new Date(),
+          wh_code: '001',
+          po_amnt: 1000,
+          cmp_tax: 100,
+          slip_comment: 'test',
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        }
+      ]
+
+      const purchaseOrderDetails: po_details[] = [
+        {
+          po_no: 'PO0000001',
+          po_row_no: 1,
+          po_row_dsp_no: 1,
+          order_no: '0000000001',
+          so_row_no: 1,
+          prod_code: '10101001',
+          prod_name: '牛ひれ',
+          po_price: 100,
+          po_qt: 10,
+          recived_qt: 10,
+          complete_flg: 1,
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        },
+        {
+          po_no: 'PO0000001',
+          po_row_no: 2,
+          po_row_dsp_no: 2,
+          order_no: '0000000001',
+          so_row_no: 1,
+          prod_code: '10101001',
+          prod_name: '牛ひれ',
+          po_price: 100,
+          po_qt: 10,
+          recived_qt: 10,
+          complete_flg: 1,
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        },
+        {
+          po_no: 'PO0000001',
+          po_row_no: 3,
+          po_row_dsp_no: 3,
+          order_no: '0000000001',
+          so_row_no: 1,
+          prod_code: '10101001',
+          prod_name: '牛ひれ',
+          po_price: 100,
+          po_qt: 10,
+          recived_qt: 10,
+          complete_flg: 1,
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin',
+        }
+      ]
+
+      test("発注データを登録できる", async () => {
+        const expected = {
+          ...purchaseOrders[0],
+          po_details: purchaseOrderDetails
+        }
+
+        await prisma.$transaction(async (prisma) => {
+          await prisma.dept_mst.createMany({ data: departments });
+          await prisma.employee.createMany({ data: employees });
+          await prisma.purchase_orders.createMany({ data: purchaseOrders });
+          await prisma.po_details.createMany({ data: purchaseOrderDetails });
+        });
+
+        const result = await prisma.purchase_orders.findMany({
+          where: {
+            po_no: 'PO0000001'
+          },
+          include: {
+            po_details: true
+          }
+        });
+
+        expect(result).toEqual([expected]);
+      });
+
+      test("発注データを更新できる", async () => {
+        const updatePurchaseOrders: purchase_orders[] = purchaseOrders.map((po) => {
+          if (po.po_no === 'PO0000001') {
+            return {
+              ...po,
+              po_amnt: 2000,
+            }
+          }
+          return po;
+        });
+
+        const updatePurchaseOrderDetails: po_details[] = purchaseOrderDetails.map((pod) => {
+          if (pod.po_no === 'PO0000001') {
+            return {
+              ...pod,
+              po_qt: 20,
+            }
+          }
+          return pod;
+        });
+
+        const expected = {
+          ...updatePurchaseOrders[0],
+          po_details: updatePurchaseOrderDetails
+        }
+
+
+        await prisma.$transaction(async (prisma) => {
+          await prisma.purchase_orders.updateMany({
+            data: updatePurchaseOrders[0]
+          });
+          for await (const pod of updatePurchaseOrderDetails) {
+            await prisma.po_details.update({
+              where: {
+                po_row_no_po_no: {
+                  po_no: pod.po_no,
+                  po_row_no: pod.po_row_no
+                }
+              },
+              data: pod
+            });
+          }
+        });
+
+        const result = await prisma.purchase_orders.findMany({
+          where: {
+            po_no: 'PO0000001'
+          },
+          include: {
+            po_details: true
+          }
+        });
+
+        expect(result).toEqual([expected]);
+      })
+
+      test("発注データを削除できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.po_details.deleteMany({
+            where: {
+              po_no: 'PO0000001'
+            }
+          });
+          await prisma.purchase_orders.deleteMany({
+            where: {
+              po_no: 'PO0000001'
+            }
+          });
+        });
+
+        const result = await prisma.purchase_orders.findMany({
+          where: {
+            po_no: 'PO0000001'
+          },
+          include: {
+            po_details: true
+          }
+        });
 
         expect(result).toEqual([]);
       });
