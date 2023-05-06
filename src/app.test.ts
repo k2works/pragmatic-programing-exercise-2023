@@ -3055,7 +3055,9 @@ describe("Part 2 販売システムのDB設計", () => {
 
     });
   });
+});
 
+describe("Part 3 仕入／在庫システムのDB設計", () => {
   describe("Chapter 9 発注／仕入業務のDB設計", () => {
     describe("MRP所要量計算", () => {
       beforeAll(async () => {
