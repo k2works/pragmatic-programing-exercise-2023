@@ -14,6 +14,8 @@ import {
   company_category,
   company_category_group,
   wh_mst,
+  wh_dept_mst,
+  stock,
   orders as order,
   order_details as order_detail,
   sales as sale,
@@ -649,6 +651,69 @@ export const wharehouses: wh_mst[] = fs
     };
   });
 
+filePath = path.join(__dirname, "wharehouseDepartment.csv");
+export const whareHouseDepartments: wh_dept_mst[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      wh_code,
+      dept_code,
+      start_date,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      wh_code,
+      dept_code,
+      start_date: new Date(start_date),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "stock.csv");
+export const stocks: stock[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      wh_code,
+      prod_code,
+      rot_no,
+      stock_type,
+      quality_type,
+      actual,
+      valid,
+      last_delivery_date,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      wh_code,
+      prod_code,
+      rot_no,
+      stock_type,
+      quality_type,
+      actual: Number(actual),
+      valid: Number(valid),
+      last_delivery_date: new Date(last_delivery_date),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
 filePath = path.join(__dirname, "order.csv");
 export const orders: order[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })

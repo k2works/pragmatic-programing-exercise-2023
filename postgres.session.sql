@@ -625,7 +625,7 @@ CREATE TABLE wh_mst (
 ALTER TABLE wh_mst
 ADD CONSTRAINT pk_wh_mst PRIMARY KEY (wh_code);
 COMMENT ON TABLE wh_mst IS 'マスタ';
-COMMENT ON COLUMN wh_mst.wh_code IS '倉庫コード';
+COMMENT ON COLUMN wh_mst.wh_code IS 'コード';
 COMMENT ON COLUMN wh_mst.wh_name IS '倉庫名';
 COMMENT ON COLUMN wh_mst.wh_type IS '倉庫区分,N:通常倉庫 C:得意先 S:仕入先 D:部門倉庫 P:製品倉庫 M:原材料倉庫';
 COMMENT ON COLUMN wh_mst.zip_code IS '郵便番号';

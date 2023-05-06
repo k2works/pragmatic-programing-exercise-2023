@@ -18,6 +18,8 @@ import {
   companyCategories,
   companyCategoryGroups,
   wharehouses,
+  whareHouseDepartments,
+  stocks,
   orders,
   orderDetails,
   sales,
@@ -254,6 +256,38 @@ async function main() {
       },
       create: w,
       update: w
+    })
+  }
+
+  console.table(whareHouseDepartments)
+  for (const w of whareHouseDepartments) {
+    await prisma.wh_dept_mst.upsert({
+      where: {
+        wh_code_dept_code_start_date: {
+          wh_code: w.wh_code,
+          dept_code: w.dept_code,
+          start_date: w.start_date
+        }
+      },
+      create: w,
+      update: w
+    })
+  }
+
+  console.table(stocks)
+  for (const stock of stocks) {
+    await prisma.stock.upsert({
+      where: {
+        wh_code_prod_code_rot_no_stock_type_quality_type: {
+          wh_code: stock.wh_code,
+          prod_code: stock.prod_code,
+          rot_no: stock.rot_no,
+          stock_type: stock.stock_type,
+          quality_type: stock.quality_type
+        }
+      },
+      create: stock,
+      update: stock
     })
   }
 

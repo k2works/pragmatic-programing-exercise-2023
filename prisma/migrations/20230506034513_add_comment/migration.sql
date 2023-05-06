@@ -1,0 +1,13 @@
+COMMENT ON TABLE stock IS '在庫データ';
+COMMENT ON COLUMN stock.wh_code IS '倉庫コード';
+COMMENT ON COLUMN stock.prod_code IS '商品コード';
+COMMENT ON COLUMN stock.rot_no IS 'ロット番号';
+COMMENT ON COLUMN stock.stock_type IS '在庫区分,1:自社在庫 2:預り在庫';
+COMMENT ON COLUMN stock.quality_type IS '良品区分,G:良品 F:不良品 U:未検品';
+COMMENT ON COLUMN stock.actual IS '実在庫数';
+COMMENT ON COLUMN stock.valid IS '有効在庫数';
+COMMENT ON COLUMN stock.last_delivery_date IS '最終出荷日';
+COMMENT ON COLUMN stock.create_date IS '作成日時';
+COMMENT ON COLUMN stock.creator IS '作成者名';
+COMMENT ON COLUMN stock.update_date IS '更新日時';
+COMMENT ON COLUMN stock.updater IS '更新者名';
