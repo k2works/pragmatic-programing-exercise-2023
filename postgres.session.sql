@@ -187,6 +187,16 @@ CREATE TABLE location_mst (
     update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
     updater VARCHAR(12)
 );
+ALTER TABLE location_mst
+ADD CONSTRAINT pk_location_mst PRIMARY KEY (wh_code, location_code, prod_code);
+COMMENT ON TABLE location_mst IS '棚番マスタ';
+COMMENT ON COLUMN location_mst.wh_code IS '倉庫コード';
+COMMENT ON COLUMN location_mst.location_code IS '棚番コード';
+COMMENT ON COLUMN location_mst.prod_code IS '商品コード';
+COMMENT ON COLUMN location_mst.create_date IS '作成日時';
+COMMENT ON COLUMN location_mst.creator IS '作成者名';
+COMMENT ON COLUMN location_mst.update_date IS '更新日時';
+COMMENT ON COLUMN location_mst.updater IS '更新者名';
 CREATE TABLE pricebycustomer (
     prod_code VARCHAR(16) NOT NULL,
     comp_code VARCHAR(8) NOT NULL,
@@ -1086,16 +1096,6 @@ COMMENT ON TABLE auto_number IS '自動採番マスタ';
 COMMENT ON COLUMN auto_number.slip_type IS '伝票種別コード';
 COMMENT ON COLUMN auto_number.yearmonth IS '年月';
 COMMENT ON COLUMN auto_number.last_silp_no IS '最終伝票番号';
-ALTER TABLE location_mst
-ADD CONSTRAINT pk_location_mst PRIMARY KEY (wh_code, location_code, prod_code);
-COMMENT ON TABLE location_mst IS '棚番マスタ';
-COMMENT ON COLUMN location_mst.wh_code IS '倉庫コード';
-COMMENT ON COLUMN location_mst.location_code IS '棚番コード';
-COMMENT ON COLUMN location_mst.prod_code IS '商品コード';
-COMMENT ON COLUMN location_mst.create_date IS '作成日時';
-COMMENT ON COLUMN location_mst.creator IS '作成者名';
-COMMENT ON COLUMN location_mst.update_date IS '更新日時';
-COMMENT ON COLUMN location_mst.updater IS '更新者名';
 ALTER TABLE credit_balance
 ADD CONSTRAINT pk_credit_balance PRIMARY KEY (comp_code);
 COMMENT ON TABLE credit_balance IS '与信残高データ';

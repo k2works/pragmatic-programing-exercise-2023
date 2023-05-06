@@ -29,6 +29,7 @@ import {
   po_details,
   wh_dept_mst,
   stock,
+  location_mst,
 } from "@prisma/client";
 import { priceByCustomers } from "../prisma/data/csvReader";
 
@@ -279,6 +280,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           await prisma.product_category.deleteMany()
           await prisma.pricebycustomer.deleteMany()
           await prisma.alternate_products.deleteMany()
+          await prisma.location_mst.deleteMany({});
           await prisma.bom.deleteMany()
           await prisma.products.deleteMany()
           await prisma.destinations_mst.deleteMany()
@@ -1543,6 +1545,7 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.orders.deleteMany({});
         await prisma.stock.deleteMany({});
         await prisma.wh_dept_mst.deleteMany();
+        await prisma.location_mst.deleteMany({});
         await prisma.wh_mst.deleteMany({});
         await prisma.customers_mst.deleteMany({});
         await prisma.companys_mst.deleteMany({});
@@ -1843,6 +1846,7 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.purchase_orders.deleteMany({});
         await prisma.stock.deleteMany({});
         await prisma.wh_dept_mst.deleteMany();
+        await prisma.location_mst.deleteMany({});
         await prisma.wh_mst.deleteMany({});
         await prisma.customers_mst.deleteMany({});
         await prisma.companys_mst.deleteMany({});
@@ -2219,6 +2223,7 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.purchase_orders.deleteMany({});
         await prisma.stock.deleteMany({});
         await prisma.wh_dept_mst.deleteMany();
+        await prisma.location_mst.deleteMany({});
         await prisma.wh_mst.deleteMany({});
         await prisma.customers_mst.deleteMany({});
         await prisma.companys_mst.deleteMany({});
@@ -2646,6 +2651,7 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.purchase_orders.deleteMany({});
         await prisma.stock.deleteMany({});
         await prisma.wh_dept_mst.deleteMany();
+        await prisma.location_mst.deleteMany({});
         await prisma.wh_mst.deleteMany({});
         await prisma.customers_mst.deleteMany({});
         await prisma.companys_mst.deleteMany({});
@@ -3076,6 +3082,7 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
     describe("MRP所要量計算", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
+          await prisma.location_mst.deleteMany({});
           await prisma.bom.deleteMany()
           await prisma.alternate_products.deleteMany()
           await prisma.pricebycustomer.deleteMany()
@@ -3495,6 +3502,7 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
     describe("部門間取引", () => {
       beforeAll(async () => {
         await prisma.stock.deleteMany({});
+        await prisma.location_mst.deleteMany({});
         await prisma.wh_dept_mst.deleteMany();
         await prisma.wh_mst.deleteMany({});
         await prisma.employee.deleteMany({});
@@ -3681,6 +3689,217 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
 
         expect(result).toEqual([]);
       });
+    });
+  });
+
+  describe("Chapter 11 在庫管理業務のDB設計", () => {
+    describe("棚番管理", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.stock.deleteMany({});
+          await prisma.location_mst.deleteMany({});
+          await prisma.wh_dept_mst.deleteMany();
+          await prisma.wh_mst.deleteMany({});
+          await prisma.employee.deleteMany({});
+          await prisma.dept_mst.deleteMany({});
+          await prisma.bom.deleteMany()
+          await prisma.alternate_products.deleteMany()
+          await prisma.pricebycustomer.deleteMany()
+          await prisma.products.deleteMany()
+        });
+      });
+
+      const products = [
+        {
+          prod_code: "1010100X",
+          prod_fullname: "商品名",
+          prod_name: "商品名",
+          prod_kana: "ショウヒンメイ",
+          prod_type: "1",
+          serial_no: "1234567890",
+          unitprice: 1000,
+          po_price: 900,
+          prime_cost: 500,
+          tax_type: 1,
+          category_code: "00101001",
+          wide_use_type: 1,
+          stock_manage_type: 1,
+          stock_reserve_type: 1,
+          sup_code: "001",
+          sup_sub_no: 1,
+          create_date: new Date("2021-01-01"),
+          creator: "user",
+          update_date: new Date("2021-01-01"),
+          updater: "user",
+        }
+      ];
+
+      const departments: dept_mst[] = [
+        {
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          end_date: new Date("2021-12-31"),
+          dep_name: "新規部署",
+          dept_layer: 1,
+          dept_psth: "10000~11000~11100~11101~",
+          bottom_type: 1,
+          slit_yn: 0,
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
+        }
+      ];
+
+      const employees = [
+        {
+          emp_code: "EMP999",
+          emp_name: "伊藤 裕子",
+          emp_kana: "イトウ ユウコ",
+          login_password: "password",
+          tel: "090-1234-5678",
+          fax: "03-1234-5678",
+          dept_code: "11101",
+          start_date: new Date("2021-01-01"),
+          occu_code: "",
+          approval_code: "",
+          create_date: new Date("2021-01-01"),
+          creator: "admin",
+          update_date: new Date("2021-01-01"),
+          updater: "admin",
+        }
+      ];
+
+      const whareHouses: wh_mst[] = [
+        {
+          wh_code: '001',
+          wh_name: '本社倉庫',
+          wh_type: '1',
+          zip_code: '000-0000',
+          state: '東京都',
+          address1: '千代田区',
+          address2: '千代田1-1-1',
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin'
+        }
+      ]
+
+      const stocks: stock[] = [
+        {
+          wh_code: '001',
+          prod_code: '001',
+          rot_no: 'X03022801',
+          stock_type: '1',
+          quality_type: '1',
+          actual: 30,
+          valid: 0,
+          last_delivery_date: new Date(),
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin'
+        },
+        {
+          wh_code: '001',
+          prod_code: '001',
+          rot_no: 'X03041502',
+          stock_type: '1',
+          quality_type: '1',
+          actual: 100,
+          valid: 0,
+          last_delivery_date: new Date(),
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin'
+        }
+      ]
+
+      const locations: location_mst[] = [
+        {
+          wh_code: '001',
+          location_code: '001',
+          prod_code: '1010100X',
+          create_date: new Date(),
+          creator: 'admin',
+          update_date: new Date(),
+          updater: 'admin'
+        }
+      ]
+
+      test("棚番を登録できる", async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.products.createMany({
+            data: products
+          });
+          await prisma.dept_mst.createMany({
+            data: departments
+          });
+          await prisma.employee.createMany({
+            data: employees
+          });
+          await prisma.wh_mst.createMany({
+            data: whareHouses
+          });
+          await prisma.stock.createMany({
+            data: stocks
+          });
+          await prisma.location_mst.createMany({
+            data: locations
+          });
+        });
+
+        const result = await prisma.stock.findMany({
+          where: {
+            wh_code: '001'
+          }
+        });
+
+        expect(result).toEqual(stocks);
+      });
+
+      test("棚番を更新できる", async () => {
+        const updateLocations: location_mst[] = locations.map((location) => {
+          return {
+            ...location,
+            location_code: '002'
+          }
+        });
+
+        await prisma.location_mst.updateMany({
+          where: {
+            wh_code: '001'
+          },
+          data: updateLocations[0]
+        });
+
+        const result = await prisma.location_mst.findMany({
+          where: {
+            wh_code: '001'
+          }
+        });
+
+        expect(result).toEqual(updateLocations);
+      });
+
+      test("棚番を削除できる", async () => {
+        await prisma.location_mst.deleteMany({
+          where: {
+            wh_code: '001'
+          }
+        });
+
+        const result = await prisma.location_mst.findMany({
+          where: {
+            wh_code: '001'
+          }
+        });
+
+        expect(result).toEqual([]);
+      });
+
     });
   });
 });

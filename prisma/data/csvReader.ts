@@ -28,6 +28,7 @@ import {
   bom,
   purchase_orders,
   po_details,
+  location_mst,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -671,6 +672,33 @@ export const whareHouseDepartments: wh_dept_mst[] = fs
       wh_code,
       dept_code,
       start_date: new Date(start_date),
+      create_date: new Date("2021-01-01"),
+      creator,
+      update_date: new Date("2021-01-01"),
+      updater
+    };
+  });
+
+filePath = path.join(__dirname, "location.csv");
+export const locations: location_mst[] = fs
+  .readFileSync(filePath, { encoding: "utf-8" })
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      wh_code,
+      location_code,
+      prod_code,
+      create_date,
+      creator,
+      update_date,
+      updater
+    ] = line.split(",");
+    return {
+      wh_code,
+      location_code,
+      prod_code,
       create_date: new Date("2021-01-01"),
       creator,
       update_date: new Date("2021-01-01"),

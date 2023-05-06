@@ -414,6 +414,38 @@ model wh_dept_mst {
   @@id([wh_code, dept_code, start_date], map: "pk_wh_dept_mst")
 }
 
+model stock {
+  wh_code            String    @db.VarChar(3)
+  prod_code          String    @db.VarChar(16)
+  rot_no             String    @db.VarChar(20)
+  stock_type         String    @default("1") @db.VarChar(1)
+  quality_type       String    @default("G") @db.VarChar(1)
+  actual             Int       @default(1)
+  valid              Int       @default(1)
+  last_delivery_date DateTime? @db.Timestamp(6)
+  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator            String?   @db.VarChar(12)
+  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater            String?   @db.VarChar(12)
+  wh_mst             wh_mst    @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_stock")
+
+  @@id([wh_code, prod_code, rot_no, stock_type, quality_type], map: "pk_stock")
+}
+
+model location_mst {
+  wh_code       String   @db.VarChar(3)
+  location_code String   @db.VarChar(4)
+  prod_code     String   @db.VarChar(16)
+  create_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  creator       String?  @db.VarChar(12)
+  update_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  updater       String?  @db.VarChar(12)
+  products      products @relation(fields: [prod_code], references: [prod_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_products_棚番マスタ")
+  wh_mst        wh_mst   @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_棚番マスタ")
+
+  @@id([wh_code, location_code, prod_code], map: "pk_location_mst")
+}
+
 model sales {
   sales_no      String          @id(map: "pk_sales") @db.VarChar(10)
   order_no      String          @db.VarChar(10)
@@ -600,20 +632,6 @@ model credit_balance {
   companys_mst  companys_mst @relation(fields: [comp_code], references: [comp_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_companys_mst_credit_balanc")
 }
 
-model location_mst {
-  wh_code       String   @db.VarChar(3)
-  location_code String   @db.VarChar(4)
-  prod_code     String   @db.VarChar(16)
-  create_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator       String?  @db.VarChar(12)
-  update_date   DateTime @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater       String?  @db.VarChar(12)
-  products      products @relation(fields: [prod_code], references: [prod_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_products_棚番マスタ")
-  wh_mst        wh_mst   @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_棚番マスタ")
-
-  @@id([wh_code, location_code, prod_code], map: "pk_location_mst")
-}
-
 model pay {
   pay_no          String        @id(map: "pk_pay") @db.VarChar(10)
   pay_date        Int?
@@ -673,22 +691,4 @@ model pu_details {
   pu            pu       @relation(fields: [pu_no], references: [pu_no], onDelete: NoAction, onUpdate: NoAction, map: "fk_仕入データ_pu_details")
 
   @@id([pu_row_no, pu_no], map: "pk_pu_details")
-}
-
-model stock {
-  wh_code            String    @db.VarChar(3)
-  prod_code          String    @db.VarChar(16)
-  rot_no             String    @db.VarChar(20)
-  stock_type         String    @default("1") @db.VarChar(1)
-  quality_type       String    @default("G") @db.VarChar(1)
-  actual             Int       @default(1)
-  valid              Int       @default(1)
-  last_delivery_date DateTime? @db.Timestamp(6)
-  create_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  creator            String?   @db.VarChar(12)
-  update_date        DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  updater            String?   @db.VarChar(12)
-  wh_mst             wh_mst    @relation(fields: [wh_code], references: [wh_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wh_mst_stock")
-
-  @@id([wh_code, prod_code, rot_no, stock_type, quality_type], map: "pk_stock")
 }

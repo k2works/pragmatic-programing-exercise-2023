@@ -19,6 +19,7 @@ import {
   companyCategoryGroups,
   wharehouses,
   whareHouseDepartments,
+  locations,
   stocks,
   orders,
   orderDetails,
@@ -271,6 +272,21 @@ async function main() {
       },
       create: w,
       update: w
+    })
+  }
+
+  console.table(locations)
+  for (const location of locations) {
+    await prisma.location_mst.upsert({
+      where: {
+        wh_code_location_code_prod_code: {
+          wh_code: location.wh_code,
+          location_code: location.location_code,
+          prod_code: location.prod_code
+        }
+      },
+      create: location,
+      update: location
     })
   }
 
