@@ -879,6 +879,78 @@ CREATE TABLE stock (
     update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
     updater VARCHAR(12)
 );
+CREATE TABLE purchase_orders (
+    po_no VARCHAR(10) NOT NULL,
+    po_date TIMESTAMP,
+    order_no VARCHAR(10) NOT NULL,
+    sup_code VARCHAR(8) NOT NULL,
+    sup_sub_no INTEGER,
+    emp_code VARCHAR(10) NOT NULL,
+    due_date TIMESTAMP,
+    wh_code VARCHAR(3) NOT NULL,
+    po_amnt INTEGER,
+    cmp_tax INTEGER DEFAULT 0 NOT NULL,
+    slip_comment VARCHAR(1000),
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE purchase_orders
+ADD CONSTRAINT pk_purchase_orders PRIMARY KEY (po_no);
+COMMENT ON TABLE purchase_orders IS '発注データ';
+COMMENT ON COLUMN purchase_orders.po_no IS '発注番号';
+COMMENT ON COLUMN purchase_orders.po_date IS '発注日';
+COMMENT ON COLUMN purchase_orders.order_no IS '受注番号';
+COMMENT ON COLUMN purchase_orders.sup_code IS '仕入先コード';
+COMMENT ON COLUMN purchase_orders.sup_sub_no IS '仕入先枝番';
+COMMENT ON COLUMN purchase_orders.emp_code IS '発注担当者コード';
+COMMENT ON COLUMN purchase_orders.due_date IS '指定納期';
+COMMENT ON COLUMN purchase_orders.wh_code IS '倉庫コード';
+COMMENT ON COLUMN purchase_orders.po_amnt IS '発注金額合計';
+COMMENT ON COLUMN purchase_orders.cmp_tax IS '消費税金額';
+COMMENT ON COLUMN purchase_orders.slip_comment IS '備考';
+COMMENT ON COLUMN purchase_orders.create_date IS '作成日時';
+COMMENT ON COLUMN purchase_orders.creator IS '作成者名';
+COMMENT ON COLUMN purchase_orders.update_date IS '更新日時';
+COMMENT ON COLUMN purchase_orders.updater IS '更新者名';
+CREATE TABLE po_details (
+    po_no VARCHAR(10) NOT NULL,
+    po_row_no INTEGER NOT NULL,
+    po_row_dsp_no INTEGER NOT NULL,
+    order_no VARCHAR(10) NOT NULL,
+    so_row_no INTEGER NOT NULL,
+    prod_code VARCHAR(16) NOT NULL,
+    prod_name VARCHAR(10) NOT NULL,
+    po_price INTEGER DEFAULT 0,
+    po_qt INTEGER DEFAULT 1 NOT NULL,
+    recived_qt INTEGER DEFAULT 1 NOT NULL,
+    complete_flg INTEGER DEFAULT 0 NOT NULL,
+    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    creator VARCHAR(12),
+    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
+    updater VARCHAR(12)
+);
+ALTER TABLE po_details
+ADD CONSTRAINT po_details_pkey PRIMARY KEY (po_row_no, po_no);
+ALTER TABLE po_details
+ADD CHECK (complete_flg IN (0, 1));
+COMMENT ON TABLE po_details IS '発注データ明細';
+COMMENT ON COLUMN po_details.po_no IS '発注番号';
+COMMENT ON COLUMN po_details.po_row_no IS '発注行番号';
+COMMENT ON COLUMN po_details.po_row_dsp_no IS '発注行表示番号';
+COMMENT ON COLUMN po_details.order_no IS '受注番号';
+COMMENT ON COLUMN po_details.so_row_no IS '受注行番号';
+COMMENT ON COLUMN po_details.prod_code IS '商品コード';
+COMMENT ON COLUMN po_details.prod_name IS '商品名';
+COMMENT ON COLUMN po_details.po_price IS '仕入単価';
+COMMENT ON COLUMN po_details.po_qt IS '発注数量';
+COMMENT ON COLUMN po_details.recived_qt IS '入荷済数量';
+COMMENT ON COLUMN po_details.complete_flg IS '完了フラグ,0:未完了, 1:完了';
+COMMENT ON COLUMN po_details.create_date IS '作成日時';
+COMMENT ON COLUMN po_details.creator IS '作成者名';
+COMMENT ON COLUMN po_details.update_date IS '更新日時';
+COMMENT ON COLUMN po_details.updater IS '更新者名';
 ALTER TABLE stock
 ADD CONSTRAINT pk_stock PRIMARY KEY (
         wh_code,
@@ -1024,78 +1096,6 @@ COMMENT ON COLUMN location_mst.create_date IS '作成日時';
 COMMENT ON COLUMN location_mst.creator IS '作成者名';
 COMMENT ON COLUMN location_mst.update_date IS '更新日時';
 COMMENT ON COLUMN location_mst.updater IS '更新者名';
-CREATE TABLE purchase_orders (
-    po_no VARCHAR(10) NOT NULL,
-    po_date TIMESTAMP,
-    order_no VARCHAR(10) NOT NULL,
-    sup_code VARCHAR(8) NOT NULL,
-    sup_sub_no INTEGER,
-    emp_code VARCHAR(10) NOT NULL,
-    due_date TIMESTAMP,
-    wh_code VARCHAR(3) NOT NULL,
-    po_amnt INTEGER,
-    cmp_tax INTEGER DEFAULT 0 NOT NULL,
-    slip_comment VARCHAR(1000),
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE purchase_orders
-ADD CONSTRAINT pk_purchase_orders PRIMARY KEY (po_no);
-COMMENT ON TABLE purchase_orders IS '発注データ';
-COMMENT ON COLUMN purchase_orders.po_no IS '発注番号';
-COMMENT ON COLUMN purchase_orders.po_date IS '発注日';
-COMMENT ON COLUMN purchase_orders.order_no IS '受注番号';
-COMMENT ON COLUMN purchase_orders.sup_code IS '仕入先コード';
-COMMENT ON COLUMN purchase_orders.sup_sub_no IS '仕入先枝番';
-COMMENT ON COLUMN purchase_orders.emp_code IS '発注担当者コード';
-COMMENT ON COLUMN purchase_orders.due_date IS '指定納期';
-COMMENT ON COLUMN purchase_orders.wh_code IS '倉庫コード';
-COMMENT ON COLUMN purchase_orders.po_amnt IS '発注金額合計';
-COMMENT ON COLUMN purchase_orders.cmp_tax IS '消費税金額';
-COMMENT ON COLUMN purchase_orders.slip_comment IS '備考';
-COMMENT ON COLUMN purchase_orders.create_date IS '作成日時';
-COMMENT ON COLUMN purchase_orders.creator IS '作成者名';
-COMMENT ON COLUMN purchase_orders.update_date IS '更新日時';
-COMMENT ON COLUMN purchase_orders.updater IS '更新者名';
-CREATE TABLE po_details (
-    po_no VARCHAR(10) NOT NULL,
-    po_row_no INTEGER NOT NULL,
-    po_row_dsp_no INTEGER NOT NULL,
-    order_no VARCHAR(10) NOT NULL,
-    so_row_no INTEGER NOT NULL,
-    prod_code VARCHAR(16) NOT NULL,
-    prod_name VARCHAR(10) NOT NULL,
-    po_price INTEGER DEFAULT 0,
-    po_qt INTEGER DEFAULT 1 NOT NULL,
-    recived_qt INTEGER DEFAULT 1 NOT NULL,
-    complete_flg INTEGER DEFAULT 0 NOT NULL,
-    create_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    creator VARCHAR(12),
-    update_date TIMESTAMP DEFAULT CURRENT_DATE NOT NULL,
-    updater VARCHAR(12)
-);
-ALTER TABLE po_details
-ADD CONSTRAINT po_details_pkey PRIMARY KEY (po_row_no, po_no);
-ALTER TABLE po_details
-ADD CHECK (complete_flg IN (0, 1));
-COMMENT ON TABLE po_details IS '発注データ明細';
-COMMENT ON COLUMN po_details.po_no IS '発注番号';
-COMMENT ON COLUMN po_details.po_row_no IS '発注行番号';
-COMMENT ON COLUMN po_details.po_row_dsp_no IS '発注行表示番号';
-COMMENT ON COLUMN po_details.order_no IS '受注番号';
-COMMENT ON COLUMN po_details.so_row_no IS '受注行番号';
-COMMENT ON COLUMN po_details.prod_code IS '商品コード';
-COMMENT ON COLUMN po_details.prod_name IS '商品名';
-COMMENT ON COLUMN po_details.po_price IS '仕入単価';
-COMMENT ON COLUMN po_details.po_qt IS '発注数量';
-COMMENT ON COLUMN po_details.recived_qt IS '入荷済数量';
-COMMENT ON COLUMN po_details.complete_flg IS '完了フラグ,0:未完了, 1:完了';
-COMMENT ON COLUMN po_details.create_date IS '作成日時';
-COMMENT ON COLUMN po_details.creator IS '作成者名';
-COMMENT ON COLUMN po_details.update_date IS '更新日時';
-COMMENT ON COLUMN po_details.updater IS '更新者名';
 ALTER TABLE credit_balance
 ADD CONSTRAINT pk_credit_balance PRIMARY KEY (comp_code);
 COMMENT ON TABLE credit_balance IS '与信残高データ';

@@ -3049,6 +3049,8 @@ describe("Part 2 販売システムのDB設計", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
           await prisma.bom.deleteMany()
+          await prisma.alternate_products.deleteMany()
+          await prisma.pricebycustomer.deleteMany()
           await prisma.products.deleteMany()
         });
       });
