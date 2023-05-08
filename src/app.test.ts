@@ -1,3 +1,5 @@
+import { config } from "dotenv";
+config({ path: '.env.test' })
 import {
   PrismaClient,
   dept_mst,
