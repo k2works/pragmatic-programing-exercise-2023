@@ -1,0 +1,2 @@
+pu_no,pu_date,sup_code,sup_sub_no,emp_code,start_date,po_no,dept_code,pu_ammount,cmp_tax,slip_comment,create_date,creator,update_date,updater
+0000000001,2023-05-06 06:49:28.076,001,1,EMP001,2021-01-01,PO0000001,11101,1000,0,test,2023-05-06 06:49:28.076,admin,2023-05-06 06:49:28.076,admin

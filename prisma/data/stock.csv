@@ -1,0 +1,3 @@
+wh_code,prod_code,rot_no,stock_type,quality_type,actual,valid,last_delivery_date,create_date,creator,update_date,updater
+001,001,X03022801,1,1,30,0,2023-05-06 05:29:49.833,2023-05-06 05:29:49.833,admin,2023-05-06 05:29:49.833,admin
+001,001,X03041502,1,1,100,0,2023-05-06 05:29:49.833,2023-05-06 05:29:49.833,admin,2023-05-06 05:29:49.833,admin

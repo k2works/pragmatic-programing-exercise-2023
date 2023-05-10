@@ -1,0 +1,24 @@
+COMMENT ON TABLE invoice IS '請求データ';
+COMMENT ON COLUMN invoice.invoice_no IS '請求番号';
+COMMENT ON COLUMN invoice.invoiced_date IS '請求日';
+COMMENT ON COLUMN invoice.comp_code IS '取引先コード';
+COMMENT ON COLUMN invoice.cust_sub_no IS '顧客枝番';
+COMMENT ON COLUMN invoice.last_received IS '前回入金額';
+COMMENT ON COLUMN invoice.month_sales IS '当月売上額';
+COMMENT ON COLUMN invoice.month_received IS '当月入金額';
+COMMENT ON COLUMN invoice.month_invoice IS '当月請求額';
+COMMENT ON COLUMN invoice.cmp_tax IS '消費税金額';
+COMMENT ON COLUMN invoice.invoice_received IS '請求消込金額';
+COMMENT ON COLUMN invoice.create_date IS '作成日時';
+COMMENT ON COLUMN invoice.creator IS '作成者名';
+COMMENT ON COLUMN invoice.update_date IS '更新日時';
+COMMENT ON COLUMN invoice.updater IS '更新者名';
+---
+COMMENT ON TABLE invoice_details IS '請求データ明細';
+COMMENT ON COLUMN invoice_details.invoice_no IS '請求番号';
+COMMENT ON COLUMN invoice_details.sales_no IS '売上番号';
+COMMENT ON COLUMN invoice_details.row_no IS '売上行番号';
+COMMENT ON COLUMN invoice_details.create_date IS '作成日時';
+COMMENT ON COLUMN invoice_details.creator IS '作成者名';
+COMMENT ON COLUMN invoice_details.update_date IS '更新日時';
+COMMENT ON COLUMN invoice_details.updater IS '更新者名';

@@ -1,0 +1,2 @@
+sales_no,order_no,sales_date,sales_type,dept_code,start_date,comp_code,emp_code,sales_amnt,cmp_tax,slip_comment,updated_no,orgnl_no,create_date,creator,update_date,updater
+0000000001,0000000001,2023-04-25 05:01:36.941,1,11101,2021-01-01,1,1,1000,100,test,1,1,2023-04-25 05:01:36.941,admin,2023-04-25 05:01:36.941,admin

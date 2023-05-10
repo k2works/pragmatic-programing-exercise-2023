@@ -1,0 +1,4 @@
+po_no,po_row_no,po_row_dsp_no,order_no,so_row_no,prod_code,prod_name,po_price,po_qt,recived_qt,complete_flg,create_date,creator,update_date,updater
+PO0000001,1,1,0000000001,1,10101001,牛ひれ,100,10,10,1,2023-05-06 03:33:28.618,admin,2023-05-06 03:33:28.618,admin
+PO0000001,2,2,0000000001,1,10101001,牛ひれ,100,10,10,1,2023-05-06 03:33:28.618,admin,2023-05-06 03:33:28.618,admin
+PO0000001,3,3,0000000001,1,10101001,牛ひれ,100,10,10,1,2023-05-06 03:33:28.618,admin,2023-05-06 03:33:28.618,admin

@@ -1,0 +1,2 @@
+bank_acut_code,recive_act_name,appl_start_date,appl_end_date,start_act_name,recive_bank_act_type,recive_act_no,bank_act_type,act_name,dept_code,start_date,a_bank_code,a_bank_blnc_code,create_date,creator,update_date,updater,update_plg_date,update_pgm
+00000001,test,2023-04-25 07:38:01.419,2023-04-25 07:38:01.419,test,1,00000001,1,test,11101,2021-01-01,0001,001,2023-04-25 07:38:01.419,admin,2023-04-25 07:38:01.419,admin,2023-04-25 07:38:01.419,main

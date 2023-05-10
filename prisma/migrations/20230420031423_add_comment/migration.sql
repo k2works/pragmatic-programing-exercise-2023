@@ -1,0 +1,15 @@
+COMMENT ON TABLE employee IS '社員マスタ';
+COMMENT ON COLUMN employee.emp_code IS '社員コード';
+COMMENT ON COLUMN employee.emp_name IS '社員名';
+COMMENT ON COLUMN employee.emp_kana IS '社員名カナ';
+COMMENT ON COLUMN employee.login_password IS 'パスワード';
+COMMENT ON COLUMN employee.tel IS '電話番号';
+COMMENT ON COLUMN employee.fax IS 'fax番号';
+COMMENT ON COLUMN employee.dept_code IS '部門コード';
+COMMENT ON COLUMN employee.start_date IS '開始日';
+COMMENT ON COLUMN employee.occu_code IS '職種コード';
+COMMENT ON COLUMN employee.approval_code IS '承認権限コード';
+COMMENT ON COLUMN employee.create_date IS '作成日時';
+COMMENT ON COLUMN employee.creator IS '作成者名';
+COMMENT ON COLUMN employee.update_date IS '更新日時';
+COMMENT ON COLUMN employee.updater IS '更新者名';

@@ -70,7 +70,6 @@ typings/
 
 # dotenv environment variables file
 .env
-.env.test
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -105,3 +104,11 @@ dist
 .vercel
 
 /public
+ops/build/docker/postgres/data
+ops/build/docker/mysql/data
+ops/build/docker/mssql/data
+ops/build/docker/mssql/log
+ops/build/docker/schemaspy/data
+ops/build/docker/schemaspy/output
+
+.idea

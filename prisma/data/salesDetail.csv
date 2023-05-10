@@ -1,0 +1,4 @@
+sales_no,row_no,prod_code,prod_name,unitprice,delivered_qty,quantity,discount,invoiced_date,invoice_no,invoice_delay_type,auto_journal_date,create_date,creator,update_date,updater
+0000000001,1,10101001,test,1000,1,1,1,2023-04-25 05:01:36.941,1,1,2023-04-25 05:01:36.941,2023-04-25 05:01:36.941,admin,2023-04-25 05:01:36.941,admin
+0000000001,2,10101001,test,1000,1,1,1,2023-04-25 05:01:36.941,1,1,2023-04-25 05:01:36.941,2023-04-25 05:01:36.941,admin,2023-04-25 05:01:36.941,admin
+0000000001,3,10101001,test,1000,1,1,1,2023-04-25 05:01:36.941,1,1,2023-04-25 05:01:36.941,2023-04-25 05:01:36.941,admin,2023-04-25 05:01:36.941,admin
