@@ -40,7 +40,7 @@ import { products as product } from ".prisma/client";
 
 let filePath = "";
 
-filePath = path.join(__dirname, "department.csv");
+filePath = path.join(`${__dirname}/data`, "department.csv");
 export const departments: dept_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -77,7 +77,7 @@ export const departments: dept_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "employee.csv");
+filePath = path.join(`${__dirname}/data`, "employee.csv");
 export const employees: employee[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -118,7 +118,7 @@ export const employees: employee[] = fs
     };
   });
 
-filePath = path.join(__dirname, "product.csv");
+filePath = path.join(`${__dirname}/data`, "product.csv");
 export const products: product[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -171,7 +171,7 @@ export const products: product[] = fs
     };
   });
 
-filePath = path.join(__dirname, "productCategory.csv");
+filePath = path.join(`${__dirname}/data`, "productCategory.csv");
 export const productCategories: product_category[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -202,7 +202,7 @@ export const productCategories: product_category[] = fs
     };
   });
 
-filePath = path.join(__dirname, "priceByCustomer.csv");
+filePath = path.join(`${__dirname}/data`, "priceByCustomer.csv");
 export const priceByCustomers: pricebycustomer[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -229,7 +229,7 @@ export const priceByCustomers: pricebycustomer[] = fs
     };
   });
 
-filePath = path.join(__dirname, "company.csv");
+filePath = path.join(`${__dirname}/data`, "company.csv");
 export const companys: companys_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -276,7 +276,7 @@ export const companys: companys_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "customer.csv");
+filePath = path.join(`${__dirname}/data`, "customer.csv");
 export const customers: customers_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -353,7 +353,7 @@ export const customers: customers_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "consumer.csv");
+filePath = path.join(`${__dirname}/data`, "consumer.csv");
 export const consumers: consumer[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -400,7 +400,7 @@ export const consumers: consumer[] = fs
     };
   });
 
-filePath = path.join(__dirname, "supplier.csv");
+filePath = path.join(`${__dirname}/data`, "supplier.csv");
 export const suppliers: supplier_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -455,7 +455,7 @@ export const suppliers: supplier_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "area.csv");
+filePath = path.join(`${__dirname}/data`, "area.csv");
 export const areas: area_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -480,7 +480,7 @@ export const areas: area_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "destination.csv");
+filePath = path.join(`${__dirname}/data`, "destination.csv");
 export const destinations: destinations_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -517,7 +517,7 @@ export const destinations: destinations_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "companyGroup.csv");
+filePath = path.join(`${__dirname}/data`, "companyGroup.csv");
 export const companyGroups: company_group_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -542,7 +542,7 @@ export const companyGroups: company_group_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "categoryType.csv");
+filePath = path.join(`${__dirname}/data`, "categoryType.csv");
 export const categoryTypes: category_type[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -567,7 +567,7 @@ export const categoryTypes: category_type[] = fs
     };
   });
 
-filePath = path.join(__dirname, "companyCategory.csv");
+filePath = path.join(`${__dirname}/data`, "companyCategory.csv");
 export const companyCategories: company_category[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -594,7 +594,7 @@ export const companyCategories: company_category[] = fs
     };
   });
 
-filePath = path.join(__dirname, "companyCategoryGroup.csv");
+filePath = path.join(`${__dirname}/data`, "companyCategoryGroup.csv");
 export const companyCategoryGroups: company_category_group[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -621,7 +621,7 @@ export const companyCategoryGroups: company_category_group[] = fs
     };
   });
 
-filePath = path.join(__dirname, "wharehouse.csv");
+filePath = path.join(`${__dirname}/data`, "wharehouse.csv");
 export const wharehouses: wh_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -656,7 +656,7 @@ export const wharehouses: wh_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "wharehouseDepartment.csv");
+filePath = path.join(`${__dirname}/data`, "wharehouseDepartment.csv");
 export const whareHouseDepartments: wh_dept_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -683,7 +683,7 @@ export const whareHouseDepartments: wh_dept_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "location.csv");
+filePath = path.join(`${__dirname}/data`, "location.csv");
 export const locations: location_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -710,7 +710,7 @@ export const locations: location_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "stock.csv");
+filePath = path.join(`${__dirname}/data`, "stock.csv");
 export const stocks: stock[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -746,7 +746,7 @@ export const stocks: stock[] = fs
       updater
     };
   });
-filePath = path.join(__dirname, "order.csv");
+filePath = path.join(`${__dirname}/data`, "order.csv");
 export const orders: order[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -793,7 +793,7 @@ export const orders: order[] = fs
     };
   });
 
-filePath = path.join(__dirname, "orderDetail.csv");
+filePath = path.join(`${__dirname}/data`, "orderDetail.csv");
 export const orderDetails: order_detail[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -840,7 +840,7 @@ export const orderDetails: order_detail[] = fs
     };
   });
 
-filePath = path.join(__dirname, "sales.csv");
+filePath = path.join(`${__dirname}/data`, "sales.csv");
 export const sales: sale[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -887,7 +887,7 @@ export const sales: sale[] = fs
     };
   });
 
-filePath = path.join(__dirname, "salesDetail.csv");
+filePath = path.join(`${__dirname}/data`, "salesDetail.csv");
 export const salesDetails: sale_detail[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -932,7 +932,7 @@ export const salesDetails: sale_detail[] = fs
     };
   });
 
-filePath = path.join(__dirname, "invoice.csv");
+filePath = path.join(`${__dirname}/data`, "invoice.csv");
 export const invoices: invoice[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -973,7 +973,7 @@ export const invoices: invoice[] = fs
     };
   });
 
-filePath = path.join(__dirname, "invoiceDetail.csv");
+filePath = path.join(`${__dirname}/data`, "invoiceDetail.csv");
 export const invoiceDetails: invoice_details[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1000,7 +1000,7 @@ export const invoiceDetails: invoice_details[] = fs
     };
   });
 
-filePath = path.join(__dirname, "bankAccount.csv");
+filePath = path.join(`${__dirname}/data`, "bankAccount.csv");
 export const bankAccounts: bank_acut_mst[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1051,7 +1051,7 @@ export const bankAccounts: bank_acut_mst[] = fs
     };
   });
 
-filePath = path.join(__dirname, "credit.csv");
+filePath = path.join(`${__dirname}/data`, "credit.csv");
 export const credits: credit[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1096,7 +1096,7 @@ export const credits: credit[] = fs
     };
   });
 
-filePath = path.join(__dirname, "alternateProduct.csv");
+filePath = path.join(`${__dirname}/data`, "alternateProduct.csv");
 export const alterNateProducts: alternate_products[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1123,7 +1123,7 @@ export const alterNateProducts: alternate_products[] = fs
     };
   });
 
-filePath = path.join(__dirname, "bom.csv");
+filePath = path.join(`${__dirname}/data`, "bom.csv");
 export const boms: bom[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1150,7 +1150,7 @@ export const boms: bom[] = fs
     };
   });
 
-filePath = path.join(__dirname, "purchaseOrder.csv");
+filePath = path.join(`${__dirname}/data`, "purchaseOrder.csv");
 export const purchaseOrders: purchase_orders[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1193,7 +1193,7 @@ export const purchaseOrders: purchase_orders[] = fs
     };
   });
 
-filePath = path.join(__dirname, "purchaseOrderDetail.csv");
+filePath = path.join(`${__dirname}/data`, "purchaseOrderDetail.csv");
 export const purchaseOrderDetails: po_details[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1236,7 +1236,7 @@ export const purchaseOrderDetails: po_details[] = fs
     };
   });
 
-filePath = path.join(__dirname, "buyingin.csv");
+filePath = path.join(`${__dirname}/data`, "buyingin.csv");
 export const buyingins: pu[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1279,7 +1279,7 @@ export const buyingins: pu[] = fs
     };
   });
 
-filePath = path.join(__dirname, "buyinginDetail.csv");
+filePath = path.join(`${__dirname}/data`, "buyinginDetail.csv");
 export const buyinginDetails: pu_details[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1318,7 +1318,7 @@ export const buyinginDetails: pu_details[] = fs
     };
   });
 
-filePath = path.join(__dirname, "pay.csv");
+filePath = path.join(`${__dirname}/data`, "pay.csv");
 export const pays: pay[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除
@@ -1359,7 +1359,7 @@ export const pays: pay[] = fs
     };
   });
 
-filePath = path.join(__dirname, "creditBalance.csv");
+filePath = path.join(`${__dirname}/data`, "creditBalance.csv");
 export const creditBalances: credit_balance[] = fs
   .readFileSync(filePath, { encoding: "utf-8" })
   .trim() // 末尾の改行を削除

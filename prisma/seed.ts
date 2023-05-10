@@ -37,7 +37,7 @@ import {
   buyinginDetails,
   pays,
   creditBalances,
-} from "./data/csvReader";
+} from "./csvReader";
 
 async function main() {
   console.table(departments);

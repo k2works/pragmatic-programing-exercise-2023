@@ -37,7 +37,7 @@ import {
   pay,
   credit_balance,
 } from "@prisma/client";
-import { priceByCustomers } from "../prisma/data/csvReader";
+import { priceByCustomers } from "../prisma/csvReader";
 
 const prisma = new PrismaClient();
 
