@@ -66,6 +66,7 @@ jobs:
 
       - name: Setup DB
         run: |
-          npm run db:test:migrate
+          echo DATABASE_URL="postgresql://root:root@localhost:5432/test?schema=public" > .env
+          npx prisma migrate dev
       - name: Run tests
         run: npm test
