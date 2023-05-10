@@ -14,7 +14,16 @@
     "deploy": "vercel",
     "deploy:local": "vercel dev",
     "deploy:heroku": "git push heroku wip/episode/00:master ",
-    "heroku-postbuild": "webpack --config ./webpack.config.js --progress"
+    "heroku-postbuild": "webpack --config ./webpack.config.js --progress",
+    "db:migrate": "npm run db:dev:migrate && npm run db:test:migrate",
+    "db:dev:migrate": "dotenv -e .env.dev -- prisma migrate dev",
+    "db:test:migrate": "dotenv -e .env.test -- prisma migrate dev",
+    "db:seed": "dotenv -e .env.dev -- prisma db seed",
+    "db:show": "dotenv -e .env.dev -- prisma studio",
+    "db:migrate:create-only": "prisma migrate dev --create-only",
+    "db:psql": "psql -h localhost -p 5432 -U root -d test",
+    "db:schemaspy:mysql": "docker-compose run --rm schemaspy_mysql",
+    "db:schemaspy:postresal": "docker-compose run --rm schemaspy_postgresql"
   },
   "repository": {
     "type": "git",

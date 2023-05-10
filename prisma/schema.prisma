@@ -15,3 +15,9 @@ generator erd {
   theme    = "forest"
   output   = "../public/docs/ERD.svg"
 }
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
