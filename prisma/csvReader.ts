@@ -11,7 +11,7 @@ export const departments: Department[] = fs
   .slice(1)
   .map((line) => {
     const [
-      code,
+      deptCode,
       startDate,
       endDate,
       name,
@@ -25,7 +25,7 @@ export const departments: Department[] = fs
       updater,
     ] = line.split(",");
     return {
-      code,
+      deptCode,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       name,

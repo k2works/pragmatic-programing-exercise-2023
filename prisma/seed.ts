@@ -7,8 +7,8 @@ async function main() {
   for (const dept of departments) {
     await prisma.department.upsert({
       where: {
-        code_startDate: {
-          code: dept.code,
+        deptCode_startDate: {
+          deptCode: dept.deptCode,
           startDate: dept.startDate
         }
       },

@@ -17,7 +17,7 @@ generator erd {
 }
 
 model Department {
-  code       String    @map("部門コード") @db.VarChar(6)
+  deptCode   String    @map("部門コード") @db.VarChar(6)
   startDate  DateTime  @default(dbgenerated("CURRENT_DATE")) @map("開始日") @db.Timestamp(6)
   endDate    DateTime? @default(dbgenerated("'2100-12-31 00:00:00'::timestamp without time zone")) @map("終了日") @db.Timestamp(6)
   name       String?   @map("部門名") @db.VarChar(40)
@@ -30,7 +30,7 @@ model Department {
   updateDate DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
   updater    String?   @map("更新者名") @db.VarChar(12)
 
-  @@id([code, startDate], map: "pk_dept_mst")
+  @@id([deptCode, startDate], map: "pk_department")
   @@map("部門マスタ")
 }
 

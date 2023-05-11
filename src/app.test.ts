@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 const departments: Department[] = [
   {
-    code: "D0001",
+    deptCode: "D0001",
     startDate: new Date("2021-01-01"),
     endDate: new Date("2021-12-31"),
     name: "新規部署",
@@ -49,7 +49,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           return { ...c, name: "更新部署" };
         });
         await prisma.department.update({
-          where: { code_startDate: { code: departments[0].code, startDate: departments[0].startDate } },
+          where: { deptCode_startDate: { deptCode: departments[0].deptCode, startDate: departments[0].startDate } },
           data: expected[0]
         });
 
@@ -60,7 +60,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       test("部門を削除できる", async () => {
         const expected: Department[] = [];
         await prisma.department.delete({
-          where: { code_startDate: { code: departments[0].code, startDate: departments[0].startDate } }
+          where: { deptCode_startDate: { deptCode: departments[0].deptCode, startDate: departments[0].startDate } }
         });
 
         const result = await prisma.department.findMany();
