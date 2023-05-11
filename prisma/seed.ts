@@ -1,18 +1,20 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { users } from "./csvReader";
+import { departments } from "./csvReader";
 
 async function main() {
-  console.table(users)
-  for (const user of users) {
-    await prisma.user.upsert({
-      where: { id: user.id },
-      update: {},
-      create: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
+  console.table(departments)
+  console.table(departments);
+  for (const dept of departments) {
+    await prisma.department.upsert({
+      where: {
+        code_startDate: {
+          code: dept.code,
+          startDate: dept.startDate
+        }
       },
+      create: dept,
+      update: dept
     });
   }
 }
