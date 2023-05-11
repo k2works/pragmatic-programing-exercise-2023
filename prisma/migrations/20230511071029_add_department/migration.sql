@@ -15,3 +15,5 @@ CREATE TABLE "部門マスタ" (
 
     CONSTRAINT "pk_dept_mst" PRIMARY KEY ("部門コード","開始日")
 );
+
+COMMENT ON COLUMN 部門マスタ.伝票入力可否 IS '0:不可 1:可能';
