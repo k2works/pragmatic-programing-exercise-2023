@@ -1,10 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { departments } from "./csvReader";
+import { departments, employees } from "./csvReader";
 
 async function main() {
   console.table(departments)
-  console.table(departments);
   for (const dept of departments) {
     await prisma.department.upsert({
       where: {
@@ -15,6 +14,17 @@ async function main() {
       },
       create: dept,
       update: dept
+    });
+  }
+
+  console.table(employees);
+  for (const emp of employees) {
+    await prisma.employee.upsert({
+      where: {
+        empCode: emp.empCode
+      },
+      create: emp,
+      update: emp
     });
   }
 }
