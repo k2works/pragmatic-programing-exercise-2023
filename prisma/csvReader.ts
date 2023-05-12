@@ -1,4 +1,11 @@
-import { Department, Employee } from "@prisma/client";
+import {
+  Department,
+  Employee,
+  Product,
+  PriceByCustomer,
+  ProductCategory,
+  AlternateProduct
+} from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
@@ -77,5 +84,139 @@ export const employees: Employee[] = fs
       creator,
       updateDate: new Date(updateDate),
       updater
+    };
+  });
+
+export const products: Product[] = fs
+  .readFileSync(filePath("product.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      prodCode,
+      fullname,
+      name,
+      kana,
+      prodType,
+      serialNo,
+      unitprice,
+      poPrice,
+      primeCost,
+      taxType,
+      categoryCode,
+      wideUseType,
+      stockManageType,
+      stockReserveType,
+      supCode,
+      supSubNo,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      prodCode,
+      fullname,
+      name,
+      kana,
+      prodType,
+      serialNo,
+      unitprice: Number(unitprice),
+      poPrice: Number(poPrice),
+      primeCost: Number(primeCost),
+      taxType: Number(taxType),
+      categoryCode,
+      wideUseType: Number(wideUseType),
+      stockManageType: Number(stockManageType),
+      stockReserveType: Number(stockReserveType),
+      supCode,
+      supSubNo: Number(supSubNo),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const productCategories: ProductCategory[] = fs
+  .readFileSync(filePath("productCategory.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      categoryCode,
+      name,
+      layer,
+      path,
+      lowestType,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      categoryCode,
+      name,
+      layer: Number(layer),
+      path,
+      lowestType: Number(lowestType),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const priceByCustomers: PriceByCustomer[] = fs
+  .readFileSync(filePath("priceByCustomer.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      prodCode,
+      compCode,
+      unitprice,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      prodCode,
+      compCode,
+      unitprice: Number(unitprice),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const alterNateProducts: AlternateProduct[] = fs
+  .readFileSync(filePath("alternateProduct.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      prodCode,
+      altProdCode,
+      priority,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      prodCode,
+      altProdCode,
+      priority: Number(priority),
+      createDate: new Date("2021-01-01"),
+      creator,
+      updateDate: new Date("2021-01-01"),
+      updater,
     };
   });
