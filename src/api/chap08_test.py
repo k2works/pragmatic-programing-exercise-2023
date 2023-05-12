@@ -12,7 +12,7 @@ import doctest
 # ## 線形リスト
 # %%
 
-class TestNode(unittest.TestCase):
+class TestLinkedList(unittest.TestCase):
     def test_linked_list(self):
         ll = LinkedList()
         self.assertEqual(ll.no, 0)
@@ -247,6 +247,318 @@ class LinkedListIterator:
         else:
             data = self.current.data
             self.current = self.current.next
+            return data
+
+# %% [markdown]
+# ## カーソルによる線形リスト
+# %%
+
+
+class TestArrayList(unittest.TestCase):
+    def test_線形リストを生成(self):
+        array_list = ArrayLinkedList(100)
+        self.assertEqual(len(array_list), 0)
+
+    def test_先頭に挿入(self):
+        array_list = ArrayLinkedList(100)
+        array_list.add_first(1)
+        self.assertEqual(len(array_list), 1)
+        array_list.add_first(2)
+        self.assertEqual(len(array_list), 2)
+        array_list.add_first(3)
+        self.assertEqual(len(array_list), 3)
+
+    def test_先頭を削除(self):
+        array_list = ArrayLinkedList(100)
+        array_list.add_first(1)
+        array_list.add_first(2)
+        array_list.add_first(3)
+        array_list.remove_first()
+        self.assertEqual(len(array_list), 2)
+        array_list.remove_first()
+        self.assertEqual(len(array_list), 1)
+        array_list.remove_first()
+        self.assertEqual(len(array_list), 0)
+
+    def test_末尾を削除(self):
+        array_list = ArrayLinkedList(100)
+        array_list.add_first(1)
+        array_list.add_first(2)
+        array_list.add_first(3)
+        array_list.remove_last()
+        self.assertEqual(len(array_list), 2)
+        array_list.remove_last()
+        self.assertEqual(len(array_list), 1)
+        array_list.remove_last()
+        self.assertEqual(len(array_list), 0)
+
+    def test_着目を進める(self):
+        array_list = ArrayLinkedList(100)
+        array_list.add_first(1)
+        array_list.add_first(2)
+        array_list.add_first(3)
+        array_list.next()
+        self.assertEqual(array_list.get_current_data(), 2)
+        array_list.next()
+        self.assertEqual(array_list.get_current_data(), 1)
+        array_list.next()
+        self.assertEqual(array_list.get_current_data(), 1)
+
+    def test_着目を削除(self):
+        array_list = ArrayLinkedList(100)
+        array_list.add_first(1)
+        array_list.add_first(2)
+        array_list.add_first(3)
+        array_list.next()
+        array_list.remove_current_node()
+        self.assertEqual(len(array_list), 2)
+        self.assertEqual(array_list.get_current_data(), 3)
+        array_list.next()
+        array_list.remove_current_node()
+        self.assertEqual(len(array_list), 1)
+        self.assertEqual(array_list.get_current_data(), 3)
+        array_list.next()
+        array_list.remove_current_node()
+        self.assertEqual(len(array_list), 0)
+        self.assertEqual(array_list.get_current_data(), -1)
+
+    def test_全削除(self):
+        array_list = ArrayLinkedList(100)
+        array_list.add_first(1)
+        array_list.add_first(2)
+        array_list.add_first(3)
+        array_list.clear()
+        self.assertEqual(len(array_list), 0)
+
+    def test_探索(self):
+        array_list = ArrayLinkedList(100)
+        array_list.add_first(1)
+        array_list.add_first(2)
+        array_list.add_first(3)
+        self.assertEqual(array_list.search(1), 2)
+        self.assertEqual(array_list.search(2), 1)
+        self.assertEqual(array_list.search(3), 0)
+        self.assertEqual(array_list.search(4), -1)
+
+    def test_帰属性判定(self):
+        array_list = ArrayLinkedList(100)
+        array_list.add_first(1)
+        array_list.add_first(2)
+        array_list.add_first(3)
+        self.assertEqual(array_list.is_empty(), False)
+
+    def test_全ノードを走査(self):
+        array_list = ArrayLinkedList(100)
+        array_list.add_first(1)
+        array_list.add_first(2)
+        array_list.add_first(3)
+        self.assertEqual(list(array_list), [3, 2, 1])
+
+
+Null = -1
+
+
+class Node:
+    """線形リストノードクラス（配列カーソル版）"""
+
+    def __init__(self, data=Null, next=Null, dnext=Null):
+        """初期化"""
+        self.data = data
+        self.next = next
+        self.dnext = dnext
+
+
+class ArrayLinkedList:
+    """線形リストクラス（配列カーソル版）"""
+
+    def __init__(self, capacity: int):
+        """初期化"""
+        self.head = Null                 # 先頭ノード
+        self.current = Null              # 着目ノード
+        self.max = Null                  # 利用中の末尾レコード
+        self.deleted = Null              # フリーリストの先頭ノード
+        self.capacity = capacity         # リストの容量
+        self.n = [Node()] * self.capacity  # リスト本体
+        self.no = 0
+
+    def __len__(self) -> int:
+        """線形リストの長さを返す"""
+        return self.no
+
+    def is_empty(self) -> bool:
+        """線形リストは空か？"""
+        return self.head == Null
+
+    def get_current_data(self) -> Any:
+        """着目ノードのデータを返す"""
+        if self.current is None:
+            return Null                     # 着目ノードはない
+        return self.n[self.current].data
+
+    def get_insert_index(self):
+        """次に挿入するレコードの添字を求める"""
+        if self.deleted == Null:         # 削除レコードは存在しない
+            if self.max + 1 < self.capacity:
+                self.max += 1
+                return self.max           # 新しいレコードを利用
+            else:
+                return Null               # 容量オーバ
+        else:
+            rec = self.deleted            # フリーリストから
+            self.deleted = self.n[rec].dnext
+            return rec
+
+    def delete_index(self, idx: int) -> None:
+        """レコードidxをフリーリストに登録"""
+        if self.deleted == Null:         # 削除レコードは存在しない
+            self.deleted = idx           # idxをフリーリストの
+            self.n[idx].dnext = Null     # 先頭に登録
+        else:
+            rec = self.deleted            # idxをフリーリストの
+            self.deleted = idx
+            self.n[idx].dnext = rec       # 先頭に挿入
+
+    def search(self, data: Any) -> int:
+        """dataと等価なノードを探索"""
+        cnt = 0
+        ptr = self.head                  # 現在走査中のノード
+
+        while ptr != Null:
+            if self.n[ptr].data == data:
+                self.current = ptr
+                return cnt                # 探索成功
+            cnt += 1
+            ptr = self.n[ptr].next        # 後続ノードに着目
+        return Null                       # 探索失敗
+
+    def __contains__(self, data: Any) -> bool:
+        """線形リストにdataは含まれているか"""
+        return self.search(data) >= 0
+
+    def add_first(self, data: Any) -> None:
+        """先頭にノードを挿入"""
+        ptr = self.head                  # 挿入前の先頭ノード
+        rec = self.get_insert_index()
+        if rec != Null:
+            self.head = self.current = rec  # 第recレコードに挿入
+            self.n[self.head] = Node(data, ptr)
+            self.no += 1
+
+    def add_last(self, data: Any) -> None:
+        """末尾にノードを挿入"""
+        if self.head == Null:            # リストが空であれば
+            self.add_first(data)         # 先頭に挿入
+        else:
+            ptr = self.head
+            while self.n[ptr].next != Null:
+                ptr = self.n[ptr].next
+            rec = self.get_insert_index()
+            if rec != Null:
+                self.n[ptr].next = self.current = rec
+                self.n[rec] = Node(data)
+                self.no += 1
+
+    def remove_first(self) -> None:
+        """先頭ノードを削除"""
+        if self.head != Null:            # リストが空でなければ
+            ptr = self.n[self.head].next
+            self.delete_index(self.head)
+            self.head = self.current = ptr
+            self.no -= 1
+
+    def remove_last(self) -> None:
+        """末尾ノードを削除"""
+        if self.head != Null:
+            if self.n[self.head].next == Null:  # ノードが一つだけであれば
+                self.remove_first()             # 先頭ノードを削除
+            else:
+                ptr = self.head                 # 走査中のノード
+                pre = self.head                 # 走査中のノードの先行ノード
+
+                while self.n[ptr].next != Null:
+                    pre = ptr
+                    ptr = self.n[ptr].next
+                self.n[pre].next = Null        # preは削除後の末尾ノード
+                self.delete_index(ptr)
+                self.current = pre
+                self.no -= 1
+
+    def remove(self, p: int) -> None:
+        """レコードpを削除"""
+        if self.head != Null:
+            if p == self.head:              # pが先頭ノードであれば
+                self.remove_first()         # 先頭ノードを削除
+            else:
+                ptr = self.head
+
+                while self.n[ptr].next != p:
+                    ptr = self.n[ptr].next
+                    if ptr == Null:
+                        return                # pはリスト上に存在しない
+                self.n[ptr].next = Null       # pは削除後の末尾ノード
+                self.delete_index(p)
+                self.n[ptr].next = self.n[p].next
+                self.current = ptr
+                self.no -= 1
+
+    def remove_current_node(self) -> None:
+        """着目ノードを削除"""
+        self.remove(self.current)
+
+    def clear(self) -> None:
+        """全ノードを削除"""
+        while self.head != Null:          # 空になるまで
+            self.remove_first()           # 先頭ノードを削除
+        self.current = Null
+
+    def next(self) -> bool:
+        """着目ノードを一つ後方に進める"""
+        if self.current == Null or self.n[self.current].next == Null:
+            return False                 # 進めることはできなかった
+        self.current = self.n[self.current].next
+        return True
+
+    def print_current_node(self) -> None:
+        """着目ノードを表示"""
+        if self.current == Null:
+            print('着目ノードはありません。')
+        else:
+            print(self.n[self.current].data)
+
+    def print(self) -> None:
+        """全ノードを表示"""
+        ptr = self.head
+
+        while ptr != Null:
+            print(self.n[ptr].data)
+            ptr = self.n[ptr].next
+
+    def dump(self) -> None:
+        """全ノードをダンプ"""
+        for i in self.n:
+            print(f'[{i}] {i.data} {i.next} {i.dnext}')
+
+    def __iter__(self) -> ArrayLinkedListIterator:
+        """イテレータを返す"""
+        return ArrayLinkedListIterator(self.n, self.head)
+
+
+class ArrayLinkedListIterator:
+    """クラスArrayLinkedListのイテレータ用クラス"""
+
+    def __init__(self, n: int, head: int):
+        self.n = n
+        self.current = head
+
+    def __iter__(self) -> ArrayLinkedListIterator:
+        return self
+
+    def __next__(self) -> Any:
+        if self.current == Null:
+            raise StopIteration
+        else:
+            data = self.n[self.current].data
+            self.current = self.n[self.current].next
             return data
 
 # %% [markdown]
