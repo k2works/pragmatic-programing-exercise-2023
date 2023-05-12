@@ -393,6 +393,9 @@ def quick_sort2(a: MutableSequence) -> None:
 
 # %% [markdown]
 # ## マージソート
+buff = ""
+
+
 class TestMergeSort(unittest.TestCase):
     def test_merge_sort_list(self):
         a = [2, 4, 6, 8, 11, 13]
