@@ -7,6 +7,8 @@ import {
   AlternateProduct,
   Company,
   Customer,
+  Destination,
+  Area,
   Consumer,
   Supplier,
   CompanyGroup,
@@ -348,6 +350,66 @@ export const customers: Customer[] = fs
       custPayMonths2: Number(custPayMonths2),
       custPayDates2: Number(custPayDates2),
       custPayMethod2: Number(custPayMethod2),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const areas: Area[] = fs
+  .readFileSync(filePath("area.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      areaCode,
+      areaName,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      areaCode,
+      areaName,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const destinations: Destination[] = fs
+  .readFileSync(filePath("destination.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      custCode,
+      custSubNo,
+      distNo,
+      distName,
+      areaCode,
+      zipCode,
+      address1,
+      address2,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      custCode,
+      custSubNo: Number(custSubNo),
+      distNo: Number(distNo),
+      distName,
+      areaCode,
+      zipCode,
+      address1,
+      address2,
       createDate: new Date(createDate),
       creator,
       updateDate: new Date(updateDate),
