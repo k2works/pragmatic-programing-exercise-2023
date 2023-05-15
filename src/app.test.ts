@@ -10,6 +10,8 @@ import {
   AlternateProduct,
   Company,
   Customer,
+  Area,
+  Destination,
   Consumer,
   Supplier,
   CompanyGroup,
@@ -178,6 +180,30 @@ const customers: Customer[] = [{
   updater: null
 }]
 
+const areas: Area[] = [{
+  areaCode: "00X",
+  areaName: "エリア名1",
+  createDate: new Date(),
+  creator: null,
+  updateDate: new Date(),
+  updater: null
+}]
+
+const destinations: Destination[] = [{
+  custCode: "00X",
+  custSubNo: 1,
+  distNo: 1,
+  distName: "配送先名1",
+  areaCode: "00X",
+  zipCode: "000-0000",
+  address1: "住所1",
+  address2: "住所2",
+  createDate: new Date(),
+  creator: null,
+  updateDate: new Date(),
+  updater: null
+}]
+
 const suppliers: Supplier[] = [{
   supCode: "00X",
   supSubNo: 1,
@@ -338,6 +364,7 @@ const sales: Sales[] = [{
   updateDate: new Date(),
   updater: 'admin',
 }];
+
 const salesDetails: SalesDetail[] = [
   {
     salesNo: '0000000001',
@@ -556,6 +583,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
   describe("Chapter 4 取引先（顧客／仕入先）マスタ設計", () => {
     beforeAll(async () => {
+      await prisma.destination.deleteMany();
       await prisma.customer.deleteMany();
       await prisma.supplier.deleteMany();
       await prisma.companyCategoryGroup.deleteMany();
@@ -1112,6 +1140,126 @@ describe("Part 2 販売システムのDB設計", () => {
         const result = await prisma.sales.findMany();
         expect(result).toEqual(expected);
       });
+
+    });
+  });
+
+  describe("Chapter 7 請求業務のDB設計", () => {
+    describe("売上／請求／回収に関連するマスタ体系", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.area.deleteMany();
+          await prisma.destination.deleteMany();
+          await prisma.customer.deleteMany();
+          await prisma.company.deleteMany();
+          await prisma.companyGroup.deleteMany();
+          await prisma.product.deleteMany();
+          await prisma.orderDetail.deleteMany();
+          await prisma.order.deleteMany();
+          await prisma.salesDetail.deleteMany();
+          await prisma.sales.deleteMany();
+
+          await prisma.companyGroup.createMany({ data: companyGroups });
+          await prisma.company.createMany({ data: companies });
+          await prisma.product.createMany({ data: products });
+          await prisma.order.createMany({ data: orders });
+          await prisma.orderDetail.createMany({ data: orderDetails });
+          await prisma.sales.createMany({ data: sales });
+          await prisma.salesDetail.createMany({ data: salesDetails });
+        });
+      });
+
+      test("出荷先を登録できる", async () => {
+        const expected: Customer[] = customers.map((c) => {
+          return {
+            ...c,
+            destinations: destinations.filter((d) => d.custCode === c.custCode),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.customer.createMany({ data: customers });
+          await prisma.area.createMany({ data: areas });
+          await prisma.destination.createMany({ data: destinations });
+        });
+
+        const result = await prisma.customer.findMany(
+          {
+            include: {
+              destinations: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("出荷先を更新できる", async () => {
+        const updatedCustomers: Customer[] = customers.map((c) => { return { ...c, name: "updated" }; });
+        const updatedDestinations: Destination[] = destinations.map((d) => { return { ...d, distName: "updated" }; });
+
+        const expected: Customer[] = updatedCustomers.map((c) => {
+          return {
+            ...c,
+            destinations: updatedDestinations.filter((d) => d.custCode === c.custCode),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const customer of updatedCustomers) {
+            await prisma.customer.update({
+              where: {
+                custCode_custSubNo: {
+                  custCode: customer.custCode,
+                  custSubNo: customer.custSubNo
+                }
+              }, data: customer
+            });
+          }
+          for (const destination of updatedDestinations) {
+            await prisma.destination.update({
+              where: {
+                custCode_distNo_custSubNo: {
+                  custCode: destination.custCode,
+                  distNo: destination.distNo,
+                  custSubNo: destination.custSubNo
+                }
+              }, data: destination
+            });
+          }
+        });
+
+        const result = await prisma.customer.findMany(
+          {
+            include: {
+              destinations: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("出荷先を削除できる", async () => {
+        const expected: Destination[] = [];
+        await prisma.$transaction(async (prisma) => {
+          for (const customer of customers) {
+            await prisma.destination.deleteMany({
+              where: { custCode: customer.custCode }
+            });
+            await prisma.customer.delete({
+              where: {
+                custCode_custSubNo: {
+                  custCode: customer.custCode,
+                  custSubNo: customer.custSubNo
+                }
+              }
+            });
+            await prisma.area.deleteMany({
+              where: { areaCode: customer.arCode }
+            });
+          }
+        });
+
+        const result = await prisma.destination.findMany();
+        expect(result).toEqual(expected);
+      })
 
     });
   });
