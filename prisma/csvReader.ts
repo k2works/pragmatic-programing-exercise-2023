@@ -15,6 +15,8 @@ import {
   CompanyCategoryGroup,
   Order,
   OrderDetail,
+  Sales,
+  SalesDetail,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -638,6 +640,96 @@ export const orderDetails: OrderDetail[] = fs
       completeFlg: Number(completeFlg),
       discount: Number(discount),
       deliveryDate: new Date(deliveryDate),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const sales: Sales[] = fs
+  .readFileSync(filePath("sales.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      salesNo,
+      orderNo,
+      salesDate,
+      salesType,
+      deptCode,
+      startDate,
+      compCode,
+      empCode,
+      salesAmnt,
+      cmpTax,
+      slipComment,
+      updatedNo,
+      orgnlNo,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      salesNo,
+      orderNo,
+      salesDate: new Date(salesDate),
+      salesType: Number(salesType),
+      deptCode,
+      startDate: new Date(startDate),
+      compCode,
+      empCode,
+      salesAmnt: Number(salesAmnt),
+      cmpTax: Number(cmpTax),
+      slipComment,
+      updatedNo: Number(updatedNo),
+      orgnlNo,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const salesDetails: SalesDetail[] = fs
+  .readFileSync(filePath("salesDetail.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      salesNo,
+      rowNo,
+      prodCode,
+      prodName,
+      unitprice,
+      deliveredQty,
+      quantity,
+      discount,
+      invoicedDate,
+      invoiceNo,
+      invoiceDelayType,
+      autoJournalDate,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      salesNo,
+      rowNo: Number(rowNo),
+      prodCode,
+      prodName,
+      unitprice: Number(unitprice),
+      deliveredQty: Number(deliveredQty),
+      quantity: Number(quantity),
+      discount: Number(discount),
+      invoicedDate: new Date(invoicedDate),
+      invoiceNo,
+      invoiceDelayType: Number(invoiceDelayType),
+      autoJournalDate: new Date(autoJournalDate),
       createDate: new Date(createDate),
       creator,
       updateDate: new Date(updateDate),
