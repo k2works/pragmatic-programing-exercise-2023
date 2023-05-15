@@ -852,6 +852,11 @@ describe("Part 2 販売システムのDB設計", () => {
           await prisma.product.deleteMany();
           await prisma.orderDetail.deleteMany();
           await prisma.order.deleteMany();
+
+          await prisma.employee.createMany({ data: employees });
+          await prisma.company.createMany({ data: companies });
+          await prisma.customer.createMany({ data: customers });
+          await prisma.product.createMany({ data: products });
         });
       });
 
@@ -863,10 +868,6 @@ describe("Part 2 販売システムのDB設計", () => {
           };
         });
         await prisma.$transaction(async (prisma) => {
-          await prisma.employee.createMany({ data: employees });
-          await prisma.company.createMany({ data: companies });
-          await prisma.customer.createMany({ data: customers });
-          await prisma.product.createMany({ data: products });
           await prisma.order.createMany({ data: orders });
           await prisma.orderDetail.createMany({ data: orderDetails });
         });
