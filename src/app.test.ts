@@ -8,8 +8,15 @@ import {
   Product,
   PriceByCustomer,
   AlternateProduct,
+  Company,
+  Customer,
+  Consumer,
+  Supplier,
+  CompanyGroup,
+  CompanyCategoryGroup,
+  CompanyCategory,
+  CategoryType,
 } from "@prisma/client";
-import { kMaxLength } from "buffer";
 const prisma = new PrismaClient();
 
 
@@ -111,6 +118,123 @@ const priceByCustomers: PriceByCustomer[] = [
     updater: 'admin',
   }
 ];
+
+const companies: Company[] = [{
+  compCode: "00X",
+  name: "顧客名1",
+  kana: "クスキメイ1",
+  supType: 0,
+  zipCode: "000-0000",
+  state: "都道府県",
+  address1: "住所1",
+  address2: "住所2",
+  noSalesFlg: 0,
+  wideUseType: 0,
+  compGroupCode: "001",
+  maxCredit: 10000,
+  tempCreditUp: 0,
+  createDate: new Date(),
+  creator: null,
+  updateDate: new Date(),
+  updater: null
+}]
+
+const customers: Customer[] = [{
+  custCode: "00X",
+  custSubNo: 1,
+  custType: 0,
+  arCode: "001",
+  arSubNo: 1,
+  payerCode: "001",
+  payerSubNo: 1,
+  name: "顧客名1",
+  kana: "クスキメイ1",
+  empCode: "001",
+  custUserName: "顧客担当者名1",
+  custUserDepName: "顧客担当者部署名1",
+  custZipCode: "000-0000",
+  custState: "都道府県",
+  custAddress1: "住所1",
+  custAddress2: "住所2",
+  custTel: "000-0000-0000",
+  custFax: "000-0000-0000",
+  custEmail: "hoge@hoge.com",
+  custArType: 0,
+  custCloseDate1: 1,
+  custPayMonths1: 0,
+  custPayDates1: 1,
+  custPayMethod1: 0,
+  custPayDates2: 1,
+  custPayMethod2: 0,
+  custCloseDate2: 1,
+  custPayMonths2: 0,
+  createDate: new Date(),
+  creator: null,
+  updateDate: new Date(),
+  updater: null
+}]
+
+const suppliers: Supplier[] = [{
+  supCode: "00X",
+  supSubNo: 1,
+  name: "仕入先名1",
+  kana: "シスキメイ1",
+  supEmpName: "担当者名1",
+  supDepName: "部署名1",
+  supZipCode: "000-0000",
+  supState: "都道府県",
+  supAddress1: "住所1",
+  supAddress2: "住所2",
+  supTel: "000-0000-0000",
+  supFax: "000-0000-0000",
+  supEmail: "hoge@hoegc.com",
+  supCloseDate: 1,
+  supPayMonths: 1,
+  supPayDates: 1,
+  payMethodType: 1,
+  createDate: new Date(),
+  creator: null,
+  updateDate: new Date(),
+  updater: null
+}]
+
+const companyGroups: CompanyGroup[] = [{
+  compGroupCode: "001",
+  groupName: "グループ名1",
+  createDate: new Date(),
+  creator: null,
+  updateDate: new Date(),
+  updater: null
+}]
+
+const cateoryTypes: CategoryType[] = [{
+  categoryTypeCode: "01",
+  categoryTypeName: "分類名1",
+  createDate: new Date(),
+  creator: null,
+  updateDate: new Date(),
+  updater: null
+}]
+
+const companyCategories: CompanyCategory[] = [{
+  categoryTypeCode: "01",
+  compCateCode: "001",
+  compCateName: "分類名1",
+  createDate: new Date(),
+  creator: null,
+  updateDate: new Date(),
+  updater: null
+}]
+
+const companyCategoryGroups: CompanyCategoryGroup[] = [{
+  categoryTypeCode: "01",
+  compCateCode: "001",
+  compCode: "00X",
+  createDate: new Date(),
+  creator: null,
+  updateDate: new Date(),
+  updater: null
+}]
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 1 販売管理システム全体像", () => { });
@@ -268,5 +392,187 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       });
 
     });
+  });
+
+  describe("Chapter 4 取引先（顧客／仕入先）マスタ設計", () => {
+    describe("取引先マスタ", () => {
+      beforeAll(async () => {
+        await prisma.customer.deleteMany();
+        await prisma.supplier.deleteMany();
+        await prisma.companyCategoryGroup.deleteMany();
+        await prisma.company.deleteMany();
+        await prisma.companyGroup.deleteMany();
+        await prisma.companyCategory.deleteMany();
+        await prisma.categoryType.deleteMany();
+      });
+
+      test("取引先を登録できる", async () => {
+        const expected: Company[] = companies.map((c) => {
+          return {
+            ...c,
+            customers: customers,
+            suppliers: suppliers,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.companyGroup.createMany({ data: companyGroups });
+          await prisma.company.createMany({ data: companies });
+          await prisma.customer.createMany({ data: customers });
+          await prisma.supplier.createMany({ data: suppliers });
+        });
+
+        const result = await prisma.company.findMany(
+          {
+            include: {
+              customers: true,
+              suppliers: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("取引先を更新できる", async () => {
+        const updatedCompanies: Company[] = companies.map((c) => { return { ...c, name: "更新取引先" }; });
+        const updatedCustomers: Customer[] = customers.map((c) => { return { ...c, name: "更新顧客" }; });
+        const updatedSuppliers: Supplier[] = suppliers.map((c) => { return { ...c, name: "更新仕入先" }; });
+
+        const expected: Company[] = updatedCompanies.map((c) => {
+          return {
+            ...c,
+            customers: updatedCustomers,
+            suppliers: updatedSuppliers,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const com of updatedCompanies) {
+            await prisma.company.update({ where: { compCode: com.compCode }, data: com });
+          }
+          for (const cus of updatedCustomers) {
+            await prisma.customer.update({
+              where: {
+                custCode_custSubNo: {
+                  custCode: cus.custCode,
+                  custSubNo: cus.custSubNo
+                }
+              }, data: cus
+            });
+          }
+          for (const sup of updatedSuppliers) {
+            await prisma.supplier.update({
+              where: {
+                supCode_supSubNo: {
+                  supCode: sup.supCode,
+                  supSubNo: sup.supSubNo
+                }
+              }, data: sup
+            });
+          }
+        });
+
+        const result = await prisma.company.findMany(
+          {
+            include: {
+              customers: true,
+              suppliers: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("取引先を削除できる", async () => {
+        const expected: Company[] = [];
+        await prisma.$transaction(async (prisma) => {
+          for (const com of companies) {
+            await prisma.companyCategoryGroup.deleteMany({
+              where: { compCode: com.compCode }
+            });
+            await prisma.customer.deleteMany({
+              where: { custCode: com.compCode }
+            });
+            await prisma.supplier.deleteMany({
+              where: { supCode: com.compCode }
+            });
+            await prisma.company.delete({
+              where: { compCode: com.compCode }
+            });
+            await prisma.companyGroup.delete({
+              where: { compGroupCode: com.compGroupCode }
+            });
+          }
+        });
+
+        const result = await prisma.company.findMany();
+        expect(result).toEqual(expected);
+      });
+
+      describe("取引先の分類", () => {
+        beforeAll(async () => {
+          await prisma.$transaction(async (prisma) => {
+            await prisma.companyGroup.createMany({ data: companyGroups });
+            await prisma.company.createMany({ data: companies });
+            await prisma.categoryType.createMany({ data: cateoryTypes });
+            await prisma.companyCategory.createMany({ data: companyCategories });
+            await prisma.companyCategoryGroup.createMany({ data: companyCategoryGroups });
+          });
+        });
+
+        test("取引先をグループ化できる", async () => {
+          const expected = {
+            ...companyGroups[0],
+            companies: companies,
+          }
+
+          const result = {
+            ...await prisma.companyGroup.findUnique({ where: { compGroupCode: companyGroups[0].compGroupCode } }),
+            companies: await prisma.company.findMany({ where: { compGroupCode: companyGroups[0].compGroupCode } }),
+          }
+          expect(result).toEqual(expected);
+        });
+
+        test("取引先を種別ごとに分類できる", async () => {
+          const expected: CategoryType[] = cateoryTypes.map((c) => {
+            return {
+              ...c,
+              companyCategories: companyCategories,
+            };
+          });
+
+          const result = await prisma.categoryType.findMany(
+            {
+              include: {
+                companyCategories: true,
+              }
+            }
+          );
+          expect(result).toEqual(expected);
+        });
+
+        test("取引先を所属ごとに分類できる", async () => {
+          const expected: CompanyCategory[] = companyCategories.map((c) => {
+            return {
+              ...c,
+              categoryType: cateoryTypes[0],
+              companyCategoryGroups: companyCategoryGroups,
+            };
+          });
+
+          const result = await prisma.companyCategory.findMany(
+            {
+              include: {
+                categoryType: true,
+                companyCategoryGroups: true,
+              }
+            }
+          );
+          expect(result).toEqual(expected);
+        });
+
+      });
+
+
+    });
+
   });
 });
