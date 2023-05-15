@@ -16,6 +16,8 @@ import {
   CompanyCategoryGroup,
   CompanyCategory,
   CategoryType,
+  Order,
+  OrderDetail,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -235,6 +237,85 @@ const companyCategoryGroups: CompanyCategoryGroup[] = [{
   updateDate: new Date(),
   updater: null
 }]
+
+const orders: Order[] = [{
+  orderNo: "0000000001",
+  orderDate: new Date(),
+  deptCode: "11101",
+  startDate: new Date("2021-01-01"),
+  custCode: "00X",
+  custSubNo: 1,
+  empCode: "EMP999",
+  requiredDate: new Date(),
+  custorderNo: "0000000001",
+  whCode: "001",
+  orderAmnt: 1000,
+  cmpTax: 10,
+  slipComment: "test",
+  createDate: new Date(),
+  creator: "0001",
+  updateDate: new Date(),
+  updater: "0001",
+}];
+
+const orderDetails: OrderDetail[] = [{
+  orderNo: "0000000001",
+  soRowNo: 1,
+  prodCode: "0001",
+  prodName: "test",
+  unitprice: 100,
+  quantity: 10,
+  cmpTaxRate: 10,
+  reserveQty: 0,
+  deliveryOrderQty: 0,
+  deliveredQty: 0,
+  completeFlg: 0,
+  discount: 0,
+  deliveryDate: new Date(),
+  createDate: new Date(),
+  creator: "0001",
+  updateDate: new Date(),
+  updater: "0001",
+},
+{
+  orderNo: "0000000001",
+  soRowNo: 2,
+  prodCode: "0001",
+  prodName: "test",
+  unitprice: 100,
+  quantity: 10,
+  cmpTaxRate: 10,
+  reserveQty: 0,
+  deliveryOrderQty: 0,
+  deliveredQty: 0,
+  completeFlg: 0,
+  discount: 0,
+  deliveryDate: new Date(),
+  createDate: new Date(),
+  creator: "0001",
+  updateDate: new Date(),
+  updater: "0001",
+},
+{
+  orderNo: "0000000001",
+  soRowNo: 3,
+  prodCode: "0001",
+  prodName: "test",
+  unitprice: 100,
+  quantity: 10,
+  cmpTaxRate: 10,
+  reserveQty: 0,
+  deliveryOrderQty: 0,
+  deliveredQty: 0,
+  completeFlg: 0,
+  discount: 0,
+  deliveryDate: new Date(),
+  createDate: new Date(),
+  creator: "0001",
+  updateDate: new Date(),
+  updater: "0001",
+}
+];
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 1 販売管理システム全体像", () => { });
@@ -757,5 +838,101 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
     });
 
+  });
+});
+
+describe("Part 2 販売システムのDB設計", () => {
+  describe("Chapter 5 受注業務のDB設計", () => {
+    describe("受注と受注明細", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.employee.deleteMany();
+          await prisma.customer.deleteMany();
+          await prisma.company.deleteMany();
+          await prisma.product.deleteMany();
+          await prisma.orderDetail.deleteMany();
+          await prisma.order.deleteMany();
+        });
+      });
+
+      test("受注を登録できる", async () => {
+        const expected: Order[] = orders.map((o) => {
+          return {
+            ...o,
+            orderDetails: orderDetails.filter((od) => od.orderNo === o.orderNo),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.employee.createMany({ data: employees });
+          await prisma.company.createMany({ data: companies });
+          await prisma.customer.createMany({ data: customers });
+          await prisma.product.createMany({ data: products });
+          await prisma.order.createMany({ data: orders });
+          await prisma.orderDetail.createMany({ data: orderDetails });
+        });
+
+        const result = await prisma.order.findMany(
+          {
+            include: {
+              orderDetails: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("受注を更新できる", async () => {
+        const updatedOrders: Order[] = orders.map((o) => { return { ...o, orderAmnt: 1000 }; });
+        const updatedOrderDetails: OrderDetail[] = orderDetails.map((o) => { return { ...o, quantity: 10 }; });
+
+        const expected: Order[] = updatedOrders.map((o) => {
+          return {
+            ...o,
+            orderDetails: updatedOrderDetails.filter((od) => od.orderNo === o.orderNo),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const order of updatedOrders) {
+            await prisma.order.update({ where: { orderNo: order.orderNo }, data: order });
+          }
+          for (const orderDetail of updatedOrderDetails) {
+            await prisma.orderDetail.update({
+              where: {
+                orderNo_soRowNo: {
+                  orderNo: orderDetail.orderNo,
+                  soRowNo: orderDetail.soRowNo
+                }
+              }, data: orderDetail
+            });
+          }
+        });
+
+        const result = await prisma.order.findMany(
+          {
+            include: {
+              orderDetails: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("受注を削除できる", async () => {
+        const expected: Order[] = [];
+        await prisma.$transaction(async (prisma) => {
+          for (const order of orders) {
+            await prisma.orderDetail.deleteMany({
+              where: { orderNo: order.orderNo }
+            });
+            await prisma.order.delete({
+              where: { orderNo: order.orderNo }
+            });
+          }
+        });
+
+        const result = await prisma.order.findMany();
+        expect(result).toEqual(expected);
+      });
+    });
   });
 });
