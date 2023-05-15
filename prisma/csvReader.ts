@@ -4,7 +4,15 @@ import {
   Product,
   PriceByCustomer,
   ProductCategory,
-  AlternateProduct
+  AlternateProduct,
+  Company,
+  Customer,
+  Consumer,
+  Supplier,
+  CompanyGroup,
+  CategoryType,
+  CompanyCategory,
+  CompanyCategoryGroup,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -214,9 +222,331 @@ export const alterNateProducts: AlternateProduct[] = fs
       prodCode,
       altProdCode,
       priority: Number(priority),
-      createDate: new Date("2021-01-01"),
+      createDate: new Date(createDate),
       creator,
-      updateDate: new Date("2021-01-01"),
-      updater,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const companys: Company[] = fs
+  .readFileSync(filePath("company.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      compCode,
+      name,
+      kana,
+      supType,
+      zipCode,
+      state,
+      address1,
+      address2,
+      noSalesFlg,
+      wideUseType,
+      compGroupCode,
+      maxCredit,
+      tempCreditUp,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      compCode,
+      name,
+      kana,
+      supType: Number(supType),
+      zipCode,
+      state,
+      address1,
+      address2,
+      noSalesFlg: Number(noSalesFlg),
+      wideUseType: Number(wideUseType),
+      compGroupCode,
+      maxCredit: Number(maxCredit),
+      tempCreditUp: Number(tempCreditUp),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const customers: Customer[] = fs
+  .readFileSync(filePath("customer.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      custCode,
+      custSubNo,
+      custType,
+      arCode,
+      arSubNo,
+      payerCode,
+      payerSubNo,
+      name,
+      kana,
+      empCode,
+      custUserName,
+      custUserDepName,
+      custZipCode,
+      custState,
+      custAddress1,
+      custAddress2,
+      custTel,
+      custFax,
+      custEmail,
+      custArType,
+      custCloseDate1,
+      custPayMonths1,
+      custPayDates1,
+      custPayMethod1,
+      custCloseDate2,
+      custPayMonths2,
+      custPayDates2,
+      custPayMethod2,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      custCode,
+      custSubNo: Number(custSubNo),
+      custType: Number(custType),
+      arCode,
+      arSubNo: Number(arSubNo),
+      payerCode: payerCode,
+      payerSubNo: Number(payerSubNo),
+      name,
+      kana,
+      empCode,
+      custUserName,
+      custUserDepName,
+      custZipCode,
+      custState,
+      custAddress1,
+      custAddress2,
+      custTel,
+      custFax,
+      custEmail,
+      custArType: Number(custArType),
+      custCloseDate1: Number(custCloseDate1),
+      custPayMonths1: Number(custPayMonths1),
+      custPayDates1: Number(custPayDates1),
+      custPayMethod1: Number(custPayMethod1),
+      custCloseDate2: Number(custCloseDate2),
+      custPayMonths2: Number(custPayMonths2),
+      custPayDates2: Number(custPayDates2),
+      custPayMethod2: Number(custPayMethod2),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const consumers: Consumer[] = fs
+  .readFileSync(filePath("consumer.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      consumerCode,
+      lastName,
+      firstName,
+      lastNameKana,
+      firstNameKana,
+      loginId,
+      email,
+      pwd,
+      birthDate,
+      sex,
+      loginDatetime,
+      restPoint,
+      withdrawalDate,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      consumerCode,
+      lastName,
+      firstName,
+      lastNameKana,
+      firstNameKana,
+      loginId,
+      email,
+      pwd,
+      birthDate: new Date(birthDate),
+      sex: Number(sex),
+      loginDatetime: new Date(loginDatetime),
+      restPoint: Number(restPoint),
+      withdrawalDate: new Date(withdrawalDate),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const suppliers: Supplier[] = fs
+  .readFileSync(filePath("supplier.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      supCode,
+      supSubNo,
+      name,
+      kana,
+      supEmpName,
+      supDepName,
+      supZipCode,
+      supState,
+      supAddress1,
+      supAddress2,
+      supTel,
+      supFax,
+      supEmail,
+      supCloseDate,
+      supPayMonths,
+      supPayDates,
+      payMethodType,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      supCode,
+      supSubNo: Number(supSubNo),
+      name,
+      kana,
+      supEmpName,
+      supDepName,
+      supZipCode,
+      supState,
+      supAddress1,
+      supAddress2,
+      supTel,
+      supFax,
+      supEmail,
+      supCloseDate: Number(supCloseDate),
+      supPayMonths: Number(supPayMonths),
+      supPayDates: Number(supPayDates),
+      payMethodType: Number(payMethodType),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const companyGroups: CompanyGroup[] = fs
+  .readFileSync(filePath("companyGroup.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      compGroupCode,
+      groupName,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      compGroupCode,
+      groupName,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const categoryTypes: CategoryType[] = fs
+  .readFileSync(filePath("categoryType.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      categoryTypeCode,
+      categoryTypeName,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      categoryTypeCode,
+      categoryTypeName,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const companyCategories: CompanyCategory[] = fs
+  .readFileSync(filePath("companyCategory.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      categoryTypeCode,
+      compCateCode,
+      compCateName,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      categoryTypeCode,
+      compCateCode,
+      compCateName,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const companyCategoryGroups: CompanyCategoryGroup[] = fs
+  .readFileSync(filePath("companyCategoryGroup.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      categoryTypeCode,
+      compCateCode,
+      compCode,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      categoryTypeCode,
+      compCateCode,
+      compCode,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
     };
   });

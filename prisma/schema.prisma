@@ -217,29 +217,30 @@ model Supplier {
 }
 
 model Consumer {
-  consumerCode  String    @id(map: "customer_pk") @map("個人客コード") @db.VarChar(16)
-  lastName      String    @map("姓") @db.VarChar(20)
-  firstName     String    @map("名") @db.VarChar(20)
-  lastNameKana  String    @map("姓カナ") @db.VarChar(40)
-  firstNameKana String    @map("名カナ") @db.VarChar(40)
-  loginId       String    @map("ログインＩＤ") @db.VarChar(256)
-  email         String    @map("メールアドレス") @db.VarChar(256)
-  pwd           String    @map("パスワード") @db.VarChar(16)
-  birthDate     DateTime  @map("生年月日") @db.Timestamp(6)
-  sex           Int       @map("性別")
-  loginDatetime DateTime? @map("ログイン日時") @db.Timestamp(6)
-  restPoint     Int?      @map("ポイント残高")
-  createDate    DateTime  @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
-  creator       String?   @map("作成者名") @db.VarChar(12)
-  updateDate    DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
-  updater       String?   @map("更新者名") @db.VarChar(12)
+  consumerCode   String    @id(map: "customer_pk") @map("個人客コード") @db.VarChar(16)
+  lastName       String    @map("姓") @db.VarChar(20)
+  firstName      String    @map("名") @db.VarChar(20)
+  lastNameKana   String    @map("姓カナ") @db.VarChar(40)
+  firstNameKana  String    @map("名カナ") @db.VarChar(40)
+  loginId        String    @map("ログインＩＤ") @db.VarChar(256)
+  email          String    @map("メールアドレス") @db.VarChar(256)
+  pwd            String    @map("パスワード") @db.VarChar(16)
+  birthDate      DateTime  @map("生年月日") @db.Timestamp(6)
+  sex            Int       @map("性別")
+  loginDatetime  DateTime? @map("ログイン日時") @db.Timestamp(6)
+  restPoint      Int?      @map("ポイント残高")
+  withdrawalDate DateTime? @map("退会日") @db.Timestamp(6)
+  createDate     DateTime  @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator        String?   @map("作成者名") @db.VarChar(12)
+  updateDate     DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater        String?   @map("更新者名") @db.VarChar(12)
 
   @@map("個人客マスタ")
 }
 
 model CompanyGroup {
   compGroupCode String   @id(map: "pk_company_group_mst") @map("取引先グループコード") @db.VarChar(4)
-  compGname     String?  @map("取引先グループ名") @db.VarChar(40)
+  groupName     String?  @map("取引先グループ名") @db.VarChar(40)
   createDate    DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
   creator       String?  @map("作成者名") @db.VarChar(12)
   updateDate    DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
@@ -250,7 +251,7 @@ model CompanyGroup {
 
 model CategoryType {
   categoryTypeCode  String            @id(map: "pk_category_type") @map("取引先分類種別コード") @db.VarChar(2)
-  categoryTypename  String?           @map("取引先分類種別名") @db.VarChar(20)
+  categoryTypeName  String?           @map("取引先分類種別名") @db.VarChar(20)
   createDate        DateTime          @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
   creator           String?           @map("作成者名") @db.VarChar(12)
   updateDate        DateTime          @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, departments, employees, priceByCustomers, productCategories, products } from "./csvReader";
+import { alterNateProducts, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, customers, departments, employees, priceByCustomers, productCategories, products, suppliers } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -77,6 +77,108 @@ async function main() {
       update: altProd
     });
   }
+
+  console.table(companys);
+  for (const comp of companys) {
+    await prisma.company.upsert({
+      where: {
+        compCode: comp.compCode
+      },
+      create: comp,
+      update: comp
+    });
+  }
+
+  console.table(customers)
+  for (const cust of customers) {
+    await prisma.customer.upsert({
+      where: {
+        custCode_custSubNo: {
+          custCode: cust.custCode,
+          custSubNo: cust.custSubNo
+        }
+      },
+      create: cust,
+      update: cust
+    });
+  }
+
+  console.table(consumers)
+  for (const consumer of consumers) {
+    await prisma.consumer.upsert({
+      where: {
+        consumerCode: consumer.consumerCode
+      },
+      create: consumer,
+      update: consumer
+    });
+  }
+
+  console.table(suppliers)
+  for (const supplier of suppliers) {
+    await prisma.supplier.upsert({
+      where: {
+        supCode_supSubNo: {
+          supCode: supplier.supCode,
+          supSubNo: supplier.supSubNo
+        }
+      },
+      create: supplier,
+      update: supplier
+    })
+  }
+
+  console.table(companyGroups)
+  for (const group of companyGroups) {
+    await prisma.companyGroup.upsert({
+      where: {
+        compGroupCode: group.compGroupCode
+      },
+      create: group,
+      update: group
+    })
+  }
+
+  console.table(categoryTypes)
+  for (const cateType of categoryTypes) {
+    await prisma.categoryType.upsert({
+      where: {
+        categoryTypeCode: cateType.categoryTypeCode
+      },
+      create: cateType,
+      update: cateType
+    })
+  }
+
+  console.table(companyCategories)
+  for (const cate of companyCategories) {
+    await prisma.companyCategory.upsert({
+      where: {
+        categoryTypeCode_compCateCode: {
+          categoryTypeCode: cate.categoryTypeCode,
+          compCateCode: cate.compCateCode
+        },
+      },
+      create: cate,
+      update: cate
+    })
+  }
+
+  console.table(companyCategoryGroups)
+  for (const group of companyCategoryGroups) {
+    await prisma.companyCategoryGroup.upsert({
+      where: {
+        categoryTypeCode_compCode_compCateCode: {
+          categoryTypeCode: group.categoryTypeCode,
+          compCateCode: group.compCateCode,
+          compCode: group.compCode,
+        },
+      },
+      create: group,
+      update: group
+    })
+  }
+
 }
 
 main()
