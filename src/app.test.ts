@@ -18,6 +18,8 @@ import {
   CategoryType,
   Order,
   OrderDetail,
+  Sales,
+  SalesDetail,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -316,6 +318,83 @@ const orderDetails: OrderDetail[] = [{
   updater: "0001",
 }
 ];
+
+const sales: Sales[] = [{
+  salesNo: '0000000001',
+  orderNo: '0000000001',
+  salesDate: new Date(),
+  salesType: 1,
+  deptCode: '11101',
+  startDate: new Date('2021-01-01'),
+  compCode: '1',
+  empCode: '1',
+  salesAmnt: 3,
+  cmpTax: 100,
+  slipComment: 'test',
+  updatedNo: 1,
+  orgnlNo: '1',
+  createDate: new Date(),
+  creator: 'admin',
+  updateDate: new Date(),
+  updater: 'admin',
+}];
+const salesDetails: SalesDetail[] = [
+  {
+    salesNo: '0000000001',
+    rowNo: 1,
+    prodCode: '10101001',
+    prodName: 'test',
+    unitprice: 1000,
+    deliveredQty: 1,
+    quantity: 1,
+    discount: 1,
+    invoicedDate: new Date(),
+    invoiceNo: '1',
+    invoiceDelayType: 1,
+    autoJournalDate: new Date(),
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+  {
+    salesNo: '0000000001',
+    rowNo: 2,
+    prodCode: '10101001',
+    prodName: 'test',
+    unitprice: 1000,
+    deliveredQty: 1,
+    quantity: 1,
+    discount: 1,
+    invoicedDate: new Date(),
+    invoiceNo: '1',
+    invoiceDelayType: 1,
+    autoJournalDate: new Date(),
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+  {
+    salesNo: '0000000001',
+    rowNo: 3,
+    prodCode: '10101001',
+    prodName: 'test',
+    unitprice: 1000,
+    deliveredQty: 1,
+    quantity: 1,
+    discount: 1,
+    invoicedDate: new Date(),
+    invoiceNo: '1',
+    invoiceDelayType: 1,
+    autoJournalDate: new Date(),
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+]
+
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 1 販売管理システム全体像", () => { });
@@ -934,6 +1013,106 @@ describe("Part 2 販売システムのDB設計", () => {
         const result = await prisma.order.findMany();
         expect(result).toEqual(expected);
       });
+    });
+  });
+
+  describe("Chapter 6 出荷／売上業務のDB設計", () => {
+    describe("売上と売上明細", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.employee.deleteMany();
+          await prisma.customer.deleteMany();
+          await prisma.company.deleteMany();
+          await prisma.product.deleteMany();
+          await prisma.orderDetail.deleteMany();
+          await prisma.order.deleteMany();
+          await prisma.salesDetail.deleteMany();
+          await prisma.sales.deleteMany();
+
+          await prisma.employee.createMany({ data: employees });
+          await prisma.company.createMany({ data: companies });
+          await prisma.customer.createMany({ data: customers });
+          await prisma.product.createMany({ data: products });
+          await prisma.order.createMany({ data: orders });
+          await prisma.orderDetail.createMany({ data: orderDetails });
+        });
+      });
+
+      test("売上を登録できる", async () => {
+        const expected: Sales[] = sales.map((s) => {
+          return {
+            ...s,
+            salesDetails: salesDetails.filter((sd) => sd.salesNo === s.salesNo),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.sales.createMany({ data: sales });
+          await prisma.salesDetail.createMany({ data: salesDetails });
+        });
+
+        const result = await prisma.sales.findMany(
+          {
+            include: {
+              salesDetails: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("売上を更新できる", async () => {
+        const updatedSales: Sales[] = sales.map((s) => { return { ...s, salesAmnt: 1000 }; });
+        const updatedSalesDetails: SalesDetail[] = salesDetails.map((sd) => { return { ...sd, quantity: 10 }; });
+
+        const expected: Sales[] = updatedSales.map((s) => {
+          return {
+            ...s,
+            salesDetails: updatedSalesDetails.filter((sd) => sd.salesNo === s.salesNo),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const sales of updatedSales) {
+            await prisma.sales.update({ where: { salesNo: sales.salesNo }, data: sales });
+          }
+          for (const salesDetail of updatedSalesDetails) {
+            await prisma.salesDetail.update({
+              where: {
+                salesNo_rowNo: {
+                  salesNo: salesDetail.salesNo,
+                  rowNo: salesDetail.rowNo
+                }
+              }, data: salesDetail
+            });
+          }
+        });
+
+        const result = await prisma.sales.findMany(
+          {
+            include: {
+              salesDetails: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("売上を削除できる", async () => {
+        const expected: Sales[] = [];
+        await prisma.$transaction(async (prisma) => {
+          for (const sale of sales) {
+            await prisma.salesDetail.deleteMany({
+              where: { salesNo: sale.salesNo }
+            });
+            await prisma.sales.delete({
+              where: { salesNo: sale.salesNo }
+            });
+          }
+        });
+
+        const result = await prisma.sales.findMany();
+        expect(result).toEqual(expected);
+      });
+
     });
   });
 });
