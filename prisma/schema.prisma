@@ -291,3 +291,50 @@ model CompanyCategoryGroup {
   @@id([categoryTypeCode, compCode, compCateCode], map: "pk_company_category_group")
   @@map("取引先分類所属マスタ")
 }
+
+model Order {
+  orderNo      String        @id(map: "pk_orders") @map("受注番号") @db.VarChar(10)
+  orderDate    DateTime      @default(dbgenerated("CURRENT_DATE")) @map("受注日") @db.Timestamp(6)
+  deptCode     String        @map("部門コード") @db.VarChar(6)
+  startDate    DateTime      @default(dbgenerated("CURRENT_DATE")) @map("部門開始日") @db.Timestamp(6)
+  custCode     String        @map("顧客コード") @db.VarChar(8)
+  custSubNo    Int?          @map("顧客枝番")
+  empCode      String        @map("社員コード") @db.VarChar(10)
+  requiredDate DateTime?     @map("希望納期") @db.Timestamp(6)
+  custorderNo  String?       @map("客先注文番号") @db.VarChar(20)
+  whCode       String        @map("倉庫コード") @db.VarChar(3)
+  orderAmnt    Int           @default(0) @map("受注金額合計")
+  cmpTax       Int           @default(0) @map("消費税合計")
+  slipComment  String?       @map("備考") @db.VarChar(1000)
+  createDate   DateTime      @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator      String?       @map("作成者名") @db.VarChar(12)
+  updateDate   DateTime      @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater      String?       @map("更新者名") @db.VarChar(12)
+  orderDetails OrderDetail[]
+
+  @@map("受注データ")
+}
+
+model OrderDetail {
+  orderNo          String    @map("受注番号") @db.VarChar(10)
+  soRowNo          Int       @map("受注行番号")
+  prodCode         String    @map("商品コード") @db.VarChar(16)
+  prodName         String    @map("商品名") @db.VarChar(10)
+  unitprice        Int       @default(0) @map("販売単価")
+  quantity         Int       @default(1) @map("受注数量")
+  cmpTaxRate       Int?      @default(0) @map("消費税率")
+  reserveQty       Int?      @default(0) @map("引当数量")
+  deliveryOrderQty Int?      @default(0) @map("出荷指示数量")
+  deliveredQty     Int?      @default(0) @map("出荷済数量")
+  completeFlg      Int       @default(0) @map("完了フラグ")
+  discount         Int       @default(0) @map("値引金額")
+  deliveryDate     DateTime? @map("納期") @db.Timestamp(6)
+  createDate       DateTime  @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator          String?   @map("作成者名") @db.VarChar(12)
+  updateDate       DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater          String?   @map("更新者名") @db.VarChar(12)
+  order            Order     @relation(fields: [orderNo], references: [orderNo])
+
+  @@id([orderNo, soRowNo])
+  @@map("受注データ明細")
+}

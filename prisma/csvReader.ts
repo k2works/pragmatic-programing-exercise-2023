@@ -13,6 +13,8 @@ import {
   CategoryType,
   CompanyCategory,
   CompanyCategoryGroup,
+  Order,
+  OrderDetail,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -544,6 +546,98 @@ export const companyCategoryGroups: CompanyCategoryGroup[] = fs
       categoryTypeCode,
       compCateCode,
       compCode,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const orders: Order[] = fs
+  .readFileSync(filePath("order.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      orderNo,
+      orderDate,
+      deptCode,
+      startDate,
+      custCode,
+      custSubNo,
+      empCode,
+      requiredDate,
+      custorderNo,
+      whCode,
+      orderAmnt,
+      cmpTax,
+      slipComment,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      orderNo,
+      orderDate: new Date(orderDate),
+      deptCode,
+      startDate: new Date(startDate),
+      custCode,
+      custSubNo: Number(custSubNo),
+      empCode,
+      requiredDate: new Date(requiredDate),
+      custorderNo,
+      whCode,
+      orderAmnt: Number(orderAmnt),
+      cmpTax: Number(cmpTax),
+      slipComment,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const orderDetails: OrderDetail[] = fs
+  .readFileSync(filePath("orderDetail.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      orderNo,
+      soRowNo,
+      prodCode,
+      prodName,
+      unitprice,
+      quantity,
+      cmpTaxRate,
+      reserveQty,
+      deliveryOrderQty,
+      deliveredQty,
+      completeFlg,
+      discount,
+      deliveryDate,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      orderNo,
+      soRowNo: Number(soRowNo),
+      prodCode,
+      prodName,
+      unitprice: Number(unitprice),
+      quantity: Number(quantity),
+      cmpTaxRate: Number(cmpTaxRate),
+      reserveQty: Number(reserveQty),
+      deliveryOrderQty: Number(deliveryOrderQty),
+      deliveredQty: Number(deliveredQty),
+      completeFlg: Number(completeFlg),
+      discount: Number(discount),
+      deliveryDate: new Date(deliveryDate),
       createDate: new Date(createDate),
       creator,
       updateDate: new Date(updateDate),
