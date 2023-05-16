@@ -30,6 +30,8 @@ import {
   Warehouse,
   Location,
   Stock,
+  Buying,
+  BuyingDetail,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -1199,5 +1201,85 @@ export const stocks: Stock[] = fs
       creator,
       updateDate: new Date(updateDate),
       updater
+    };
+  });
+
+export const buyings: Buying[] = fs
+  .readFileSync(filePath("buying.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      buyNo,
+      buyDate,
+      supCode,
+      supSubNo,
+      empCode,
+      startDate,
+      poNo,
+      deptCode,
+      buyAmmount,
+      cmpTax,
+      slipComment,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      buyNo,
+      buyDate: new Date(buyDate),
+      supCode,
+      supSubNo: Number(supSubNo),
+      empCode,
+      startDate: new Date(startDate),
+      poNo,
+      deptCode,
+      buyAmmount: Number(buyAmmount),
+      cmpTax: Number(cmpTax),
+      slipComment,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater,
+    };
+  });
+
+export const buyingDetails: BuyingDetail[] = fs
+  .readFileSync(filePath("buyingDetail.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      buyNo,
+      buyRowNo,
+      buyRowDspNo,
+      poRowNo,
+      prodCode,
+      whCode,
+      prodName,
+      poPrice,
+      buyQuantity,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      buyNo,
+      buyRowNo: Number(buyRowNo),
+      buyRowDspNo: Number(buyRowDspNo),
+      poRowNo: Number(poRowNo),
+      prodCode,
+      whCode,
+      prodName,
+      poPrice: Number(poPrice),
+      buyQuantity: Number(buyQuantity),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater,
     };
   });

@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-config({ path: '.env.test' })
+config({ path: ".env.test" });
 import {
   PrismaClient,
   Department,
@@ -36,7 +36,6 @@ import {
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
-
 const departments: Department[] = [
   {
     deptCode: "11101",
@@ -51,8 +50,8 @@ const departments: Department[] = [
     creator: "admin",
     updateDate: new Date("2021-01-01"),
     updater: "admin",
-  }
-]
+  },
+];
 
 const employees: Employee[] = [
   {
@@ -70,7 +69,7 @@ const employees: Employee[] = [
     creator: "admin",
     updateDate: new Date("2021-01-01"),
     updater: "admin",
-  }
+  },
 ];
 
 const productCategories: ProductCategory[] = [
@@ -85,7 +84,7 @@ const productCategories: ProductCategory[] = [
     updateDate: new Date("2021-01-01"),
     updater: "user",
   },
-]
+];
 
 const products: Product[] = [
   {
@@ -109,7 +108,7 @@ const products: Product[] = [
     creator: "user",
     updateDate: new Date("2021-01-01"),
     updater: "user",
-  }
+  },
 ];
 
 const boms: Bom[] = [
@@ -126,330 +125,353 @@ const boms: Bom[] = [
 
 const alternateProducts: AlternateProduct[] = [
   {
-    prodCode: '1010100X',
-    altProdCode: 'P0000001',
+    prodCode: "1010100X",
+    altProdCode: "P0000001",
     priority: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
-  }
+    updater: "admin",
+  },
 ];
 
 const priceByCustomers: PriceByCustomer[] = [
   {
-    prodCode: '1010100X',
-    compCode: 'C0000001',
+    prodCode: "1010100X",
+    compCode: "C0000001",
     unitprice: 1000,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
-  }
+    updater: "admin",
+  },
 ];
 
-const companies: Company[] = [{
-  compCode: "00X",
-  name: "顧客名1",
-  kana: "クスキメイ1",
-  supType: 0,
-  zipCode: "000-0000",
-  state: "都道府県",
-  address1: "住所1",
-  address2: "住所2",
-  noSalesFlg: 0,
-  wideUseType: 0,
-  compGroupCode: "001",
-  maxCredit: 10000,
-  tempCreditUp: 0,
-  createDate: new Date(),
-  creator: null,
-  updateDate: new Date(),
-  updater: null
-}]
-
-const customers: Customer[] = [{
-  custCode: "00X",
-  custSubNo: 1,
-  custType: 0,
-  arCode: "001",
-  arSubNo: 1,
-  payerCode: "001",
-  payerSubNo: 1,
-  name: "顧客名1",
-  kana: "クスキメイ1",
-  empCode: "001",
-  custUserName: "顧客担当者名1",
-  custUserDepName: "顧客担当者部署名1",
-  custZipCode: "000-0000",
-  custState: "都道府県",
-  custAddress1: "住所1",
-  custAddress2: "住所2",
-  custTel: "000-0000-0000",
-  custFax: "000-0000-0000",
-  custEmail: "hoge@hoge.com",
-  custArType: 0,
-  custCloseDate1: 1,
-  custPayMonths1: 0,
-  custPayDates1: 1,
-  custPayMethod1: 0,
-  custPayDates2: 1,
-  custPayMethod2: 0,
-  custCloseDate2: 1,
-  custPayMonths2: 0,
-  createDate: new Date(),
-  creator: null,
-  updateDate: new Date(),
-  updater: null
-}]
-
-const areas: Area[] = [{
-  areaCode: "00X",
-  areaName: "エリア名1",
-  createDate: new Date(),
-  creator: null,
-  updateDate: new Date(),
-  updater: null
-}]
-
-const destinations: Destination[] = [{
-  custCode: "00X",
-  custSubNo: 1,
-  distNo: 1,
-  distName: "配送先名1",
-  areaCode: "00X",
-  zipCode: "000-0000",
-  address1: "住所1",
-  address2: "住所2",
-  createDate: new Date(),
-  creator: null,
-  updateDate: new Date(),
-  updater: null
-}]
-
-const suppliers: Supplier[] = [{
-  supCode: "00X",
-  supSubNo: 1,
-  name: "仕入先名1",
-  kana: "シスキメイ1",
-  supEmpName: "担当者名1",
-  supDepName: "部署名1",
-  supZipCode: "000-0000",
-  supState: "都道府県",
-  supAddress1: "住所1",
-  supAddress2: "住所2",
-  supTel: "000-0000-0000",
-  supFax: "000-0000-0000",
-  supEmail: "hoge@hoegc.com",
-  supCloseDate: 1,
-  supPayMonths: 1,
-  supPayDates: 1,
-  payMethodType: 1,
-  createDate: new Date(),
-  creator: null,
-  updateDate: new Date(),
-  updater: null
-}]
-
-const companyGroups: CompanyGroup[] = [{
-  compGroupCode: "001",
-  groupName: "グループ名1",
-  createDate: new Date(),
-  creator: null,
-  updateDate: new Date(),
-  updater: null
-}]
-
-const cateoryTypes: CategoryType[] = [{
-  categoryTypeCode: "01",
-  categoryTypeName: "分類名1",
-  createDate: new Date(),
-  creator: null,
-  updateDate: new Date(),
-  updater: null
-}]
-
-const companyCategories: CompanyCategory[] = [{
-  categoryTypeCode: "01",
-  compCateCode: "001",
-  compCateName: "分類名1",
-  createDate: new Date(),
-  creator: null,
-  updateDate: new Date(),
-  updater: null
-}]
-
-const companyCategoryGroups: CompanyCategoryGroup[] = [{
-  categoryTypeCode: "01",
-  compCateCode: "001",
-  compCode: "00X",
-  createDate: new Date(),
-  creator: null,
-  updateDate: new Date(),
-  updater: null
-}]
-
-const orders: Order[] = [{
-  orderNo: "0000000001",
-  orderDate: new Date(),
-  deptCode: "11101",
-  startDate: new Date("2021-01-01"),
-  custCode: "00X",
-  custSubNo: 1,
-  empCode: "EMP999",
-  requiredDate: new Date(),
-  custorderNo: "0000000001",
-  whCode: "001",
-  orderAmnt: 1000,
-  cmpTax: 10,
-  slipComment: "test",
-  createDate: new Date(),
-  creator: "0001",
-  updateDate: new Date(),
-  updater: "0001",
-}];
-
-const orderDetails: OrderDetail[] = [{
-  orderNo: "0000000001",
-  soRowNo: 1,
-  prodCode: "0001",
-  prodName: "test",
-  unitprice: 100,
-  quantity: 10,
-  cmpTaxRate: 10,
-  reserveQty: 0,
-  deliveryOrderQty: 0,
-  deliveredQty: 0,
-  completeFlg: 0,
-  discount: 0,
-  deliveryDate: new Date(),
-  createDate: new Date(),
-  creator: "0001",
-  updateDate: new Date(),
-  updater: "0001",
-},
-{
-  orderNo: "0000000001",
-  soRowNo: 2,
-  prodCode: "0001",
-  prodName: "test",
-  unitprice: 100,
-  quantity: 10,
-  cmpTaxRate: 10,
-  reserveQty: 0,
-  deliveryOrderQty: 0,
-  deliveredQty: 0,
-  completeFlg: 0,
-  discount: 0,
-  deliveryDate: new Date(),
-  createDate: new Date(),
-  creator: "0001",
-  updateDate: new Date(),
-  updater: "0001",
-},
-{
-  orderNo: "0000000001",
-  soRowNo: 3,
-  prodCode: "0001",
-  prodName: "test",
-  unitprice: 100,
-  quantity: 10,
-  cmpTaxRate: 10,
-  reserveQty: 0,
-  deliveryOrderQty: 0,
-  deliveredQty: 0,
-  completeFlg: 0,
-  discount: 0,
-  deliveryDate: new Date(),
-  createDate: new Date(),
-  creator: "0001",
-  updateDate: new Date(),
-  updater: "0001",
-}
+const companies: Company[] = [
+  {
+    compCode: "00X",
+    name: "顧客名1",
+    kana: "クスキメイ1",
+    supType: 0,
+    zipCode: "000-0000",
+    state: "都道府県",
+    address1: "住所1",
+    address2: "住所2",
+    noSalesFlg: 0,
+    wideUseType: 0,
+    compGroupCode: "001",
+    maxCredit: 10000,
+    tempCreditUp: 0,
+    createDate: new Date(),
+    creator: null,
+    updateDate: new Date(),
+    updater: null,
+  },
 ];
 
-const sales: Sales[] = [{
-  salesNo: '0000000001',
-  orderNo: '0000000001',
-  salesDate: new Date(),
-  salesType: 1,
-  deptCode: '11101',
-  startDate: new Date('2021-01-01'),
-  compCode: '1',
-  empCode: '1',
-  salesAmnt: 3,
-  cmpTax: 100,
-  slipComment: 'test',
-  updatedNo: 1,
-  orgnlNo: '1',
-  createDate: new Date(),
-  creator: 'admin',
-  updateDate: new Date(),
-  updater: 'admin',
-}];
+const customers: Customer[] = [
+  {
+    custCode: "00X",
+    custSubNo: 1,
+    custType: 0,
+    arCode: "001",
+    arSubNo: 1,
+    payerCode: "001",
+    payerSubNo: 1,
+    name: "顧客名1",
+    kana: "クスキメイ1",
+    empCode: "001",
+    custUserName: "顧客担当者名1",
+    custUserDepName: "顧客担当者部署名1",
+    custZipCode: "000-0000",
+    custState: "都道府県",
+    custAddress1: "住所1",
+    custAddress2: "住所2",
+    custTel: "000-0000-0000",
+    custFax: "000-0000-0000",
+    custEmail: "hoge@hoge.com",
+    custArType: 0,
+    custCloseDate1: 1,
+    custPayMonths1: 0,
+    custPayDates1: 1,
+    custPayMethod1: 0,
+    custPayDates2: 1,
+    custPayMethod2: 0,
+    custCloseDate2: 1,
+    custPayMonths2: 0,
+    createDate: new Date(),
+    creator: null,
+    updateDate: new Date(),
+    updater: null,
+  },
+];
+
+const areas: Area[] = [
+  {
+    areaCode: "00X",
+    areaName: "エリア名1",
+    createDate: new Date(),
+    creator: null,
+    updateDate: new Date(),
+    updater: null,
+  },
+];
+
+const destinations: Destination[] = [
+  {
+    custCode: "00X",
+    custSubNo: 1,
+    distNo: 1,
+    distName: "配送先名1",
+    areaCode: "00X",
+    zipCode: "000-0000",
+    address1: "住所1",
+    address2: "住所2",
+    createDate: new Date(),
+    creator: null,
+    updateDate: new Date(),
+    updater: null,
+  },
+];
+
+const suppliers: Supplier[] = [
+  {
+    supCode: "00X",
+    supSubNo: 1,
+    name: "仕入先名1",
+    kana: "シスキメイ1",
+    supEmpName: "担当者名1",
+    supDepName: "部署名1",
+    supZipCode: "000-0000",
+    supState: "都道府県",
+    supAddress1: "住所1",
+    supAddress2: "住所2",
+    supTel: "000-0000-0000",
+    supFax: "000-0000-0000",
+    supEmail: "hoge@hoegc.com",
+    supCloseDate: 1,
+    supPayMonths: 1,
+    supPayDates: 1,
+    payMethodType: 1,
+    createDate: new Date(),
+    creator: null,
+    updateDate: new Date(),
+    updater: null,
+  },
+];
+
+const companyGroups: CompanyGroup[] = [
+  {
+    compGroupCode: "001",
+    groupName: "グループ名1",
+    createDate: new Date(),
+    creator: null,
+    updateDate: new Date(),
+    updater: null,
+  },
+];
+
+const cateoryTypes: CategoryType[] = [
+  {
+    categoryTypeCode: "01",
+    categoryTypeName: "分類名1",
+    createDate: new Date(),
+    creator: null,
+    updateDate: new Date(),
+    updater: null,
+  },
+];
+
+const companyCategories: CompanyCategory[] = [
+  {
+    categoryTypeCode: "01",
+    compCateCode: "001",
+    compCateName: "分類名1",
+    createDate: new Date(),
+    creator: null,
+    updateDate: new Date(),
+    updater: null,
+  },
+];
+
+const companyCategoryGroups: CompanyCategoryGroup[] = [
+  {
+    categoryTypeCode: "01",
+    compCateCode: "001",
+    compCode: "00X",
+    createDate: new Date(),
+    creator: null,
+    updateDate: new Date(),
+    updater: null,
+  },
+];
+
+const orders: Order[] = [
+  {
+    orderNo: "0000000001",
+    orderDate: new Date(),
+    deptCode: "11101",
+    startDate: new Date("2021-01-01"),
+    custCode: "00X",
+    custSubNo: 1,
+    empCode: "EMP999",
+    requiredDate: new Date(),
+    custorderNo: "0000000001",
+    whCode: "001",
+    orderAmnt: 1000,
+    cmpTax: 10,
+    slipComment: "test",
+    createDate: new Date(),
+    creator: "0001",
+    updateDate: new Date(),
+    updater: "0001",
+  },
+];
+
+const orderDetails: OrderDetail[] = [
+  {
+    orderNo: "0000000001",
+    soRowNo: 1,
+    prodCode: "0001",
+    prodName: "test",
+    unitprice: 100,
+    quantity: 10,
+    cmpTaxRate: 10,
+    reserveQty: 0,
+    deliveryOrderQty: 0,
+    deliveredQty: 0,
+    completeFlg: 0,
+    discount: 0,
+    deliveryDate: new Date(),
+    createDate: new Date(),
+    creator: "0001",
+    updateDate: new Date(),
+    updater: "0001",
+  },
+  {
+    orderNo: "0000000001",
+    soRowNo: 2,
+    prodCode: "0001",
+    prodName: "test",
+    unitprice: 100,
+    quantity: 10,
+    cmpTaxRate: 10,
+    reserveQty: 0,
+    deliveryOrderQty: 0,
+    deliveredQty: 0,
+    completeFlg: 0,
+    discount: 0,
+    deliveryDate: new Date(),
+    createDate: new Date(),
+    creator: "0001",
+    updateDate: new Date(),
+    updater: "0001",
+  },
+  {
+    orderNo: "0000000001",
+    soRowNo: 3,
+    prodCode: "0001",
+    prodName: "test",
+    unitprice: 100,
+    quantity: 10,
+    cmpTaxRate: 10,
+    reserveQty: 0,
+    deliveryOrderQty: 0,
+    deliveredQty: 0,
+    completeFlg: 0,
+    discount: 0,
+    deliveryDate: new Date(),
+    createDate: new Date(),
+    creator: "0001",
+    updateDate: new Date(),
+    updater: "0001",
+  },
+];
+
+const sales: Sales[] = [
+  {
+    salesNo: "0000000001",
+    orderNo: "0000000001",
+    salesDate: new Date(),
+    salesType: 1,
+    deptCode: "11101",
+    startDate: new Date("2021-01-01"),
+    compCode: "1",
+    empCode: "1",
+    salesAmnt: 3,
+    cmpTax: 100,
+    slipComment: "test",
+    updatedNo: 1,
+    orgnlNo: "1",
+    createDate: new Date(),
+    creator: "admin",
+    updateDate: new Date(),
+    updater: "admin",
+  },
+];
 
 const salesDetails: SalesDetail[] = [
   {
-    salesNo: '0000000001',
+    salesNo: "0000000001",
     rowNo: 1,
-    prodCode: '10101001',
-    prodName: 'test',
+    prodCode: "10101001",
+    prodName: "test",
     unitprice: 1000,
     deliveredQty: 1,
     quantity: 1,
     discount: 1,
     invoicedDate: new Date(),
-    invoiceNo: '1',
+    invoiceNo: "1",
     invoiceDelayType: 1,
     autoJournalDate: new Date(),
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
   {
-    salesNo: '0000000001',
+    salesNo: "0000000001",
     rowNo: 2,
-    prodCode: '10101001',
-    prodName: 'test',
+    prodCode: "10101001",
+    prodName: "test",
     unitprice: 1000,
     deliveredQty: 1,
     quantity: 1,
     discount: 1,
     invoicedDate: new Date(),
-    invoiceNo: '1',
+    invoiceNo: "1",
     invoiceDelayType: 1,
     autoJournalDate: new Date(),
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
   {
-    salesNo: '0000000001',
+    salesNo: "0000000001",
     rowNo: 3,
-    prodCode: '10101001',
-    prodName: 'test',
+    prodCode: "10101001",
+    prodName: "test",
     unitprice: 1000,
     deliveredQty: 1,
     quantity: 1,
     discount: 1,
     invoicedDate: new Date(),
-    invoiceNo: '1',
+    invoiceNo: "1",
     invoiceDelayType: 1,
     autoJournalDate: new Date(),
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
-]
+];
 
 const invoices: Invoice[] = [
   {
-    invoiceNo: '0000000001',
+    invoiceNo: "0000000001",
     invoicedDate: new Date(),
-    compCode: '00X',
+    compCode: "00X",
     custSubNo: 1,
     lastReceived: 1,
     monthSales: 1,
@@ -458,236 +480,236 @@ const invoices: Invoice[] = [
     cmpTax: 1,
     invoiceReceived: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
-  }
+    updater: "admin",
+  },
 ];
 
 const invoiceDetails: InvoiceDetail[] = [
   {
-    invoiceNo: '0000000001',
-    salesNo: '0000000001',
+    invoiceNo: "0000000001",
+    salesNo: "0000000001",
     rowNo: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
   {
-    invoiceNo: '0000000001',
-    salesNo: '0000000001',
+    invoiceNo: "0000000001",
+    salesNo: "0000000001",
     rowNo: 2,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
   {
-    invoiceNo: '0000000001',
-    salesNo: '0000000001',
+    invoiceNo: "0000000001",
+    salesNo: "0000000001",
     rowNo: 3,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
 ];
 
 const bankAccounts: BankAccount[] = [
   {
-    bankAcutCode: '00000001',
-    reciveActName: 'test',
+    bankAcutCode: "00000001",
+    reciveActName: "test",
     applStartDate: new Date(),
     applEndDate: new Date(),
-    startActName: 'test',
-    reciveBankActType: '1',
-    reciveActNo: '00000001',
-    bankActType: '1',
-    actName: 'test',
-    deptCode: '11101',
+    startActName: "test",
+    reciveBankActType: "1",
+    reciveActNo: "00000001",
+    bankActType: "1",
+    actName: "test",
+    deptCode: "11101",
     startDate: new Date("2021-01-01"),
-    aBankCode: '0001',
-    aBankBlncCode: '001',
+    aBankCode: "0001",
+    aBankBlncCode: "001",
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
     updatePlgDate: new Date(),
-    updatePgm: 'main',
-  }
-]
+    updatePgm: "main",
+  },
+];
 
 const credits: Credit[] = [
   {
-    creditNo: '0000000001',
+    creditNo: "0000000001",
     creditDate: new Date(),
-    deptCode: '11101',
+    deptCode: "11101",
     startDate: new Date("2021-01-01"),
-    custCode: '00X',
+    custCode: "00X",
     custSubNo: 1,
     payMethodType: 1,
-    bankAcutCode: '00000001',
+    bankAcutCode: "00000001",
     receivedAmnt: 1000,
     received: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
     updatePlgDate: new Date(),
-    updatePgm: 'main',
-  }
-]
+    updatePgm: "main",
+  },
+];
 
 const purchaseOrders: PurchaseOrder[] = [
   {
-    poNo: 'PO0000001',
+    poNo: "PO0000001",
     poDate: new Date(),
-    orderNo: '0000000001',
-    supCode: '001',
+    orderNo: "0000000001",
+    supCode: "001",
     supSubNo: 1,
-    empCode: 'EMP999',
+    empCode: "EMP999",
     dueDate: new Date(),
-    whCode: '001',
+    whCode: "001",
     poAmnt: 1000,
     cmpTax: 100,
-    slipComment: 'test',
+    slipComment: "test",
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
-  }
-]
+    updater: "admin",
+  },
+];
 
 const purchaseOrderDetails: PurchaseOrderDetail[] = [
   {
-    poNo: 'PO0000001',
+    poNo: "PO0000001",
     poRowNo: 1,
     poRowDspNo: 1,
-    orderNo: '0000000001',
+    orderNo: "0000000001",
     soRowNo: 1,
-    prodCode: '10101001',
-    prodName: '牛ひれ',
+    prodCode: "10101001",
+    prodName: "牛ひれ",
     poPrice: 100,
     poQt: 10,
     recivedQt: 10,
     completeFlg: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
   {
-    poNo: 'PO0000001',
+    poNo: "PO0000001",
     poRowNo: 2,
     poRowDspNo: 2,
-    orderNo: '0000000001',
+    orderNo: "0000000001",
     soRowNo: 1,
-    prodCode: '10101001',
-    prodName: '牛ひれ',
+    prodCode: "10101001",
+    prodName: "牛ひれ",
     poPrice: 100,
     poQt: 10,
     recivedQt: 10,
     completeFlg: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
   {
-    poNo: 'PO0000001',
+    poNo: "PO0000001",
     poRowNo: 3,
     poRowDspNo: 3,
-    orderNo: '0000000001',
+    orderNo: "0000000001",
     soRowNo: 1,
-    prodCode: '10101001',
-    prodName: '牛ひれ',
+    prodCode: "10101001",
+    prodName: "牛ひれ",
     poPrice: 100,
     poQt: 10,
     recivedQt: 10,
     completeFlg: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
-  }
-]
+    updater: "admin",
+  },
+];
 
 const warehouses: Warehouse[] = [
   {
-    whCode: '001',
-    whName: '本社倉庫',
-    whType: '1',
-    zipCode: '000-0000',
-    state: '東京都',
-    address1: '千代田区',
-    address2: '千代田1-1-1',
+    whCode: "001",
+    whName: "本社倉庫",
+    whType: "1",
+    zipCode: "000-0000",
+    state: "東京都",
+    address1: "千代田区",
+    address2: "千代田1-1-1",
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin'
-  }
-]
+    updater: "admin",
+  },
+];
 
 const locations: Location[] = [
   {
-    whCode: '001',
-    locationCode: '001',
-    prodCode: '1010100X',
+    whCode: "001",
+    locationCode: "001",
+    prodCode: "1010100X",
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin'
-  }
-]
+    updater: "admin",
+  },
+];
 
 const warehouseDepartments: WarehouseDepartment[] = [
   {
-    whCode: '001',
-    deptCode: '11101',
-    startDate: new Date('2021-01-01'),
+    whCode: "001",
+    deptCode: "11101",
+    startDate: new Date("2021-01-01"),
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin'
-  }
-]
+    updater: "admin",
+  },
+];
 
 const stocks: Stock[] = [
   {
-    whCode: '001',
-    prodCode: '001',
-    rotNo: 'X03022801',
-    stockType: '1',
-    qualityType: '1',
+    whCode: "001",
+    prodCode: "001",
+    rotNo: "X03022801",
+    stockType: "1",
+    qualityType: "1",
     actual: 30,
     valid: 0,
     lastDeliveryDate: new Date(),
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin'
+    updater: "admin",
   },
   {
-    whCode: '001',
-    prodCode: '001',
-    rotNo: 'X03041502',
-    stockType: '1',
-    qualityType: '1',
+    whCode: "001",
+    prodCode: "001",
+    rotNo: "X03041502",
+    stockType: "1",
+    qualityType: "1",
     actual: 100,
     valid: 0,
     lastDeliveryDate: new Date(),
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin'
-  }
-]
+    updater: "admin",
+  },
+];
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
-  describe("Chapter 1 販売管理システム全体像", () => { });
+  describe("Chapter 1 販売管理システム全体像", () => {});
 
-  describe("Chapter 2 基幹業務システム構築のポイント", () => { });
+  describe("Chapter 2 基幹業務システム構築のポイント", () => {});
 
   describe("Chapter 3 部門／社員／商品マスタ設計", () => {
     describe("部門マスタ", () => {
@@ -701,7 +723,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           return { ...c };
         });
         await prisma.department.create({
-          data: departments[0]
+          data: departments[0],
         });
 
         const result = await prisma.department.findMany();
@@ -713,8 +735,13 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           return { ...c, name: "更新部署" };
         });
         await prisma.department.update({
-          where: { deptCode_startDate: { deptCode: departments[0].deptCode, startDate: departments[0].startDate } },
-          data: expected[0]
+          where: {
+            deptCode_startDate: {
+              deptCode: departments[0].deptCode,
+              startDate: departments[0].startDate,
+            },
+          },
+          data: expected[0],
         });
 
         const result = await prisma.department.findMany();
@@ -724,7 +751,12 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       test("部門を削除できる", async () => {
         const expected: Department[] = [];
         await prisma.department.delete({
-          where: { deptCode_startDate: { deptCode: departments[0].deptCode, startDate: departments[0].startDate } }
+          where: {
+            deptCode_startDate: {
+              deptCode: departments[0].deptCode,
+              startDate: departments[0].startDate,
+            },
+          },
         });
 
         const result = await prisma.department.findMany();
@@ -742,7 +774,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           return { ...c };
         });
         await prisma.employee.create({
-          data: employees[0]
+          data: employees[0],
         });
 
         const result = await prisma.employee.findMany();
@@ -755,7 +787,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         });
         await prisma.employee.update({
           where: { empCode: employees[0].empCode },
-          data: expected[0]
+          data: expected[0],
         });
 
         const result = await prisma.employee.findMany();
@@ -765,7 +797,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       test("社員を削除できる", async () => {
         const expected: Employee[] = [];
         await prisma.employee.delete({
-          where: { empCode: employees[0].empCode }
+          where: { empCode: employees[0].empCode },
         });
 
         const result = await prisma.employee.findMany();
@@ -802,7 +834,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           include: {
             alternateProducts: true,
             pricebycustomers: true,
-          }
+          },
         });
         expect(result).toEqual(expected[0]);
       });
@@ -813,7 +845,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         });
         await prisma.product.update({
           where: { prodCode: products[0].prodCode },
-          data: expected[0]
+          data: expected[0],
         });
 
         const result = await prisma.product.findUnique({
@@ -827,20 +859,19 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
 
         await prisma.$transaction(async (prisma) => {
           await prisma.alternateProduct.deleteMany({
-            where: { prodCode: products[0].prodCode }
+            where: { prodCode: products[0].prodCode },
           });
           await prisma.priceByCustomer.deleteMany({
-            where: { prodCode: products[0].prodCode }
+            where: { prodCode: products[0].prodCode },
           });
           await prisma.product.delete({
-            where: { prodCode: products[0].prodCode }
+            where: { prodCode: products[0].prodCode },
           });
         });
 
         const result = await prisma.product.findMany();
         expect(result).toEqual(expected);
       });
-
     });
   });
 
@@ -856,7 +887,6 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       await prisma.categoryType.deleteMany();
     });
     describe("取引先マスタ", () => {
-
       test("取引先を登録できる", async () => {
         const expected: Company[] = companies.map((c) => {
           return {
@@ -872,21 +902,25 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           await prisma.supplier.createMany({ data: suppliers });
         });
 
-        const result = await prisma.company.findMany(
-          {
-            include: {
-              customers: true,
-              suppliers: true,
-            }
-          }
-        );
+        const result = await prisma.company.findMany({
+          include: {
+            customers: true,
+            suppliers: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
       test("取引先を更新できる", async () => {
-        const updatedCompanies: Company[] = companies.map((c) => { return { ...c, name: "更新取引先" }; });
-        const updatedCustomers: Customer[] = customers.map((c) => { return { ...c, name: "更新顧客" }; });
-        const updatedSuppliers: Supplier[] = suppliers.map((c) => { return { ...c, name: "更新仕入先" }; });
+        const updatedCompanies: Company[] = companies.map((c) => {
+          return { ...c, name: "更新取引先" };
+        });
+        const updatedCustomers: Customer[] = customers.map((c) => {
+          return { ...c, name: "更新顧客" };
+        });
+        const updatedSuppliers: Supplier[] = suppliers.map((c) => {
+          return { ...c, name: "更新仕入先" };
+        });
 
         const expected: Company[] = updatedCompanies.map((c) => {
           return {
@@ -897,16 +931,20 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         });
         await prisma.$transaction(async (prisma) => {
           for (const com of updatedCompanies) {
-            await prisma.company.update({ where: { compCode: com.compCode }, data: com });
+            await prisma.company.update({
+              where: { compCode: com.compCode },
+              data: com,
+            });
           }
           for (const cus of updatedCustomers) {
             await prisma.customer.update({
               where: {
                 custCode_custSubNo: {
                   custCode: cus.custCode,
-                  custSubNo: cus.custSubNo
-                }
-              }, data: cus
+                  custSubNo: cus.custSubNo,
+                },
+              },
+              data: cus,
             });
           }
           for (const sup of updatedSuppliers) {
@@ -914,21 +952,20 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
               where: {
                 supCode_supSubNo: {
                   supCode: sup.supCode,
-                  supSubNo: sup.supSubNo
-                }
-              }, data: sup
+                  supSubNo: sup.supSubNo,
+                },
+              },
+              data: sup,
             });
           }
         });
 
-        const result = await prisma.company.findMany(
-          {
-            include: {
-              customers: true,
-              suppliers: true,
-            }
-          }
-        );
+        const result = await prisma.company.findMany({
+          include: {
+            customers: true,
+            suppliers: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
@@ -937,19 +974,19 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const com of companies) {
             await prisma.companyCategoryGroup.deleteMany({
-              where: { compCode: com.compCode }
+              where: { compCode: com.compCode },
             });
             await prisma.customer.deleteMany({
-              where: { custCode: com.compCode }
+              where: { custCode: com.compCode },
             });
             await prisma.supplier.deleteMany({
-              where: { supCode: com.compCode }
+              where: { supCode: com.compCode },
             });
             await prisma.company.delete({
-              where: { compCode: com.compCode }
+              where: { compCode: com.compCode },
             });
             await prisma.companyGroup.delete({
-              where: { compGroupCode: com.compGroupCode }
+              where: { compGroupCode: com.compGroupCode },
             });
           }
         });
@@ -957,7 +994,6 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         const result = await prisma.company.findMany();
         expect(result).toEqual(expected);
       });
-
     });
 
     describe("顧客マスタ", () => {
@@ -973,19 +1009,21 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           await prisma.customer.createMany({ data: customers });
         });
 
-        const result = await prisma.company.findMany(
-          {
-            include: {
-              customers: true,
-            }
-          }
-        );
+        const result = await prisma.company.findMany({
+          include: {
+            customers: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
       test("顧客を更新できる", async () => {
-        const updatedCompanies: Company[] = companies.map((c) => { return { ...c, name: "更新取引先" }; });
-        const updatedCustomers: Customer[] = customers.map((c) => { return { ...c, name: "更新顧客" }; });
+        const updatedCompanies: Company[] = companies.map((c) => {
+          return { ...c, name: "更新取引先" };
+        });
+        const updatedCustomers: Customer[] = customers.map((c) => {
+          return { ...c, name: "更新顧客" };
+        });
 
         const expected: Company[] = updatedCompanies.map((c) => {
           return {
@@ -995,27 +1033,29 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         });
         await prisma.$transaction(async (prisma) => {
           for (const com of updatedCompanies) {
-            await prisma.company.update({ where: { compCode: com.compCode }, data: com });
+            await prisma.company.update({
+              where: { compCode: com.compCode },
+              data: com,
+            });
           }
           for (const cus of updatedCustomers) {
             await prisma.customer.update({
               where: {
                 custCode_custSubNo: {
                   custCode: cus.custCode,
-                  custSubNo: cus.custSubNo
-                }
-              }, data: cus
+                  custSubNo: cus.custSubNo,
+                },
+              },
+              data: cus,
             });
           }
         });
 
-        const result = await prisma.company.findMany(
-          {
-            include: {
-              customers: true,
-            }
-          }
-        );
+        const result = await prisma.company.findMany({
+          include: {
+            customers: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
@@ -1024,10 +1064,10 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const com of companies) {
             await prisma.customer.deleteMany({
-              where: { custCode: com.compCode }
+              where: { custCode: com.compCode },
             });
             await prisma.company.delete({
-              where: { compCode: com.compCode }
+              where: { compCode: com.compCode },
             });
           }
         });
@@ -1035,9 +1075,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         const result = await prisma.customer.findMany();
         expect(result).toEqual(expected);
       });
-
     });
-
 
     describe("取引先グループマスタ", () => {
       beforeAll(async () => {
@@ -1058,15 +1096,18 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         const expected = {
           ...companyGroups[0],
           companies: companies,
-        }
+        };
 
         const result = {
-          ...await prisma.companyGroup.findUnique({ where: { compGroupCode: companyGroups[0].compGroupCode } }),
-          companies: await prisma.company.findMany({ where: { compGroupCode: companyGroups[0].compGroupCode } }),
-        }
+          ...(await prisma.companyGroup.findUnique({
+            where: { compGroupCode: companyGroups[0].compGroupCode },
+          })),
+          companies: await prisma.company.findMany({
+            where: { compGroupCode: companyGroups[0].compGroupCode },
+          }),
+        };
         expect(result).toEqual(expected);
       });
-
     });
 
     describe("取引先分類マスタ", () => {
@@ -1075,7 +1116,9 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           await prisma.company.createMany({ data: companies });
           await prisma.categoryType.createMany({ data: cateoryTypes });
           await prisma.companyCategory.createMany({ data: companyCategories });
-          await prisma.companyCategoryGroup.createMany({ data: companyCategoryGroups });
+          await prisma.companyCategoryGroup.createMany({
+            data: companyCategoryGroups,
+          });
         });
       });
 
@@ -1096,13 +1139,11 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           };
         });
 
-        const result = await prisma.categoryType.findMany(
-          {
-            include: {
-              companyCategories: true,
-            }
-          }
-        );
+        const result = await prisma.categoryType.findMany({
+          include: {
+            companyCategories: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
@@ -1115,22 +1156,17 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           };
         });
 
-        const result = await prisma.companyCategory.findMany(
-          {
-            include: {
-              categoryType: true,
-              companyCategoryGroups: true,
-            }
-          }
-        );
+        const result = await prisma.companyCategory.findMany({
+          include: {
+            categoryType: true,
+            companyCategoryGroups: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
-
     });
 
-
     describe("仕入先マスタ", () => {
-
       test("仕入先を登録できる", async () => {
         const expected: Company[] = companies.map((c) => {
           return {
@@ -1143,19 +1179,21 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
           await prisma.supplier.createMany({ data: suppliers });
         });
 
-        const result = await prisma.company.findMany(
-          {
-            include: {
-              suppliers: true,
-            }
-          }
-        );
+        const result = await prisma.company.findMany({
+          include: {
+            suppliers: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
       test("仕入先を更新できる", async () => {
-        const updatedCompanies: Company[] = companies.map((c) => { return { ...c, name: "更新取引先" }; });
-        const updatedSuppliers: Supplier[] = suppliers.map((c) => { return { ...c, name: "更新仕入先" }; });
+        const updatedCompanies: Company[] = companies.map((c) => {
+          return { ...c, name: "更新取引先" };
+        });
+        const updatedSuppliers: Supplier[] = suppliers.map((c) => {
+          return { ...c, name: "更新仕入先" };
+        });
 
         const expected: Company[] = updatedCompanies.map((c) => {
           return {
@@ -1165,27 +1203,29 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         });
         await prisma.$transaction(async (prisma) => {
           for (const com of updatedCompanies) {
-            await prisma.company.update({ where: { compCode: com.compCode }, data: com });
+            await prisma.company.update({
+              where: { compCode: com.compCode },
+              data: com,
+            });
           }
           for (const sup of updatedSuppliers) {
             await prisma.supplier.update({
               where: {
                 supCode_supSubNo: {
                   supCode: sup.supCode,
-                  supSubNo: sup.supSubNo
-                }
-              }, data: sup
+                  supSubNo: sup.supSubNo,
+                },
+              },
+              data: sup,
             });
           }
         });
 
-        const result = await prisma.company.findMany(
-          {
-            include: {
-              suppliers: true,
-            }
-          }
-        );
+        const result = await prisma.company.findMany({
+          include: {
+            suppliers: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
@@ -1194,10 +1234,10 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const com of companies) {
             await prisma.supplier.deleteMany({
-              where: { supCode: com.compCode }
+              where: { supCode: com.compCode },
             });
             await prisma.company.delete({
-              where: { compCode: com.compCode }
+              where: { compCode: com.compCode },
             });
           }
         });
@@ -1205,9 +1245,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
         const result = await prisma.supplier.findMany();
         expect(result).toEqual(expected);
       });
-
     });
-
   });
 });
 
@@ -1242,49 +1280,55 @@ describe("Part 2 販売システムのDB設計", () => {
           await prisma.orderDetail.createMany({ data: orderDetails });
         });
 
-        const result = await prisma.order.findMany(
-          {
-            include: {
-              orderDetails: true,
-            }
-          }
-        );
+        const result = await prisma.order.findMany({
+          include: {
+            orderDetails: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
       test("受注を更新できる", async () => {
-        const updatedOrders: Order[] = orders.map((o) => { return { ...o, orderAmnt: 1000 }; });
-        const updatedOrderDetails: OrderDetail[] = orderDetails.map((o) => { return { ...o, quantity: 10 }; });
+        const updatedOrders: Order[] = orders.map((o) => {
+          return { ...o, orderAmnt: 1000 };
+        });
+        const updatedOrderDetails: OrderDetail[] = orderDetails.map((o) => {
+          return { ...o, quantity: 10 };
+        });
 
         const expected: Order[] = updatedOrders.map((o) => {
           return {
             ...o,
-            orderDetails: updatedOrderDetails.filter((od) => od.orderNo === o.orderNo),
+            orderDetails: updatedOrderDetails.filter(
+              (od) => od.orderNo === o.orderNo,
+            ),
           };
         });
         await prisma.$transaction(async (prisma) => {
           for (const order of updatedOrders) {
-            await prisma.order.update({ where: { orderNo: order.orderNo }, data: order });
+            await prisma.order.update({
+              where: { orderNo: order.orderNo },
+              data: order,
+            });
           }
           for (const orderDetail of updatedOrderDetails) {
             await prisma.orderDetail.update({
               where: {
                 orderNo_soRowNo: {
                   orderNo: orderDetail.orderNo,
-                  soRowNo: orderDetail.soRowNo
-                }
-              }, data: orderDetail
+                  soRowNo: orderDetail.soRowNo,
+                },
+              },
+              data: orderDetail,
             });
           }
         });
 
-        const result = await prisma.order.findMany(
-          {
-            include: {
-              orderDetails: true,
-            }
-          }
-        );
+        const result = await prisma.order.findMany({
+          include: {
+            orderDetails: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
@@ -1293,10 +1337,10 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const order of orders) {
             await prisma.orderDetail.deleteMany({
-              where: { orderNo: order.orderNo }
+              where: { orderNo: order.orderNo },
             });
             await prisma.order.delete({
-              where: { orderNo: order.orderNo }
+              where: { orderNo: order.orderNo },
             });
           }
         });
@@ -1343,49 +1387,55 @@ describe("Part 2 販売システムのDB設計", () => {
           await prisma.salesDetail.createMany({ data: salesDetails });
         });
 
-        const result = await prisma.sales.findMany(
-          {
-            include: {
-              salesDetails: true,
-            }
-          }
-        );
+        const result = await prisma.sales.findMany({
+          include: {
+            salesDetails: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
       test("売上を更新できる", async () => {
-        const updatedSales: Sales[] = sales.map((s) => { return { ...s, salesAmnt: 1000 }; });
-        const updatedSalesDetails: SalesDetail[] = salesDetails.map((sd) => { return { ...sd, quantity: 10 }; });
+        const updatedSales: Sales[] = sales.map((s) => {
+          return { ...s, salesAmnt: 1000 };
+        });
+        const updatedSalesDetails: SalesDetail[] = salesDetails.map((sd) => {
+          return { ...sd, quantity: 10 };
+        });
 
         const expected: Sales[] = updatedSales.map((s) => {
           return {
             ...s,
-            salesDetails: updatedSalesDetails.filter((sd) => sd.salesNo === s.salesNo),
+            salesDetails: updatedSalesDetails.filter(
+              (sd) => sd.salesNo === s.salesNo,
+            ),
           };
         });
         await prisma.$transaction(async (prisma) => {
           for (const sales of updatedSales) {
-            await prisma.sales.update({ where: { salesNo: sales.salesNo }, data: sales });
+            await prisma.sales.update({
+              where: { salesNo: sales.salesNo },
+              data: sales,
+            });
           }
           for (const salesDetail of updatedSalesDetails) {
             await prisma.salesDetail.update({
               where: {
                 salesNo_rowNo: {
                   salesNo: salesDetail.salesNo,
-                  rowNo: salesDetail.rowNo
-                }
-              }, data: salesDetail
+                  rowNo: salesDetail.rowNo,
+                },
+              },
+              data: salesDetail,
             });
           }
         });
 
-        const result = await prisma.sales.findMany(
-          {
-            include: {
-              salesDetails: true,
-            }
-          }
-        );
+        const result = await prisma.sales.findMany({
+          include: {
+            salesDetails: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
@@ -1394,10 +1444,10 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const sale of sales) {
             await prisma.salesDetail.deleteMany({
-              where: { salesNo: sale.salesNo }
+              where: { salesNo: sale.salesNo },
             });
             await prisma.sales.delete({
-              where: { salesNo: sale.salesNo }
+              where: { salesNo: sale.salesNo },
             });
           }
         });
@@ -1405,7 +1455,6 @@ describe("Part 2 販売システムのDB設計", () => {
         const result = await prisma.sales.findMany();
         expect(result).toEqual(expected);
       });
-
     });
   });
 
@@ -1449,24 +1498,28 @@ describe("Part 2 販売システムのDB設計", () => {
           await prisma.destination.createMany({ data: destinations });
         });
 
-        const result = await prisma.customer.findMany(
-          {
-            include: {
-              destinations: true,
-            }
-          }
-        );
+        const result = await prisma.customer.findMany({
+          include: {
+            destinations: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
       test("出荷先を更新できる", async () => {
-        const updatedCustomers: Customer[] = customers.map((c) => { return { ...c, name: "updated" }; });
-        const updatedDestinations: Destination[] = destinations.map((d) => { return { ...d, distName: "updated" }; });
+        const updatedCustomers: Customer[] = customers.map((c) => {
+          return { ...c, name: "updated" };
+        });
+        const updatedDestinations: Destination[] = destinations.map((d) => {
+          return { ...d, distName: "updated" };
+        });
 
         const expected: Customer[] = updatedCustomers.map((c) => {
           return {
             ...c,
-            destinations: updatedDestinations.filter((d) => d.custCode === c.custCode),
+            destinations: updatedDestinations.filter(
+              (d) => d.custCode === c.custCode,
+            ),
           };
         });
         await prisma.$transaction(async (prisma) => {
@@ -1475,9 +1528,10 @@ describe("Part 2 販売システムのDB設計", () => {
               where: {
                 custCode_custSubNo: {
                   custCode: customer.custCode,
-                  custSubNo: customer.custSubNo
-                }
-              }, data: customer
+                  custSubNo: customer.custSubNo,
+                },
+              },
+              data: customer,
             });
           }
           for (const destination of updatedDestinations) {
@@ -1486,20 +1540,19 @@ describe("Part 2 販売システムのDB設計", () => {
                 custCode_distNo_custSubNo: {
                   custCode: destination.custCode,
                   distNo: destination.distNo,
-                  custSubNo: destination.custSubNo
-                }
-              }, data: destination
+                  custSubNo: destination.custSubNo,
+                },
+              },
+              data: destination,
             });
           }
         });
 
-        const result = await prisma.customer.findMany(
-          {
-            include: {
-              destinations: true,
-            }
-          }
-        );
+        const result = await prisma.customer.findMany({
+          include: {
+            destinations: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
@@ -1508,25 +1561,25 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const customer of customers) {
             await prisma.destination.deleteMany({
-              where: { custCode: customer.custCode }
+              where: { custCode: customer.custCode },
             });
             await prisma.customer.delete({
               where: {
                 custCode_custSubNo: {
                   custCode: customer.custCode,
-                  custSubNo: customer.custSubNo
-                }
-              }
+                  custSubNo: customer.custSubNo,
+                },
+              },
             });
             await prisma.area.deleteMany({
-              where: { areaCode: customer.arCode }
+              where: { areaCode: customer.arCode },
             });
           }
         });
 
         const result = await prisma.destination.findMany();
         expect(result).toEqual(expected);
-      })
+      });
     });
 
     describe("請求業務の処理", () => {
@@ -1557,7 +1610,9 @@ describe("Part 2 販売システムのDB設計", () => {
         const expected: Invoice[] = invoices.map((i) => {
           return {
             ...i,
-            invoiceDetails: invoiceDetails.filter((id) => id.invoiceNo === i.invoiceNo),
+            invoiceDetails: invoiceDetails.filter(
+              (id) => id.invoiceNo === i.invoiceNo,
+            ),
           };
         });
         await prisma.$transaction(async (prisma) => {
@@ -1565,29 +1620,38 @@ describe("Part 2 販売システムのDB設計", () => {
           await prisma.invoiceDetail.createMany({ data: invoiceDetails });
         });
 
-        const result = await prisma.invoice.findMany(
-          {
-            include: {
-              invoiceDetails: true,
-            }
-          }
-        );
+        const result = await prisma.invoice.findMany({
+          include: {
+            invoiceDetails: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
       test("請求を更新できる", async () => {
-        const updatedInvoices: Invoice[] = invoices.map((i) => { return { ...i, monthSales: 1000 }; });
-        const updatedInvoiceDetails: InvoiceDetail[] = invoiceDetails.map((id) => { return { ...id }; });
+        const updatedInvoices: Invoice[] = invoices.map((i) => {
+          return { ...i, monthSales: 1000 };
+        });
+        const updatedInvoiceDetails: InvoiceDetail[] = invoiceDetails.map(
+          (id) => {
+            return { ...id };
+          },
+        );
 
         const expected: Invoice[] = updatedInvoices.map((i) => {
           return {
             ...i,
-            invoiceDetails: updatedInvoiceDetails.filter((id) => id.invoiceNo === i.invoiceNo),
+            invoiceDetails: updatedInvoiceDetails.filter(
+              (id) => id.invoiceNo === i.invoiceNo,
+            ),
           };
         });
         await prisma.$transaction(async (prisma) => {
           for (const invoice of updatedInvoices) {
-            await prisma.invoice.update({ where: { invoiceNo: invoice.invoiceNo }, data: invoice });
+            await prisma.invoice.update({
+              where: { invoiceNo: invoice.invoiceNo },
+              data: invoice,
+            });
           }
           for (const invoiceDetail of updatedInvoiceDetails) {
             await prisma.invoiceDetail.update({
@@ -1595,20 +1659,19 @@ describe("Part 2 販売システムのDB設計", () => {
                 invoiceNo_salesNo_rowNo: {
                   invoiceNo: invoiceDetail.invoiceNo,
                   salesNo: invoiceDetail.salesNo,
-                  rowNo: invoiceDetail.rowNo
-                }
-              }, data: invoiceDetail
+                  rowNo: invoiceDetail.rowNo,
+                },
+              },
+              data: invoiceDetail,
             });
           }
         });
 
-        const result = await prisma.invoice.findMany(
-          {
-            include: {
-              invoiceDetails: true,
-            }
-          }
-        );
+        const result = await prisma.invoice.findMany({
+          include: {
+            invoiceDetails: true,
+          },
+        });
         expect(result).toEqual(expected);
       });
 
@@ -1617,10 +1680,10 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const invoice of invoices) {
             await prisma.invoiceDetail.deleteMany({
-              where: { invoiceNo: invoice.invoiceNo }
+              where: { invoiceNo: invoice.invoiceNo },
             });
             await prisma.invoice.delete({
-              where: { invoiceNo: invoice.invoiceNo }
+              where: { invoiceNo: invoice.invoiceNo },
             });
           }
         });
@@ -1628,8 +1691,6 @@ describe("Part 2 販売システムのDB設計", () => {
         const result = await prisma.invoice.findMany();
         expect(result).toEqual(expected);
       });
-
-
     });
   });
 
@@ -1656,7 +1717,9 @@ describe("Part 2 販売システムのDB設計", () => {
       });
 
       test("入金口座を更新できる", async () => {
-        const updatedBankAccounts: BankAccount[] = bankAccounts.map((b) => { return { ...b, reciveActName: "updated" }; });
+        const updatedBankAccounts: BankAccount[] = bankAccounts.map((b) => {
+          return { ...b, reciveActName: "updated" };
+        });
 
         const expected: BankAccount[] = updatedBankAccounts.map((b) => {
           return {
@@ -1666,7 +1729,8 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const bankAccount of updatedBankAccounts) {
             await prisma.bankAccount.update({
-              where: { bankAcutCode: bankAccount.bankAcutCode }, data: bankAccount
+              where: { bankAcutCode: bankAccount.bankAcutCode },
+              data: bankAccount,
             });
           }
         });
@@ -1679,12 +1743,12 @@ describe("Part 2 販売システムのDB設計", () => {
         const expected: BankAccount[] = [];
         await prisma.$transaction(async (prisma) => {
           await prisma.bankAccount.deleteMany({
-            where: { bankAcutCode: bankAccounts[0].bankAcutCode }
+            where: { bankAcutCode: bankAccounts[0].bankAcutCode },
           });
         });
 
         const result = await prisma.bankAccount.findMany({
-          where: { bankAcutCode: bankAccounts[0].bankAcutCode }
+          where: { bankAcutCode: bankAccounts[0].bankAcutCode },
         });
         expect(result).toEqual(expected);
       });
@@ -1712,7 +1776,9 @@ describe("Part 2 販売システムのDB設計", () => {
       });
 
       test("入金を更新できる", async () => {
-        const updatedCredits: Credit[] = credits.map((c) => { return { ...c, receivedAmnt: 1000 }; });
+        const updatedCredits: Credit[] = credits.map((c) => {
+          return { ...c, receivedAmnt: 1000 };
+        });
 
         const expected: Credit[] = updatedCredits.map((c) => {
           return {
@@ -1722,7 +1788,8 @@ describe("Part 2 販売システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const credit of updatedCredits) {
             await prisma.credit.update({
-              where: { creditNo: credit.creditNo }, data: credit
+              where: { creditNo: credit.creditNo },
+              data: credit,
             });
           }
         });
@@ -1735,17 +1802,16 @@ describe("Part 2 販売システムのDB設計", () => {
         const expected: Credit[] = [];
         await prisma.$transaction(async (prisma) => {
           await prisma.credit.deleteMany({
-            where: { creditNo: credits[0].creditNo }
+            where: { creditNo: credits[0].creditNo },
           });
         });
 
         const result = await prisma.credit.findMany({
-          where: { creditNo: credits[0].creditNo }
+          where: { creditNo: credits[0].creditNo },
         });
         expect(result).toEqual(expected);
       });
     });
-
   });
 });
 
@@ -1839,14 +1905,18 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const result = await prisma.product.findMany({
           include: {
             boms: true,
-          }
+          },
         });
         expect(result).toEqual(expected);
       });
 
       test("部品表を更新できる", async () => {
-        const updatedProducts: Product[] = products.map((p) => { return { ...p, name: "updated" }; });
-        const updatedBoms: Bom[] = boms.map((b) => { return { ...b, quantity: 10 }; });
+        const updatedProducts: Product[] = products.map((p) => {
+          return { ...p, name: "updated" };
+        });
+        const updatedBoms: Bom[] = boms.map((b) => {
+          return { ...b, quantity: 10 };
+        });
 
         const expected: Product[] = updatedProducts.map((p) => {
           return {
@@ -1857,13 +1927,20 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const product of updatedProducts) {
             await prisma.product.update({
-              where: { prodCode: product.prodCode }, data: product
+              where: { prodCode: product.prodCode },
+              data: product,
             });
           }
 
           for (const bom of updatedBoms) {
             await prisma.bom.update({
-              where: { prodCode_bomCode: { prodCode: bom.prodCode, bomCode: bom.bomCode } }, data: bom
+              where: {
+                prodCode_bomCode: {
+                  prodCode: bom.prodCode,
+                  bomCode: bom.bomCode,
+                },
+              },
+              data: bom,
             });
           }
         });
@@ -1872,7 +1949,7 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
           where: { prodCode: products[0].prodCode },
           include: {
             boms: true,
-          }
+          },
         });
         expect(result).toEqual(expected);
       });
@@ -1881,15 +1958,15 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const expected: Bom[] = [];
         await prisma.$transaction(async (prisma) => {
           await prisma.bom.deleteMany({
-            where: { prodCode: products[0].prodCode }
+            where: { prodCode: products[0].prodCode },
           });
           await prisma.product.delete({
-            where: { prodCode: products[0].prodCode }
+            where: { prodCode: products[0].prodCode },
           });
         });
 
         const result = await prisma.bom.findMany({
-          where: { prodCode: products[0].prodCode }
+          where: { prodCode: products[0].prodCode },
         });
         expect(result).toEqual(expected);
       });
@@ -1919,38 +1996,51 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const expected: PurchaseOrder[] = purchaseOrders.map((po) => {
           return {
             ...po,
-            purchaseOrderDetails: purchaseOrderDetails.filter((pod) => pod.poNo === po.poNo),
+            purchaseOrderDetails: purchaseOrderDetails.filter(
+              (pod) => pod.poNo === po.poNo,
+            ),
           };
         });
 
         await prisma.$transaction(async (prisma) => {
           await prisma.purchaseOrder.createMany({ data: purchaseOrders });
-          await prisma.purchaseOrderDetail.createMany({ data: purchaseOrderDetails });
-        }
-        );
+          await prisma.purchaseOrderDetail.createMany({
+            data: purchaseOrderDetails,
+          });
+        });
 
         const result = await prisma.purchaseOrder.findMany({
           include: {
             purchaseOrderDetails: true,
-          }
+          },
         });
         expect(result).toEqual(expected);
       });
 
       test("発注を更新できる", async () => {
-        const updatedPurchaseOrders: PurchaseOrder[] = purchaseOrders.map((po) => { return { ...po, poAmnt: 1000 }; });
-        const updatedPurchaseOrderDetails: PurchaseOrderDetail[] = purchaseOrderDetails.map((pod) => { return { ...pod, poQt: 10 }; });
+        const updatedPurchaseOrders: PurchaseOrder[] = purchaseOrders.map(
+          (po) => {
+            return { ...po, poAmnt: 1000 };
+          },
+        );
+        const updatedPurchaseOrderDetails: PurchaseOrderDetail[] =
+          purchaseOrderDetails.map((pod) => {
+            return { ...pod, poQt: 10 };
+          });
         const expected: PurchaseOrder[] = updatedPurchaseOrders.map((po) => {
           return {
             ...po,
-            purchaseOrderDetails: updatedPurchaseOrderDetails.filter((pod) => pod.poNo === po.poNo),
+            purchaseOrderDetails: updatedPurchaseOrderDetails.filter(
+              (pod) => pod.poNo === po.poNo,
+            ),
           };
         });
 
         await prisma.$transaction(async (prisma) => {
           for (const purchaseOrder of updatedPurchaseOrders) {
             await prisma.purchaseOrder.update({
-              where: { poNo: purchaseOrder.poNo }, data: purchaseOrder
+              where: { poNo: purchaseOrder.poNo },
+              data: purchaseOrder,
             });
           }
           for (const purchaseOrderDetail of updatedPurchaseOrderDetails) {
@@ -1958,17 +2048,18 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
               where: {
                 poRowNo_poNo: {
                   poRowNo: purchaseOrderDetail.poRowNo,
-                  poNo: purchaseOrderDetail.poNo
-                }
-              }, data: purchaseOrderDetail
+                  poNo: purchaseOrderDetail.poNo,
+                },
+              },
+              data: purchaseOrderDetail,
             });
           }
-        })
+        });
 
         const result = await prisma.purchaseOrder.findMany({
           include: {
             purchaseOrderDetails: true,
-          }
+          },
         });
         expect(result).toEqual(expected);
       });
@@ -1978,10 +2069,10 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const purchaseOrder of purchaseOrders) {
             await prisma.purchaseOrderDetail.deleteMany({
-              where: { poNo: purchaseOrder.poNo }
+              where: { poNo: purchaseOrder.poNo },
             });
             await prisma.purchaseOrder.delete({
-              where: { poNo: purchaseOrder.poNo }
+              where: { poNo: purchaseOrder.poNo },
             });
           }
         });
@@ -1989,7 +2080,6 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const result = await prisma.purchaseOrder.findMany();
         expect(result).toEqual(expected);
       });
-
     });
   });
 
@@ -2011,13 +2101,17 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const expected: Warehouse[] = warehouses.map((s) => {
           return {
             ...s,
-            warehouseDepartments: warehouseDepartments.filter((whd) => whd.whCode === s.whCode),
+            warehouseDepartments: warehouseDepartments.filter(
+              (whd) => whd.whCode === s.whCode,
+            ),
             stocks: stocks.filter((st) => st.whCode === s.whCode),
           };
         });
         await prisma.$transaction(async (prisma) => {
           await prisma.warehouse.createMany({ data: warehouses });
-          await prisma.warehouseDepartment.createMany({ data: warehouseDepartments });
+          await prisma.warehouseDepartment.createMany({
+            data: warehouseDepartments,
+          });
           await prisma.stock.createMany({ data: stocks });
         });
 
@@ -2025,29 +2119,38 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
           include: {
             stocks: true,
             warehouseDepartments: true,
-          }
+          },
         });
         expect(result).toEqual(expected);
       });
 
       test("在庫データを更新できる", async () => {
-        const updatedWarehouses: Warehouse[] = warehouses.map((s) => { return { ...s, whName: "updated" }; });
-        const updatedWarehouseDepartments: WarehouseDepartment[] = warehouseDepartments.map((whd) => { return { ...whd } });
-        const updatedStocks: Stock[] = stocks.map((st) => { return { ...st, actual: 10 }; });
+        const updatedWarehouses: Warehouse[] = warehouses.map((s) => {
+          return { ...s, whName: "updated" };
+        });
+        const updatedWarehouseDepartments: WarehouseDepartment[] =
+          warehouseDepartments.map((whd) => {
+            return { ...whd };
+          });
+        const updatedStocks: Stock[] = stocks.map((st) => {
+          return { ...st, actual: 10 };
+        });
 
         const expected: Warehouse[] = updatedWarehouses.map((s) => {
           return {
             ...s,
-            warehouseDepartments: updatedWarehouseDepartments.filter((whd) => whd.whCode === s.whCode),
+            warehouseDepartments: updatedWarehouseDepartments.filter(
+              (whd) => whd.whCode === s.whCode,
+            ),
             stocks: updatedStocks.filter((st) => st.whCode === s.whCode),
           };
-        }
-        );
+        });
 
         await prisma.$transaction(async (prisma) => {
           for (const warehouse of updatedWarehouses) {
             await prisma.warehouse.update({
-              where: { whCode: warehouse.whCode }, data: warehouse
+              where: { whCode: warehouse.whCode },
+              data: warehouse,
             });
           }
           for (const warehouseDepartment of updatedWarehouseDepartments) {
@@ -2056,9 +2159,10 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
                 whCode_deptCode_startDate: {
                   whCode: warehouseDepartment.whCode,
                   deptCode: warehouseDepartment.deptCode,
-                  startDate: warehouseDepartment.startDate
-                }
-              }, data: warehouseDepartment
+                  startDate: warehouseDepartment.startDate,
+                },
+              },
+              data: warehouseDepartment,
             });
           }
           for (const stock of updatedStocks) {
@@ -2069,18 +2173,19 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
                   prodCode: stock.prodCode,
                   rotNo: stock.rotNo,
                   stockType: stock.stockType,
-                  qualityType: stock.qualityType
-                }
-              }, data: stock
+                  qualityType: stock.qualityType,
+                },
+              },
+              data: stock,
             });
           }
-        })
+        });
 
         const result = await prisma.warehouse.findMany({
           include: {
             stocks: true,
             warehouseDepartments: true,
-          }
+          },
         });
         expect(result).toEqual(expected);
       });
@@ -2090,13 +2195,13 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const warehouse of warehouses) {
             await prisma.warehouseDepartment.deleteMany({
-              where: { whCode: warehouse.whCode }
+              where: { whCode: warehouse.whCode },
             });
             await prisma.stock.deleteMany({
-              where: { whCode: warehouse.whCode }
+              where: { whCode: warehouse.whCode },
             });
             await prisma.warehouse.delete({
-              where: { whCode: warehouse.whCode }
+              where: { whCode: warehouse.whCode },
             });
           }
         });
@@ -2104,7 +2209,6 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const result = await prisma.warehouse.findMany();
         expect(result).toEqual(expected);
       });
-
     });
   });
 
@@ -2136,14 +2240,18 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const result = await prisma.warehouse.findMany({
           include: {
             locations: true,
-          }
+          },
         });
         expect(result).toEqual(expected);
       });
 
       test("棚番を更新できる", async () => {
-        const updatedWarehouses: Warehouse[] = warehouses.map((w) => { return { ...w, whName: "updated" }; });
-        const updatedLocations: Location[] = locations.map((l) => { return { ...l }; });
+        const updatedWarehouses: Warehouse[] = warehouses.map((w) => {
+          return { ...w, whName: "updated" };
+        });
+        const updatedLocations: Location[] = locations.map((l) => {
+          return { ...l };
+        });
 
         const expected: Warehouse[] = updatedWarehouses.map((w) => {
           return {
@@ -2154,7 +2262,8 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const warehouse of updatedWarehouses) {
             await prisma.warehouse.update({
-              where: { whCode: warehouse.whCode }, data: warehouse
+              where: { whCode: warehouse.whCode },
+              data: warehouse,
             });
           }
           for (const location of updatedLocations) {
@@ -2163,9 +2272,10 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
                 whCode_locationCode_prodCode: {
                   whCode: location.whCode,
                   locationCode: location.locationCode,
-                  prodCode: location.prodCode
-                }
-              }, data: location
+                  prodCode: location.prodCode,
+                },
+              },
+              data: location,
             });
           }
         });
@@ -2173,7 +2283,7 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const result = await prisma.warehouse.findMany({
           include: {
             locations: true,
-          }
+          },
         });
         expect(result).toEqual(expected);
       });
@@ -2183,10 +2293,10 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           for (const warehouse of warehouses) {
             await prisma.location.deleteMany({
-              where: { whCode: warehouse.whCode }
+              where: { whCode: warehouse.whCode },
             });
             await prisma.warehouse.delete({
-              where: { whCode: warehouse.whCode }
+              where: { whCode: warehouse.whCode },
             });
           }
         });
@@ -2195,7 +2305,5 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         expect(result).toEqual(expected);
       });
     });
-
-
   });
 });

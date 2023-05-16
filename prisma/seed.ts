@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, areas, bankAccounts, boms, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, locations, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, stocks, suppliers, warehouseDepartments, warehouses } from "./csvReader";
+import { alterNateProducts, areas, bankAccounts, boms, buyingDetails, buyings, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, locations, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, stocks, suppliers, warehouseDepartments, warehouses } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -406,6 +406,33 @@ async function main() {
       update: stock
     })
   }
+
+  await prisma.$transaction(async (prisma) => {
+    console.table(buyings)
+    for (const buying of buyings) {
+      await prisma.buying.upsert({
+        where: {
+          buyNo: buying.buyNo
+        },
+        create: buying,
+        update: buying
+      })
+    }
+
+    console.table(buyingDetails)
+    for (const buyingDetail of buyingDetails) {
+      await prisma.buyingDetail.upsert({
+        where: {
+          buyRowNo_buyNo: {
+            buyRowNo: buyingDetail.buyRowNo,
+            buyNo: buyingDetail.buyNo
+          },
+        },
+        create: buyingDetail,
+        update: buyingDetail
+      })
+    }
+  });
 }
 
 main()

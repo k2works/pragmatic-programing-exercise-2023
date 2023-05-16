@@ -633,3 +633,46 @@ model Stock {
   @@id([whCode, prodCode, rotNo, stockType, qualityType], map: "pk_stock")
   @@map("在庫データ")
 }
+
+model Buying {
+  buyNo       String    @id(map: "pk_pu") @map("仕入番号") @db.VarChar(10)
+  buyDate     DateTime? @default(dbgenerated("CURRENT_DATE")) @map("仕入日") @db.Timestamp(6)
+  supCode     String    @map("仕入先コード") @db.VarChar(8)
+  supSubNo    Int?      @default(0) @map("仕入先枝番")
+  empCode     String    @map("仕入担当者コード") @db.VarChar(10)
+  startDate   DateTime  @default(dbgenerated("CURRENT_DATE")) @map("開始日") @db.Timestamp(6)
+  poNo        String?   @map("発注番号") @db.VarChar(10)
+  deptCode    String    @map("部門コード") @db.VarChar(6)
+  buyAmmount  Int?      @default(0) @map("仕入金額合計")
+  cmpTax      Int       @default(0) @map("消費税合計")
+  slipComment String?   @map("備考") @db.VarChar(1000)
+  createDate  DateTime  @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator     String?   @map("作成者名") @db.VarChar(12)
+  updateDate  DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater     String?   @db.VarChar(12)
+
+  buyingDetails BuyingDetail[]
+
+  @@map("仕入データ")
+}
+
+model BuyingDetail {
+  buyNo       String   @map("仕入番号") @db.VarChar(10)
+  buyRowNo    Int      @map("仕入行番号")
+  buyRowDspNo Int      @map("仕入行表示番号")
+  poRowNo     Int      @map("発注行番号")
+  prodCode    String   @map("商品コード") @db.VarChar(16)
+  whCode      String   @map("倉庫コード") @db.VarChar(3)
+  prodName    String   @map("商品名") @db.VarChar(10)
+  poPrice     Int?     @default(0) @map("仕入単価")
+  buyQuantity Int      @default(1) @map("仕入数量")
+  createDate  DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator     String?  @map("作成者名") @db.VarChar(12)
+  updateDate  DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater     String?  @map("更新者名") @db.VarChar(12)
+
+  buying Buying? @relation(fields: [buyNo], references: [buyNo])
+
+  @@id([buyRowNo, buyNo], map: "pk_pu_details")
+  @@map("仕入データ明細")
+}
