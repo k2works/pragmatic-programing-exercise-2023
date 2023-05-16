@@ -90,8 +90,24 @@ model Product {
   updater           String?            @map("更新者名") @db.VarChar(12)
   pricebycustomers  PriceByCustomer[]
   alternateProducts AlternateProduct[]
+  boms              Bom[]
 
   @@map("商品マスタ")
+}
+
+model Bom {
+  prodCode   String   @map("商品コード") @db.VarChar(16)
+  bomCode    String   @map("部品コード") @db.VarChar(16)
+  quantity   Int      @default(1) @map("部品数量")
+  createDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator    String?  @map("作成者名") @db.VarChar(12)
+  updateDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater    String?  @map("更新者名") @db.VarChar(12)
+
+  product Product @relation(fields: [prodCode], references: [prodCode])
+
+  @@id([prodCode, bomCode], map: "pk_bom")
+  @@map("部品表")
 }
 
 model PriceByCustomer {

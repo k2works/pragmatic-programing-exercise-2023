@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, areas, bankAccounts, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, sales, salesDetails, suppliers } from "./csvReader";
+import { alterNateProducts, areas, bankAccounts, boms, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, sales, salesDetails, suppliers } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -47,6 +47,20 @@ async function main() {
       },
       create: prod,
       update: prod
+    });
+  }
+
+  console.table(boms);
+  for (const bom of boms) {
+    await prisma.bom.upsert({
+      where: {
+        prodCode_bomCode: {
+          prodCode: bom.prodCode,
+          bomCode: bom.bomCode
+        }
+      },
+      create: bom,
+      update: bom
     });
   }
 

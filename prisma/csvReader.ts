@@ -2,6 +2,7 @@ import {
   Department,
   Employee,
   Product,
+  Bom,
   PriceByCustomer,
   ProductCategory,
   AlternateProduct,
@@ -154,6 +155,32 @@ export const products: Product[] = fs
       creator,
       updateDate: new Date(updateDate),
       updater
+    };
+  });
+
+export const boms: Bom[] = fs
+  .readFileSync(filePath("bom.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      prodCode,
+      bomCode,
+      quantity,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      prodCode,
+      bomCode,
+      quantity: Number(quantity),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater,
     };
   });
 
