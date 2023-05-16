@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, areas, bankAccounts, boms, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, stocks, suppliers, wareHouseDepartments, warehouses } from "./csvReader";
+import { alterNateProducts, areas, bankAccounts, boms, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, stocks, suppliers, warehouseDepartments, warehouses } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -351,7 +351,7 @@ async function main() {
 
   console.table(warehouses)
   for (const w of warehouses) {
-    await prisma.wareHouse.upsert({
+    await prisma.warehouse.upsert({
       where: {
         whCode: w.whCode
       },
@@ -360,9 +360,9 @@ async function main() {
     })
   }
 
-  console.table(wareHouseDepartments)
-  for (const w of wareHouseDepartments) {
-    await prisma.wareHouseDepartment.upsert({
+  console.table(warehouseDepartments)
+  for (const w of warehouseDepartments) {
+    await prisma.warehouseDepartment.upsert({
       where: {
         whCode_deptCode_startDate: {
           whCode: w.whCode,

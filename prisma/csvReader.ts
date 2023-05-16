@@ -26,8 +26,8 @@ import {
   Credit,
   PurchaseOrder,
   PurchaseOrderDetail,
-  WareHouse,
-  WareHouseDepartment,
+  Warehouse,
+  WarehouseDepartment,
   Stock,
 } from "@prisma/client";
 import fs from "fs";
@@ -1079,7 +1079,7 @@ export const purchaseOrderDetails: PurchaseOrderDetail[] = fs
     };
   });
 
-export const warehouses: WareHouse[] = fs
+export const warehouses: Warehouse[] = fs
   .readFileSync(filePath("warehouse.csv"), encodeing)
   .trim() // 末尾の改行を削除
   .split("\n") // 行単位で分割
@@ -1113,7 +1113,7 @@ export const warehouses: WareHouse[] = fs
     };
   });
 
-export const wareHouseDepartments: WareHouseDepartment[] = fs
+export const warehouseDepartments: WarehouseDepartment[] = fs
   .readFileSync(filePath("warehouseDepartment.csv"), encodeing)
   .trim() // 末尾の改行を削除
   .split("\n") // 行単位で分割
