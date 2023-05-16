@@ -30,6 +30,7 @@ import {
   PurchaseOrder,
   PurchaseOrderDetail,
   Warehouse,
+  Location,
   WarehouseDepartment,
   Stock,
 } from "@prisma/client";
@@ -621,6 +622,18 @@ const warehouses: Warehouse[] = [
     state: '東京都',
     address1: '千代田区',
     address2: '千代田1-1-1',
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin'
+  }
+]
+
+const locations: Location[] = [
+  {
+    whCode: '001',
+    locationCode: '001',
+    prodCode: '1010100X',
     createDate: new Date(),
     creator: 'admin',
     updateDate: new Date(),
@@ -1984,6 +1997,7 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
     describe("部門間取引", () => {
       beforeAll(async () => {
         await prisma.$transaction(async (prisma) => {
+          await prisma.location.deleteMany();
           await prisma.stock.deleteMany();
           await prisma.warehouseDepartment.deleteMany();
           await prisma.department.deleteMany();
@@ -2092,5 +2106,96 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
       });
 
     });
+  });
+
+  describe("Chapter 11 在庫管理業のDB設計", () => {
+    beforeAll(async () => {
+      await prisma.$transaction(async (prisma) => {
+        await prisma.location.deleteMany();
+        await prisma.stock.deleteMany();
+        await prisma.warehouse.deleteMany();
+        await prisma.product.deleteMany();
+
+        await prisma.product.createMany({ data: products });
+      });
+    });
+
+    describe("棚番管理", () => {
+      test("棚番を登録できる", async () => {
+        const expected: Warehouse[] = warehouses.map((w) => {
+          return {
+            ...w,
+            locations: locations.filter((l) => l.whCode === w.whCode),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.warehouse.createMany({ data: warehouses });
+          await prisma.location.createMany({ data: locations });
+        });
+
+        const result = await prisma.warehouse.findMany({
+          include: {
+            locations: true,
+          }
+        });
+        expect(result).toEqual(expected);
+      });
+
+      test("棚番を更新できる", async () => {
+        const updatedWarehouses: Warehouse[] = warehouses.map((w) => { return { ...w, whName: "updated" }; });
+        const updatedLocations: Location[] = locations.map((l) => { return { ...l }; });
+
+        const expected: Warehouse[] = updatedWarehouses.map((w) => {
+          return {
+            ...w,
+            locations: updatedLocations.filter((l) => l.whCode === w.whCode),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const warehouse of updatedWarehouses) {
+            await prisma.warehouse.update({
+              where: { whCode: warehouse.whCode }, data: warehouse
+            });
+          }
+          for (const location of updatedLocations) {
+            await prisma.location.update({
+              where: {
+                whCode_locationCode_prodCode: {
+                  whCode: location.whCode,
+                  locationCode: location.locationCode,
+                  prodCode: location.prodCode
+                }
+              }, data: location
+            });
+          }
+        });
+
+        const result = await prisma.warehouse.findMany({
+          include: {
+            locations: true,
+          }
+        });
+        expect(result).toEqual(expected);
+      });
+
+      test("棚番を削除できる", async () => {
+        const expected: Warehouse[] = [];
+        await prisma.$transaction(async (prisma) => {
+          for (const warehouse of warehouses) {
+            await prisma.location.deleteMany({
+              where: { whCode: warehouse.whCode }
+            });
+            await prisma.warehouse.delete({
+              where: { whCode: warehouse.whCode }
+            });
+          }
+        });
+
+        const result = await prisma.warehouse.findMany();
+        expect(result).toEqual(expected);
+      });
+    });
+
+
   });
 });
