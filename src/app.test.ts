@@ -22,6 +22,8 @@ import {
   OrderDetail,
   Sales,
   SalesDetail,
+  Invoice,
+  InvoiceDetail,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -422,6 +424,54 @@ const salesDetails: SalesDetail[] = [
   },
 ]
 
+const invoices: Invoice[] = [
+  {
+    invoiceNo: '0000000001',
+    invoicedDate: new Date(),
+    compCode: '00X',
+    custSubNo: 1,
+    lastReceived: 1,
+    monthSales: 1,
+    monthReceived: 1,
+    monthInvoice: 1,
+    cmpTax: 1,
+    invoiceReceived: 1,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  }
+];
+
+const invoiceDetails: InvoiceDetail[] = [
+  {
+    invoiceNo: '0000000001',
+    salesNo: '0000000001',
+    rowNo: 1,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+  {
+    invoiceNo: '0000000001',
+    salesNo: '0000000001',
+    rowNo: 2,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+  {
+    invoiceNo: '0000000001',
+    salesNo: '0000000001',
+    rowNo: 3,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+];
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 1 販売管理システム全体像", () => { });
@@ -1054,6 +1104,8 @@ describe("Part 2 販売システムのDB設計", () => {
           await prisma.product.deleteMany();
           await prisma.orderDetail.deleteMany();
           await prisma.order.deleteMany();
+          await prisma.invoiceDetail.deleteMany();
+          await prisma.invoice.deleteMany();
           await prisma.salesDetail.deleteMany();
           await prisma.sales.deleteMany();
 
@@ -1156,6 +1208,8 @@ describe("Part 2 販売システムのDB設計", () => {
           await prisma.product.deleteMany();
           await prisma.orderDetail.deleteMany();
           await prisma.order.deleteMany();
+          await prisma.invoiceDetail.deleteMany();
+          await prisma.invoice.deleteMany();
           await prisma.salesDetail.deleteMany();
           await prisma.sales.deleteMany();
 
@@ -1260,6 +1314,108 @@ describe("Part 2 販売システムのDB設計", () => {
         const result = await prisma.destination.findMany();
         expect(result).toEqual(expected);
       })
+    });
+
+    describe("請求業務の処理", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.customer.deleteMany();
+          await prisma.company.deleteMany();
+          await prisma.companyGroup.deleteMany();
+          await prisma.product.deleteMany();
+          await prisma.orderDetail.deleteMany();
+          await prisma.order.deleteMany();
+          await prisma.invoiceDetail.deleteMany();
+          await prisma.invoice.deleteMany();
+          await prisma.salesDetail.deleteMany();
+          await prisma.sales.deleteMany();
+
+          await prisma.companyGroup.createMany({ data: companyGroups });
+          await prisma.company.createMany({ data: companies });
+          await prisma.product.createMany({ data: products });
+          await prisma.order.createMany({ data: orders });
+          await prisma.orderDetail.createMany({ data: orderDetails });
+          await prisma.sales.createMany({ data: sales });
+          await prisma.salesDetail.createMany({ data: salesDetails });
+        });
+      });
+
+      test("請求を登録できる", async () => {
+        const expected: Invoice[] = invoices.map((i) => {
+          return {
+            ...i,
+            invoiceDetails: invoiceDetails.filter((id) => id.invoiceNo === i.invoiceNo),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.invoice.createMany({ data: invoices });
+          await prisma.invoiceDetail.createMany({ data: invoiceDetails });
+        });
+
+        const result = await prisma.invoice.findMany(
+          {
+            include: {
+              invoiceDetails: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("請求を更新できる", async () => {
+        const updatedInvoices: Invoice[] = invoices.map((i) => { return { ...i, monthSales: 1000 }; });
+        const updatedInvoiceDetails: InvoiceDetail[] = invoiceDetails.map((id) => { return { ...id }; });
+
+        const expected: Invoice[] = updatedInvoices.map((i) => {
+          return {
+            ...i,
+            invoiceDetails: updatedInvoiceDetails.filter((id) => id.invoiceNo === i.invoiceNo),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const invoice of updatedInvoices) {
+            await prisma.invoice.update({ where: { invoiceNo: invoice.invoiceNo }, data: invoice });
+          }
+          for (const invoiceDetail of updatedInvoiceDetails) {
+            await prisma.invoiceDetail.update({
+              where: {
+                invoiceNo_salesNo_rowNo: {
+                  invoiceNo: invoiceDetail.invoiceNo,
+                  salesNo: invoiceDetail.salesNo,
+                  rowNo: invoiceDetail.rowNo
+                }
+              }, data: invoiceDetail
+            });
+          }
+        });
+
+        const result = await prisma.invoice.findMany(
+          {
+            include: {
+              invoiceDetails: true,
+            }
+          }
+        );
+        expect(result).toEqual(expected);
+      });
+
+      test("請求を削除できる", async () => {
+        const expected: Invoice[] = [];
+        await prisma.$transaction(async (prisma) => {
+          for (const invoice of invoices) {
+            await prisma.invoiceDetail.deleteMany({
+              where: { invoiceNo: invoice.invoiceNo }
+            });
+            await prisma.invoice.delete({
+              where: { invoiceNo: invoice.invoiceNo }
+            });
+          }
+        });
+
+        const result = await prisma.invoice.findMany();
+        expect(result).toEqual(expected);
+      });
+
 
     });
   });
