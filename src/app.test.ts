@@ -6,6 +6,7 @@ import {
   Employee,
   ProductCategory,
   Product,
+  Bom,
   PriceByCustomer,
   AlternateProduct,
   Company,
@@ -103,6 +104,18 @@ const products: Product[] = [
     updateDate: new Date("2021-01-01"),
     updater: "user",
   }
+];
+
+const boms: Bom[] = [
+  {
+    prodCode: "1010100X",
+    bomCode: "1010100X",
+    quantity: 0,
+    createDate: new Date(),
+    creator: "admin",
+    updateDate: new Date(),
+    updater: "admin",
+  },
 ];
 
 const alternateProducts: AlternateProduct[] = [
@@ -612,6 +625,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
       beforeAll(async () => {
         await prisma.alternateProduct.deleteMany();
         await prisma.priceByCustomer.deleteMany();
+        await prisma.bom.deleteMany();
         await prisma.product.deleteMany();
         await prisma.productCategory.deleteMany();
       });
@@ -1580,5 +1594,153 @@ describe("Part 2 販売システムのDB設計", () => {
       });
     });
 
+  });
+});
+
+describe("Part 3 仕入／在庫システムのDB設計", () => {
+  describe("Chapter 9 発注／仕入業務のDB設計", () => {
+    describe("MRP所要量計算", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.bom.deleteMany();
+          await prisma.product.deleteMany();
+        });
+      });
+
+      test("部品表を登録できる", async () => {
+        const newProducts: Product[] = [
+          {
+            ...products[0],
+          },
+          {
+            ...products[0],
+            prodCode: "001",
+            name: "いちご蒸缶",
+            prodType: "2",
+          },
+          {
+            ...products[0],
+            prodCode: "002",
+            name: "いちご蒸缶セット",
+            prodType: "2",
+          },
+          {
+            ...products[0],
+            prodCode: "X01",
+            name: "生うに",
+            prodType: "3",
+          },
+          {
+            ...products[0],
+            prodCode: "X02",
+            name: "大アワビ",
+            prodType: "3",
+          },
+          {
+            ...products[0],
+            prodCode: "Z01",
+            name: "缶",
+            prodType: "4",
+          },
+        ];
+
+        const newBoms: Bom[] = [
+          {
+            ...boms[0],
+          },
+          {
+            ...boms[0],
+            prodCode: "001",
+            bomCode: "X01",
+            quantity: 2,
+          },
+          {
+            ...boms[0],
+            prodCode: "001",
+            bomCode: "X02",
+            quantity: 1,
+          },
+          {
+            ...boms[0],
+            prodCode: "001",
+            bomCode: "Z01",
+            quantity: 1,
+          },
+          {
+            ...boms[0],
+            prodCode: "002",
+            bomCode: "001",
+            quantity: 2,
+          },
+        ];
+        const expected: Product[] = newProducts.map((p) => {
+          return {
+            ...p,
+            boms: newBoms.filter((b) => b.prodCode === p.prodCode),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.product.createMany({ data: newProducts });
+          await prisma.bom.createMany({ data: newBoms });
+        });
+
+        const result = await prisma.product.findMany({
+          include: {
+            boms: true,
+          }
+        });
+        expect(result).toEqual(expected);
+      });
+
+      test("部品表を更新できる", async () => {
+        const updatedProducts: Product[] = products.map((p) => { return { ...p, name: "updated" }; });
+        const updatedBoms: Bom[] = boms.map((b) => { return { ...b, quantity: 10 }; });
+
+        const expected: Product[] = updatedProducts.map((p) => {
+          return {
+            ...p,
+            boms: updatedBoms.filter((b) => b.prodCode === p.prodCode),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const product of updatedProducts) {
+            await prisma.product.update({
+              where: { prodCode: product.prodCode }, data: product
+            });
+          }
+
+          for (const bom of updatedBoms) {
+            await prisma.bom.update({
+              where: { prodCode_bomCode: { prodCode: bom.prodCode, bomCode: bom.bomCode } }, data: bom
+            });
+          }
+        });
+
+        const result = await prisma.product.findMany({
+          where: { prodCode: products[0].prodCode },
+          include: {
+            boms: true,
+          }
+        });
+        expect(result).toEqual(expected);
+      });
+
+      test("部品表を削除できる", async () => {
+        const expected: Bom[] = [];
+        await prisma.$transaction(async (prisma) => {
+          await prisma.bom.deleteMany({
+            where: { prodCode: products[0].prodCode }
+          });
+          await prisma.product.delete({
+            where: { prodCode: products[0].prodCode }
+          });
+        });
+
+        const result = await prisma.bom.findMany({
+          where: { prodCode: products[0].prodCode }
+        });
+        expect(result).toEqual(expected);
+      });
+    });
   });
 });
