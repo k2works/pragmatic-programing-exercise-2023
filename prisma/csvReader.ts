@@ -24,6 +24,8 @@ import {
   InvoiceDetail,
   BankAccount,
   Credit,
+  PurchaseOrder,
+  PurchaseOrderdetail,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -987,5 +989,89 @@ export const credits: Credit[] = fs
       updater,
       updatePlgDate: new Date(updatePlgDate),
       updatePgm
+    };
+  });
+
+export const purchaseOrders: PurchaseOrder[] = fs
+  .readFileSync(filePath("purchaseOrder.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      poNo,
+      poDate,
+      orderNo,
+      supCode,
+      supSubNo,
+      empCode,
+      dueDate,
+      whCode,
+      poAmnt,
+      cmpTax,
+      slipComment,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      poNo,
+      poDate: new Date(poDate),
+      orderNo,
+      supCode,
+      supSubNo: Number(supSubNo),
+      empCode,
+      dueDate: new Date(dueDate),
+      whCode,
+      poAmnt: Number(poAmnt),
+      cmpTax: Number(cmpTax),
+      slipComment,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater,
+    };
+  });
+
+export const purchaseOrderDetails: PurchaseOrderdetail[] = fs
+  .readFileSync(filePath("purchaseOrderDetail.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      poNo,
+      poRowNo,
+      poRowDspNo,
+      orderNo,
+      soRowNo,
+      prodCode,
+      prodName,
+      poPrice,
+      poQt,
+      recivedQt,
+      completeFlg,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      poNo,
+      poRowNo: Number(poRowNo),
+      poRowDspNo: Number(poRowDspNo),
+      orderNo,
+      soRowNo: Number(soRowNo),
+      prodCode,
+      prodName,
+      poPrice: Number(poPrice),
+      poQt: Number(poQt),
+      recivedQt: Number(recivedQt),
+      completeFlg: Number(completeFlg),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater,
     };
   });

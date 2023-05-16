@@ -515,3 +515,48 @@ model Credit {
 
   @@map("入金データ")
 }
+
+model PurchaseOrder {
+  poNo        String    @id(map: "pk_purchase_orders") @map("発注番号") @db.VarChar(10)
+  poDate      DateTime? @map("発注日") @db.Timestamp(6)
+  orderNo     String    @map("受注番号") @db.VarChar(10)
+  supCode     String    @map("仕入先コード") @db.VarChar(8)
+  supSubNo    Int?      @default(0) @map("仕入先枝番")
+  empCode     String    @map("発注担当者コード") @db.VarChar(10)
+  dueDate     DateTime? @map("指定納期") @db.Timestamp(6)
+  whCode      String    @map("倉庫コード") @db.VarChar(3)
+  poAmnt      Int?      @default(0) @map("発注金額合計")
+  cmpTax      Int       @default(0) @map("消費税合計")
+  slipComment String?   @map("備考") @db.VarChar(1000)
+  createDate  DateTime  @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator     String?   @map("作成者名") @db.VarChar(12)
+  updateDate  DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater     String?   @map("更新者名") @db.VarChar(12)
+
+  purchaseOrderDetails PurchaseOrderdetail[]
+
+  @@map("発注データ")
+}
+
+model PurchaseOrderdetail {
+  poNo        String   @map("発注番号") @db.VarChar(10)
+  poRowNo     Int      @map("発注行番号")
+  poRowDspNo  Int      @map("発注行表示番号")
+  orderNo     String   @map("受注番号") @db.VarChar(10)
+  soRowNo     Int      @map("受注行番号")
+  prodCode    String   @map("商品コード") @db.VarChar(16)
+  prodName    String   @map("商品名") @db.VarChar(10)
+  poPrice     Int?     @default(0) @map("発注単価")
+  poQt        Int      @default(1) @map("発注数量")
+  recivedQt   Int      @default(1) @map("入荷数量")
+  completeFlg Int      @default(0) @map("完了フラグ")
+  createDate  DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator     String?  @map("作成者名") @db.VarChar(12)
+  updateDate  DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater     String?  @map("更新者名") @db.VarChar(12)
+
+  PurchaseOrder PurchaseOrder? @relation(fields: [poNo], references: [poNo])
+
+  @@id([poRowNo, poNo])
+  @@map("発注データ明細")
+}

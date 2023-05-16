@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, areas, bankAccounts, boms, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, sales, salesDetails, suppliers } from "./csvReader";
+import { alterNateProducts, areas, bankAccounts, boms, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, suppliers } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -321,6 +321,34 @@ async function main() {
       update: credit
     })
   }
+
+  await prisma.$transaction(async (prisma) => {
+    console.table(purchaseOrders)
+    for (const po of purchaseOrders) {
+      await prisma.purchaseOrder.upsert({
+        where: {
+          poNo: po.poNo
+        },
+        create: po,
+        update: po
+      })
+    }
+
+    console.table(purchaseOrderDetails)
+    for (const poDetail of purchaseOrderDetails) {
+      await prisma.purchaseOrderdetail.upsert({
+        where: {
+          poRowNo_poNo: {
+            poRowNo: poDetail.poRowNo,
+            poNo: poDetail.poNo
+          },
+        },
+        create: poDetail,
+        update: poDetail
+      })
+    }
+  });
+
 
 }
 
