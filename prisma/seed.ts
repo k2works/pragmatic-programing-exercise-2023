@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, areas, bankAccounts, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, sales, salesDetails, suppliers } from "./csvReader";
+import { alterNateProducts, areas, bankAccounts, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, sales, salesDetails, suppliers } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -296,6 +296,18 @@ async function main() {
       update: bankAccount
     })
   }
+
+  console.table(credits)
+  for (const credit of credits) {
+    await prisma.credit.upsert({
+      where: {
+        creditNo: credit.creditNo
+      },
+      create: credit,
+      update: credit
+    })
+  }
+
 }
 
 main()

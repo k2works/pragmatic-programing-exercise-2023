@@ -22,6 +22,7 @@ import {
   Invoice,
   InvoiceDetail,
   BankAccount,
+  Credit,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -909,6 +910,50 @@ export const bankAccounts: BankAccount[] = fs
       startDate: new Date(startDate),
       aBankCode,
       aBankBlncCode,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater,
+      updatePlgDate: new Date(updatePlgDate),
+      updatePgm
+    };
+  });
+
+export const credits: Credit[] = fs
+  .readFileSync(filePath("credit.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      creditNo,
+      creditDate,
+      deptCode,
+      startDate,
+      custCode,
+      custSubNo,
+      payMethodType,
+      bankAcutCode,
+      receivedAmnt,
+      received,
+      createDate,
+      creator,
+      updateDate,
+      updater,
+      updatePlgDate,
+      updatePgm
+    ] = line.split(",");
+    return {
+      creditNo,
+      creditDate: new Date(creditDate),
+      deptCode,
+      startDate: new Date(startDate),
+      custCode,
+      custSubNo: Number(custSubNo),
+      payMethodType: Number(payMethodType),
+      bankAcutCode,
+      receivedAmnt: Number(receivedAmnt),
+      received: Number(received),
       createDate: new Date(createDate),
       creator,
       updateDate: new Date(updateDate),

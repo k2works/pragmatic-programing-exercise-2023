@@ -478,3 +478,24 @@ model BankAccount {
 
   @@map("入金口座マスタ")
 }
+
+model Credit {
+  creditNo      String    @id(map: "pk_credit") @map("入金番号") @db.VarChar(10)
+  creditDate    DateTime? @map("入金日") @db.Timestamp(6)
+  deptCode      String    @map("部門コード") @db.VarChar(6)
+  startDate     DateTime  @default(dbgenerated("CURRENT_DATE")) @map("開始日") @db.Timestamp(6)
+  custCode      String    @map("顧客コード") @db.VarChar(8)
+  custSubNo     Int?      @default(0) @map("顧客枝番")
+  payMethodType Int?      @default(1) @map("支払方法区分")
+  bankAcutCode  String?   @map("入金口座コード") @db.VarChar(8)
+  receivedAmnt  Int?      @default(0) @map("入金金額")
+  received      Int?      @default(0) @map("消込金額")
+  createDate    DateTime  @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator       String?   @map("作成者名") @db.VarChar(12)
+  updateDate    DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater       String?   @map("更新者名") @db.VarChar(12)
+  updatePlgDate DateTime? @default(dbgenerated("CURRENT_DATE")) @map("プログラム更新日時") @db.Timestamp(6)
+  updatePgm     String?   @map("更新プログラム名") @db.VarChar(50)
+
+  @@map("入金データ")
+}
