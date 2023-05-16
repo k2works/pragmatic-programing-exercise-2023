@@ -30,6 +30,8 @@ model Department {
   updateDate DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
   updater    String?   @map("更新者名") @db.VarChar(12)
 
+  wharehouseDepartments WhareHouseDepartment[]
+
   @@id([deptCode, startDate], map: "pk_department")
   @@map("部門マスタ")
 }
@@ -557,6 +559,61 @@ model PurchaseOrderDetail {
 
   PurchaseOrder PurchaseOrder? @relation(fields: [poNo], references: [poNo])
 
-  @@id([poRowNo, poNo])
+  @@id([poRowNo, poNo], map: "pk_purchase_order_details")
   @@map("発注データ明細")
+}
+
+model WhareHouse {
+  whCode     String   @id(map: "pk_wh_mst") @map("倉庫コード") @db.VarChar(3)
+  whName     String?  @map("倉庫名") @db.VarChar(20)
+  whType     String?  @default("N") @map("倉庫区分") @db.VarChar(1)
+  zipCode    String?  @map("郵便番号") @db.Char(8)
+  state      String?  @map("都道府県") @db.VarChar(4)
+  address1   String?  @map("住所１") @db.VarChar(40)
+  address2   String?  @map("住所２") @db.VarChar(40)
+  createDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator    String?  @map("作成者名") @db.VarChar(12)
+  updateDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater    String?  @map("更新者名") @db.VarChar(12)
+
+  warehouseDepartments WhareHouseDepartment[]
+  stocks               Stock[]
+
+  @@map("倉庫マスタ")
+}
+
+model WhareHouseDepartment {
+  whCode     String   @map("倉庫コード") @db.VarChar(3)
+  deptCode   String   @map("部門コード") @db.VarChar(6)
+  startDate  DateTime @default(dbgenerated("CURRENT_DATE")) @map("開始日") @db.Timestamp(6)
+  createDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator    String?  @map("作成者名") @db.VarChar(12)
+  updateDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater    String?  @map("更新者名") @db.VarChar(12)
+
+  wharehouse WhareHouse? @relation(fields: [whCode], references: [whCode])
+  department Department? @relation(fields: [deptCode, startDate], references: [deptCode, startDate])
+
+  @@id([whCode, deptCode, startDate], map: "pk_wh_dept_mst")
+  @@map("倉庫部門マスタ")
+}
+
+model Stock {
+  whCode           String    @map("倉庫コード") @db.VarChar(3)
+  prodCode         String    @map("商品コード") @db.VarChar(16)
+  rotNo            String    @map("ロット番号") @db.VarChar(20)
+  stockType        String    @default("1") @map("在庫区分") @db.VarChar(1)
+  qualityType      String    @default("G") @map("良品区分") @db.VarChar(1)
+  actual           Int       @default(1) @map("実在庫数")
+  valid            Int       @default(1) @map("有効在庫数")
+  lastDeliveryDate DateTime? @map("最終出荷日") @db.Timestamp(6)
+  createDate       DateTime  @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator          String?   @map("作成者名") @db.VarChar(12)
+  updateDate       DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater          String?   @map("更新者名") @db.VarChar(12)
+
+  wharehouse WhareHouse? @relation(fields: [whCode], references: [whCode])
+
+  @@id([whCode, prodCode, rotNo, stockType, qualityType], map: "pk_stock")
+  @@map("在庫データ")
 }

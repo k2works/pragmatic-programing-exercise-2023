@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, areas, bankAccounts, boms, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, suppliers } from "./csvReader";
+import { alterNateProducts, areas, bankAccounts, boms, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, stocks, suppliers, whareHouseDepartments, wharehouses } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -349,7 +349,48 @@ async function main() {
     }
   });
 
+  console.table(wharehouses)
+  for (const w of wharehouses) {
+    await prisma.whareHouse.upsert({
+      where: {
+        whCode: w.whCode
+      },
+      create: w,
+      update: w
+    })
+  }
 
+  console.table(whareHouseDepartments)
+  for (const w of whareHouseDepartments) {
+    await prisma.whareHouseDepartment.upsert({
+      where: {
+        whCode_deptCode_startDate: {
+          whCode: w.whCode,
+          deptCode: w.deptCode,
+          startDate: w.startDate
+        }
+      },
+      create: w,
+      update: w
+    })
+  }
+
+  console.table(stocks)
+  for (const stock of stocks) {
+    await prisma.stock.upsert({
+      where: {
+        whCode_prodCode_rotNo_stockType_qualityType: {
+          whCode: stock.whCode,
+          prodCode: stock.prodCode,
+          rotNo: stock.rotNo,
+          stockType: stock.stockType,
+          qualityType: stock.qualityType
+        }
+      },
+      create: stock,
+      update: stock
+    })
+  }
 }
 
 main()

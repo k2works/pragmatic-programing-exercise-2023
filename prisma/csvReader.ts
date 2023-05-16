@@ -26,6 +26,9 @@ import {
   Credit,
   PurchaseOrder,
   PurchaseOrderDetail,
+  WhareHouse,
+  WhareHouseDepartment,
+  Stock,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -1073,5 +1076,101 @@ export const purchaseOrderDetails: PurchaseOrderDetail[] = fs
       creator,
       updateDate: new Date(updateDate),
       updater,
+    };
+  });
+
+export const wharehouses: WhareHouse[] = fs
+  .readFileSync(filePath("wharehouse.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      whCode,
+      whName,
+      whType,
+      zipCode,
+      state,
+      address1,
+      address2,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      whCode,
+      whName,
+      whType,
+      zipCode,
+      state,
+      address1,
+      address2,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const whareHouseDepartments: WhareHouseDepartment[] = fs
+  .readFileSync(filePath("wharehouseDepartment.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      whCode,
+      deptCode,
+      startDate,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      whCode,
+      deptCode,
+      startDate: new Date(startDate),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const stocks: Stock[] = fs
+  .readFileSync(filePath("stock.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      whCode,
+      prodCode,
+      rotNo,
+      stockType,
+      qualityType,
+      actual,
+      valid,
+      lastDeliveryDate,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      whCode,
+      prodCode,
+      rotNo,
+      stockType,
+      qualityType,
+      actual: Number(actual),
+      valid: Number(valid),
+      lastDeliveryDate: new Date(lastDeliveryDate),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
     };
   });
