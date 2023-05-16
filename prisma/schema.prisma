@@ -454,3 +454,27 @@ model InvoiceDetail {
   @@id([invoiceNo, salesNo, rowNo], map: "pk_invoice_details")
   @@map("請求データ明細")
 }
+
+model BankAccount {
+  bankAcutCode      String    @id(map: "pk_bank_acut_mst") @map("入金口座コード") @db.VarChar(8)
+  reciveActName     String?   @map("入金口座名") @db.VarChar(30)
+  applStartDate     DateTime  @default(dbgenerated("CURRENT_DATE")) @map("適用開始日") @db.Timestamp(6)
+  applEndDate       DateTime? @default(dbgenerated("'2100-12-31 00:00:00'::timestamp without time zone")) @map("適用終了日") @db.Timestamp(6)
+  startActName      String?   @map("適用開始後入金口座名") @db.VarChar(30)
+  reciveBankActType String?   @map("入金口座区分") @db.VarChar(1)
+  reciveActNo       String?   @map("入金口座番号") @db.VarChar(12)
+  bankActType       String?   @map("銀行口座種別") @db.VarChar(1)
+  actName           String?   @map("口座名義人") @db.VarChar(20)
+  deptCode          String    @map("部門コード") @db.VarChar(6)
+  startDate         DateTime  @default(dbgenerated("CURRENT_DATE")) @map("部門開始日") @db.Timestamp(6)
+  aBankCode         String?   @map("全銀協銀行コード") @db.VarChar(4)
+  aBankBlncCode     String?   @map("全銀協支店コード") @db.VarChar(3)
+  createDate        DateTime  @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator           String?   @map("作成者名") @db.VarChar(12)
+  updateDate        DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater           String?   @map("更新者名") @db.VarChar(12)
+  updatePlgDate     DateTime? @default(dbgenerated("CURRENT_DATE")) @map("プログラム更新日時") @db.Timestamp(6)
+  updatePgm         String?   @map("更新プログラム名") @db.VarChar(50)
+
+  @@map("入金口座マスタ")
+}

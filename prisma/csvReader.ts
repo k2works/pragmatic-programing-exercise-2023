@@ -21,6 +21,7 @@ import {
   SalesDetail,
   Invoice,
   InvoiceDetail,
+  BankAccount,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -864,5 +865,55 @@ export const invoiceDetails: InvoiceDetail[] = fs
       creator,
       updateDate: new Date(updateDate),
       updater
+    };
+  });
+
+export const bankAccounts: BankAccount[] = fs
+  .readFileSync(filePath("bankAccount.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      bankAcutCode,
+      reciveActName,
+      applStartDate,
+      applEndDate,
+      startActName,
+      reciveBankActType,
+      reciveActNo,
+      bankActType,
+      actName,
+      deptCode,
+      startDate,
+      aBankCode,
+      aBankBlncCode,
+      createDate,
+      creator,
+      updateDate,
+      updater,
+      updatePlgDate,
+      updatePgm
+    ] = line.split(",");
+    return {
+      bankAcutCode,
+      reciveActName,
+      applStartDate: new Date(applStartDate),
+      applEndDate: new Date(applEndDate),
+      startActName,
+      reciveBankActType,
+      reciveActNo,
+      bankActType,
+      actName,
+      deptCode,
+      startDate: new Date(startDate),
+      aBankCode,
+      aBankBlncCode,
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater,
+      updatePlgDate: new Date(updatePlgDate),
+      updatePgm
     };
   });
