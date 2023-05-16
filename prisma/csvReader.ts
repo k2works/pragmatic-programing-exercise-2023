@@ -1206,7 +1206,7 @@ export const stocks: Stock[] = fs
   });
 
 export const purchases: Purchase[] = fs
-  .readFileSync(filePath("buying.csv"), encodeing)
+  .readFileSync(filePath("purchase.csv"), encodeing)
   .trim() // 末尾の改行を削除
   .split("\n") // 行単位で分割
   .slice(1) // ヘッダー行を除外
@@ -1248,7 +1248,7 @@ export const purchases: Purchase[] = fs
   });
 
 export const purchaseDetails: PurchaseDetail[] = fs
-  .readFileSync(filePath("buyingDetail.csv"), encodeing)
+  .readFileSync(filePath("purchaseDetail.csv"), encodeing)
   .trim() // 末尾の改行を削除
   .split("\n") // 行単位で分割
   .slice(1) // ヘッダー行を除外
