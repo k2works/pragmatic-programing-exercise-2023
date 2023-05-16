@@ -33,6 +33,7 @@ import {
   Purchase,
   PurchaseDetail,
   Payment,
+  CreditBalance,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -1318,6 +1319,34 @@ export const payments: Payment[] = fs
       payAmnt: Number(payAmnt),
       cmpTax: Number(cmpTax),
       completeFlg: Number(completeFlg),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater,
+    };
+  });
+
+export const creditBalances: CreditBalance[] = fs
+  .readFileSync(filePath("creditBalance.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      compCode,
+      orderBalance,
+      recBalance,
+      payBalance,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      compCode,
+      orderBalance: Number(orderBalance),
+      recBalance: Number(recBalance),
+      payBalance: Number(payBalance),
       createDate: new Date(createDate),
       creator,
       updateDate: new Date(updateDate),
