@@ -29,6 +29,9 @@ import {
   Credit,
   PurchaseOrder,
   PurchaseOrderDetail,
+  Warehouse,
+  WarehouseDepartment,
+  Stock,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -609,6 +612,64 @@ const purchaseOrderDetails: PurchaseOrderDetail[] = [
   }
 ]
 
+const warehouses: Warehouse[] = [
+  {
+    whCode: '001',
+    whName: '本社倉庫',
+    whType: '1',
+    zipCode: '000-0000',
+    state: '東京都',
+    address1: '千代田区',
+    address2: '千代田1-1-1',
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin'
+  }
+]
+
+const warehouseDepartments: WarehouseDepartment[] = [
+  {
+    whCode: '001',
+    deptCode: '11101',
+    startDate: new Date('2021-01-01'),
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin'
+  }
+]
+
+const stocks: Stock[] = [
+  {
+    whCode: '001',
+    prodCode: '001',
+    rotNo: 'X03022801',
+    stockType: '1',
+    qualityType: '1',
+    actual: 30,
+    valid: 0,
+    lastDeliveryDate: new Date(),
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin'
+  },
+  {
+    whCode: '001',
+    prodCode: '001',
+    rotNo: 'X03041502',
+    stockType: '1',
+    qualityType: '1',
+    actual: 100,
+    valid: 0,
+    lastDeliveryDate: new Date(),
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin'
+  }
+]
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 1 販売管理システム全体像", () => { });
@@ -618,6 +679,7 @@ describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 3 部門／社員／商品マスタ設計", () => {
     describe("部門マスタ", () => {
       beforeAll(async () => {
+        await prisma.warehouseDepartment.deleteMany();
         await prisma.department.deleteMany();
       });
 
@@ -1912,6 +1974,120 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         });
 
         const result = await prisma.purchaseOrder.findMany();
+        expect(result).toEqual(expected);
+      });
+
+    });
+  });
+
+  describe("Chapter 10 入庫／倉庫移動業務のDB設計", () => {
+    describe("部門間取引", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.stock.deleteMany();
+          await prisma.warehouseDepartment.deleteMany();
+          await prisma.department.deleteMany();
+          await prisma.warehouse.deleteMany();
+
+          await prisma.department.createMany({ data: departments });
+        });
+      });
+
+      test("在庫データを登録できる", async () => {
+        const expected: Warehouse[] = warehouses.map((s) => {
+          return {
+            ...s,
+            warehouseDepartments: warehouseDepartments.filter((whd) => whd.whCode === s.whCode),
+            stocks: stocks.filter((st) => st.whCode === s.whCode),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.warehouse.createMany({ data: warehouses });
+          await prisma.warehouseDepartment.createMany({ data: warehouseDepartments });
+          await prisma.stock.createMany({ data: stocks });
+        });
+
+        const result = await prisma.warehouse.findMany({
+          include: {
+            stocks: true,
+            warehouseDepartments: true,
+          }
+        });
+        expect(result).toEqual(expected);
+      });
+
+      test("在庫データを更新できる", async () => {
+        const updatedWarehouses: Warehouse[] = warehouses.map((s) => { return { ...s, whName: "updated" }; });
+        const updatedWarehouseDepartments: WarehouseDepartment[] = warehouseDepartments.map((whd) => { return { ...whd } });
+        const updatedStocks: Stock[] = stocks.map((st) => { return { ...st, actual: 10 }; });
+
+        const expected: Warehouse[] = updatedWarehouses.map((s) => {
+          return {
+            ...s,
+            warehouseDepartments: updatedWarehouseDepartments.filter((whd) => whd.whCode === s.whCode),
+            stocks: updatedStocks.filter((st) => st.whCode === s.whCode),
+          };
+        }
+        );
+
+        await prisma.$transaction(async (prisma) => {
+          for (const warehouse of updatedWarehouses) {
+            await prisma.warehouse.update({
+              where: { whCode: warehouse.whCode }, data: warehouse
+            });
+          }
+          for (const warehouseDepartment of updatedWarehouseDepartments) {
+            await prisma.warehouseDepartment.update({
+              where: {
+                whCode_deptCode_startDate: {
+                  whCode: warehouseDepartment.whCode,
+                  deptCode: warehouseDepartment.deptCode,
+                  startDate: warehouseDepartment.startDate
+                }
+              }, data: warehouseDepartment
+            });
+          }
+          for (const stock of updatedStocks) {
+            await prisma.stock.update({
+              where: {
+                whCode_prodCode_rotNo_stockType_qualityType: {
+                  whCode: stock.whCode,
+                  prodCode: stock.prodCode,
+                  rotNo: stock.rotNo,
+                  stockType: stock.stockType,
+                  qualityType: stock.qualityType
+                }
+              }, data: stock
+            });
+          }
+        })
+
+        const result = await prisma.warehouse.findMany({
+          include: {
+            stocks: true,
+            warehouseDepartments: true,
+          }
+        });
+        expect(result).toEqual(expected);
+      });
+
+      test("在庫データを削除できる", async () => {
+        const expected: Warehouse[] = [];
+        await prisma.$transaction(async (prisma) => {
+          for (const warehouse of warehouses) {
+            await prisma.warehouseDepartment.deleteMany({
+              where: { whCode: warehouse.whCode }
+            });
+            await prisma.stock.deleteMany({
+              where: { whCode: warehouse.whCode }
+            });
+            await prisma.warehouse.delete({
+              where: { whCode: warehouse.whCode }
+            });
+          }
+        });
+
+        const result = await prisma.warehouse.findMany();
         expect(result).toEqual(expected);
       });
 
