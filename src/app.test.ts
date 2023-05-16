@@ -33,6 +33,8 @@ import {
   Location,
   WarehouseDepartment,
   Stock,
+  Buying,
+  BuyingDetail,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -706,10 +708,78 @@ const stocks: Stock[] = [
   },
 ];
 
-describe("Part 1 業務システムの概要とマスタ設計", () => {
-  describe("Chapter 1 販売管理システム全体像", () => {});
+const buyings: Buying[] = [
+  {
+    buyNo: '0000000001',
+    buyDate: new Date(),
+    supCode: '00X',
+    supSubNo: 1,
+    empCode: 'EMP999',
+    startDate: new Date('2021-01-01'),
+    poNo: 'PO0000001',
+    deptCode: '11101',
+    buyAmmount: 1000,
+    cmpTax: 0,
+    slipComment: 'test',
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  }
+]
 
-  describe("Chapter 2 基幹業務システム構築のポイント", () => {});
+const buyingDetails: BuyingDetail[] = [
+  {
+    buyNo: '0000000001',
+    buyRowNo: 1,
+    buyRowDspNo: 1,
+    poRowNo: 1,
+    prodCode: '1010100X',
+    whCode: '001',
+    prodName: 'test',
+    poPrice: 1000,
+    buyQuantity: 1,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+  {
+    buyNo: '0000000001',
+    buyRowNo: 2,
+    buyRowDspNo: 2,
+    poRowNo: 2,
+    prodCode: '1010100X',
+    whCode: '001',
+    prodName: 'test',
+    poPrice: 1000,
+    buyQuantity: 1,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+  {
+    buyNo: '0000000001',
+    buyRowNo: 3,
+    buyRowDspNo: 3,
+    poRowNo: 3,
+    prodCode: '1010100X',
+    whCode: '001',
+    prodName: 'test',
+    poPrice: 1000,
+    buyQuantity: 1,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  }
+]
+
+describe("Part 1 業務システムの概要とマスタ設計", () => {
+  describe("Chapter 1 販売管理システム全体像", () => { });
+
+  describe("Chapter 2 基幹業務システム構築のポイント", () => { });
 
   describe("Chapter 3 部門／社員／商品マスタ設計", () => {
     describe("部門マスタ", () => {
@@ -2305,5 +2375,109 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         expect(result).toEqual(expected);
       });
     });
+  });
+
+  describe("Chapter 12  仕入／支払業務のDB設計", () => {
+    describe("仕入データのテーブル設計", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.purchaseOrderDetail.deleteMany();
+          await prisma.purchaseOrder.deleteMany();
+          await prisma.buyingDetail.deleteMany();
+          await prisma.buying.deleteMany();
+          await prisma.product.deleteMany();
+          await prisma.supplier.deleteMany();
+
+          await prisma.supplier.createMany({ data: suppliers });
+          await prisma.product.createMany({ data: products });
+          await prisma.purchaseOrder.createMany({ data: purchaseOrders });
+          await prisma.purchaseOrderDetail.createMany({
+            data: purchaseOrderDetails,
+          });
+        });
+      });
+
+      test("仕入を登録できる", async () => {
+        const expected: Buying[] = buyings.map((b) => {
+          return {
+            ...b,
+            buyingDetails: buyingDetails.filter((bd) => bd.buyNo === b.buyNo),
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.buying.createMany({ data: buyings });
+          await prisma.buyingDetail.createMany({ data: buyingDetails });
+        });
+
+        const result = await prisma.buying.findMany({
+          include: {
+            buyingDetails: true,
+          },
+        });
+        expect(result).toEqual(expected);
+      });
+
+      test("仕入を更新できる", async () => {
+        const updatedBuyings: Buying[] = buyings.map((b) => {
+          return { ...b, buyAmmount: 1000 };
+        });
+        const updatedBuyingDetails: BuyingDetail[] = buyingDetails.map((bd) => {
+          return { ...bd, buyQuantity: 10 };
+        });
+        const expected: Buying[] = updatedBuyings.map((b) => {
+          return {
+            ...b,
+            buyingDetails: updatedBuyingDetails.filter(
+              (bd) => bd.buyNo === b.buyNo,
+            ),
+          };
+        });
+
+        await prisma.$transaction(async (prisma) => {
+          for (const buying of updatedBuyings) {
+            await prisma.buying.update({
+              where: { buyNo: buying.buyNo },
+              data: buying,
+            });
+          }
+          for (const buyingDetail of updatedBuyingDetails) {
+            await prisma.buyingDetail.update({
+              where: {
+                buyRowNo_buyNo: {
+                  buyRowNo: buyingDetail.buyRowNo,
+                  buyNo: buyingDetail.buyNo,
+                },
+              },
+              data: buyingDetail,
+            });
+          }
+        });
+
+        const result = await prisma.buying.findMany({
+          include: {
+            buyingDetails: true,
+          },
+        });
+        expect(result).toEqual(expected);
+      });
+    });
+
+    test("仕入を削除できる", async () => {
+      const expected: Buying[] = [];
+      await prisma.$transaction(async (prisma) => {
+        for (const buying of buyings) {
+          await prisma.buyingDetail.deleteMany({
+            where: { buyNo: buying.buyNo },
+          });
+          await prisma.buying.delete({
+            where: { buyNo: buying.buyNo },
+          });
+        }
+      });
+
+      const result = await prisma.buying.findMany();
+      expect(result).toEqual(expected);
+    });
+
   });
 });
