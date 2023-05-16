@@ -26,8 +26,9 @@ import {
   Credit,
   PurchaseOrder,
   PurchaseOrderDetail,
-  Warehouse,
   WarehouseDepartment,
+  Warehouse,
+  Location,
   Stock,
 } from "@prisma/client";
 import fs from "fs";
@@ -1079,6 +1080,32 @@ export const purchaseOrderDetails: PurchaseOrderDetail[] = fs
     };
   });
 
+export const warehouseDepartments: WarehouseDepartment[] = fs
+  .readFileSync(filePath("warehouseDepartment.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      whCode,
+      deptCode,
+      startDate,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      whCode,
+      deptCode,
+      startDate: new Date(startDate),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
 export const warehouses: Warehouse[] = fs
   .readFileSync(filePath("warehouse.csv"), encodeing)
   .trim() // 末尾の改行を削除
@@ -1113,16 +1140,16 @@ export const warehouses: Warehouse[] = fs
     };
   });
 
-export const warehouseDepartments: WarehouseDepartment[] = fs
-  .readFileSync(filePath("warehouseDepartment.csv"), encodeing)
+export const locations: Location[] = fs
+  .readFileSync(filePath("location.csv"), encodeing)
   .trim() // 末尾の改行を削除
   .split("\n") // 行単位で分割
   .slice(1) // ヘッダー行を除外
   .map((line) => {
     const [
       whCode,
-      deptCode,
-      startDate,
+      locationCode,
+      prodCode,
       createDate,
       creator,
       updateDate,
@@ -1130,8 +1157,8 @@ export const warehouseDepartments: WarehouseDepartment[] = fs
     ] = line.split(",");
     return {
       whCode,
-      deptCode,
-      startDate: new Date(startDate),
+      locationCode,
+      prodCode,
       createDate: new Date(createDate),
       creator,
       updateDate: new Date(updateDate),

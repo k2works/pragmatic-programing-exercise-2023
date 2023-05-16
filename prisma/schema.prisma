@@ -563,6 +563,22 @@ model PurchaseOrderDetail {
   @@map("発注データ明細")
 }
 
+model WarehouseDepartment {
+  whCode     String   @map("倉庫コード") @db.VarChar(3)
+  deptCode   String   @map("部門コード") @db.VarChar(6)
+  startDate  DateTime @default(dbgenerated("CURRENT_DATE")) @map("開始日") @db.Timestamp(6)
+  createDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator    String?  @map("作成者名") @db.VarChar(12)
+  updateDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater    String?  @map("更新者名") @db.VarChar(12)
+
+  warehouse  Warehouse?  @relation(fields: [whCode], references: [whCode])
+  department Department? @relation(fields: [deptCode, startDate], references: [deptCode, startDate])
+
+  @@id([whCode, deptCode, startDate], map: "pk_wh_dept_mst")
+  @@map("倉庫部門マスタ")
+}
+
 model Warehouse {
   whCode     String   @id(map: "pk_wh_mst") @map("倉庫コード") @db.VarChar(3)
   whName     String?  @map("倉庫名") @db.VarChar(20)
@@ -578,24 +594,24 @@ model Warehouse {
 
   warehouseDepartments WarehouseDepartment[]
   stocks               Stock[]
+  locations            Location[]
 
   @@map("倉庫マスタ")
 }
 
-model WarehouseDepartment {
-  whCode     String   @map("倉庫コード") @db.VarChar(3)
-  deptCode   String   @map("部門コード") @db.VarChar(6)
-  startDate  DateTime @default(dbgenerated("CURRENT_DATE")) @map("開始日") @db.Timestamp(6)
-  createDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
-  creator    String?  @map("作成者名") @db.VarChar(12)
-  updateDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
-  updater    String?  @map("更新者名") @db.VarChar(12)
+model Location {
+  whCode       String   @map("倉庫コード") @db.VarChar(3)
+  locationCode String   @map("棚番コード") @db.VarChar(4)
+  prodCode     String   @map("商品コード") @db.VarChar(16)
+  createDate   DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator      String?  @map("作成者名") @db.VarChar(12)
+  updateDate   DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater      String?  @map("更新者名") @db.VarChar(12)
 
-  warehouse  Warehouse?  @relation(fields: [whCode], references: [whCode])
-  department Department? @relation(fields: [deptCode, startDate], references: [deptCode, startDate])
+  warehouse Warehouse? @relation(fields: [whCode], references: [whCode])
 
-  @@id([whCode, deptCode, startDate], map: "pk_wh_dept_mst")
-  @@map("倉庫部門マスタ")
+  @@id([whCode, locationCode, prodCode], map: "pk_location_mst")
+  @@map("棚番マスタ")
 }
 
 model Stock {
