@@ -24,6 +24,7 @@ import {
   SalesDetail,
   Invoice,
   InvoiceDetail,
+  BankAccount,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -422,6 +423,30 @@ const salesDetails: SalesDetail[] = [
     updateDate: new Date(),
     updater: 'admin',
   },
+]
+
+const bankAccounts: BankAccount[] = [
+  {
+    bankAcutCode: '00000001',
+    reciveActName: 'test',
+    applStartDate: new Date(),
+    applEndDate: new Date(),
+    startActName: 'test',
+    reciveBankActType: '1',
+    reciveActNo: '00000001',
+    bankActType: '1',
+    actName: 'test',
+    deptCode: '11101',
+    startDate: new Date("2021-01-01"),
+    aBankCode: '0001',
+    aBankBlncCode: '001',
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+    updatePlgDate: new Date(),
+    updatePgm: 'main',
+  }
 ]
 
 const invoices: Invoice[] = [
@@ -1418,5 +1443,64 @@ describe("Part 2 販売システムのDB設計", () => {
 
 
     });
+  });
+
+  describe("Chapter 8 回収業務のDB設計", () => {
+    describe("銀行再編に対応した入金口座マスタ", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.bankAccount.deleteMany();
+        });
+      });
+
+      test("入金口座を登録できる", async () => {
+        const expected: BankAccount[] = bankAccounts.map((b) => {
+          return {
+            ...b,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.bankAccount.createMany({ data: bankAccounts });
+        });
+
+        const result = await prisma.bankAccount.findMany();
+        expect(result).toEqual(expected);
+      });
+
+      test("入金口座を更新できる", async () => {
+        const updatedBankAccounts: BankAccount[] = bankAccounts.map((b) => { return { ...b, reciveActName: "updated" }; });
+
+        const expected: BankAccount[] = updatedBankAccounts.map((b) => {
+          return {
+            ...b,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const bankAccount of updatedBankAccounts) {
+            await prisma.bankAccount.update({
+              where: { bankAcutCode: bankAccount.bankAcutCode }, data: bankAccount
+            });
+          }
+        });
+
+        const result = await prisma.bankAccount.findMany();
+        expect(result).toEqual(expected);
+      });
+
+      test("入金口座を削除できる", async () => {
+        const expected: BankAccount[] = [];
+        await prisma.$transaction(async (prisma) => {
+          await prisma.bankAccount.deleteMany({
+            where: { bankAcutCode: bankAccounts[0].bankAcutCode }
+          });
+        });
+
+        const result = await prisma.bankAccount.findMany({
+          where: { bankAcutCode: bankAccounts[0].bankAcutCode }
+        });
+        expect(result).toEqual(expected);
+      });
+    });
+
   });
 });
