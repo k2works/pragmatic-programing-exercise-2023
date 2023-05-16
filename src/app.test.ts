@@ -25,6 +25,7 @@ import {
   Invoice,
   InvoiceDetail,
   BankAccount,
+  Credit,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -425,30 +426,6 @@ const salesDetails: SalesDetail[] = [
   },
 ]
 
-const bankAccounts: BankAccount[] = [
-  {
-    bankAcutCode: '00000001',
-    reciveActName: 'test',
-    applStartDate: new Date(),
-    applEndDate: new Date(),
-    startActName: 'test',
-    reciveBankActType: '1',
-    reciveActNo: '00000001',
-    bankActType: '1',
-    actName: 'test',
-    deptCode: '11101',
-    startDate: new Date("2021-01-01"),
-    aBankCode: '0001',
-    aBankBlncCode: '001',
-    createDate: new Date(),
-    creator: 'admin',
-    updateDate: new Date(),
-    updater: 'admin',
-    updatePlgDate: new Date(),
-    updatePgm: 'main',
-  }
-]
-
 const invoices: Invoice[] = [
   {
     invoiceNo: '0000000001',
@@ -497,6 +474,51 @@ const invoiceDetails: InvoiceDetail[] = [
     updater: 'admin',
   },
 ];
+
+const bankAccounts: BankAccount[] = [
+  {
+    bankAcutCode: '00000001',
+    reciveActName: 'test',
+    applStartDate: new Date(),
+    applEndDate: new Date(),
+    startActName: 'test',
+    reciveBankActType: '1',
+    reciveActNo: '00000001',
+    bankActType: '1',
+    actName: 'test',
+    deptCode: '11101',
+    startDate: new Date("2021-01-01"),
+    aBankCode: '0001',
+    aBankBlncCode: '001',
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+    updatePlgDate: new Date(),
+    updatePgm: 'main',
+  }
+]
+
+const credits: Credit[] = [
+  {
+    creditNo: '0000000001',
+    creditDate: new Date(),
+    deptCode: '11101',
+    startDate: new Date("2021-01-01"),
+    custCode: '00X',
+    custSubNo: 1,
+    payMethodType: 1,
+    bankAcutCode: '00000001',
+    receivedAmnt: 1000,
+    received: 1,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+    updatePlgDate: new Date(),
+    updatePgm: 'main',
+  }
+]
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 1 販売管理システム全体像", () => { });
@@ -1497,6 +1519,62 @@ describe("Part 2 販売システムのDB設計", () => {
 
         const result = await prisma.bankAccount.findMany({
           where: { bankAcutCode: bankAccounts[0].bankAcutCode }
+        });
+        expect(result).toEqual(expected);
+      });
+    });
+
+    describe("請求と入金業務の流れ", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.credit.deleteMany();
+        });
+      });
+
+      test("入金を登録できる", async () => {
+        const expected: Credit[] = credits.map((c) => {
+          return {
+            ...c,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.credit.createMany({ data: credits });
+        });
+
+        const result = await prisma.credit.findMany();
+        expect(result).toEqual(expected);
+      });
+
+      test("入金を更新できる", async () => {
+        const updatedCredits: Credit[] = credits.map((c) => { return { ...c, receivedAmnt: 1000 }; });
+
+        const expected: Credit[] = updatedCredits.map((c) => {
+          return {
+            ...c,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const credit of updatedCredits) {
+            await prisma.credit.update({
+              where: { creditNo: credit.creditNo }, data: credit
+            });
+          }
+        });
+
+        const result = await prisma.credit.findMany();
+        expect(result).toEqual(expected);
+      });
+
+      test("入金を削除できる", async () => {
+        const expected: Credit[] = [];
+        await prisma.$transaction(async (prisma) => {
+          await prisma.credit.deleteMany({
+            where: { creditNo: credits[0].creditNo }
+          });
+        });
+
+        const result = await prisma.credit.findMany({
+          where: { creditNo: credits[0].creditNo }
         });
         expect(result).toEqual(expected);
       });
