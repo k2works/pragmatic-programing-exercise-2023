@@ -19,6 +19,8 @@ import {
   OrderDetail,
   Sales,
   SalesDetail,
+  Invoice,
+  InvoiceDetail,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -792,6 +794,72 @@ export const salesDetails: SalesDetail[] = fs
       invoiceNo,
       invoiceDelayType: Number(invoiceDelayType),
       autoJournalDate: new Date(autoJournalDate),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const invoices: Invoice[] = fs
+  .readFileSync(filePath("invoice.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      invoiceNo,
+      invoicedDate,
+      compCode,
+      custSubNo,
+      lastReceived,
+      monthSales,
+      monthReceived,
+      monthInvoice,
+      cmpTax,
+      invoiceReceived,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      invoiceNo,
+      invoicedDate: new Date(invoicedDate),
+      compCode,
+      custSubNo: Number(custSubNo),
+      lastReceived: Number(lastReceived),
+      monthSales: Number(monthSales),
+      monthReceived: Number(monthReceived),
+      monthInvoice: Number(monthInvoice),
+      cmpTax: Number(cmpTax),
+      invoiceReceived: Number(invoiceReceived),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater
+    };
+  });
+
+export const invoiceDetails: InvoiceDetail[] = fs
+  .readFileSync(filePath("invoiceDetail.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      invoiceNo,
+      salesNo,
+      rowNo,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      invoiceNo,
+      salesNo,
+      rowNo: Number(rowNo),
       createDate: new Date(createDate),
       creator,
       updateDate: new Date(updateDate),

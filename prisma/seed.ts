@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, areas, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, customers, departments, destinations, employees, orderDetails, orders, priceByCustomers, productCategories, products, sales, salesDetails, suppliers } from "./csvReader";
+import { alterNateProducts, areas, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, customers, departments, destinations, employees, invoiceDetails, invoices, orderDetails, orders, priceByCustomers, productCategories, products, sales, salesDetails, suppliers } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -255,6 +255,33 @@ async function main() {
         },
         create: salesDetail,
         update: salesDetail
+      })
+    }
+  });
+
+  await prisma.$transaction(async (prisma) => {
+    console.table(invoices)
+    for (const i of invoices) {
+      await prisma.invoice.upsert({
+        where: {
+          invoiceNo: i.invoiceNo
+        },
+        create: i,
+        update: i
+      })
+    }
+    console.table(invoiceDetails)
+    for (const invoiceDetail of invoiceDetails) {
+      await prisma.invoiceDetail.upsert({
+        where: {
+          invoiceNo_salesNo_rowNo: {
+            invoiceNo: invoiceDetail.invoiceNo,
+            salesNo: invoiceDetail.salesNo,
+            rowNo: invoiceDetail.rowNo
+          }
+        },
+        create: invoiceDetail,
+        update: invoiceDetail
       })
     }
   });
