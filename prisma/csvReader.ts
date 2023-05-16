@@ -30,8 +30,8 @@ import {
   Warehouse,
   Location,
   Stock,
-  Buying,
-  BuyingDetail,
+  Purchase,
+  PurchaseDetail,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -1204,22 +1204,22 @@ export const stocks: Stock[] = fs
     };
   });
 
-export const buyings: Buying[] = fs
+export const purchases: Purchase[] = fs
   .readFileSync(filePath("buying.csv"), encodeing)
   .trim() // 末尾の改行を削除
   .split("\n") // 行単位で分割
   .slice(1) // ヘッダー行を除外
   .map((line) => {
     const [
-      buyNo,
-      buyDate,
+      puNo,
+      puDate,
       supCode,
       supSubNo,
       empCode,
       startDate,
       poNo,
       deptCode,
-      buyAmmount,
+      puAmmount,
       cmpTax,
       slipComment,
       createDate,
@@ -1228,15 +1228,15 @@ export const buyings: Buying[] = fs
       updater
     ] = line.split(",");
     return {
-      buyNo,
-      buyDate: new Date(buyDate),
+      puNo,
+      puDate: new Date(puDate),
       supCode,
       supSubNo: Number(supSubNo),
       empCode,
       startDate: new Date(startDate),
       poNo,
       deptCode,
-      buyAmmount: Number(buyAmmount),
+      puAmmount: Number(puAmmount),
       cmpTax: Number(cmpTax),
       slipComment,
       createDate: new Date(createDate),
@@ -1246,37 +1246,37 @@ export const buyings: Buying[] = fs
     };
   });
 
-export const buyingDetails: BuyingDetail[] = fs
+export const purchaseDetails: PurchaseDetail[] = fs
   .readFileSync(filePath("buyingDetail.csv"), encodeing)
   .trim() // 末尾の改行を削除
   .split("\n") // 行単位で分割
   .slice(1) // ヘッダー行を除外
   .map((line) => {
     const [
-      buyNo,
-      buyRowNo,
-      buyRowDspNo,
+      puNo,
+      puRowNo,
+      puRowDspNo,
       poRowNo,
       prodCode,
       whCode,
       prodName,
       poPrice,
-      buyQuantity,
+      puQuantity,
       createDate,
       creator,
       updateDate,
       updater
     ] = line.split(",");
     return {
-      buyNo,
-      buyRowNo: Number(buyRowNo),
-      buyRowDspNo: Number(buyRowDspNo),
+      puNo,
+      puRowNo: Number(puRowNo),
+      puRowDspNo: Number(puRowDspNo),
       poRowNo: Number(poRowNo),
       prodCode,
       whCode,
       prodName,
       poPrice: Number(poPrice),
-      buyQuantity: Number(buyQuantity),
+      puQuantity: Number(puQuantity),
       createDate: new Date(createDate),
       creator,
       updateDate: new Date(updateDate),

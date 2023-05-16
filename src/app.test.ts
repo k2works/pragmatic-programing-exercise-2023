@@ -33,8 +33,8 @@ import {
   Location,
   WarehouseDepartment,
   Stock,
-  Buying,
-  BuyingDetail,
+  Purchase,
+  PurchaseDetail,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -708,17 +708,17 @@ const stocks: Stock[] = [
   },
 ];
 
-const buyings: Buying[] = [
+const purchases: Purchase[] = [
   {
-    buyNo: '0000000001',
-    buyDate: new Date(),
+    puNo: '0000000001',
+    puDate: new Date(),
     supCode: '00X',
     supSubNo: 1,
     empCode: 'EMP999',
     startDate: new Date('2021-01-01'),
     poNo: 'PO0000001',
     deptCode: '11101',
-    buyAmmount: 1000,
+    puAmmount: 1000,
     cmpTax: 0,
     slipComment: 'test',
     createDate: new Date(),
@@ -728,47 +728,47 @@ const buyings: Buying[] = [
   }
 ]
 
-const buyingDetails: BuyingDetail[] = [
+const purchaseDetails: PurchaseDetail[] = [
   {
-    buyNo: '0000000001',
-    buyRowNo: 1,
-    buyRowDspNo: 1,
+    puNo: '0000000001',
+    puRowNo: 1,
+    puRowDspNo: 1,
     poRowNo: 1,
     prodCode: '1010100X',
     whCode: '001',
     prodName: 'test',
     poPrice: 1000,
-    buyQuantity: 1,
+    puQuantity: 1,
     createDate: new Date(),
     creator: 'admin',
     updateDate: new Date(),
     updater: 'admin',
   },
   {
-    buyNo: '0000000001',
-    buyRowNo: 2,
-    buyRowDspNo: 2,
+    puNo: '0000000001',
+    puRowNo: 2,
+    puRowDspNo: 2,
     poRowNo: 2,
     prodCode: '1010100X',
     whCode: '001',
     prodName: 'test',
     poPrice: 1000,
-    buyQuantity: 1,
+    puQuantity: 1,
     createDate: new Date(),
     creator: 'admin',
     updateDate: new Date(),
     updater: 'admin',
   },
   {
-    buyNo: '0000000001',
-    buyRowNo: 3,
-    buyRowDspNo: 3,
+    puNo: '0000000001',
+    puRowNo: 3,
+    puRowDspNo: 3,
     poRowNo: 3,
     prodCode: '1010100X',
     whCode: '001',
     prodName: 'test',
     poPrice: 1000,
-    buyQuantity: 1,
+    puQuantity: 1,
     createDate: new Date(),
     creator: 'admin',
     updateDate: new Date(),
@@ -2383,8 +2383,8 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         await prisma.$transaction(async (prisma) => {
           await prisma.purchaseOrderDetail.deleteMany();
           await prisma.purchaseOrder.deleteMany();
-          await prisma.buyingDetail.deleteMany();
-          await prisma.buying.deleteMany();
+          await prisma.purchaseDetail.deleteMany();
+          await prisma.purchase.deleteMany();
           await prisma.product.deleteMany();
           await prisma.supplier.deleteMany();
 
@@ -2398,64 +2398,64 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
       });
 
       test("仕入を登録できる", async () => {
-        const expected: Buying[] = buyings.map((b) => {
+        const expected: Purchase[] = purchases.map((b) => {
           return {
             ...b,
-            buyingDetails: buyingDetails.filter((bd) => bd.buyNo === b.buyNo),
+            purchaseDetails: purchaseDetails.filter((bd) => bd.puNo === b.puNo),
           };
         });
         await prisma.$transaction(async (prisma) => {
-          await prisma.buying.createMany({ data: buyings });
-          await prisma.buyingDetail.createMany({ data: buyingDetails });
+          await prisma.purchase.createMany({ data: purchases });
+          await prisma.purchaseDetail.createMany({ data: purchaseDetails });
         });
 
-        const result = await prisma.buying.findMany({
+        const result = await prisma.purchase.findMany({
           include: {
-            buyingDetails: true,
+            purchaseDetails: true,
           },
         });
         expect(result).toEqual(expected);
       });
 
       test("仕入を更新できる", async () => {
-        const updatedBuyings: Buying[] = buyings.map((b) => {
-          return { ...b, buyAmmount: 1000 };
+        const updatePurchases: Purchase[] = purchases.map((b) => {
+          return { ...b, puAmmount: 1000 };
         });
-        const updatedBuyingDetails: BuyingDetail[] = buyingDetails.map((bd) => {
-          return { ...bd, buyQuantity: 10 };
+        const updatedBuyingDetails: PurchaseDetail[] = purchaseDetails.map((bd) => {
+          return { ...bd, puQuantity: 10 };
         });
-        const expected: Buying[] = updatedBuyings.map((b) => {
+        const expected: Purchase[] = updatePurchases.map((b) => {
           return {
             ...b,
-            buyingDetails: updatedBuyingDetails.filter(
-              (bd) => bd.buyNo === b.buyNo,
+            purchaseDetails: updatedBuyingDetails.filter(
+              (bd) => bd.puNo === b.puNo,
             ),
           };
         });
 
         await prisma.$transaction(async (prisma) => {
-          for (const buying of updatedBuyings) {
-            await prisma.buying.update({
-              where: { buyNo: buying.buyNo },
-              data: buying,
+          for (const purchase of updatePurchases) {
+            await prisma.purchase.update({
+              where: { puNo: purchase.puNo },
+              data: purchase,
             });
           }
-          for (const buyingDetail of updatedBuyingDetails) {
-            await prisma.buyingDetail.update({
+          for (const purchaseDetail of updatedBuyingDetails) {
+            await prisma.purchaseDetail.update({
               where: {
-                buyRowNo_buyNo: {
-                  buyRowNo: buyingDetail.buyRowNo,
-                  buyNo: buyingDetail.buyNo,
+                puRowNo_puNo: {
+                  puRowNo: purchaseDetail.puRowNo,
+                  puNo: purchaseDetail.puNo,
                 },
               },
-              data: buyingDetail,
+              data: purchaseDetail,
             });
           }
         });
 
-        const result = await prisma.buying.findMany({
+        const result = await prisma.purchase.findMany({
           include: {
-            buyingDetails: true,
+            purchaseDetails: true,
           },
         });
         expect(result).toEqual(expected);
@@ -2463,19 +2463,19 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
     });
 
     test("仕入を削除できる", async () => {
-      const expected: Buying[] = [];
+      const expected: Purchase[] = [];
       await prisma.$transaction(async (prisma) => {
-        for (const buying of buyings) {
-          await prisma.buyingDetail.deleteMany({
-            where: { buyNo: buying.buyNo },
+        for (const purchase of purchases) {
+          await prisma.purchaseDetail.deleteMany({
+            where: { puNo: purchase.puNo },
           });
-          await prisma.buying.delete({
-            where: { buyNo: buying.buyNo },
+          await prisma.purchase.delete({
+            where: { puNo: purchase.puNo },
           });
         }
       });
 
-      const result = await prisma.buying.findMany();
+      const result = await prisma.purchase.findMany();
       expect(result).toEqual(expected);
     });
 

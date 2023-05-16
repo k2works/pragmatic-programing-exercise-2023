@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, areas, bankAccounts, boms, buyingDetails, buyings, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, locations, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, stocks, suppliers, warehouseDepartments, warehouses } from "./csvReader";
+import { alterNateProducts, areas, bankAccounts, boms, purchaseDetails, purchases, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, locations, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, stocks, suppliers, warehouseDepartments, warehouses } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -408,28 +408,28 @@ async function main() {
   }
 
   await prisma.$transaction(async (prisma) => {
-    console.table(buyings)
-    for (const buying of buyings) {
-      await prisma.buying.upsert({
+    console.table(purchases)
+    for (const purchase of purchases) {
+      await prisma.purchase.upsert({
         where: {
-          buyNo: buying.buyNo
+          puNo: purchase.puNo
         },
-        create: buying,
-        update: buying
+        create: purchase,
+        update: purchase
       })
     }
 
-    console.table(buyingDetails)
-    for (const buyingDetail of buyingDetails) {
-      await prisma.buyingDetail.upsert({
+    console.table(purchaseDetails)
+    for (const purchaseDetail of purchaseDetails) {
+      await prisma.purchaseDetail.upsert({
         where: {
-          buyRowNo_buyNo: {
-            buyRowNo: buyingDetail.buyRowNo,
-            buyNo: buyingDetail.buyNo
+          puRowNo_puNo: {
+            puRowNo: purchaseDetail.puRowNo,
+            puNo: purchaseDetail.puNo
           },
         },
-        create: buyingDetail,
-        update: buyingDetail
+        create: purchaseDetail,
+        update: purchaseDetail
       })
     }
   });
