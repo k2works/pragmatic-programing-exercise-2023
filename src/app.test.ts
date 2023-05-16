@@ -36,6 +36,7 @@ import {
   Purchase,
   PurchaseDetail,
   Payment,
+  CreditBalance,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -793,6 +794,19 @@ const payments: Payment[] = [
     creator: '001',
     updateDate: new Date('2021-02-02'),
     updater: '001'
+  }
+]
+
+const creditBalances: CreditBalance[] = [
+  {
+    compCode: '00X',
+    orderBalance: 0,
+    recBalance: 0,
+    payBalance: 0,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
   }
 ]
 
@@ -2567,5 +2581,68 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
       });
     });
 
+  });
+
+  describe("Chapter 13 業務全般に関連する処理のDB設計", () => {
+    describe("与信チェック", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.supplier.deleteMany();
+          await prisma.creditBalance.deleteMany();
+        });
+      });
+
+      test("与信残高を登録できる", async () => {
+        const expected: CreditBalance[] = creditBalances.map((cb) => {
+          return {
+            ...cb,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.creditBalance.createMany({ data: creditBalances });
+        });
+
+        const result = await prisma.creditBalance.findMany();
+        expect(result).toEqual(expected);
+      });
+
+      test("与信残高を更新できる", async () => {
+        const updatedCreditBalances: CreditBalance[] = creditBalances.map((cb) => {
+          return { ...cb, orderBalance: 1000 };
+        });
+
+        const expected: CreditBalance[] = updatedCreditBalances.map((cb) => {
+          return {
+            ...cb,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const creditBalance of updatedCreditBalances) {
+            await prisma.creditBalance.update({
+              where: { compCode: creditBalance.compCode },
+              data: creditBalance,
+            });
+          }
+        });
+
+        const result = await prisma.creditBalance.findMany();
+        expect(result).toEqual(expected);
+      });
+
+      test("与信残高を削除できる", async () => {
+        const expected: CreditBalance[] = [];
+        await prisma.$transaction(async (prisma) => {
+          await prisma.creditBalance.deleteMany({
+            where: { compCode: creditBalances[0].compCode },
+          });
+        });
+
+        const result = await prisma.creditBalance.findMany({
+          where: { compCode: creditBalances[0].compCode },
+        });
+        expect(result).toEqual(expected);
+      });
+
+    });
   });
 });
