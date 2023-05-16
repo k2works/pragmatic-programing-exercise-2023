@@ -336,7 +336,7 @@ async function main() {
 
     console.table(purchaseOrderDetails)
     for (const poDetail of purchaseOrderDetails) {
-      await prisma.purchaseOrderdetail.upsert({
+      await prisma.purchaseOrderDetail.upsert({
         where: {
           poRowNo_poNo: {
             poRowNo: poDetail.poRowNo,

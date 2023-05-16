@@ -533,12 +533,12 @@ model PurchaseOrder {
   updateDate  DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
   updater     String?   @map("更新者名") @db.VarChar(12)
 
-  purchaseOrderDetails PurchaseOrderdetail[]
+  purchaseOrderDetails PurchaseOrderDetail[]
 
   @@map("発注データ")
 }
 
-model PurchaseOrderdetail {
+model PurchaseOrderDetail {
   poNo        String   @map("発注番号") @db.VarChar(10)
   poRowNo     Int      @map("発注行番号")
   poRowDspNo  Int      @map("発注行表示番号")

@@ -25,7 +25,7 @@ import {
   BankAccount,
   Credit,
   PurchaseOrder,
-  PurchaseOrderdetail,
+  PurchaseOrderDetail,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -1034,7 +1034,7 @@ export const purchaseOrders: PurchaseOrder[] = fs
     };
   });
 
-export const purchaseOrderDetails: PurchaseOrderdetail[] = fs
+export const purchaseOrderDetails: PurchaseOrderDetail[] = fs
   .readFileSync(filePath("purchaseOrderDetail.csv"), encodeing)
   .trim() // 末尾の改行を削除
   .split("\n") // 行単位で分割
