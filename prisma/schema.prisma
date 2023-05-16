@@ -30,7 +30,7 @@ model Department {
   updateDate DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
   updater    String?   @map("更新者名") @db.VarChar(12)
 
-  wharehouseDepartments WhareHouseDepartment[]
+  warehouseDepartments WareHouseDepartment[]
 
   @@id([deptCode, startDate], map: "pk_department")
   @@map("部門マスタ")
@@ -563,7 +563,7 @@ model PurchaseOrderDetail {
   @@map("発注データ明細")
 }
 
-model WhareHouse {
+model WareHouse {
   whCode     String   @id(map: "pk_wh_mst") @map("倉庫コード") @db.VarChar(3)
   whName     String?  @map("倉庫名") @db.VarChar(20)
   whType     String?  @default("N") @map("倉庫区分") @db.VarChar(1)
@@ -576,13 +576,13 @@ model WhareHouse {
   updateDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
   updater    String?  @map("更新者名") @db.VarChar(12)
 
-  warehouseDepartments WhareHouseDepartment[]
+  warehouseDepartments WareHouseDepartment[]
   stocks               Stock[]
 
   @@map("倉庫マスタ")
 }
 
-model WhareHouseDepartment {
+model WareHouseDepartment {
   whCode     String   @map("倉庫コード") @db.VarChar(3)
   deptCode   String   @map("部門コード") @db.VarChar(6)
   startDate  DateTime @default(dbgenerated("CURRENT_DATE")) @map("開始日") @db.Timestamp(6)
@@ -591,7 +591,7 @@ model WhareHouseDepartment {
   updateDate DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
   updater    String?  @map("更新者名") @db.VarChar(12)
 
-  wharehouse WhareHouse? @relation(fields: [whCode], references: [whCode])
+  warehouse  WareHouse?  @relation(fields: [whCode], references: [whCode])
   department Department? @relation(fields: [deptCode, startDate], references: [deptCode, startDate])
 
   @@id([whCode, deptCode, startDate], map: "pk_wh_dept_mst")
@@ -612,7 +612,7 @@ model Stock {
   updateDate       DateTime  @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
   updater          String?   @map("更新者名") @db.VarChar(12)
 
-  wharehouse WhareHouse? @relation(fields: [whCode], references: [whCode])
+  warehouse WareHouse? @relation(fields: [whCode], references: [whCode])
 
   @@id([whCode, prodCode, rotNo, stockType, qualityType], map: "pk_stock")
   @@map("在庫データ")
