@@ -676,3 +676,22 @@ model PurchaseDetail {
   @@id([puRowNo, puNo], map: "pk_pu_details")
   @@map("仕入データ明細")
 }
+
+model Payment {
+  payNo         String   @id(map: "pk_pay") @map("支払番号") @db.VarChar(10)
+  payDate       Int?     @default(0) @map("支払日")
+  deptCode      String   @map("部門コード") @db.VarChar(6)
+  startDate     DateTime @default(dbgenerated("CURRENT_DATE")) @map("部門開始日") @db.Timestamp(6)
+  supCode       String   @map("仕入先コード") @db.VarChar(8)
+  supSubNo      Int?     @default(0) @map("仕入先枝番")
+  payMethodType Int?     @default(1) @map("支払方法区分")
+  payAmnt       Int?     @default(0) @map("支払金額")
+  cmpTax        Int      @default(0) @map("消費税合計")
+  completeFlg   Int      @default(0) @map("支払完了フラグ")
+  createDate    DateTime @default(dbgenerated("CURRENT_DATE")) @map("作成日時") @db.Timestamp(6)
+  creator       String?  @map("作成者名") @db.VarChar(12)
+  updateDate    DateTime @default(dbgenerated("CURRENT_DATE")) @map("更新日時") @db.Timestamp(6)
+  updater       String?  @map("更新者名") @db.VarChar(12)
+
+  @@map("支払データ")
+}

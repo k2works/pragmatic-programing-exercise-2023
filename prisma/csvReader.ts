@@ -32,6 +32,7 @@ import {
   Stock,
   Purchase,
   PurchaseDetail,
+  Payment,
 } from "@prisma/client";
 import fs from "fs";
 import path from "path";
@@ -1277,6 +1278,46 @@ export const purchaseDetails: PurchaseDetail[] = fs
       prodName,
       poPrice: Number(poPrice),
       puQuantity: Number(puQuantity),
+      createDate: new Date(createDate),
+      creator,
+      updateDate: new Date(updateDate),
+      updater,
+    };
+  });
+
+export const payments: Payment[] = fs
+  .readFileSync(filePath("payment.csv"), encodeing)
+  .trim() // 末尾の改行を削除
+  .split("\n") // 行単位で分割
+  .slice(1) // ヘッダー行を除外
+  .map((line) => {
+    const [
+      payNo,
+      payDate,
+      deptCode,
+      startDate,
+      supCode,
+      supSubNo,
+      payMethodType,
+      payAmnt,
+      cmpTax,
+      completeFlg,
+      createDate,
+      creator,
+      updateDate,
+      updater
+    ] = line.split(",");
+    return {
+      payNo,
+      payDate: Number(payDate),
+      deptCode,
+      startDate: new Date(startDate),
+      supCode,
+      supSubNo: Number(supSubNo),
+      payMethodType: Number(payMethodType),
+      payAmnt: Number(payAmnt),
+      cmpTax: Number(cmpTax),
+      completeFlg: Number(completeFlg),
       createDate: new Date(createDate),
       creator,
       updateDate: new Date(updateDate),

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { alterNateProducts, areas, bankAccounts, boms, purchaseDetails, purchases, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, locations, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, stocks, suppliers, warehouseDepartments, warehouses } from "./csvReader";
+import { alterNateProducts, areas, bankAccounts, boms, purchaseDetails, purchases, categoryTypes, companyCategories, companyCategoryGroups, companyGroups, companys, consumers, credits, customers, departments, destinations, employees, invoiceDetails, invoices, locations, orderDetails, orders, priceByCustomers, productCategories, products, purchaseOrderDetails, purchaseOrders, sales, salesDetails, stocks, suppliers, warehouseDepartments, warehouses, payments } from "./csvReader";
 
 async function main() {
   console.table(departments)
@@ -433,6 +433,17 @@ async function main() {
       })
     }
   });
+
+  console.table(payments)
+  for (const pay of payments) {
+    await prisma.payment.upsert({
+      where: {
+        payNo: pay.payNo
+      },
+      create: pay,
+      update: pay
+    })
+  }
 }
 
 main()
