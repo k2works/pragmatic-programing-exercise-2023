@@ -27,6 +27,8 @@ import {
   InvoiceDetail,
   BankAccount,
   Credit,
+  PurchaseOrder,
+  PurchaseOrderDetail,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -532,6 +534,81 @@ const credits: Credit[] = [
     updatePgm: 'main',
   }
 ]
+
+const purchaseOrders: PurchaseOrder[] = [
+  {
+    poNo: 'PO0000001',
+    poDate: new Date(),
+    orderNo: '0000000001',
+    supCode: '001',
+    supSubNo: 1,
+    empCode: 'EMP999',
+    dueDate: new Date(),
+    whCode: '001',
+    poAmnt: 1000,
+    cmpTax: 100,
+    slipComment: 'test',
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  }
+]
+
+const purchaseOrderDetails: PurchaseOrderDetail[] = [
+  {
+    poNo: 'PO0000001',
+    poRowNo: 1,
+    poRowDspNo: 1,
+    orderNo: '0000000001',
+    soRowNo: 1,
+    prodCode: '10101001',
+    prodName: '牛ひれ',
+    poPrice: 100,
+    poQt: 10,
+    recivedQt: 10,
+    completeFlg: 1,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+  {
+    poNo: 'PO0000001',
+    poRowNo: 2,
+    poRowDspNo: 2,
+    orderNo: '0000000001',
+    soRowNo: 1,
+    prodCode: '10101001',
+    prodName: '牛ひれ',
+    poPrice: 100,
+    poQt: 10,
+    recivedQt: 10,
+    completeFlg: 1,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  },
+  {
+    poNo: 'PO0000001',
+    poRowNo: 3,
+    poRowDspNo: 3,
+    orderNo: '0000000001',
+    soRowNo: 1,
+    prodCode: '10101001',
+    prodName: '牛ひれ',
+    poPrice: 100,
+    poQt: 10,
+    recivedQt: 10,
+    completeFlg: 1,
+    createDate: new Date(),
+    creator: 'admin',
+    updateDate: new Date(),
+    updater: 'admin',
+  }
+]
+
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
   describe("Chapter 1 販売管理システム全体像", () => { });
@@ -1741,6 +1818,103 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         });
         expect(result).toEqual(expected);
       });
+    });
+
+    describe("発注データのテーブル設計", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.employee.deleteMany();
+          await prisma.supplier.deleteMany();
+          await prisma.bom.deleteMany();
+          await prisma.product.deleteMany();
+          await prisma.orderDetail.deleteMany();
+          await prisma.order.deleteMany();
+          await prisma.purchaseOrderDetail.deleteMany();
+          await prisma.purchaseOrder.deleteMany();
+
+          await prisma.employee.createMany({ data: employees });
+          await prisma.supplier.createMany({ data: suppliers });
+          await prisma.product.createMany({ data: products });
+          await prisma.order.createMany({ data: orders });
+          await prisma.orderDetail.createMany({ data: orderDetails });
+        });
+      });
+
+      test("発注を登録できる", async () => {
+        const expected: PurchaseOrder[] = purchaseOrders.map((po) => {
+          return {
+            ...po,
+            purchaseOrderDetails: purchaseOrderDetails.filter((pod) => pod.poNo === po.poNo),
+          };
+        });
+
+        await prisma.$transaction(async (prisma) => {
+          await prisma.purchaseOrder.createMany({ data: purchaseOrders });
+          await prisma.purchaseOrderDetail.createMany({ data: purchaseOrderDetails });
+        }
+        );
+
+        const result = await prisma.purchaseOrder.findMany({
+          include: {
+            purchaseOrderDetails: true,
+          }
+        });
+        expect(result).toEqual(expected);
+      });
+
+      test("発注を更新できる", async () => {
+        const updatedPurchaseOrders: PurchaseOrder[] = purchaseOrders.map((po) => { return { ...po, poAmnt: 1000 }; });
+        const updatedPurchaseOrderDetails: PurchaseOrderDetail[] = purchaseOrderDetails.map((pod) => { return { ...pod, poQt: 10 }; });
+        const expected: PurchaseOrder[] = updatedPurchaseOrders.map((po) => {
+          return {
+            ...po,
+            purchaseOrderDetails: updatedPurchaseOrderDetails.filter((pod) => pod.poNo === po.poNo),
+          };
+        });
+
+        await prisma.$transaction(async (prisma) => {
+          for (const purchaseOrder of updatedPurchaseOrders) {
+            await prisma.purchaseOrder.update({
+              where: { poNo: purchaseOrder.poNo }, data: purchaseOrder
+            });
+          }
+          for (const purchaseOrderDetail of updatedPurchaseOrderDetails) {
+            await prisma.purchaseOrderDetail.update({
+              where: {
+                poRowNo_poNo: {
+                  poRowNo: purchaseOrderDetail.poRowNo,
+                  poNo: purchaseOrderDetail.poNo
+                }
+              }, data: purchaseOrderDetail
+            });
+          }
+        })
+
+        const result = await prisma.purchaseOrder.findMany({
+          include: {
+            purchaseOrderDetails: true,
+          }
+        });
+        expect(result).toEqual(expected);
+      });
+
+      test("発注を削除できる", async () => {
+        const expected: PurchaseOrder[] = [];
+        await prisma.$transaction(async (prisma) => {
+          for (const purchaseOrder of purchaseOrders) {
+            await prisma.purchaseOrderDetail.deleteMany({
+              where: { poNo: purchaseOrder.poNo }
+            });
+            await prisma.purchaseOrder.delete({
+              where: { poNo: purchaseOrder.poNo }
+            });
+          }
+        });
+
+        const result = await prisma.purchaseOrder.findMany();
+        expect(result).toEqual(expected);
+      });
+
     });
   });
 });
