@@ -35,6 +35,7 @@ import {
   Stock,
   Purchase,
   PurchaseDetail,
+  Payment,
 } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -773,6 +774,25 @@ const purchaseDetails: PurchaseDetail[] = [
     creator: 'admin',
     updateDate: new Date(),
     updater: 'admin',
+  }
+]
+
+const payments: Payment[] = [
+  {
+    payNo: '000000001',
+    payDate: 1,
+    deptCode: '11101',
+    startDate: new Date('2021-01-01'),
+    supCode: '00X',
+    supSubNo: 1,
+    payMethodType: 1,
+    payAmnt: 1000,
+    cmpTax: 100,
+    completeFlg: 0,
+    createDate: new Date('2021-02-02'),
+    creator: '001',
+    updateDate: new Date('2021-02-02'),
+    updater: '001'
   }
 ]
 
@@ -2460,23 +2480,91 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         });
         expect(result).toEqual(expected);
       });
+
+      test("仕入を削除できる", async () => {
+        const expected: Purchase[] = [];
+        await prisma.$transaction(async (prisma) => {
+          for (const purchase of purchases) {
+            await prisma.purchaseDetail.deleteMany({
+              where: { puNo: purchase.puNo },
+            });
+            await prisma.purchase.delete({
+              where: { puNo: purchase.puNo },
+            });
+          }
+        });
+
+        const result = await prisma.purchase.findMany();
+        expect(result).toEqual(expected);
+      });
     });
 
-    test("仕入を削除できる", async () => {
-      const expected: Purchase[] = [];
-      await prisma.$transaction(async (prisma) => {
-        for (const purchase of purchases) {
-          await prisma.purchaseDetail.deleteMany({
-            where: { puNo: purchase.puNo },
-          });
-          await prisma.purchase.delete({
-            where: { puNo: purchase.puNo },
-          });
-        }
+    describe("支払いデータのテーブル設計", () => {
+      beforeAll(async () => {
+        await prisma.$transaction(async (prisma) => {
+          await prisma.department.deleteMany();
+          await prisma.supplier.deleteMany();
+          await prisma.purchase.deleteMany();
+          await prisma.purchaseDetail.deleteMany();
+          await prisma.payment.deleteMany();
+
+          await prisma.department.createMany({ data: departments });
+          await prisma.supplier.createMany({ data: suppliers });
+          await prisma.purchase.createMany({ data: purchases });
+          await prisma.purchaseDetail.createMany({ data: purchaseDetails });
+        });
       });
 
-      const result = await prisma.purchase.findMany();
-      expect(result).toEqual(expected);
+      test("支払いを登録できる", async () => {
+        const expected: Payment[] = payments.map((p) => {
+          return {
+            ...p,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          await prisma.payment.createMany({ data: payments });
+        });
+
+        const result = await prisma.payment.findMany();
+        expect(result).toEqual(expected);
+      });
+
+      test("支払いを更新できる", async () => {
+        const updatedPayments: Payment[] = payments.map((p) => {
+          return { ...p, payAmnt: 1000 };
+        });
+
+        const expected: Payment[] = updatedPayments.map((p) => {
+          return {
+            ...p,
+          };
+        });
+        await prisma.$transaction(async (prisma) => {
+          for (const payment of updatedPayments) {
+            await prisma.payment.update({
+              where: { payNo: payment.payNo },
+              data: payment,
+            });
+          }
+        });
+
+        const result = await prisma.payment.findMany();
+        expect(result).toEqual(expected);
+      });
+
+      test("支払いを削除できる", async () => {
+        const expected: Payment[] = [];
+        await prisma.$transaction(async (prisma) => {
+          await prisma.payment.deleteMany({
+            where: { payNo: payments[0].payNo },
+          });
+        });
+
+        const result = await prisma.payment.findMany({
+          where: { payNo: payments[0].payNo },
+        });
+        expect(result).toEqual(expected);
+      });
     });
 
   });
