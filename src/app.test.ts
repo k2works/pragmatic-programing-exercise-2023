@@ -712,108 +712,108 @@ const stocks: Stock[] = [
 
 const purchases: Purchase[] = [
   {
-    puNo: '0000000001',
+    puNo: "0000000001",
     puDate: new Date(),
-    supCode: '00X',
+    supCode: "00X",
     supSubNo: 1,
-    empCode: 'EMP999',
-    startDate: new Date('2021-01-01'),
-    poNo: 'PO0000001',
-    deptCode: '11101',
+    empCode: "EMP999",
+    startDate: new Date("2021-01-01"),
+    poNo: "PO0000001",
+    deptCode: "11101",
     puAmmount: 1000,
     cmpTax: 0,
-    slipComment: 'test',
+    slipComment: "test",
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
-  }
-]
+    updater: "admin",
+  },
+];
 
 const purchaseDetails: PurchaseDetail[] = [
   {
-    puNo: '0000000001',
+    puNo: "0000000001",
     puRowNo: 1,
     puRowDspNo: 1,
     poRowNo: 1,
-    prodCode: '1010100X',
-    whCode: '001',
-    prodName: 'test',
+    prodCode: "1010100X",
+    whCode: "001",
+    prodName: "test",
     poPrice: 1000,
     puQuantity: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
   {
-    puNo: '0000000001',
+    puNo: "0000000001",
     puRowNo: 2,
     puRowDspNo: 2,
     poRowNo: 2,
-    prodCode: '1010100X',
-    whCode: '001',
-    prodName: 'test',
+    prodCode: "1010100X",
+    whCode: "001",
+    prodName: "test",
     poPrice: 1000,
     puQuantity: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
+    updater: "admin",
   },
   {
-    puNo: '0000000001',
+    puNo: "0000000001",
     puRowNo: 3,
     puRowDspNo: 3,
     poRowNo: 3,
-    prodCode: '1010100X',
-    whCode: '001',
-    prodName: 'test',
+    prodCode: "1010100X",
+    whCode: "001",
+    prodName: "test",
     poPrice: 1000,
     puQuantity: 1,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
-  }
-]
+    updater: "admin",
+  },
+];
 
 const payments: Payment[] = [
   {
-    payNo: '000000001',
+    payNo: "000000001",
     payDate: 1,
-    deptCode: '11101',
-    startDate: new Date('2021-01-01'),
-    supCode: '00X',
+    deptCode: "11101",
+    startDate: new Date("2021-01-01"),
+    supCode: "00X",
     supSubNo: 1,
     payMethodType: 1,
     payAmnt: 1000,
     cmpTax: 100,
     completeFlg: 0,
-    createDate: new Date('2021-02-02'),
-    creator: '001',
-    updateDate: new Date('2021-02-02'),
-    updater: '001'
-  }
-]
+    createDate: new Date("2021-02-02"),
+    creator: "001",
+    updateDate: new Date("2021-02-02"),
+    updater: "001",
+  },
+];
 
 const creditBalances: CreditBalance[] = [
   {
-    compCode: '00X',
+    compCode: "00X",
     orderBalance: 0,
     recBalance: 0,
     payBalance: 0,
     createDate: new Date(),
-    creator: 'admin',
+    creator: "admin",
     updateDate: new Date(),
-    updater: 'admin',
-  }
-]
+    updater: "admin",
+  },
+];
 
 describe("Part 1 業務システムの概要とマスタ設計", () => {
-  describe("Chapter 1 販売管理システム全体像", () => { });
+  describe("Chapter 1 販売管理システム全体像", () => {});
 
-  describe("Chapter 2 基幹業務システム構築のポイント", () => { });
+  describe("Chapter 2 基幹業務システム構築のポイント", () => {});
 
   describe("Chapter 3 部門／社員／商品マスタ設計", () => {
     describe("部門マスタ", () => {
@@ -2455,9 +2455,11 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         const updatePurchases: Purchase[] = purchases.map((b) => {
           return { ...b, puAmmount: 1000 };
         });
-        const updatedBuyingDetails: PurchaseDetail[] = purchaseDetails.map((bd) => {
-          return { ...bd, puQuantity: 10 };
-        });
+        const updatedBuyingDetails: PurchaseDetail[] = purchaseDetails.map(
+          (bd) => {
+            return { ...bd, puQuantity: 10 };
+          },
+        );
         const expected: Purchase[] = updatePurchases.map((b) => {
           return {
             ...b,
@@ -2580,7 +2582,6 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         expect(result).toEqual(expected);
       });
     });
-
   });
 
   describe("Chapter 13 業務全般に関連する処理のDB設計", () => {
@@ -2607,9 +2608,11 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
       });
 
       test("与信残高を更新できる", async () => {
-        const updatedCreditBalances: CreditBalance[] = creditBalances.map((cb) => {
-          return { ...cb, orderBalance: 1000 };
-        });
+        const updatedCreditBalances: CreditBalance[] = creditBalances.map(
+          (cb) => {
+            return { ...cb, orderBalance: 1000 };
+          },
+        );
 
         const expected: CreditBalance[] = updatedCreditBalances.map((cb) => {
           return {
@@ -2642,7 +2645,6 @@ describe("Part 3 仕入／在庫システムのDB設計", () => {
         });
         expect(result).toEqual(expected);
       });
-
     });
   });
 });
