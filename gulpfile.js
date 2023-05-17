@@ -32,6 +32,9 @@ const asciidoctor = {
         mkdirs: true,
       });
     });
+
+    src(`${inputRootDir}/images/*.*`).pipe(dest(`${outputRootDir}/images`));
+
     cb();
   },
   watch: (cb) => {
