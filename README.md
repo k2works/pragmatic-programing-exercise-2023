@@ -1,10 +1,8 @@
-# intercept-booster
+# プログラミング入門 2023
 
-[![Node.js CI](https://github.com/k2works/intercept-booster-sample/actions/workflows/node.js.yml/badge.svg)](https://github.com/k2works/intercept-booster-sample/actions/workflows/node.js.yml)
+[![Node.js CI](https://github.com/k2works/programing_introduce_2023/actions/workflows/node.js.yml/badge.svg)](https://github.com/k2works/programing_introduce_2023/actions/workflows/node.js.yml)
 
 ## 概要
-
-intercept-boosterのサンプルです。
 
 ### 目的
 
@@ -22,6 +20,7 @@ npx npx intercept-booster
 npm install
 npm start
 ```
+
 ## 構成
 
 - [構築](./docs/build.adoc)
