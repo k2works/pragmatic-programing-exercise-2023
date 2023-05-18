@@ -24,9 +24,8 @@ jobs:
     - name: Build
       working-directory: src/api
       run: |
-        go get github.com/stretchr/testify/assert
-        go build -v ./
+        sudo go build -v ./
 
     - name: Test
       working-directory: src/api
-      run: go test -v ./...
+      run: sudo go test -v ./...
