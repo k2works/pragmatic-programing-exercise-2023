@@ -105,12 +105,10 @@ dist
 .vercel
 
 /public
+.idea
 ops/build/docker/postgres/data
 ops/build/docker/mysql/data
 ops/build/docker/mssql/data
 ops/build/docker/mssql/log
 ops/build/docker/schemaspy/data
 ops/build/docker/schemaspy/output
-
-.idea
-__pycache__
