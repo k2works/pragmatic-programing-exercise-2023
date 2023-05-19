@@ -199,7 +199,8 @@ exports.build = series(
   webpackBuildTasks(),
   asciidoctorBuildTasks(),
   marpBuildTasks(),
-  prettier.format
+  jupyterBuildTasks(),
+  prettier.format,
 );
 
 exports.test = series(jest.test);
