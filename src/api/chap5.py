@@ -1,6 +1,10 @@
 # %% [markdown]
 # # 分類1:アヤメの判定
 
+# %%
+import os
+folder = os.path.dirname(os.path.abspath(__file__))
+
 # %% [markdown]
 # ## アヤメの花を分類する
 
@@ -16,7 +20,8 @@
 # %%
 import pandas as pd # pandasをインポート
 # iris.csvファイルを読み込んで、データフレームに変換
-df = pd.read_csv('data/iris.csv')
+file = folder + '/data/iris.csv'
+df = pd.read_csv(file)
 df.head(3) # 先頭3行だけ表示
 
 # %% [markdown]
@@ -121,7 +126,7 @@ df.std() # 各列の標準偏差
 # #### 平均値を求めてデータフレームの欠損値と置き換える
 
 # %%
-df = pd.read_csv('data/iris.csv')
+df = pd.read_csv(file)
 
 # 各列の平均値を計算して、colmeanに代入
 colmean = df.mean()
@@ -215,7 +220,8 @@ model.score(x_test, y_test)
 # %%
 import pickle # pickleモジュールのインポート
 
-with open('model/irismodel.pkl', 'wb') as f:
+file = folder + '/model/irismodel.pkl'
+with open(file, 'wb') as f:
     pickle.dump(model, f)
 
 # %% [markdown]

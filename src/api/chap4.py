@@ -4,6 +4,8 @@
 # %%
 import unittest
 import doctest
+import os
+folder = os.path.dirname(os.path.abspath(__file__))
 
 # %% [markdown]
 # ## きのこ派とたけのこ派に分類する
@@ -85,7 +87,8 @@ df2 = pd.DataFrame(data, index= ['4月', '5月'], columns=['松田の労働', '�
 # %%
 # pandasは別名pdでインポート済み
 # KvsT.csvファイルを読み込んで、データフレームに変換
-df = pd.read_csv('data/KvsT.csv')
+file = folder + '/data/KvsT.csv'
+df = pd.read_csv(file)
 # 先頭3行だけ表示
 df.head(3)
 
@@ -198,7 +201,8 @@ model.predict(new_data) # 2人のデータを一括で予測
 
 # %%
 from PIL import Image
-im = Image.open('img/4-9.png')
+file = folder + '/img/4-9.png'
+im = Image.open(file)
 im
 
 # %% [markdown]
@@ -219,7 +223,8 @@ model.score(x, t)
 # %%
 import pickle
 
-with open('model/kvst-model.pkl', 'wb') as f:
+file = folder + '/model/kvst-model.pkl'
+with open(file, 'wb') as f:
     pickle.dump(model, f)
 
 # %% [markdown]
@@ -227,7 +232,7 @@ with open('model/kvst-model.pkl', 'wb') as f:
 # %%
 import pickle
 
-with open('model/kvst-model.pkl', 'rb') as f:
+with open(file, 'rb') as f:
     model = pickle.load(f)
 
 # %% [markdown]
@@ -242,7 +247,8 @@ model.predict(suzuki)
 import pandas as pd
 
 # データの読み込み
-df = pd.read_csv('data/KvsT.csv')
+file = folder + '/data/KvsT.csv'
+df = pd.read_csv(file)
 
 # 特徴量と正解データに分割
 xcol = ['身長', '体重', '年代']
