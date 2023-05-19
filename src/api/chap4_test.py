@@ -5,7 +5,7 @@
 import unittest
 import doctest
 import os
-folder = os.path.dirname(os.path.abspath(__file__))
+path = os.path.dirname(os.path.abspath(__file__))
 
 # %% [markdown]
 # ## きのこ派とたけのこ派に分類する
@@ -87,7 +87,7 @@ df2 = pd.DataFrame(data, index= ['4月', '5月'], columns=['松田の労働', '�
 # %%
 # pandasは別名pdでインポート済み
 # KvsT.csvファイルを読み込んで、データフレームに変換
-file = folder + '/data/KvsT.csv'
+file = path + '/data/KvsT.csv'
 df = pd.read_csv(file)
 # 先頭3行だけ表示
 df.head(3)
@@ -201,7 +201,7 @@ model.predict(new_data) # 2人のデータを一括で予測
 
 # %%
 from PIL import Image
-file = folder + '/img/4-9.png'
+file = path + '/img/4-9.png'
 im = Image.open(file)
 im
 
@@ -223,7 +223,7 @@ model.score(x, t)
 # %%
 import pickle
 
-file = folder + '/model/kvst-model.pkl'
+file = path + '/model/kvst-model.pkl'
 with open(file, 'wb') as f:
     pickle.dump(model, f)
 
@@ -247,7 +247,7 @@ model.predict(suzuki)
 import pandas as pd
 
 # データの読み込み
-file = folder + '/data/KvsT.csv'
+file = path + '/data/KvsT.csv'
 df = pd.read_csv(file)
 
 # 特徴量と正解データに分割
@@ -262,3 +262,7 @@ model.fit(x, t)
 
 # 正解率の計算
 model.score(x, t)
+
+# %%
+doctest.testmod(verbose=True)
+unittest.main(argv=[''], verbosity=2, exit=False)

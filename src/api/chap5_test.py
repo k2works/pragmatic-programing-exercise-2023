@@ -2,8 +2,10 @@
 # # 分類1:アヤメの判定
 
 # %%
+import unittest
+import doctest
 import os
-folder = os.path.dirname(os.path.abspath(__file__))
+path = os.path.dirname(os.path.abspath(__file__))
 
 # %% [markdown]
 # ## アヤメの花を分類する
@@ -20,7 +22,7 @@ folder = os.path.dirname(os.path.abspath(__file__))
 # %%
 import pandas as pd # pandasをインポート
 # iris.csvファイルを読み込んで、データフレームに変換
-file = folder + '/data/iris.csv'
+file = path + '/data/iris.csv'
 df = pd.read_csv(file)
 df.head(3) # 先頭3行だけ表示
 
@@ -220,7 +222,7 @@ model.score(x_test, y_test)
 # %%
 import pickle # pickleモジュールのインポート
 
-file = folder + '/model/irismodel.pkl'
+file = path + '/model/irismodel.pkl'
 with open(file, 'wb') as f:
     pickle.dump(model, f)
 
@@ -277,3 +279,7 @@ from sklearn.tree import plot_tree
 
 # plot_tree関数で決定木を描画
 plot_tree(model, feature_names=x_train.columns, filled=True)
+
+# %%
+doctest.testmod(verbose=True)
+unittest.main(argv=[''], verbosity=2, exit=False)
