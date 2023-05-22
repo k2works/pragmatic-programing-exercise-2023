@@ -9,6 +9,24 @@ path = os.path.dirname(os.path.abspath(__file__))
 
 # %% [markdown]
 # ## データの内容
+# |列名|意味|
+# |:--|:--|
+# |id|顧客ID|
+# |age|年齢|
+# |job|職種|
+# |education|最終学歴|
+# |marital|既婚／未婚／離別など
+# |loan|個人ローンの有無|
+# |housing|住宅ローンの有無|
+# |amount|年間キャンペーン終了時点での、総投資信託購入額|
+# |default|債務不履行の有無|
+# |previous|キャンペーン前に接触した回数|
+# |campaign|現キャンペーン内での接触回数|
+# |day|最終接触日|
+# |month|最終接触月|
+# |duration|接触時のへ平均時間（秒）|
+# |y|今回のキャンペーンの結果（1:購入、0:未購入|
+
 
 # %% [markdown]
 # ## 問題背景
