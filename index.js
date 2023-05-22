@@ -16,6 +16,7 @@ const contents = `
 - [第6章 回帰1:映画の興行収入の予測](./notebooks/chap6.html)
 - [第7章 分類2:客船沈没事故での生存確率](./notebooks/chap7.html)
 - [第8章 回帰2:住宅の平均価格の予測](./notebooks/chap8.html)
+- [第9章 練習問題:の金融機関のキャンペーン分析](./notebooks/chap9.html)
 
 `;
 
