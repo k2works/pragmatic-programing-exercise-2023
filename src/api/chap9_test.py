@@ -44,7 +44,7 @@ path = os.path.dirname(os.path.abspath(__file__))
 
 # %%
 import pandas as pd
-df = pd.read_csv(path + '/data/bank.csv', sep=',')
+df = pd.read_csv(path + '/data/Bank.csv', sep=',')
 df.head()
 
 # %% [markdown]
@@ -355,7 +355,7 @@ df.duplicated().sum()
 
 # %%
 import pandas as pd
-df = pd.read_csv(path + '/data/bank.csv', sep=',')
+df = pd.read_csv(path + '/data/Bank.csv', sep=',')
 df.head()
 
 # %% [markdown]
