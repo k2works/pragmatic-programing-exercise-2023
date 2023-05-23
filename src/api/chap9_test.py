@@ -421,10 +421,9 @@ from sklearn.discriminant_analysis import StandardScaler
 from sklearn.preprocessing import LabelEncoder
 
 # カテゴリカル変数を指定してLabelEncoderを作成
-encoder = LabelEncoder()
 categorical_cols = ['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month']
 for col in categorical_cols:
-    df[col] = encoder.fit_transform(df[col])
+    CategoricalData(df, col).convert()
 
 # データの分割とスケーリング
 X = df.drop('y', axis=1)
