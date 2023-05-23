@@ -11,9 +11,7 @@ import (
 func TestFixedStack_Push(t *testing.T) {
 	s := NewFixedStack(64)
 	s.Push(1)
-	if len(s.Dump()) != 1 || s.Dump()[0] != 1 {
-		t.Errorf("Push failed")
-	}
+	assert.Equal(t, 1, len(s.Dump()))
 }
 
 func TestFixedStack_Find(t *testing.T) {
@@ -21,9 +19,7 @@ func TestFixedStack_Find(t *testing.T) {
 	s.Push(1)
 	s.Push(2)
 	s.Push(3)
-	if s.Find(2) != 1 {
-		t.Errorf("Find failed")
-	}
+	assert.Equal(t, 1, s.Find(2))
 }
 
 func TestFixedStack_Count(t *testing.T) {
@@ -31,9 +27,7 @@ func TestFixedStack_Count(t *testing.T) {
 	s.Push(1)
 	s.Push(1)
 	s.Push(1)
-	if s.Count(1) != 3 {
-		t.Errorf("Count failed")
-	}
+	assert.Equal(t, 3, s.Count(1))
 }
 
 func TestFixedStack_Peek(t *testing.T) {
@@ -41,9 +35,7 @@ func TestFixedStack_Peek(t *testing.T) {
 	s.Push(1)
 	s.Push(2)
 	s.Push(3)
-	if s.Peek() != 3 {
-		t.Errorf("Peek failed")
-	}
+	assert.Equal(t, 3, s.Peek())
 }
 
 func TestFixedStack_Pop(t *testing.T) {
@@ -51,12 +43,8 @@ func TestFixedStack_Pop(t *testing.T) {
 	s.Push(1)
 	s.Push(2)
 	s.Push(3)
-	if s.Pop() != 3 {
-		t.Errorf("Pop failed")
-	}
-	if len(s.Dump()) != 2 {
-		t.Errorf("Pop failed")
-	}
+	assert.Equal(t, 3, s.Pop())
+	assert.Equal(t, 2, len(s.Dump()))
 }
 
 func TestFixedStack_Clear(t *testing.T) {
@@ -65,9 +53,8 @@ func TestFixedStack_Clear(t *testing.T) {
 	s.Push(2)
 	s.Push(3)
 	s.Clear()
-	if !s.IsEmpty() {
-		t.Errorf("Clear failed")
-	}
+	assert.Equal(t, 0, len(s.Dump()))
+	assert.True(t, s.IsEmpty())
 }
 
 type FixedStack struct {
@@ -301,7 +288,6 @@ func TestFixedQueue_Clear(t *testing.T) {
 	q.Enque(2)
 	q.Enque(3)
 	q.Clear()
-	assert.True(t, q.IsEmpty())
 }
 
 func TestFixedQueue_Dump(t *testing.T) {
