@@ -35,6 +35,29 @@ def plot_df(df):
 
     return exec_all
 
+class CategoricalData:
+    def __init__(self, df, col) -> None:
+        self.df = df
+        self.col = col
+
+    def show(self):
+        """カテゴリーデータの値の数を確認"""
+        return self.df[self.col].value_counts()
+
+    def plot(self):
+        """カテゴリーデータの値の数を棒グラフで確認"""
+        return self.df[self.col].value_counts().plot(kind='bar')
+
+    def convert(self):
+        """カテゴリーデータを数値に変換"""
+        from sklearn.preprocessing import LabelEncoder
+
+        encoder = LabelEncoder()
+        self.df[self.col] = encoder.fit_transform(self.df[self.col])
+
+    def pivot(self, value):
+        """ピボットテーブルによる集計"""
+        return self.df.pivot_table(index='y', columns=self.col, values=value, aggfunc='count')
 
 # %% [markdown]
 # ## データの内容
@@ -123,196 +146,209 @@ df.select_dtypes(include='number').columns
 df.select_dtypes(include='object').columns
 
 # %% [markdown]
+# ### 職種カテゴリ
+
+# %%
+job = CategoricalData(df, 'job')
+
+# %% [markdown]
 # ### 職種カテゴリ確認
 
 # %%
-df['job'].value_counts()
+job.show()
 
 # %%
-df['job'].value_counts().plot(kind='bar')
+job.plot()
 
 # %% [markdown]
 # #### カテゴリーデータを数値に変換
 
 # %%
-from sklearn.preprocessing import LabelEncoder
-
-encoder = LabelEncoder()
-df['job'] = encoder.fit_transform(df['job'])
-df['job'].value_counts()
-df['job'].value_counts().plot(kind='bar')
+job.convert()
+job.plot()
 
 # %% [markdown]
 # #### ピボットテーブルによる集計
 
 # %%
-df.pivot_table(index='y', columns='job', values='id', aggfunc='count')
+job.pivot('id')
 
 # %% [markdown]
 # ### 最終学歴カテゴリ確認
 
 # %%
-df['education'].value_counts()
+education = CategoricalData(df, 'education')
 
 # %%
-df['education'].value_counts().plot(kind='bar')
+education.show()
+
+# %%
+education.plot()
 
 # %% [markdown]
 # #### カテゴリーデータを数値に変換
 
 # %%
-encoder = LabelEncoder()
-df['education'] = encoder.fit_transform(df['education'])
-df['education'].value_counts()
-df['education'].value_counts().plot(kind='bar')
+education.convert()
+education.plot()
 
 # %% [markdown]
 # #### ピボットテーブルによる集計
 
 # %%
-df.pivot_table(index='y', columns='education', values='id', aggfunc='count')
+education.pivot('id')
 
 # %% [markdown]
 # ### 既婚／未婚／離別カテゴリ確認
 
 # %%
-df['marital'].value_counts()
+marital = CategoricalData(df, 'marital')
 
 # %%
-df['marital'].value_counts().plot(kind='bar')
+marital.show()
+
+# %%
+marital.plot()
 
 # %% [markdown]
 # #### カテゴリーデータを数値に変換
 
 # %%
-encoder = LabelEncoder()
-df['marital'] = encoder.fit_transform(df['marital'])
-df['marital'].value_counts()
-df['marital'].value_counts().plot(kind='bar')
+marital.convert()
+marital.plot()
 
 # %% [markdown]
 # #### ピボットテーブルによる集計
 
 # %%
-df.pivot_table(index='y', columns='marital', values='id', aggfunc='count')
+marital.pivot('id')
 
 # %% [markdown]
 # ### 個人ローンの有無カテゴリ確認
 
 # %%
-df['loan'].value_counts()
+loan = CategoricalData(df, 'loan')
 
 # %%
-df['loan'].value_counts().plot(kind='bar')
+loan.show()
+
+# %%
+loan.plot()
 
 # %% [markdown]
 # #### カテゴリーデータを数値に変換
 
 # %%
-encoder = LabelEncoder()
-df['loan'] = encoder.fit_transform(df['loan'])
-df['loan'].value_counts()
-df['loan'].value_counts().plot(kind='bar')
+loan.convert()
+loan.plot()
 
 # %% [markdown]
 # #### ピボットテーブルによる集計
 
 # %%
-df.pivot_table(index='y', columns='loan', values='id', aggfunc='count')
+loan.pivot('id')
 
 # %% [markdown]
 # ### 住宅ローンの有無カテゴリ確認
 
 # %%
-df['housing'].value_counts()
+housing = CategoricalData(df, 'housing')
 
 # %%
-df['housing'].value_counts().plot(kind='bar')
+housing.show()
+
+# %%
+housing.plot()
 
 # %% [markdown]
 # #### カテゴリーデータを数値に変換
 
 # %%
-encoder = LabelEncoder()
-df['housing'] = encoder.fit_transform(df['housing'])
-df['housing'].value_counts()
+housing.convert()
+housing.plot()
 
 # %% [markdown]
 # #### ピボットテーブルによる集計
 
 # %%
-df.pivot_table(index='y', columns='housing', values='id', aggfunc='count')
+housing.pivot('id')
 
 
 # %% [markdown]
 # ### 債務不履行の有無カテゴリ確認
 
 # %%
-df['default'].value_counts()
+default = CategoricalData(df, 'default')
 
 # %%
-df['default'].value_counts().plot(kind='bar')
+default.show()
+
+# %%
+default.plot()
 
 # %% [markdown]
 # #### カテゴリーデータを数値に変換
 
 # %%
-encoder = LabelEncoder()
-df['default'] = encoder.fit_transform(df['default'])
-df['default'].value_counts().plot(kind='bar')
+default.convert()
+default.plot()
 
 # %% [markdown]
 # #### ピボットテーブルによる集計
 
 # %%
-df.pivot_table(index='y', columns='default', values='id', aggfunc='count')
+default.pivot('id')
 
 # %% [markdown]
 # ### 最終接触月確認
 
 # %%
-df['month'].value_counts()
+month = CategoricalData(df, 'month')
 
 # %%
-df['month'].value_counts().plot(kind='bar')
+month.show()
+
+# %%
+month.plot()
 
 # %% [markdown]
 # #### カテゴリーデータを数値に変換
 
 # %%
-encoder = LabelEncoder()
-df['month'] = encoder.fit_transform(df['month'])
-df['month'].value_counts().plot(kind='bar')
+month.convert()
+month.plot()
 
 
 # %% [markdown]
 # #### ピボットテーブルによる集計
 
 # %%
-df.pivot_table(index='y', columns='month', values='id', aggfunc='count')
+month.pivot('id')
 
 # %% [markdown]
 # ### 連絡方法カテゴリ確認
 
 # %%
-df['contact'].value_counts()
+contact = CategoricalData(df, 'contact')
 
 # %%
-df['contact'].value_counts().plot(kind='bar')
+contact.show()
+
+# %%
+contact.plot()
 
 # %% [markdown]
 # #### カテゴリーデータを数値に変換
 
 # %%
-encoder = LabelEncoder()
-df['contact'] = encoder.fit_transform(df['contact'])
-df['contact'].value_counts().plot(kind='bar')
+contact.convert()
+contact.plot()
 
 # %% [markdown]
 # #### ピボットテーブルによる集計
 
 # %%
-df.pivot_table(index='y', columns='contact', values='id', aggfunc='count')
+contact.pivot('id')
 
 
 # %% [markdown]
