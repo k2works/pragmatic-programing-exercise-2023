@@ -7,6 +7,35 @@ import doctest
 import os
 path = os.path.dirname(os.path.abspath(__file__))
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def plot_df(df):
+    def plot_df_hist():
+        """データの分布確認"""
+        df.hist(figsize=(10, 10))
+        plt.show()
+
+    def plot_df_boxplot():
+        """データの外れ値確認"""
+        df.boxplot(figsize=(10, 10))
+        plt.show()
+
+    def plot_df_pairplot():
+        """データの可視化"""
+        sns.set()
+        sns.pairplot(df, hue='y')
+        plt.show()
+
+    def exec_all(on=True):
+        if on:
+            plot_df_hist()
+            plot_df_boxplot()
+            plot_df_pairplot()
+
+    return exec_all
+
+
 # %% [markdown]
 # ## データの内容
 # |列名|意味|
@@ -39,30 +68,6 @@ path = os.path.dirname(os.path.abspath(__file__))
 # %% [markdown]
 # ## データ分析の方法検討
 
-# %%
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-def plot_df(df):
-    def plot_df_hist():
-        """データの分布確認"""
-        df.hist(figsize=(10, 10))
-        plt.show()
-
-    def plot_df_boxplot():
-        """データの外れ値確認"""
-        df.boxplot(figsize=(10, 10))
-        plt.show()
-
-    def plot_df_pairplot():
-        """データの可視化"""
-        sns.set()
-        sns.pairplot(df, hue='y')
-        plt.show()
-
-    return plot_df_hist, plot_df_boxplot, plot_df_pairplot
-
-
 # %% [markdown]
 # ### CSVファイルの読み込み
 
@@ -94,10 +99,8 @@ df.corr()
 
 # %%
 # %matplotlib inline
-plot_hist, plot_boxplot, plot_pairplot = plot_df(df)
-plot_hist()
-plot_boxplot()
-plot_pairplot()
+exec_all = plot_df(df)
+exec_all(on=False)
 
 
 # %% [markdown]
@@ -326,10 +329,8 @@ df['y'].value_counts().plot(kind='bar')
 
 # %%
 # %matplotlib inline
-plot_hist, plot_boxplot, plot_pairplot = plot_df(df)
-plot_hist()
-plot_boxplot()
-plot_pairplot()
+exec_all = plot_df(df)
+exec_all(on=False)
 
 # %% [markdown]
 # ### データの欠損確認
