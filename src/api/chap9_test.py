@@ -10,6 +10,14 @@ path = os.path.dirname(os.path.abspath(__file__))
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# データの可視化設定
+plot_on = False
+
+def new_df():
+    """データフレームの作成"""
+    df = pd.read_csv(path + '/data/Bank.csv', sep=',')
+    return df
+
 def plot_df(df):
     def plot_df_hist():
         """データの分布確認"""
@@ -58,6 +66,10 @@ class CategoricalData:
     def pivot(self, value):
         """ピボットテーブルによる集計"""
         return self.df.pivot_table(index='y', columns=self.col, values=value, aggfunc='count')
+
+    def dummy(self):
+        """ダミー変数化"""
+        return pd.get_dummies(self.df, columns=[self.col])
 
 # %% [markdown]
 # ## データの内容
@@ -118,15 +130,6 @@ df.describe()
 df.corr()
 
 # %% [markdown]
-# ### データの可視化
-
-# %%
-# %matplotlib inline
-exec_all = plot_df(df)
-exec_all(on=False)
-
-
-# %% [markdown]
 # ### データの特徴量確認
 
 # %%
@@ -173,6 +176,16 @@ job.plot()
 # %%
 job.pivot('id')
 
+
+# %% [markdown]
+# ### ダミー変数化
+
+# %%
+#job.dummy()
+df = job.dummy()
+df.head()
+
+
 # %% [markdown]
 # ### 最終学歴カテゴリ確認
 
@@ -197,6 +210,13 @@ education.plot()
 
 # %%
 education.pivot('id')
+
+# %% [markdown]
+# ### ダミー変数化
+
+# %%
+df = education.dummy()
+df.head()
 
 # %% [markdown]
 # ### 既婚／未婚／離別カテゴリ確認
@@ -224,6 +244,14 @@ marital.plot()
 marital.pivot('id')
 
 # %% [markdown]
+# ### ダミー変数化
+# %%
+df = marital.dummy()
+df.head()
+
+# %%
+
+# %% [markdown]
 # ### 個人ローンの有無カテゴリ確認
 
 # %%
@@ -247,6 +275,12 @@ loan.plot()
 
 # %%
 loan.pivot('id')
+
+# %% [markdown]
+# ### ダミー変数化
+# %%
+df = loan.dummy()
+df.head()
 
 # %% [markdown]
 # ### 住宅ローンの有無カテゴリ確認
@@ -273,6 +307,12 @@ housing.plot()
 # %%
 housing.pivot('id')
 
+# %% [markdown]
+# ### ダミー変数化
+# %%
+df = housing.dummy()
+df.head()
+
 
 # %% [markdown]
 # ### 債務不履行の有無カテゴリ確認
@@ -298,6 +338,12 @@ default.plot()
 
 # %%
 default.pivot('id')
+
+# %% [markdown]
+# ### ダミー変数化
+# %%
+df = default.dummy()
+df.head()
 
 # %% [markdown]
 # ### 最終接触月確認
@@ -352,6 +398,12 @@ contact.pivot('id')
 
 
 # %% [markdown]
+# ### ダミー変数化
+# %%
+df = contact.dummy()
+df.head()
+
+# %% [markdown]
 # ### データの目的変数確認
 
 # %%
@@ -365,8 +417,9 @@ df['y'].value_counts().plot(kind='bar')
 
 # %%
 # %matplotlib inline
+df = new_df()
 exec_all = plot_df(df)
-exec_all(on=False)
+exec_all(plot_on)
 
 # %% [markdown]
 # ### データの欠損確認
@@ -394,7 +447,7 @@ df.duplicated().sum()
 
 # %%
 import pandas as pd
-df = pd.read_csv(path + '/data/Bank.csv', sep=',')
+df = new_df()
 df.head()
 
 # %% [markdown]
