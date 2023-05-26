@@ -9,9 +9,10 @@ path = os.path.dirname(os.path.abspath(__file__))
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn import tree
 
 # データの可視化設定
-plot_on = False
+plot_on = True
 
 def new_df():
     """データフレームの作成"""
@@ -42,6 +43,28 @@ def plot_df(df):
             plot_df_pairplot()
 
     return exec_all
+
+# x:特徴量 t:正解データ depth:木の深さ
+def learn(x, t, depth=3):
+    """決定木による学習"""
+    x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_state=0)
+
+    model = tree.DecisionTreeClassifier(max_depth=depth, random_state=0, class_weight='balanced')
+    model.fit(x_train, y_train)
+
+    score = model.score(X = x_train, y = y_train)
+    score2 = model.score(X = x_test, y = y_test)
+    return round(score, 3), round(score2, 3), model
+
+def check_learn(x, t, depth=14):
+    """学習の確認"""
+    for j in range(1, depth + 1): # jは木の深さ（1～14が入る）
+    # xは特徴量、tは正解データ
+        train_score, test_score, model = learn(x, t, depth=j)
+        sentence = '訓練データの正解率{}:'
+        sentence2 = 'テストデータの正解率{}'
+        total_sentence = '深さ{}:' + sentence + sentence2
+        print(total_sentence.format(j, train_score, test_score))
 
 class CategoricalData:
     def __init__(self, df, col) -> None:
@@ -504,9 +527,9 @@ X_test_std = scaler.transform(X_test)
 # ### 未学習状態モデルの生成（分類なら決定木、回帰なら線形回帰）
 
 # %%
-from sklearn.tree import DecisionTreeClassifier
-
-model = DecisionTreeClassifier(max_depth=3, random_state=1234)
+# model = tree.DecisionTreeClassifier(max_depth=3, random_state=1234)
+check_learn(X_train_std, y_train)
+treain_score, test_score, model = learn(X_train_std, y_train, depth=8)
 
 # %% [markdown]
 # ### 訓練データで学習（必要に応じて不均衡データ補正）
@@ -529,6 +552,13 @@ accuracy_score(y_test, y_pred)
 # ### 検証データで評価し指標確認（分類なら正解率、回帰なら決定係数）
 
 # %% [markdown]
+# ### 特徴量重要度をデータフレームに変換して表示
+
+# %%
+pd.DataFrame(model.feature_importances_, index=X.columns)
+
+
+# %% [markdown]
 # ### 決定木における特徴量の考察
 
 # %%
@@ -540,10 +570,146 @@ indices = np.argsort(importances)[::-1]
 for f in range(X_train_std.shape[1]):
     print(f'{f+1}番目に重要な特徴量：{X.columns[indices[f]]} {importances[indices[f]]}')
 
-
 # %% [markdown]
 # ### NG:改善案検討前処理に戻る
+
+# %% [markdown]
+# #### モデルの再学習
+
+# %% [markdown]
+# ##### Take1
+# - 接触時の平均時間、キャンペーン前に接触した回数、年齢、住宅ローンの有無を特徴量として学習する
+# - 接触時の平均時間の欠損値は削除する
+# - 住宅ローンの有無を数値化する
+
+# %%
+df = new_df()
+
+df.dropna(inplace=True)
+categorical_cols = ['housing']
+for c in categorical_cols:
+    CategoricalData(df, c).convert()
+
+col = ['duration', 'campaign', 'age', 'housing']
+x = df[col]
+t = df['y']
+
+check_learn(x, t)
+treain_score, test_score, model = learn(x, t, depth=8)
+model.score(x, t)
+
+# %% [markdown]
+# ##### Take2
+# - 接触時の平均時間、キャンペーン前に接触した回数、年齢、住宅ローンの有無を特徴量として学習する
+# - 接触時の平均時間の欠損値は削除する
+# - 住宅ローンの有無をダミー化する
+
+# %%
+df = new_df()
+
+df.dropna(inplace=True)
+housing = CategoricalData(df, 'housing')
+df = housing.dummy()
+
+col = ['duration', 'campaign', 'age', 'housing_yes', 'housing_no']
+x = df[col]
+t = df['y']
+
+check_learn(x, t)
+treain_score, test_score, model = learn(x, t, depth=8)
+model.score(x, t)
+
+# %% [markdown]
+# ##### Take3
+# - 接触時の平均時間、キャンペーン前に接触した回数、年齢、住宅ローンの有無を特徴量として学習する
+# - 接触時の平均時間の欠損値は平均時間で埋める
+# - 住宅ローンの有無を数値化する
+
+# %%
+df = new_df()
+
+df['duration'].fillna(df['duration'].mean(), inplace=True)
+categorical_cols = ['housing']
+for c in categorical_cols:
+    CategoricalData(df, c).convert()
+
+
+col = ['duration', 'campaign', 'age', 'housing']
+x = df[col]
+t = df['y']
+
+depth = 20
+check_learn(x, t, depth)
+treain_score, test_score, model = learn(x, t, 7)
+model.score(x, t)
+
+# %% [markdown]
+# ##### Take4
+# - 接触時の平均時間を特徴量として学習する
+# - 接触時の平均時間の欠損値は平均時間で埋める
+# - 住宅ローンの有無を数値化する
+
+# %%
+df = new_df()
+
+df['duration'].fillna(df['duration'].mean(), inplace=True)
+categorical_cols = ['housing']
+for c in categorical_cols:
+    CategoricalData(df, c).convert()
+
+
+col = ['duration']
+x = df[col]
+t = df['y']
+
+check_learn(x, t)
+treain_score, test_score, model = learn(x, t, 9)
+model.score(x, t)
+
 # ### OK:最終性能評価（テストデータで評価）
+
+# %% [markdown]
+# ##### Take3
+# - 接触時の平均時間、キャンペーン前に接触した回数、年齢、住宅ローンの有無を特徴量として学習する
+# - 接触時の平均時間の欠損値は平均時間で埋める
+# - 住宅ローンの有無を数値化する
+
+# %%
+df = new_df()
+
+df['duration'].fillna(df['duration'].mean(), inplace=True)
+categorical_cols = ['housing']
+for c in categorical_cols:
+    CategoricalData(df, c).convert()
+
+
+col = ['duration', 'campaign', 'age', 'housing']
+x = df[col]
+t = df['y']
+
+check_learn(x, t)
+treain_score, test_score, model = learn(x, t, 7)
+
+model.score(x, t)
+
+# %% [markdown]
+# ### データの可視化
+
+# %%
+# %matplotlib inline
+x_tmp = pd.concat([x, t], axis=1)
+exec_all = plot_df(x_tmp)
+exec_all(plot_on)
+
+# %% [markdown]
+# ### 学習したモデルを保存する
+
+# %%
+import pickle
+file = path + '/model/campaign.pkl'
+with open(file, 'wb') as f:
+    pickle.dump(model, f)
+
 
 # %%
 doctest.testmod(verbose=True)
