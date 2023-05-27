@@ -24,6 +24,7 @@ const contents = `
 
 - [第10章 より実践的な前処理](./notebooks/chap10.html)
 - [第11章 さまざまな教師あり学習：回帰](./notebooks/chap11.html)
+- [第12章 さまざまな教師あり学習：分類](./notebooks/chap12.html)
 
 `;
 
