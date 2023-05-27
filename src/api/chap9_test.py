@@ -10,6 +10,7 @@ path = os.path.dirname(os.path.abspath(__file__))
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn import tree
+from sklearn.tree import plot_tree
 
 # データの可視化設定
 plot_on = True
@@ -596,7 +597,8 @@ t = df['y']
 
 check_learn(x, t)
 treain_score, test_score, model = learn(x, t, depth=8)
-model.score(x, t)
+take1 = model.score(x, t)
+take1
 
 # %% [markdown]
 # ##### Take2
@@ -617,7 +619,8 @@ t = df['y']
 
 check_learn(x, t)
 treain_score, test_score, model = learn(x, t, depth=8)
-model.score(x, t)
+take2 = model.score(x, t)
+take2
 
 # %% [markdown]
 # ##### Take3
@@ -641,7 +644,8 @@ t = df['y']
 depth = 20
 check_learn(x, t, depth)
 treain_score, test_score, model = learn(x, t, 7)
-model.score(x, t)
+take3 = model.score(x, t)
+take3
 
 # %% [markdown]
 # ##### Take4
@@ -664,8 +668,68 @@ t = df['y']
 
 check_learn(x, t)
 treain_score, test_score, model = learn(x, t, 9)
-model.score(x, t)
+take4 = model.score(x, t)
+take4
 
+# %% [markdown]
+# ##### Take5
+# - 接触時の平均時間、キャンペーン前に接触した回数、年齢、住宅ローンの有無を特徴量として学習する
+# - 接触時の平均時間の欠損値は削除する
+# - 接触時の平均時間の外れ値を削除する
+# - 住宅ローンの有無を数値化する
+
+# %%
+df = new_df()
+
+df.dropna(inplace=True)
+no = df[(df['duration'] > 1400)].index
+df = df.drop(no, axis=0)
+categorical_cols = ['housing']
+for c in categorical_cols:
+    CategoricalData(df, c).convert()
+
+col = ['duration', 'campaign', 'age', 'housing']
+x = df[col]
+t = df['y']
+
+check_learn(x, t)
+treain_score, test_score, model = learn(x, t, depth=8)
+take5 = model.score(x, t)
+take5
+# %% [markdown]
+# ##### Take6
+# - 接触時の平均時間、キャンペーン前に接触した回数、年齢、住宅ローンの有無を特徴量として学習する
+# - 接触時の平均時間の欠損値は平均時間で埋める
+# - 接触時の平均時間の外れ値を削除する
+# - 住宅ローンの有無を数値化する
+
+# %%
+df = new_df()
+
+df['duration'].fillna(df['duration'].mean(), inplace=True)
+no = df[(df['duration'] > 1400)].index
+df = df.drop(no, axis=0)
+categorical_cols = ['housing']
+for c in categorical_cols:
+    CategoricalData(df, c).convert()
+
+
+col = ['duration', 'campaign', 'age', 'housing']
+x = df[col]
+t = df['y']
+
+depth = 20
+check_learn(x, t, depth)
+treain_score, test_score, model = learn(x, t, 7)
+take6 = model.score(x, t)
+take6
+
+# %%
+# 結果を比較
+for i, take in enumerate([take1,take2, take3, take4, take5, take6]):
+    print(f'take{i+1}:{take}')
+
+# %% [markdown]
 # ### OK:最終性能評価（テストデータで評価）
 
 # %% [markdown]
@@ -700,6 +764,10 @@ model.score(x, t)
 x_tmp = pd.concat([x, t], axis=1)
 exec_all = plot_df(x_tmp)
 exec_all(plot_on)
+
+# %%
+# %matplotlib inline
+plot_tree(model, feature_names=x.columns, filled=True, max_depth=2)
 
 # %% [markdown]
 # ### 学習したモデルを保存する
