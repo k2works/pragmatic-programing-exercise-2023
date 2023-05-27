@@ -13,7 +13,7 @@ from sklearn import tree
 from sklearn.tree import plot_tree
 
 # データの可視化設定
-plot_on = True
+plot_on = False
 
 def new_df():
     """データフレームの作成"""
