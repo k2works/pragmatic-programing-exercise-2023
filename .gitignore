@@ -105,3 +105,6 @@ dist
 .vercel
 
 /public
+
+*.pyc
+.idea
