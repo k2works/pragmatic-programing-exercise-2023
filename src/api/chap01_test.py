@@ -1,22 +1,37 @@
 # %% [markdown]
-# # アルゴリズムとは
+# # 基本的なアルゴリズム
 # %%
 import unittest
 import doctest
 
 # %% [markdown]
-# ## 3値の最大値
+# ## アルゴリズムとは
+
+# %% [markdown]
+# ### ３値の最大値
+
+#  %% [markdown]
+# #### List 1- 1 ３つの整数値を読み込んで最大値を求めて表示
+
+# %% [markdown]
+# ```python
+# print('三つの整数値を読み込んで最大値を求めて表示')
+# a = int(input('整数aの値 : '))
+# b = int(input('整数bの値 : '))
+# c = int(input('整数cの値 : '))
 #
-# 1. maximumにaの値を代入する。
-# 1. bの値がmaximumよりも大きければ、maximumにbの値を代入する。
-# 1. cの値がmaximumよりも大きければ、maximumにcの値を代入する。
-#
-# 実行例
-#
-#     三つの整数の最大値を求めます。
-#     整数aの値 : 1
-#     整数bの値 : 3
-#     整数cの値 : 2
+# maximum = a
+# if b > maximum:
+#    maximum = b
+# if c > maximum:
+#    maximum = c
+# ```
+
+# print(f'最大値は{maximum}です。')
+
+# %% [markdown]
+# #### List 1-2 三つの整数値を求めて表示（すべての大小関係に対して確認）
+
 # %%
 
 
@@ -42,7 +57,7 @@ class TestMax3(unittest.TestCase):
 
 
 def max3(a, b, c):
-    """３つの整数値を読み込んで最大値を求めて表示
+    """三つの整数値を読み込んで最大値を求めて表示
     >>> max3(1, 3, 2)
     3
     """
@@ -54,12 +69,106 @@ def max3(a, b, c):
 
     return maximum
 
+# %% [markdown]
+# #### List 1C-1 三つの整数値を読み込んで中央値を求めて表示
 
-doctest.testmod(verbose=True)
-unittest.main(argv=[''], verbosity=2, exit=False)
+# %%
+
+
+class TestMed3(unittest.TestCase):
+    def test_med3(self):
+        for a, b, c, expected in [
+            (3, 2, 1, 2),
+            (3, 2, 2, 2),
+            (3, 1, 2, 2),
+            (3, 2, 3, 3),
+            (2, 1, 3, 2),
+            (3, 3, 2, 3),
+            (3, 3, 3, 3),
+            (2, 2, 3, 2),
+            (2, 3, 1, 2),
+            (2, 3, 2, 2),
+            (1, 3, 2, 2),
+            (2, 3, 3, 3),
+            (1, 2, 3, 2),
+        ]:
+            with self.subTest(a=a,  b=b, c=c, expected=expected):
+                self.assertEqual(expected, med3(a, b, c))
+
+
+def med3(a, b, c):
+    """a,b,cの中央値を求めて返却
+    >>> med3(1, 3, 2)
+    2
+    """
+    if a >= b:
+        if b >= c:
+            return b
+        elif a <= c:
+            return a
+        else:
+            return c
+    elif a > c:
+        return a
+    elif b > c:
+        return c
+    else:
+        return b
 
 # %% [markdown]
-# ## 条件判定と分岐
+# ### 条件判定と分岐
+
+# %% [markdown]
+# #### List 1-3 読み込んだ整数値の符号を表示
+# ```python
+# n = int(input('整数を入力してください：'))
+#
+# if n > 0:
+#     print('その値は正です。')
+# elif n < 0:
+#     print('その値は負です。')
+# else:
+#     print('その値は0です。')
+# ```
+
+# %% [markdown]
+# #### List 1-4 整数値の判定（その１）
+# ```python
+# n = int(input('整数：'))
+# if n == 0:
+#     print('A')
+# elif n == 2:
+#     print('B')
+# else:
+#     print('C')
+# ```
+
+# %% [markdown]
+# #### List 1-5 整数値の判定（その２）
+# ```python
+# n = int(input('整数：'))
+# if n == 0:
+#     print('A')
+# elif n == 1:
+#     print('B')
+# elif n == 2:
+#     print('C')
+# ```
+
+# %% [markdown]
+# #### List 1-6 整数値の判定（その２の正体）
+# ```python
+# n = int(input('整数：'))
+# if n == 1:
+#     print('A')
+# elif n == 2:
+#     print('B')
+# elif n == 3:
+#     print('C')
+# else:
+#     pass
+# ```
+
 # %%
 
 
@@ -83,24 +192,73 @@ def judge_sign(n):
         return ('その値は0です。')
 
 
-doctest.testmod(verbose=True)
-unittest.main(argv=[''], verbosity=2, exit=False)
 # %% [markdown]
-# 繰り返し
+# ### フローチャート（流れ図）の記号
 
-# 1からnまでの整数の総和を求める
+# %% [markdown]
+# ## 繰り返し
+
+# %% [markdown]
+# ### 1からnまでの整数の総和を求める
+
+# %% [markdown]
+# #### List 1-7 1からnまでの総和を求める（while文）
+# ```python
+# print('1からnまでの総和を求めます。')
+# n = int(input('nの値：'))
+
+# sum = 0
+# i = 1
+
+# while i <= n:
+#     sum += i
+#     i += 1
+# print(f'1から{n}までの総和は{sum}です。')
+# ```
+
+# %% [markdown]
+# ### for文による繰返し
+
+# %% [markdown]
+# #### List 1-8 1からnまでの総和を求める（for文）
+# ```python
+# print('1からnまでの総和を求めます。')
+# n = int(input('nの値：'))
+#
+# sum = 0
+# for i in range(1, n + 1):
+#     sum += i
+#
+# print(f'1から{n}までの総和は{sum}です。')
+# ```
+
+# %% [markdown]
+# ### 2値のソートと2値の交換
+
+# %% [markdown]
+# #### List 1-9 aからbまでの総和を求める（for文）
+# ```python
+# print('aからbまでの総和を求めます。')
+# a = int(input('整数a：'))
+# b = int(input('整数b：'))
+#
+# if a > b:
+#     a, b = b, a
+#
+# sum = 0
+# for i in range(a, b + 1):
+#     sum += i
+#
+# print(f'{a}から{b}までの総和は{sum}です。')
+# ```
+
 # %%
-
-
 class TestSum1ToNWhile(unittest.TestCase):
     def test_sum_1_to_n_while(self):
         self.assertEqual(sum_1_to_n_while(5), 15)
 
     def test_sum_1_to_n_for(self):
         self.assertEqual(sum_1_to_n_for(5), 15)
-
-    def test_sum_gauss(self):
-        self.assertEqual(sum_gauss(5), 15)
 
 
 def sum_1_to_n_while(n):
@@ -128,40 +286,31 @@ def sum_1_to_n_for(n):
     return sum
 
 
-def sum_gauss(n):
-    """ ガウスの方法
-    >>> sum_gauss(5)
-    15
-    """
-    sum = n * (n + 1) // 2
-    return sum
+# %% [markdown]
+# ### 繰り返しの過程における条件判定（その１）
 
-# 2値のソートと2値の交換
+# %% [markdown]
+# #### List 1-10 aからbまでの総和を求める（求める過程の式も表示：その１）
+# ```python
+# print('aからbまでの総和を求めます。')
+# a = int(input('整数a：'))
+# b = int(input('整数b：'))
+#
+# if a > b:
+#     a, b = b, a
+#
+# sum = 0
+# for i in range(a, b + 1):
+#     if i < b:
+#         print(f'{i} + ', end='')
+#     else:
+#         print(f'{i} = ', end='')
+#     sum += i
+#
+# print(sum)
+# ```
+
 # %%
-
-
-class TestSum(unittest.TestCase):
-    def test_sum(self):
-        self.assertEqual(sum(3, 8), 33)
-
-
-def sum(a, b):
-    """ aからbまでの総和を求める
-    >>> sum(3,8)
-    33
-    """
-    if a > b:
-        a, b = b, a
-    sum = 0
-    for i in range(a, b + 1):
-        sum += i
-
-    return sum
-
-# 繰り返しの過程における条件判定（その１）
-# %%
-
-
 class TestSumVerbose(unittest.TestCase):
     def test_sum_verbose_1(self):
         self.assertEqual(sum_verbose_1(3, 3), '3 = 3')
@@ -212,7 +361,59 @@ def sum_verbose_2(a, b):
     result += f'{b} = {sum}'
     return result
 
-# 繰返しの過程における条件判定（その２）
+
+# %% [markdown]
+# #### List 1-11 aからbまでの総和を求める（求める過程の式も表示：その２）
+#
+#  ```python
+# print('aからbまでの総和を求めます。')
+# a = int(input('整数a：'))
+# b = int(input('整数b：'))
+#
+# if a > b:
+#     a, b = b, a
+#
+# sum = 0
+# for i in range(a, b + 1):
+#     print(f'{i} + ', end='')
+#     sum += i
+#
+# print(f'{b} = ', end='')
+# sum += b
+#
+# print(sum)
+# ```
+
+# %% [markdown]
+# ### 繰り返しの過程における条件判定（その２）
+
+# %% [markdown]
+# #### List 1-12 記号文字+と-を交互に表示（その１）
+# ```python
+# print('記号文字+と-を交互に表示します。')
+# n = int(input('全部で何個：'))
+#
+# for i in range(n):
+#     if i % 2:
+#         print('-', end='')
+#     else:
+#         print('+', end='')
+# print()
+# ```
+
+# #### List 1-13 記号文字+と-を交互に表示（その２）
+# ```python
+# print('記号文字+と-を交互に表示します。')
+# n = int(input('全部で何個：'))
+#
+# for _ in range(n // 2):
+#     print('+-', end='')
+#
+# if n % 2:
+#     print('+', end='')
+# print()
+# ```
+
 # %%
 
 
@@ -254,7 +455,41 @@ def alternative_2(n):
 
     return result
 
-# 繰返しの過程における条件判定（その３）
+# %% [markdown]
+# ### 繰り返しの過程における条件判定（その３）
+
+
+# %% [markdown]
+# #### List 1-14 n個の記号文字*をw個ごとに改行しながら表示（その１）
+# ```python
+# print('記号文字*を表示します。')
+# n = int(input('全部で何個：'))
+# w = int(input('何個ごとに改行しますか：'))
+#
+# for i in range(n):
+#     print('*', end='')
+#     if i % w == w - 1:
+#         print()
+#
+# if n % w:
+#     print()
+# ```
+
+# %% [markdown]
+# #### List 1-15 n個の記号文字*をw個ごとに改行しながら表示（その２）
+# ```python
+# print('記号文字*を表示します。')
+# n = int(input('全部で何個：'))
+# w = int(input('何個ごとに改行しますか：'))
+#
+# for _ in range(n // w):
+#     print('*' * w)
+#
+# rest = n % w
+# if rest:
+#     print('*' * rest)
+# ```
+
 # %%
 
 
@@ -298,7 +533,30 @@ def print_starts_2(n, w):
 
     return result
 
-# 正の値の読み込み
+
+# %% [markdown]
+# ### 正の値の読み込み
+
+# %% [markdown]
+# #### List 1-16 1からnまでの総和を求める（nに正の整数値を読み込む）
+
+# ```python
+# print('1からnまでの総和を求めます。')
+#
+# while True:
+#     n = int(input('nの値：'))
+#     if n > 0:
+#         break
+#
+# sum = 0
+# i = 1
+#
+# for i in range(1, n + 1):
+#     sum += i
+#     i += 1
+# print(f'１から{n}までの総和は{sum}です。')
+# ```
+
 # %%
 
 
@@ -331,7 +589,41 @@ def sum_1_to_positive(n):
 
     return sum
 
-# 辺と面積が整数値である長方形
+# %% [markdown]
+# ### 返と面積が整数値である長方形
+
+# %% [markdown]
+# #### List 1-17 縦横が整数で面積がareaの長方形の辺の長さを列挙
+#
+# ```python
+# area = int(input('面積は：'))
+#
+# for i in range(1, area + 1):
+#     if i * i > area:
+#         break
+#     if area % i:
+#         continue
+#     print(f'{i}×{area // i}')
+# ```
+
+# %% [markdown]
+# #### List 1-18 10～99の乱数をn個生成（13が生成されたら中断）
+# ```python
+# import random
+#
+# n = int(input('乱数は何個：'))
+#
+# for _ in range(n):
+#     r = random.randint(10, 99)
+#     print(r, end=' ')
+#     if r == 13:
+#         print('\n終了します。')
+#         break
+# else:
+#     print('\n乱数生成を終了します。')
+# ```
+
+# %%
 
 
 class TestRectangle(unittest.TestCase):
@@ -386,7 +678,59 @@ def skip_2():
         result += f'{i} '
     return result
 
-# 多重ループ
+
+# %% [markdown]
+# ### 繰り返しのスキップと複数のrangeの走査
+
+# %% [markdown]
+# #### List 1-19 1から12までを8をスキップして繰り返す（その１）
+
+# %%
+for i in range(1, 13):
+    if i == 8:
+        continue
+    print(i, end=' ')
+print()
+
+# %% [markdown]
+# #### List 1-20 1から12までを8をスキップして繰り返す（その２）
+
+# %%
+for i in list(range(1, 8)) + list(range(9, 13)):
+    print(i, end=' ')
+print()
+
+# %% [markdown]
+# #### List 1C-2 ２桁の正の整数値（10～99）を読み込む
+# ```python
+# print('２桁の整数値を入力してください。')
+# while True:
+#     no = int(input('値は：'))
+#     if no >= 10 and no <= 99
+#         break
+# print(f'読み込んだのは{no}です。')
+# ```
+
+# %% [markdown]
+# ### 構造化プログラミング
+
+# %% [markdown]
+# ### 多重ループ
+
+# %% [markdown]
+# #### 九九の表
+
+# %% [markdown]
+# #### List 1-21 九九の表を表示
+
+# %%
+print('-' * 27)
+for i in range(1, 10):
+    for j in range(1, 10):
+        print(f'{i * j:3}', end='')
+    print()
+print('-' * 27)
+
 # %%
 
 
@@ -422,7 +766,35 @@ def multiplication_table():
     result += '-' * 27
     return result
 
-# 直角三角形の表示
+# %% [markdown]
+# #### 直角三角形の表示
+
+# %% [markdown]
+# #### List 1-22 左下側が直角の二等辺三角形を表示
+# ```python
+# print('左下直角の二等辺三角形')
+# n = int(input('短辺の長さ：'))
+#
+# for i in range(n):
+#     for j in range(i + 1):
+#         print('*', end='')
+#     print()
+# ```
+
+# %% [markdown]
+# #### List 1-23 右下側が直角の二等辺三角形を表示
+# ```python
+# print('右下直角の二等辺三角形')
+# n = int(input('短辺の長さ：'))
+#
+# for i in range(n):
+#     for _ in range(n - i - 1):
+#         print(' ', end='')
+#     for _ in range(i + 1):
+#         print('*', end='')
+#     print()
+# ```
+
 # %%
 
 
@@ -476,7 +848,33 @@ def traiangle_rg(n):
             result += '*'
         result += '\n'
     return result
+# %% [markdown]
+# #### Pythonの変数について
+
+# %% [markdown]
+# #### List 1C-3
 
 
+# %%
+n = 1
+
+
+def put_id():
+    x = 1
+    print(f'id(x) = {id(x)}')
+
+
+print(f'id(1) = {id(1)}')
+print(f'id(n) = {id(n)}')
+put_id()
+
+# %%  [markdown]
+# #### List 1C-4
+
+# %%
+for i in range(1, 100):
+    print(f'i = {i:3} id(i) = {id(i)}')
+
+# %%
 doctest.testmod(verbose=True)
 unittest.main(argv=[''], verbosity=2, exit=False)
