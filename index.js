@@ -22,7 +22,7 @@ const contents = `
 
 ## 第Ⅲ部 中級者への最初の１歩を踏み出そう
 
-- [第10章 より実践的な前処理](./notebooks/chap11.html)
+- [第10章 より実践的な前処理](./notebooks/chap10.html)
 
 `;
 
