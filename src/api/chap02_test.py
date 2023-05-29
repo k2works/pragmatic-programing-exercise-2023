@@ -1,8 +1,95 @@
-# データ構造と配列
-from typing import MutableSequence
+# %% [markdown]
+# # データ構造と配列
+# %%
 from typing import Any, Sequence
+from typing import MutableSequence
 import unittest
 import doctest
+
+# %% [markdown]
+# ## データ構造の定義
+
+# %% [markdown]
+# ### 配列の必要性
+
+# %% [markdown]
+# #### List2-1 ５人の点数を読み込んで合計点・平均点を表示
+# ```python
+# print('5人の点数の合計と平均点を求めます。')
+# tensu1 = int(input('1番の点数：'))
+# tensu2 = int(input('2番の点数：'))
+# tensu3 = int(input('3番の点数：'))
+# tensu4 = int(input('4番の点数：'))
+# tensu5 = int(input("5番の点数："))
+#
+# total = 0
+# total += tensu1
+# total += tensu2
+# total += tensu3
+# total += tensu4
+# total += tensu5
+#
+# print(f'合計は{total}点です。')
+# print(f'平均は{total/5}点です。')
+
+# %%
+
+# %% [markdown]
+# ### リストとタプル
+
+# %% [markdown]
+# #### リスト
+
+# %% [markdown]
+# #### タプル
+
+# %% [markdown]
+# #### アンパック
+
+# %%
+x = [1, 2, 3]
+a, b, c = x
+x
+
+# %% [markdown]
+# ### インデックス式によるアクセス
+
+# %% [markdown]
+# #### インデックス式
+
+# %% [markdown]
+# ##### 2-2 リストとインデックス式
+# %%
+x = [11, 22, 33, 44, 55, 66, 77]
+print(x[2])
+print(x[-3])
+x[-4] = 3.14
+print(x)
+# print(x[7])
+# x[7] = 3.14
+
+# %% [markdown]
+# ### スライス式によるアクセス
+
+# %% [markdown]
+# #### スライス式による取り出し
+
+# %% [markdown]
+# ##### 2-3 リストとスライス式
+# %%
+s = [11, 22, 33, 44, 55, 66, 77]
+print(s[0:6])
+print(s[0:7])
+print(s[0:7:2])
+print(s[-4:-2])
+print(s[3:1])
+
+# %% [markdown]
+# ### データ構造
+
+# %% [markdown]
+# > データ単位とデータ自身とのあいだの物理的または論理的な関係
+# >> JIS X0015 03.01
 
 
 class TestTotal(unittest.TestCase):
@@ -26,6 +113,55 @@ def total(tensu1, tensu2, tensu3, tensu4, tensu5):
     result += ','
     result += str(total/5)
     return result
+
+# %% [markdown]
+# ## 配列
+
+# %% [markdown]
+# ## 要素
+
+# %% [markdown]
+# ## 添字とインデックス
+
+# %% [markdown]
+# ## リスト（List）
+
+# %% [markdown]
+# ## タプル（Tuple）
+
+# %% [markdown]
+# ## インデックス式
+
+# %% [markdown]
+# ## スライス式
+
+# %% [markdown]
+# ## 走査
+
+# %% [markdown]
+# ## 配列の要素の最大数
+
+# %% [markdown]
+# ## 配列の要素の並びの反転
+
+# %% [markdown]
+# ## 基数変換
+
+# %% [markdown]
+# ## 素数の列挙
+
+# %% [markdown]
+# ## アノテーション（Any/Sequence/MutableSequence）
+
+# %% [markdown]
+# ## 関数とモジュール
+
+# %% [markdown]
+# ## ミュータブル（変更可能）
+
+# %% [markdown]
+# ## イミュータブル（変更不能）
+
 
 # 配列
 
