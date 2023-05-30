@@ -1,1 +1,4 @@
 notebook
+pandas
+sqlalchemy==1.4.46
+psycopg2
