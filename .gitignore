@@ -112,3 +112,5 @@ ops/build/docker/mssql/data
 ops/build/docker/mssql/log
 ops/build/docker/schemaspy/data
 ops/build/docker/schemaspy/output
+
+__pycache__

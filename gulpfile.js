@@ -2,6 +2,7 @@ const { series, parallel, watch, src, dest } = require("gulp");
 const { default: rimraf } = require("rimraf");
 const browserSync = require('browser-sync').create();
 const shell = require('gulp-shell');
+const rename = require('gulp-rename');
 
 const asciidoctor = {
   clean: async (cb) => {
@@ -155,6 +156,30 @@ const prettier = {
   },
 };
 
+const jupyter = {
+  build: () => {
+    return src("./src/**/*.ipynb")
+      .pipe(shell(["pip install -r requirements.txt"]))
+  },
+  docs: () => {
+    return src("./src/**/*.ipynb")
+      .pipe(shell(["jupyter nbconvert --to html <%= file.path %> --output-dir ./public/notebooks"]))
+  },
+  md: () => {
+    return src("./src/**/*.ipynb")
+      .pipe(shell(["jupyter nbconvert --to markdown <%= file.path %> --output-dir ./docs/notebooks"]))
+  },
+  clean: async (cb) => {
+    await rimraf("./public/notebooks");
+    await rimraf("./docs/notebooks");
+    cb();
+  },
+}
+
+const jupyterBuildTasks = () => {
+  return series(jupyter.clean, jupyter.build, jupyter.docs, jupyter.md);
+}
+
 const webpackBuildTasks = () => {
   return series(webpack.clean, webpack.build);
 }
@@ -171,6 +196,7 @@ exports.default = series(
   webpackBuildTasks(),
   asciidoctorBuildTasks(),
   marpBuildTasks(),
+  jupyterBuildTasks(),
   prettier.format,
   series(
     parallel(webpack.server, asciidoctor.server),
@@ -183,7 +209,8 @@ exports.build = series(
   webpackBuildTasks(),
   asciidoctorBuildTasks(),
   marpBuildTasks(),
-  prettier.format
+  jupyterBuildTasks(),
+  prettier.format,
 );
 
 exports.test = series(jest.test);
@@ -195,6 +222,7 @@ exports.slides = series(marp.build);
 exports.docs = series(
   asciidoctorBuildTasks(),
   marpBuildTasks(),
+  jupyterBuildTasks(),
   parallel(asciidoctor.server, asciidoctor.watch, marp.watch),
 );
 
