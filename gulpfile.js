@@ -155,6 +155,30 @@ const prettier = {
   },
 };
 
+const jupyter = {
+  build: () => {
+    return src("./src/**/*.ipynb")
+      .pipe(shell(["pip install -r requirements.txt"]))
+  },
+  docs: () => {
+    return src("./src/**/*.ipynb")
+      .pipe(shell(["jupyter nbconvert --to html <%= file.path %> --output-dir ./public/notebooks"]))
+  },
+  md: () => {
+    return src("./src/**/*.ipynb")
+      .pipe(shell(["jupyter nbconvert --to markdown <%= file.path %> --output-dir ./docs/notebooks"]))
+  },
+  clean: async (cb) => {
+    await rimraf("./public/notebooks");
+    await rimraf("./docs/notebooks");
+    cb();
+  },
+}
+
+const jupyterBuildTasks = () => {
+  return series(jupyter.clean, jupyter.build, jupyter.docs, jupyter.md);
+}
+
 const webpackBuildTasks = () => {
   return series(webpack.clean, webpack.build);
 }
@@ -171,6 +195,7 @@ exports.default = series(
   webpackBuildTasks(),
   asciidoctorBuildTasks(),
   marpBuildTasks(),
+  jupyterBuildTasks(),
   prettier.format,
   series(
     parallel(webpack.server, asciidoctor.server),
@@ -183,6 +208,7 @@ exports.build = series(
   webpackBuildTasks(),
   asciidoctorBuildTasks(),
   marpBuildTasks(),
+  jupyterBuildTasks(),
   prettier.format
 );
 
