@@ -28,6 +28,7 @@ const contents = `
 - [第13章 さまざまな予測性能評価](./notebooks/chap13.html)
 - [第14章 教師なし学習1:次元の削減](./notebooks/chap14.html)
 - [第15章 教師なし学習2:クラスタリング](./notebooks/chap15.html)
+- [付録C Pandas虎の巻](./notebooks/appendix_c_1.html)
 
 `;
 
