@@ -4,9 +4,8 @@ const app = new App();
 
 const dev = require('@k2works/full-stack-lab');
 const contents = `
-## 機能名
-## 仕様
-## TODOリスト
+## スッキリわかるPythonによる機械学習入門 スッキリわかるシリーズ
+### [分類1:アヤメの判別](notebooks/chap09.html)
 `;
 
 const usecase = `
@@ -189,5 +188,5 @@ e01 |o..o{ e03
 @enduml
 `;
 
-const mode = "APP"; // "UI" or "API" or "DOC"
+const mode = "DOC"; // "UI" or "API" or "DOC"
 dev.default({ contents, ui, uiModel, uiInteraction, usecase, uml, erd, mode });
