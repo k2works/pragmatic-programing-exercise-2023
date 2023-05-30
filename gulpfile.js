@@ -2,6 +2,7 @@ const { series, parallel, watch, src, dest } = require("gulp");
 const { default: rimraf } = require("rimraf");
 const browserSync = require('browser-sync').create();
 const shell = require('gulp-shell');
+const rename = require('gulp-rename');
 
 const asciidoctor = {
   clean: async (cb) => {
@@ -163,11 +164,20 @@ const jupyter = {
   docs: () => {
     return src("./src/**/*.ipynb")
       .pipe(shell(["jupyter nbconvert --to html <%= file.path %> --output-dir ./public/notebooks"]))
-  }
+  },
+  md: () => {
+    return src("./src/**/*.ipynb")
+      .pipe(shell(["jupyter nbconvert --to markdown <%= file.path %> --output-dir ./docs/notebooks"]))
+  },
+  clean: async (cb) => {
+    await rimraf("./public/notebooks");
+    await rimraf("./docs/notebooks");
+    cb();
+  },
 }
 
 const jupyterBuildTasks = () => {
-  return series(jupyter.build, jupyter.docs);
+  return series(jupyter.clean, jupyter.build, jupyter.docs, jupyter.md);
 }
 
 const webpackBuildTasks = () => {
