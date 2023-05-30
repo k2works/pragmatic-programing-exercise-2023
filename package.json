@@ -68,6 +68,9 @@
     "testMatch": [
       "**/**/*.test.js",
       "**/**/*.test.ts"
+    ],
+    "roots": [
+      "src"
     ]
   },
   "dependencies": {
