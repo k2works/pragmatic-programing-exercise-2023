@@ -16,8 +16,11 @@ generator erd {
   output   = "../public/docs/ERD.svg"
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+model Iris {
+  id           Int     @id @default(autoincrement())
+  sepal_length Float?
+  sepal_width  Float?
+  petal_length Float?
+  petal_width  Float?
+  species      String?
 }
