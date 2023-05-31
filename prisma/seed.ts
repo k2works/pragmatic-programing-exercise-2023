@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { irises } from "./csvReader";
+import { cinemas, irises } from "./csvReader";
 
 async function main() {
   for (const iris of irises) {
@@ -14,6 +14,22 @@ async function main() {
         petal_length: iris.petal_length,
         petal_width: iris.petal_width,
         species: iris.species,
+      },
+    });
+  }
+
+  for (const cinema of cinemas) {
+    console.log(cinema)
+    await prisma.cinema.upsert({
+      where: { cinema_id: cinema.cinema_id },
+      update: {},
+      create: {
+        cinema_id: cinema.cinema_id,
+        sns1: cinema.sns1,
+        sns2: cinema.sns2,
+        actor: cinema.actor,
+        original: cinema.original,
+        sales: cinema.sales,
       },
     });
   }
