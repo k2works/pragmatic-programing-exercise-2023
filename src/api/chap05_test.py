@@ -12,15 +12,15 @@ import pandas as pd
 import seaborn as sns
 
 class CSVRepository:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, file) -> None:
+        self.file = file
 
     def get_data(self):
-        return pd.read_csv(path + '/data/iris.csv')
+        return pd.read_csv(self.file)
 
 class SQLRepository:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, table) -> None:
+        self.table = table
 
     def get_data(self):
         from sqlalchemy import create_engine
@@ -31,7 +31,7 @@ class SQLRepository:
         password = 'root'
 
         engine = create_engine(f'postgresql://{username}:{password}@{host}:{port}/{db}')
-        return pd.read_sql_table('iris', engine)
+        return pd.read_sql_table(self.table, engine)
 
 class CategoricalData:
     def __init__(self, df, col) -> None:
@@ -94,7 +94,8 @@ def convert_categoricals(df, cols):
         df_conv[c] = CategoricalData(df_conv, c).convert()
     return df_conv
 
-repo = CSVRepository()
+#repo = SQLRepository(table='Iris')
+repo = CSVRepository(file= path + '/data/iris.csv')
 
 # %% [markdown]
 # ## データの内容
@@ -208,7 +209,7 @@ dv.df_all('species')
 
 # %% [markdown]
 # ### データの読み込み
-repo = CSVRepository()
+repo = CSVRepository(file= path + '/data/iris.csv')
 df = repo.get_data()
 df.head(3)
 
