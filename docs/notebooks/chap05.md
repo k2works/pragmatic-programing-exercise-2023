@@ -6,95 +6,11 @@ from typing import Any
 import unittest
 import doctest
 import os
+from domain import CSVRepository, SQLRepository, CategoricalData, DataVisualization, convert_categoricals
+
 path = os.path.dirname(os.path.abspath(__file__))
-
-import pandas as pd
-import seaborn as sns
-
-class CSVRepository:
-    def __init__(self) -> None:
-        pass
-
-    def get_data(self):
-        return pd.read_csv(path + '/data/iris.csv')
-
-class SQLRepository:
-    def __init__(self) -> None:
-        pass
-
-    def get_data(self):
-        from sqlalchemy import create_engine
-        host = 'localhost'
-        port = '5432'
-        db = 'test'
-        username = 'root'
-        password = 'root'
-
-        engine = create_engine(f'postgresql://{username}:{password}@{host}:{port}/{db}')
-        return pd.read_sql_table('iris', engine)
-
-class CategoricalData:
-    def __init__(self, df, col) -> None:
-        self.df = df
-        self.col = col
-
-    def show(self):
-        """カテゴリーデータの値の数を確認"""
-        return self.df[self.col].value_counts()
-
-    def plot(self):
-        """カテゴリーデータの値の数を棒グラフで確認"""
-        return self.df[self.col].value_counts().plot(kind='bar')
-
-    def convert(self):
-        """カテゴリーデータを数値に変換"""
-        from sklearn.preprocessing import LabelEncoder
-
-        encoder = LabelEncoder()
-        return encoder.fit_transform(self.df[self.col])
-
-    def pivot(self, index,value):
-        """ピボットテーブルによる集計"""
-        return self.df.pivot_table(index=index, columns=self.col, values=value, aggfunc='count')
-
-    def dummy(self):
-        """ダミー変数化"""
-        return pd.get_dummies(self.df, columns=[self.col])
-
-class DataVisualization:
-    def __init__(self, df) -> None:
-        self.df = df
-
-    def df_hist(self):
-        """データフレームのヒストグラム表示"""
-        return self.df.hist(figsize=(12, 12))
-
-    def df_scatter(self):
-        """データフレームの散布図表示"""
-        return pd.plotting.scatter_matrix(self.df, figsize=(12, 12))
-
-    def df_box(self):
-        """データフレームの箱ひげ図表示"""
-        return self.df.boxplot(figsize=(12, 12))
-
-    def df_pairplot(self, hue=None):
-        """データフレームのペアプロット表示"""
-        return sns.pairplot(self.df, hue=hue)
-
-    def df_all(self, hue):
-        """データフレームの全ての表示"""
-        self.df_hist()
-        self.df_scatter()
-        self.df_box()
-        self.df_pairplot(hue)
-
-def convert_categoricals(df, cols):
-    df_conv = df.copy()
-    for c in cols:
-        df_conv[c] = CategoricalData(df_conv, c).convert()
-    return df_conv
-
-repo = CSVRepository()
+#repo = SQLRepository(table='Iris')
+repo = CSVRepository(file= path + '/data/iris.csv')
 ```
 
  ## データの内容
@@ -424,8 +340,8 @@ species.show()
 
 
 
-    Iris-versicolor    50
     Iris-virginica     50
+    Iris-versicolor    50
     Iris-setosa        50
     Name: species, dtype: int64
 
@@ -1400,7 +1316,7 @@ dv.df_all('species')
 
 
 ```python
-repo = CSVRepository()
+repo = CSVRepository(file= path + '/data/iris.csv')
 df = repo.get_data()
 df.head(3)
 ```
@@ -1689,35 +1605,14 @@ doctest.testmod(verbose=True)
 unittest.main(argv=[''], verbosity=2, exit=False)
 ```
 
-    27 items had no tests:
+    6 items had no tests:
         __main__
-        __main__.CSVRepository
-        __main__.CSVRepository.__init__
-        __main__.CSVRepository.get_data
-        __main__.CategoricalData
-        __main__.CategoricalData.__init__
-        __main__.CategoricalData.convert
-        __main__.CategoricalData.dummy
-        __main__.CategoricalData.pivot
-        __main__.CategoricalData.plot
-        __main__.CategoricalData.show
-        __main__.DataVisualization
-        __main__.DataVisualization.__init__
-        __main__.DataVisualization.df_all
-        __main__.DataVisualization.df_box
-        __main__.DataVisualization.df_hist
-        __main__.DataVisualization.df_pairplot
-        __main__.DataVisualization.df_scatter
-        __main__.SQLRepository
-        __main__.SQLRepository.__init__
-        __main__.SQLRepository.get_data
         __main__.__VSCODE_compute_hash
         __main__.__VSCODE_wrap_run_cell
-        __main__.convert_categoricals
         __main__.df_dropna
         __main__.df_fillna_mean
         __main__.df_fillna_mean_cols
-    0 tests in 27 items.
+    0 tests in 6 items.
     0 passed and 0 failed.
     Test passed.
     
@@ -1732,6 +1627,6 @@ unittest.main(argv=[''], verbosity=2, exit=False)
 
 
 
-    <unittest.main.TestProgram at 0x27bcdc560d0>
+    <unittest.main.TestProgram at 0x16e0fb5fa30>
 
 
