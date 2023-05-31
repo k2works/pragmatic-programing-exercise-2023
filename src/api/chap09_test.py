@@ -88,6 +88,11 @@ class DataVisualization:
         self.df_box()
         self.df_pairplot(hue)
 
+def convert_categoricals(df, cols):
+    df_conv = df.copy()
+    for c in cols:
+        df_conv[c] = CategoricalData(df_conv, c).convert()
+    return df_conv
 
 repo = CSVRepository()
 
@@ -132,10 +137,8 @@ df.describe()
 # ### データの特徴量の相関確認
 
 # %%
-df_conv = df.copy()
 categorical_cols = ['species']
-for c in categorical_cols:
-    df_conv[c] = CategoricalData(df_conv, c).convert()
+df_conv = convert_categoricals(df, categorical_cols)
 df_conv.corr()
 
 # %% [markdown]
@@ -166,8 +169,10 @@ species.plot()
 # ### 種類カテゴリの数値変換
 
 # %%
-species.convert()
-species.plot()
+categorical_cols = ['species']
+df_conv = convert_categoricals(df, categorical_cols)
+conv_species = CategoricalData(df_conv, 'species')
+conv_species.plot()
 
 # %% [markdown]
 # ### ピボットテーブルによる集計
