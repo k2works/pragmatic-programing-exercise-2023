@@ -207,7 +207,44 @@ dv.df_all('species')
 # ## データの前処理
 
 # %% [markdown]
+# ### データの読み込み
+repo = SQLRepository()
+df = repo.get_data()
+df.head(3)
+
+# %% [markdown]
 # ### 欠損地処理（行削除・全体代表値埋め、グループ代表値埋め）
+
+# %% [markdown]
+# #### 欠損値の確認
+# %%
+df.isnull().sum()
+
+# %% [markdown]
+# #### 欠損値の削除
+# %%
+df_drop = df.dropna(how = 'any', axis = 0)
+df_drop.tail(3)
+df_drop.isnull().sum()
+
+# %% [markdown]
+# #### 欠損値の代表値埋め
+# %%
+df_fill = df.fillna(df.mean())
+df_fill.tail(3)
+df_fill.isnull().sum()
+
+# %% [markdown]
+# #### 特徴量と正解データの取り出し
+# %%
+xcol = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+df = df_fill.copy()
+x = df[xcol]
+t = df['species']
+
+from sklearn.model_selection import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.3, random_state=0)
 
 # %% [markdown]
 # ### 各手法を必要に応じて実施
@@ -225,6 +262,12 @@ dv.df_all('species')
 # ### 未学習状態モデルの生成（分類なら決定木、回帰なら線形回帰）
 
 # %% [markdown]
+# #### 決定木モデルを作成する
+# %%
+from sklearn import tree
+model = tree.DecisionTreeClassifier(max_depth=2, random_state=0)
+
+# %% [markdown]
 # ### 訓練データで学習（必要に応じて不均衡データ補正）
 
 # %% [markdown]
@@ -232,13 +275,68 @@ dv.df_all('species')
 
 # %% [markdown]
 # ### 検証データで評価し指標確認（分類なら正解率、回帰なら決定係数）
+# %%
+model.fit(x_train, y_train)
+model.score(x_test, y_test)
 
 # %% [markdown]
 # ### NG:改善案検討前処理に戻る
+
 # ### OK:最終性能評価（テストデータで評価）
+# #### Take1
+# - がく片の長さ、がく片の幅、花弁の長さ、花弁の幅を特徴量として、アヤメの種類を判別する。
+# - 欠損データは削除する。
+# %%
+from sklearn.model_selection import train_test_split
+from sklearn import tree
+
+df_drop = df.dropna(how = 'any', axis = 0)
+df_drop.tail(3)
+df_drop.isnull().sum()
+
+xcol = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+df = df_fill.copy()
+x = df[xcol]
+t = df['species']
+
+x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.3, random_state=0)
+
+model = tree.DecisionTreeClassifier(max_depth=2, random_state=0)
+model.fit(x_train, y_train)
+model.score(x_test, y_test)
+
+import pickle
+with open(path + '/model/model.pkl', 'wb') as f:
+    pickle.dump(model, f)
 
 # %% [markdown]
 # ## 決定木における特徴量の考察
+
+# %% [markdown]
+# ### 分岐条件の列を決める
+# %%
+model.tree_.feature
+
+# %% [markdown]
+# ### 分岐条件のしきい値
+# %%
+model.tree_.threshold
+
+# %% [markdown]
+# ### 末端ノードと種類の紐付け
+# %%
+print(model.tree_.value[1])
+print(model.tree_.value[3])
+print(model.tree_.value[4])
+# %%
+model.classes_
+
+# %% [markdown]
+# ### 決定木の可視化
+# %%
+from sklearn.tree import plot_tree
+
+plot_tree(model, feature_names=xcol, class_names=model.classes_, filled=True)
 
 
 # %%
