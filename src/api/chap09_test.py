@@ -51,7 +51,7 @@ class CategoricalData:
         from sklearn.preprocessing import LabelEncoder
 
         encoder = LabelEncoder()
-        self.df[self.col] = encoder.fit_transform(self.df[self.col])
+        return encoder.fit_transform(self.df[self.col])
 
     def pivot(self, index,value):
         """ピボットテーブルによる集計"""
@@ -132,7 +132,11 @@ df.describe()
 # ### データの特徴量の相関確認
 
 # %%
-df.corr()
+df_conv = df.copy()
+categorical_cols = ['species']
+for c in categorical_cols:
+    df_conv[c] = CategoricalData(df_conv, c).convert()
+df_conv.corr()
 
 # %% [markdown]
 # ### データの数値変数確認
