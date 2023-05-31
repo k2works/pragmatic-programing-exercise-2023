@@ -139,5 +139,5 @@ const erd = `
 @enduml
 `;
 
-const mode = "API"; // "UI" or "API"
+const mode = "APP"; // "UI" or "API" or "DOC"
 render({ contents, ui, uiModel, uiInteraction, usecase, uml, erd, mode });
