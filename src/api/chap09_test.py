@@ -208,7 +208,7 @@ dv.df_all('species')
 
 # %% [markdown]
 # ### データの読み込み
-repo = SQLRepository()
+repo = CSVRepository()
 df = repo.get_data()
 df.head(3)
 
