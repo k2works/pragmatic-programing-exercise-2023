@@ -448,7 +448,7 @@ species.plot()
 
 
     
-![png](chap09_files/chap09_19_1.png)
+![png](chap05_files/chap05_19_1.png)
     
 
 
@@ -469,7 +469,7 @@ conv_species.plot()
 
 
     
-![png](chap09_files/chap09_20_1.png)
+![png](chap05_files/chap05_20_1.png)
     
 
 
@@ -1376,19 +1376,19 @@ dv.df_all('species')
 
 
     
-![png](chap09_files/chap09_29_0.png)
+![png](chap05_files/chap05_29_0.png)
     
 
 
 
     
-![png](chap09_files/chap09_29_1.png)
+![png](chap05_files/chap05_29_1.png)
     
 
 
 
     
-![png](chap09_files/chap09_29_2.png)
+![png](chap05_files/chap05_29_2.png)
     
 
 
@@ -1679,7 +1679,7 @@ plot_tree(model, feature_names=xcol, class_names=model.classes_, filled=True)
 
 
     
-![png](chap09_files/chap09_65_1.png)
+![png](chap05_files/chap05_65_1.png)
     
 
 
