@@ -8,6 +8,7 @@ const contents = `
 ## 新・明解Pythonで学ぶアルゴリズムとデータ構造
 
 ### 第1章 [基本的なアルゴリズム](./notebooks/chap01.html)
+### 第2章 [データ構造と配列](./notebooks/chap02.html)
 
 `;
 
