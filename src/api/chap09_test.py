@@ -285,17 +285,15 @@ model.score(x_test, y_test)
 # ### OK:最終性能評価（テストデータで評価）
 # #### Take1
 # - がく片の長さ、がく片の幅、花弁の長さ、花弁の幅を特徴量として、アヤメの種類を判別する。
-# - 欠損データは削除する。
+# - 欠損データは代表値埋めを行う。
 # %%
 from sklearn.model_selection import train_test_split
 from sklearn import tree
 
-df_drop = df.dropna(how = 'any', axis = 0)
-df_drop.tail(3)
-df_drop.isnull().sum()
+df = repo.get_data()
+df = df.fillna(df.mean())
 
 xcol = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-df = df_fill.copy()
 x = df[xcol]
 t = df['species']
 
@@ -305,6 +303,7 @@ model = tree.DecisionTreeClassifier(max_depth=2, random_state=0)
 model.fit(x_train, y_train)
 model.score(x_test, y_test)
 
+# %%
 import pickle
 with open(path + '/model/model.pkl', 'wb') as f:
     pickle.dump(model, f)
