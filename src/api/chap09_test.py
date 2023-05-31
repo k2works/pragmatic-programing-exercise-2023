@@ -192,7 +192,7 @@ dv = DataVisualization(df)
 dv.df_all('species')
 
 # %% [markdown]
-# 分析の実施
+# # 分析の実施
 
 # %% [markdown]
 # ## データの前処理
