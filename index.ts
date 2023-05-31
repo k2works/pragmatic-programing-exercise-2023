@@ -6,6 +6,7 @@ const dev = require('@k2works/full-stack-lab');
 const contents = `
 ## スッキリわかるPythonによる機械学習入門 スッキリわかるシリーズ
 ### [分類1:アヤメの判別](notebooks/chap09.html)
+### [回帰1:映画の興行収入の予測](notebooks/chap06.html)
 `;
 
 const usecase = `
