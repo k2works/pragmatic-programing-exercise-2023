@@ -223,22 +223,22 @@ df.isnull().sum()
 # %% [markdown]
 # #### 欠損値の削除
 # %%
-df_drop = df.dropna(how = 'any', axis = 0)
-df_drop.tail(3)
-df_drop.isnull().sum()
+def df_dropna(df):
+    df_drop = df.dropna(how = 'any', axis = 0)
+    return df_drop
 
 # %% [markdown]
 # #### 欠損値の代表値埋め
 # %%
-df_fill = df.fillna(df.mean())
-df_fill.tail(3)
-df_fill.isnull().sum()
+def df_fillna_mean(df):
+    df_fill = df.fillna(df.mean())
+    return df_fill
 
 # %% [markdown]
 # #### 特徴量と正解データの取り出し
 # %%
 xcol = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-df = df_fill.copy()
+df = df_fillna_mean(df)
 x = df[xcol]
 t = df['species']
 
@@ -291,7 +291,7 @@ from sklearn.model_selection import train_test_split
 from sklearn import tree
 
 df = repo.get_data()
-df = df.fillna(df.mean())
+df = df_fillna_mean(df)
 
 xcol = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
 x = df[xcol]
