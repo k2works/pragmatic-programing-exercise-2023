@@ -2,12 +2,14 @@
 # # 分類1:アヤメの判別
 
 # %%
+from typing import Any
 import unittest
 import doctest
 import os
 path = os.path.dirname(os.path.abspath(__file__))
 
 import pandas as pd
+import seaborn as sns
 
 class CSVRepository:
     def __init__(self) -> None:
@@ -30,6 +32,62 @@ class SQLRepository:
 
         engine = create_engine(f'postgresql://{username}:{password}@{host}:{port}/{db}')
         return pd.read_sql_table('iris', engine)
+
+class CategoricalData:
+    def __init__(self, df, col) -> None:
+        self.df = df
+        self.col = col
+
+    def show(self):
+        """カテゴリーデータの値の数を確認"""
+        return self.df[self.col].value_counts()
+
+    def plot(self):
+        """カテゴリーデータの値の数を棒グラフで確認"""
+        return self.df[self.col].value_counts().plot(kind='bar')
+
+    def convert(self):
+        """カテゴリーデータを数値に変換"""
+        from sklearn.preprocessing import LabelEncoder
+
+        encoder = LabelEncoder()
+        self.df[self.col] = encoder.fit_transform(self.df[self.col])
+
+    def pivot(self, index,value):
+        """ピボットテーブルによる集計"""
+        return self.df.pivot_table(index=index, columns=self.col, values=value, aggfunc='count')
+
+    def dummy(self):
+        """ダミー変数化"""
+        return pd.get_dummies(self.df, columns=[self.col])
+
+class DataVisualization:
+    def __init__(self, df) -> None:
+        self.df = df
+
+    def df_hist(self):
+        """データフレームのヒストグラム表示"""
+        return self.df.hist(figsize=(12, 12))
+
+    def df_scatter(self):
+        """データフレームの散布図表示"""
+        return pd.plotting.scatter_matrix(self.df, figsize=(12, 12))
+
+    def df_box(self):
+        """データフレームの箱ひげ図表示"""
+        return self.df.boxplot(figsize=(12, 12))
+
+    def df_pairplot(self, hue=None):
+        """データフレームのペアプロット表示"""
+        return sns.pairplot(self.df, hue=hue)
+
+    def df_all(self, hue):
+        """データフレームの全ての表示"""
+        self.df_hist()
+        self.df_scatter()
+        self.df_box()
+        self.df_pairplot(hue)
+
 
 repo = CSVRepository()
 
@@ -57,6 +115,81 @@ df.head(3)
 # %% [markdown]
 # ## データ分析の方法検討
 # - 特徴量を「がく片の長さと幅、花びらの長さと幅」として、アヤメの種類を判別する。
+
+# %% [markdown]
+# ### データの概要
+
+# %%
+df.info()
+
+# %% [markdown]
+# ### データの統計量
+
+# %%
+df.describe()
+
+# %% [markdown]
+# ### データの特徴量の相関確認
+
+# %%
+df.corr()
+
+# %% [markdown]
+# ### データの数値変数確認
+
+# %%
+df.select_dtypes(include='number').columns
+
+# %% [markdown]
+# ### データのカテゴリ変数確認
+
+# %%
+df.select_dtypes(include='object').columns
+
+# %% [markdown]
+# ### 種類カテゴリ
+
+# %%
+species = CategoricalData(df, 'species')
+
+# %%
+species.show()
+
+# %%
+species.plot()
+
+## %% [markdown]
+# ### 種類カテゴリの数値変換
+
+# %%
+species.convert()
+species.plot()
+
+# %% [markdown]
+# ### ピボットテーブルによる集計
+
+# %%
+species.pivot('sepal_length', 'sepal_width')
+# %%
+species.pivot('sepal_width', 'petal_length')
+# %%
+species.pivot('petal_length', 'petal_width')
+# %%
+species.pivot('petal_width', 'sepal_length')
+
+# %% [markdown]
+# ### ダミー変数化
+
+# %%
+df_dummy = species.dummy()
+df_dummy
+
+# %% [markdown]
+# ### データの可視化
+
+# %%
+dv = DataVisualization(df)
+dv.df_all('species')
 
 # %% [markdown]
 # 分析の実施
