@@ -230,15 +230,22 @@ def df_dropna(df):
 # %% [markdown]
 # #### 欠損値の代表値埋め
 # %%
-def df_fillna_mean(df):
-    df_fill = df.fillna(df.mean())
+def df_fillna_mean(df, col):
+    mean_value = df[col].mean()
+    df_fill = df.fillna(mean_value)
+    return df_fill
+
+def df_fillna_mean_cols(df, cols):
+    df_fill = df.copy()
+    for col in cols:
+        df_fill = df_fillna_mean(df_fill, col)
     return df_fill
 
 # %% [markdown]
 # #### 特徴量と正解データの取り出し
 # %%
 xcol = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-df = df_fillna_mean(df)
+df = df_fillna_mean_cols(df, xcol)
 x = df[xcol]
 t = df['species']
 
@@ -291,9 +298,9 @@ from sklearn.model_selection import train_test_split
 from sklearn import tree
 
 df = repo.get_data()
-df = df_fillna_mean(df)
-
 xcol = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+df = df_fillna_mean_cols(df, xcol)
+
 x = df[xcol]
 t = df['species']
 
