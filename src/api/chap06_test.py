@@ -198,14 +198,6 @@ mean_absolute_error(y_pred=pred, y_true=y_test)
 # 決定係数を求める
 model.score(x_test, y_test)
 
-# %%
-# モデルを保存する
-import pickle
-
-with open('model/cinema.pkl', mode='wb') as fp:
-    pickle.dump(model, fp)
-
-
 # %% [markdown]
 # ### NG:改善案検討前処理に戻る
 # ### OK:最終性能評価（テストデータで評価）
@@ -238,8 +230,8 @@ print(f'決定係数:{score}')
 
 # モデルの保存
 import pickle
-with open('model/cinema.pkl', mode='wb') as fp:
-    pickle.dump(model, fp)
+with open(path + '/model/cinema.pkl', 'wb') as f:
+    pickle.dump(model, f)
 
 # %% [markdown]
 # ## 回帰式による影響度の分析
