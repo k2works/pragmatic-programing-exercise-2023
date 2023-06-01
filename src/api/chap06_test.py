@@ -225,9 +225,14 @@ model = LinearRegression()
 model.fit(x_train, y_train)
 
 # モデルの評価
+import pandas as pd
 score = model.score(x_test, y_test)
 print(f'決定係数:{score}')
+coef = pd.DataFrame(model.coef_)
+coef.index = x_train.columns
+print(f'回帰式: {coef[0][0]}*SNS1 + {coef[0][1]}*SNS2 + {coef[0][2]}*actor + {coef[0][3]}*original + {model.intercept_}')
 
+# %%
 # モデルの保存
 import pickle
 with open(path + '/model/cinema.pkl', 'wb') as f:
