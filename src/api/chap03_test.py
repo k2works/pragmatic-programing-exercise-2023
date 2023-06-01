@@ -1,15 +1,119 @@
-# 探索アルゴリズム
-
-from __future__ import annotations
-from enum import Enum
-import hashlib
-import copy
-from typing import Any, Sequence
+# %% [markdown]
+# # 検索
+# %%
 import unittest
 import doctest
 
 
-# 線形探索
+# %% [markdown]
+# ## 探索アルゴリズム
+
+# %% [markdown]
+# ### 探索とキー
+
+# %% [markdown]
+# ### 配列からの探索
+
+# %% [markdown]
+# ## 線形探索
+
+# %% [markdown]
+# ### 線形探索
+
+# %% [markdown]
+# #### List3-1 線形探索(while文)
+# %% [markdown]
+# ```python
+# from __future__ import annotations
+# from typing import Any, Sequence
+# import doctest
+# import unittest
+# import copy
+# import hashlib
+# from enum import Enum
+#
+#
+# def seq_search(a: Sequence, key: Any) -> int:
+#     i = 0
+#     while True:
+#         if i == len(a):
+#             return -1
+#         if a[i] == key:
+#             return i
+#         i += 1
+#
+#
+# if __name__ == '__main__':
+#     num = int(input('要素数: '))
+#     x = [None] * num
+#
+#     for i in range(num):
+#         x[i] = int(input(f'x[{i}]: '))
+#
+#     ky = int(input('探す値: '))
+#
+#     idx = seq_search(x, ky)
+#
+#     if idx == -1:
+#         print('その値の要素は存在しません。')
+#     else:
+#         print(f'その値はx[{idx}]にあります。')
+
+# %% [markdown]
+# #### List3-2 線形探索（for文）
+# %%
+from typing import Sequence
+from traitlets import Any
+
+
+def seq_search(a: Sequence, key: Any) -> int:
+    for i in range(len(a)):
+        if a[i] == key:
+            return i
+    return -1
+
+# %% [markdown]
+# ### いろいろな型のシーケンスからの検索
+
+
+# %% [markdown]
+# #### List3C-1 線形検索を行う関数seq_searchの利用例（その１）
+# %% [markdown]
+# ```python
+# print('実数の探索を行います。')
+# print('Endを入力すると終了します。')
+#
+# number = 0
+# x = []
+#
+# while True:
+#     s = input(f'x[{number}]: ')
+#     if s == 'End':
+#         break
+#     x.append(float(s))
+#     number += 1
+#
+# ky = float(input('探す値: '))
+#
+# idx = seq_search(x, ky)
+# if idx == -1:
+#     print('その値の要素は存在しません。')
+# else:
+#     print(f'その値はx[{idx}]にあります。')
+
+# %% [markdown]
+# #### List3C-2 線形検索を行う関数seq_searchの利用例（その２）
+# %%
+t = (4, 7, 5.6, 2, 3.14, 1)
+s = 'string'
+a = ['DTS', 'AAC', 'FLAC']
+
+print(f'{t}中の5,6の添字は{seq_search(t, 5.6)}です。')
+print(f'{s}中のnの添字は{seq_search(s, "n")}です。')
+print(f'{a}中のDTSの添字は{seq_search(a, "DTS")}です。')
+
+# %%
+
 
 class TestSsearch(unittest.TestCase):
     def test_ssearch_while(self):
@@ -49,6 +153,43 @@ def ssearch_for(a: Sequence, key: Any) -> int:
         if a[i] == key:
             return i
     return -1
+
+
+# %% [markdown]
+# ### 番兵法
+
+# %% [markdown]
+# ## ２分探索
+
+# %% [markdown]
+# ### ２分探索
+
+# %% [markdown]
+# ### 計算量
+
+# %% [markdown]
+# ## ハッシュ法
+
+# %% [markdown]
+# ### ソート済み配列の操作
+
+# %% [markdown]
+# ### ハッシュ法
+
+# %% [markdown]
+# ### 衝突
+
+# %% [markdown]
+# ### チェイン法
+
+# %% [markdown]
+# ### オープンアドレス法
+
+
+# 探索アルゴリズム
+
+
+# 線形探索
 
 
 # 線形探索（番兵法）
