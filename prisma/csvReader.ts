@@ -43,9 +43,9 @@ export const cinemas: Cinema[] = fs
     ] = line.split(",");
     return {
       cinema_id: cinema_id ? parseInt(cinema_id) : 0,
-      SNS1: sns1,
-      SNS2: sns2,
-      actor,
+      SNS1: sns1 ? parseInt(sns1) : null,
+      SNS2: sns2 ? parseInt(sns2) : null,
+      actor: actor ? parseInt(actor) : null,
       original: original ? parseInt(original) : null,
       sales: sales ? parseInt(sales) : null,
     };
