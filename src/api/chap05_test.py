@@ -228,7 +228,7 @@ model.score(x_test, y_test)
 
 # %%
 import pickle
-with open(path + '/model/model.pkl', 'wb') as f:
+with open(path + '/model/iris.pkl', 'wb') as f:
     pickle.dump(model, f)
 
 # %% [markdown]
