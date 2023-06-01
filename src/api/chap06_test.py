@@ -118,7 +118,6 @@ dv.df_all('sales')
 # %% [markdown]
 # ## データの前処理
 # %%
-repo = CSVRepository(file= path + '/data/cinema.csv')
 df = repo.get_data()
 df.head(3)
 
@@ -153,13 +152,10 @@ df3 = df2.drop(no, axis=0)
 df3.shape
 
 # %%
-X = df3.loc[:, 'SNS1':'original']
-
-# %%
+x = df3[['SNS1', 'SNS2', 'actor', 'original']]
 t = df3['sales']
-
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(X, t, test_size=0.2, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_state=0)
 
 # %% [markdown]
 # ## モデルの作成と学習
@@ -207,15 +203,17 @@ model.score(x_test, y_test)
 # - 外れ値データは削除する。
 # %%
 # 前処理
+from domain import CSVRepository, SQLRepository
+#repo = SQLRepository(table='Cinema')
 repo = CSVRepository(file= path + '/data/cinema.csv')
+
 df = repo.get_data()
 df2 = df.fillna(df.mean())
 no = df2[(df2['SNS2'] > 1000) & (df2['sales'] < 8500)].index
 df3 = df2.drop(no, axis=0)
 
-
 # モデルの作成と学習
-x = df3.loc[:, 'SNS1':'original']
+x = df3[['SNS1', 'SNS2', 'actor', 'original']]
 t = df3['sales']
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_state=0)
@@ -226,11 +224,18 @@ model.fit(x_train, y_train)
 
 # モデルの評価
 import pandas as pd
+from sklearn.metrics import mean_absolute_error
+
 score = model.score(x_test, y_test)
 print(f'決定係数:{score}')
+
 coef = pd.DataFrame(model.coef_)
 coef.index = x_train.columns
 print(f'回帰式: {coef[0][0]}*SNS1 + {coef[0][1]}*SNS2 + {coef[0][2]}*actor + {coef[0][3]}*original + {model.intercept_}')
+
+pred = model.predict(x_test)
+mae = mean_absolute_error(y_pred=pred, y_true=y_test)
+print(f'平均絶対誤差: {mae}')
 
 # %%
 # モデルの保存
