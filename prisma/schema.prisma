@@ -33,3 +33,17 @@ model Cinema {
   original  Int?
   sales     Int?
 }
+
+model Survived {
+  PassengerId Int     @id @default(autoincrement())
+  Pclass      Int?
+  Age         Float?
+  Parch       Int?
+  Fare        Float?
+  Embarked    String?
+  Survived    Int?
+  Sex         String?
+  SibSp       Int?
+  Ticket      String?
+  Cabin       String?
+}

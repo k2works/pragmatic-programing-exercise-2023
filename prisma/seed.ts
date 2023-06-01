@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { cinemas, irises } from "./csvReader";
+import { cinemas, irises, surviveds } from "./csvReader";
 
 async function main() {
   for (const iris of irises) {
@@ -33,6 +33,29 @@ async function main() {
       },
     });
   }
+
+  for (const survived of surviveds) {
+    console.log(survived)
+    await prisma.survived.upsert({
+      where: { PassengerId: survived.PassengerId },
+      update: {},
+      create: {
+        PassengerId: survived.PassengerId,
+        Pclass: survived.Pclass,
+        Age: survived.Age,
+        Parch: survived.Parch,
+        Fare: survived.Fare,
+        Embarked: survived.Embarked,
+        Survived: survived.Survived,
+        Sex: survived.Sex,
+        SibSp: survived.SibSp,
+        Ticket: survived.Ticket,
+        Cabin: survived.Cabin,
+      },
+    });
+  }
+
+
 }
 
 main()

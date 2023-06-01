@@ -1,4 +1,4 @@
-import { Iris, Cinema } from "@prisma/client";
+import { Iris, Cinema, Survived } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
@@ -48,5 +48,39 @@ export const cinemas: Cinema[] = fs
       actor: actor ? parseInt(actor) : null,
       original: original ? parseInt(original) : null,
       sales: sales ? parseInt(sales) : null,
+    };
+  });
+
+export const surviveds: Survived[] = fs
+  .readFileSync(filePath("Survived.csv"), encodeing)
+  .trim()
+  .split("\n")
+  .slice(1)
+  .map((line) => {
+    const [
+      passengerId,
+      survived,
+      pclass,
+      sex,
+      age,
+      sibSp,
+      parch,
+      ticket,
+      fare,
+      cabin,
+      embarked,
+    ] = line.split(",");
+    return {
+      PassengerId: passengerId ? parseInt(passengerId) : 0,
+      Survived: survived ? parseInt(survived) : null,
+      Pclass: pclass ? parseInt(pclass) : null,
+      Sex: sex,
+      Age: age ? parseFloat(age) : null,
+      SibSp: sibSp ? parseInt(sibSp) : null,
+      Parch: parch ? parseInt(parch) : null,
+      Ticket: ticket,
+      Fare: fare ? parseFloat(fare) : null,
+      Cabin: cabin,
+      Embarked: embarked,
     };
   });
