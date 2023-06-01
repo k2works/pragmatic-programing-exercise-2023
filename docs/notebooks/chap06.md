@@ -907,7 +907,6 @@ dv.df_all('sales')
 
 
 ```python
-repo = CSVRepository(file= path + '/data/cinema.csv')
 df = repo.get_data()
 df.head(3)
 ```
@@ -1074,15 +1073,10 @@ df3.shape
 
 
 ```python
-X = df3.loc[:, 'SNS1':'original']
-```
-
-
-```python
+x = df3[['SNS1', 'SNS2', 'actor', 'original']]
 t = df3['sales']
-
 from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(X, t, test_size=0.2, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_state=0)
 ```
 
  ## モデルの作成と学習
@@ -1162,15 +1156,6 @@ model.score(x_test, y_test)
 
 
 
-
-```python
-# モデルを保存する
-import pickle
-
-with open('model/cinema.pkl', mode='wb') as fp:
-    pickle.dump(model, fp)
-```
-
  ### NG:改善案検討前処理に戻る
  ### OK:最終性能評価（テストデータで評価）
  #### Take1
@@ -1181,14 +1166,17 @@ with open('model/cinema.pkl', mode='wb') as fp:
 
 ```python
 # 前処理
+from domain import CSVRepository, SQLRepository
+#repo = SQLRepository(table='Cinema')
 repo = CSVRepository(file= path + '/data/cinema.csv')
+
 df = repo.get_data()
 df2 = df.fillna(df.mean())
 no = df2[(df2['SNS2'] > 1000) & (df2['sales'] < 8500)].index
 df3 = df2.drop(no, axis=0)
 
 # モデルの作成と学習
-x = df3.loc[:, 'SNS1':'original']
+x = df3[['SNS1', 'SNS2', 'actor', 'original']]
 t = df3['sales']
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_state=0)
@@ -1198,17 +1186,33 @@ model = LinearRegression()
 model.fit(x_train, y_train)
 
 # モデルの評価
+import pandas as pd
+from sklearn.metrics import mean_absolute_error
+
 score = model.score(x_test, y_test)
 print(f'決定係数:{score}')
 
-# モデルの保存
-import pickle
-with open('model/cinema.pkl', mode='wb') as fp:
-    pickle.dump(model, fp)
+coef = pd.DataFrame(model.coef_)
+coef.index = x_train.columns
+print(f'回帰式: {coef[0][0]}*SNS1 + {coef[0][1]}*SNS2 + {coef[0][2]}*actor + {coef[0][3]}*original + {model.intercept_}')
+
+pred = model.predict(x_test)
+mae = mean_absolute_error(y_pred=pred, y_true=y_test)
+print(f'平均絶対誤差: {mae}')
 ```
 
     決定係数:0.790388159657009
+    回帰式: 1.076456224442035*SNS1 + 0.5340019060723649*SNS2 + 0.2847375188012023*actor + 213.95584502727357*original + 6253.418729438709
+    平均絶対誤差: 277.12236964086253
     
+
+
+```python
+# モデルの保存
+import pickle
+with open(path + '/model/cinema.pkl', 'wb') as f:
+    pickle.dump(model, f)
+```
 
  ## 回帰式による影響度の分析
 
@@ -1257,6 +1261,6 @@ unittest.main(argv=[''], verbosity=2, exit=False)
 
 
 
-    <unittest.main.TestProgram at 0x2a08eb44b50>
+    <unittest.main.TestProgram at 0x251aaaac400>
 
 
