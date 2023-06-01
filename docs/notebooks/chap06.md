@@ -905,7 +905,151 @@ dv.df_all('sales')
 
  ## データの前処理
 
+
+```python
+repo = CSVRepository(file= path + '/data/cinema.csv')
+df = repo.get_data()
+df.head(3)
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>cinema_id</th>
+      <th>SNS1</th>
+      <th>SNS2</th>
+      <th>actor</th>
+      <th>original</th>
+      <th>sales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1375</td>
+      <td>291.0</td>
+      <td>1044</td>
+      <td>8808.994029</td>
+      <td>0</td>
+      <td>9731</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1000</td>
+      <td>363.0</td>
+      <td>568</td>
+      <td>10290.709370</td>
+      <td>1</td>
+      <td>10210</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1390</td>
+      <td>158.0</td>
+      <td>431</td>
+      <td>6340.388534</td>
+      <td>1</td>
+      <td>8227</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
  ### 欠損地処理（行削除・全体代表値埋め、グループ代表値埋め）
+
+
+```python
+df.isnull().any(axis=0)
+```
+
+
+
+
+    cinema_id    False
+    SNS1          True
+    SNS2         False
+    actor         True
+    original     False
+    sales        False
+    dtype: bool
+
+
+
+
+```python
+df2 = df.fillna(df.mean())
+df2.isnull().any(axis=0)
+```
+
+
+
+
+    cinema_id    False
+    SNS1         False
+    SNS2         False
+    actor        False
+    original     False
+    sales        False
+    dtype: bool
+
+
+
+
+```python
+for name in df2.columns:
+    if name == 'cinema_id' or name == 'sales':
+        continue
+
+    df2.plot.scatter(x=name, y='sales')
+```
+
+    c:\Users\kakim\Projects\github\k2works\programing_introduce_2023\.venv\lib\site-packages\pandas\plotting\_matplotlib\core.py:1041: UserWarning: No data for colormapping provided via 'c'. Parameters 'cmap' will be ignored
+      scatter = ax.scatter(
+    
+
+
+    
+![png](chap06_files/chap06_35_1.png)
+    
+
+
+
+    
+![png](chap06_files/chap06_35_2.png)
+    
+
+
+
+    
+![png](chap06_files/chap06_35_3.png)
+    
+
+
+
+    
+![png](chap06_files/chap06_35_4.png)
+    
+
 
  ### 各手法を必要に応じて実施
 
@@ -914,18 +1058,179 @@ dv.df_all('sales')
  - 特徴量の絞り込み
  - 標準化
 
+
+```python
+no = df2[(df2['SNS2'] > 1000) & (df2['sales'] < 8500)].index
+df3 = df2.drop(no, axis=0)
+df3.shape
+```
+
+
+
+
+    (99, 6)
+
+
+
+
+```python
+X = df3.loc[:, 'SNS1':'original']
+```
+
+
+```python
+t = df3['sales']
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(X, t, test_size=0.2, random_state=0)
+```
+
  ## モデルの作成と学習
 
  ### 未学習状態モデルの生成（分類なら決定木、回帰なら線形回帰）
 
+
+```python
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+```
+
  ### 訓練データで学習（必要に応じて不均衡データ補正）
+
+
+```python
+model.fit(x_train, y_train)
+
+new = [[150, 700, 300, 0]]
+model.predict(new)
+```
+
+    c:\Users\kakim\Projects\github\k2works\programing_introduce_2023\.venv\lib\site-packages\sklearn\base.py:439: UserWarning: X does not have valid feature names, but LinearRegression was fitted with feature names
+      warnings.warn(
+    
+
+
+
+
+    array([6874.109753])
+
+
 
  ## モデルの評価
 
  ### 検証データで評価し指標確認（分類なら正解率、回帰なら決定係数）
 
+
+```python
+model.score(x_test, y_test)
+```
+
+
+
+
+    0.790388159657009
+
+
+
+
+```python
+# MAEを求める
+from sklearn.metrics import mean_absolute_error
+
+pred = model.predict(x_test)
+
+mean_absolute_error(y_pred=pred, y_true=y_test)
+```
+
+
+
+
+    277.12236964086253
+
+
+
+
+```python
+# 決定係数を求める
+model.score(x_test, y_test)
+```
+
+
+
+
+    0.790388159657009
+
+
+
+
+```python
+# モデルを保存する
+import pickle
+
+with open('model/cinema.pkl', mode='wb') as fp:
+    pickle.dump(model, fp)
+```
+
  ### NG:改善案検討前処理に戻る
  ### OK:最終性能評価（テストデータで評価）
+ #### Take1
+ - 特徴量を「公開後10日以内にSNS1でつぶやかれた数、公開後10日以内にSNS2でつぶやかれた数、主演俳優の昨年のメディア露出度、原作があるかどうか」、目的変数を「最終的な興行収入」として、映画の興行収入を予測する。
+ - 欠損データは代表値埋めを行う。
+ - 外れ値データは削除する。
+
+
+```python
+# 前処理
+repo = CSVRepository(file= path + '/data/cinema.csv')
+df = repo.get_data()
+df2 = df.fillna(df.mean())
+no = df2[(df2['SNS2'] > 1000) & (df2['sales'] < 8500)].index
+df3 = df2.drop(no, axis=0)
+
+# モデルの作成と学習
+x = df3.loc[:, 'SNS1':'original']
+t = df3['sales']
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_state=0)
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+model.fit(x_train, y_train)
+
+# モデルの評価
+score = model.score(x_test, y_test)
+print(f'決定係数:{score}')
+
+# モデルの保存
+import pickle
+with open('model/cinema.pkl', mode='wb') as fp:
+    pickle.dump(model, fp)
+```
+
+    決定係数:0.790388159657009
+    
+
+ ## 回帰式による影響度の分析
+
+
+```python
+# 係数と切片を確認
+import pandas as pd
+tmp = pd.DataFrame(model.coef_)
+tmp.index = x_train.columns
+print('係数: ')
+print(tmp)
+print('切片: ', model.intercept_)
+```
+
+    係数: 
+                       0
+    SNS1        1.076456
+    SNS2        0.534002
+    actor       0.284738
+    original  213.955845
+    切片:  6253.418729438709
+    
 
 
 ```python
@@ -952,6 +1257,6 @@ unittest.main(argv=[''], verbosity=2, exit=False)
 
 
 
-    <unittest.main.TestProgram at 0x2a08781a400>
+    <unittest.main.TestProgram at 0x2a08eb44b50>
 
 
