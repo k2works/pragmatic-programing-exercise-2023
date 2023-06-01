@@ -8,8 +8,8 @@ import os
 from domain import CSVRepository, SQLRepository, CategoricalData, DataVisualization, convert_categoricals
 
 path = os.path.dirname(os.path.abspath(__file__))
-repo = SQLRepository(table='Cinema')
-#repo = CSVRepository(file= path + '/data/cinema.csv')
+#repo = SQLRepository(table='Cinema')
+repo = CSVRepository(file= path + '/data/cinema.csv')
 
 # %% [markdown]
 # ## データの内容
@@ -87,9 +87,9 @@ conv_species.plot()
 # ### ピボットテーブルによる集計
 
 # %%
-original.pivot('sales', 'sns1')
+original.pivot('sales', 'SNS1')
 # %%
-original.pivot('sales', 'sns2')
+original.pivot('sales', 'SNS2')
 # %%
 original.pivot('sales', 'actor')
 
