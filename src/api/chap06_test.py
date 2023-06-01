@@ -117,9 +117,26 @@ dv.df_all('sales')
 
 # %% [markdown]
 # ## データの前処理
+# %%
+repo = CSVRepository(file= path + '/data/cinema.csv')
+df = repo.get_data()
+df.head(3)
 
 # %% [markdown]
 # ### 欠損地処理（行削除・全体代表値埋め、グループ代表値埋め）
+# %%
+df.isnull().any(axis=0)
+
+# %%
+df2 = df.fillna(df.mean())
+df2.isnull().any(axis=0)
+
+# %%
+for name in df2.columns:
+    if name == 'cinema_id' or name == 'sales':
+        continue
+
+    df2.plot.scatter(x=name, y='sales')
 
 # %% [markdown]
 # ### 各手法を必要に応じて実施
@@ -130,24 +147,110 @@ dv.df_all('sales')
 # - 特徴量の絞り込み
 # - 標準化
 
+# %%
+no = df2[(df2['SNS2'] > 1000) & (df2['sales'] < 8500)].index
+df3 = df2.drop(no, axis=0)
+df3.shape
+
+# %%
+X = df3.loc[:, 'SNS1':'original']
+
+# %%
+t = df3['sales']
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(X, t, test_size=0.2, random_state=0)
+
 # %% [markdown]
 # ## モデルの作成と学習
 
 # %% [markdown]
 # ### 未学習状態モデルの生成（分類なら決定木、回帰なら線形回帰）
+# %%
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
 
 # %% [markdown]
 # ### 訓練データで学習（必要に応じて不均衡データ補正）
+# %%
+model.fit(x_train, y_train)
+
+new = [[150, 700, 300, 0]]
+model.predict(new)
 
 # %% [markdown]
 # ## モデルの評価
 
 # %% [markdown]
 # ### 検証データで評価し指標確認（分類なら正解率、回帰なら決定係数）
+# %%
+model.score(x_test, y_test)
+
+# %%
+# MAEを求める
+from sklearn.metrics import mean_absolute_error
+
+pred = model.predict(x_test)
+
+mean_absolute_error(y_pred=pred, y_true=y_test)
+
+# %%
+# 決定係数を求める
+model.score(x_test, y_test)
+
+# %%
+# モデルを保存する
+import pickle
+
+with open('model/cinema.pkl', mode='wb') as fp:
+    pickle.dump(model, fp)
+
 
 # %% [markdown]
 # ### NG:改善案検討前処理に戻る
 # ### OK:最終性能評価（テストデータで評価）
+# #### Take1
+# - 特徴量を「公開後10日以内にSNS1でつぶやかれた数、公開後10日以内にSNS2でつぶやかれた数、主演俳優の昨年のメディア露出度、原作があるかどうか」、目的変数を「最終的な興行収入」として、映画の興行収入を予測する。
+# - 欠損データは代表値埋めを行う。
+# - 外れ値データは削除する。
+# %%
+# 前処理
+repo = CSVRepository(file= path + '/data/cinema.csv')
+df = repo.get_data()
+df2 = df.fillna(df.mean())
+no = df2[(df2['SNS2'] > 1000) & (df2['sales'] < 8500)].index
+df3 = df2.drop(no, axis=0)
+
+
+# モデルの作成と学習
+x = df3.loc[:, 'SNS1':'original']
+t = df3['sales']
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_state=0)
+
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+model.fit(x_train, y_train)
+
+# モデルの評価
+score = model.score(x_test, y_test)
+print(f'決定係数:{score}')
+
+# モデルの保存
+import pickle
+with open('model/cinema.pkl', mode='wb') as fp:
+    pickle.dump(model, fp)
+
+# %% [markdown]
+# ## 回帰式による影響度の分析
+# %%
+# 係数と切片を確認
+import pandas as pd
+tmp = pd.DataFrame(model.coef_)
+tmp.index = x_train.columns
+print('係数: ')
+print(tmp)
+print('切片: ', model.intercept_)
 
 
 # %%
