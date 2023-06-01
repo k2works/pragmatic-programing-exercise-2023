@@ -25,8 +25,8 @@ async function main() {
       update: {},
       create: {
         cinema_id: cinema.cinema_id,
-        sns1: cinema.sns1,
-        sns2: cinema.sns2,
+        SNS1: cinema.SNS1,
+        SNS2: cinema.SNS2,
         actor: cinema.actor,
         original: cinema.original,
         sales: cinema.sales,

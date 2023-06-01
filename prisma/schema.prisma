@@ -27,8 +27,8 @@ model Iris {
 
 model Cinema {
   cinema_id Int     @id @default(autoincrement())
-  sns1      String?
-  sns2      String?
+  SNS1      String?
+  SNS2      String?
   actor     String?
   original  Int?
   sales     Int?

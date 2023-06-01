@@ -43,8 +43,8 @@ export const cinemas: Cinema[] = fs
     ] = line.split(",");
     return {
       cinema_id: cinema_id ? parseInt(cinema_id) : 0,
-      sns1,
-      sns2,
+      SNS1: sns1,
+      SNS2: sns2,
       actor,
       original: original ? parseInt(original) : null,
       sales: sales ? parseInt(sales) : null,
