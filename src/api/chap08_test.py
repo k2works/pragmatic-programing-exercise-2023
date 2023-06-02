@@ -6,11 +6,12 @@ import unittest
 import doctest
 import os
 
-from domain import SQLRepository, convert_categoricals, CategoricalData, DataVisualization
+from domain import SQLRepository,CSVRepository, convert_categoricals, CategoricalData, DataVisualization
 
+VISUALIZTION = True
 path = os.path.dirname(os.path.abspath(__file__))
-repo = SQLRepository(table='Boston')
-#repo = CSVRepository(file=path + '/data/Boston.csv')
+#repo = SQLRepository(table='Boston')
+repo = CSVRepository(file=path + '/data/Boston.csv')
 # %% [markdown]
 # ## データの内容
 # | 列名 | 内容 |
@@ -108,25 +109,48 @@ df_dummy
 # ### データの可視化
 
 # %%
-dv = DataVisualization(df)
-dv.df_all('PRICE')
+if VISUALIZTION:
+    dv = DataVisualization(df)
+    dv.df_all('PRICE')
 
 # %%
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-for c in df.columns:
-    plt.figure()
-    if c == 'ID' or c == 'PRICE':
-        continue
-    sns.boxenplot(x=c, y='PRICE', data=df)
+if VISUALIZTION:
+    for c in df.columns:
+        plt.figure()
+        if c == 'ID' or c == 'PRICE':
+            continue
+        sns.boxenplot(x=c, y='PRICE', data=df)
 
 
 # %% [markdown]
 # ## データの前処理
+# %%
+df = repo.get_data()
+df.head(3)
+
+# %%
+import pandas as pd
+crime = pd.get_dummies(df['CRIME'], drop_first=True)
+df2 = pd.concat([df, crime], axis=1)
+df2 = df2.drop('CRIME', axis=1)
+df2.head(3)
+
+# %%
+from sklearn.model_selection import train_test_split
+train_val, test = train_test_split(df2, test_size=0.2, random_state=123)
 
 # %% [markdown]
-# ### 欠損地処理（行削除・全体代表値埋め、グループ代表値埋め）
+# ### 欠損値処理（行削除・全体代表値埋め、グループ代表値埋め）
+# %%
+train_val_mean = train_val.mean()
+train_val2 =  train_val.fillna(train_val_mean)
+
+colname = train_val2.columns
+for name in colname:
+    train_val2.plot(kind='scatter', x=name, y='PRICE')
 
 # %% [markdown]
 # ### 各手法を必要に応じて実施
@@ -137,25 +161,241 @@ for c in df.columns:
 # - 特徴量の絞り込み
 # - 標準化
 
+# %%
+out_line1 = train_val2[(train_val2['RM'] < 6) & (train_val2['PRICE'] > 40)].index
+out_line2 = train_val2[(train_val2['PTRATIO'] > 18) & (train_val2['PRICE'] > 40)].index
+print(out_line1, out_line2)
+# %%
+train_val3 = train_val2.drop(out_line1)
+col = ['INDUS', 'NOX', 'RM', 'PTRATIO', 'LSTAT', 'PRICE']
+
+train_val4 = train_val3[col]
+train_val4.head(3)
+# %%
+train_cor = train_val4.corr()['PRICE']
+abs_cor = train_cor.map(abs)
+abs_cor.sort_values(ascending=False)
+
+# %%
+col = ['RM', 'LSTAT', 'PTRATIO']
+x = train_val4[col]
+t = train_val4[['PRICE']]
+
+x_train, x_val, y_train, y_val = train_test_split(x, t, test_size=0.2, random_state=0)
+
+# %%
+from sklearn.preprocessing import StandardScaler
+
+sc_model_x = StandardScaler()
+sc_model_x.fit(x_train)
+sc_x = sc_model_x.transform(x_train)
+
+sc_model_y = StandardScaler()
+sc_model_y.fit(y_train)
+sc_y = sc_model_y.transform(y_train)
+
+
 # %% [markdown]
 # ## モデルの作成と学習
 
 # %% [markdown]
 # ### 未学習状態モデルの生成（分類なら決定木、回帰なら線形回帰）
+# %%
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+
 
 # %% [markdown]
 # ### 訓練データで学習（必要に応じて不均衡データ補正）
+# %%
+model.fit(sc_x, sc_y)
 
 # %% [markdown]
 # ## モデルの評価
 
 # %% [markdown]
 # ### 検証データで評価し指標確認（分類なら正解率、回帰なら決定係数）
+# %%
+sc_x_val = sc_model_x.transform(x_val)
+sc_y_val = sc_model_y.transform(y_val)
+model.score(sc_x_val, sc_y_val)
 
 # %% [markdown]
 # ### NG:改善案検討前処理に戻る
-# ### OK:最終性能評価（テストデータで評価）
+# %% [markdown]
+# ### Take1
+# %%
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from domain import SQLRepository,CSVRepository, convert_categoricals, CategoricalData, DataVisualization
 
+path = os.path.dirname(os.path.abspath(__file__))
+#repo = SQLRepository(table='Boston')
+repo = CSVRepository(file=path + '/data/Boston.csv')
+
+# モデルの作成と学習
+def learn(x,t):
+    x_train, x_val, y_train, y_val = train_test_split(x, t, test_size=0.2, random_state=0)
+    # 訓練データを標準化
+    sc_model_x = StandardScaler()
+    sc_model_y = StandardScaler()
+    sc_model_x.fit(x_train)
+    sc_x_train = sc_model_x.transform(x_train)
+    sc_model_y.fit(y_train)
+    sc_y_train = sc_model_y.transform(y_train)
+    # 学習
+    model = LinearRegression()
+    model.fit(sc_x_train, sc_y_train)
+
+    # 検証データを標準化
+    sc_x_val = sc_model_x.transform(x_val)
+    sc_y_val = sc_model_y.transform(y_val)
+    # 訓練データと検証データの決定係数計算
+    train_score = model.score(sc_x_train, sc_y_train)
+    val_score = model.score(sc_x_val, sc_y_val)
+
+    return train_score, val_score
+
+
+# データの前処理
+df = repo.get_data()
+
+import pandas as pd
+crime = pd.get_dummies(df['CRIME'], drop_first=True)
+df2 = pd.concat([df, crime], axis=1)
+df2 = df2.drop('CRIME', axis=1)
+
+from sklearn.model_selection import train_test_split
+train_val, test = train_test_split(df2, test_size=0.2, random_state=0)
+
+train_val_mean = train_val.mean()
+train_val2 =  train_val.fillna(train_val_mean)
+
+out_line1 = train_val2[(train_val2['RM'] < 6) & (train_val2['PRICE'] > 40)].index
+out_line2 = train_val2[(train_val2['PTRATIO'] > 18) & (train_val2['PRICE'] > 40)].index
+train_val3 = train_val2.drop([76], axis=0)
+
+col = ['INDUS', 'NOX', 'RM', 'PTRATIO', 'LSTAT', 'PRICE']
+train_val4 = train_val3[col]
+train_val4.head(3)
+
+train_cor = train_val4.corr()['PRICE']
+abs_cor = train_cor.map(abs)
+abs_cor.sort_values(ascending=False)
+
+# モデルの評価とチューニング
+x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+t = train_val3[['PRICE']]
+
+s1,s2 = learn(x, t)
+print(s1, s2)
+
+# %% [markdown]
+# ### Take1
+# - 特徴量にINDUS列を追加
+# %%
+x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO', 'INDUS']]
+t = train_val3[['PRICE']]
+s1,s2 = learn(x, t)
+print(s1, s2)
+
+# %% [markdown]
+# ### Take2
+# - RM列のデータを2乗した新しい列を追加
+# %%
+x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+t = train_val3[['PRICE']]
+x['RM2'] = x['RM'] ** 2
+s1,s2 = learn(x, t)
+print(s1, s2)
+
+# %% [markdown]
+# ### Take3
+# - RM列のデータを2乗した新しい列を追加
+# - LSTAT列のデータを2乗した新しい列を追加
+# %%
+x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+t = train_val3[['PRICE']]
+x['RM2'] = x['RM'] ** 2
+x['LSTAT2'] = x['LSTAT'] ** 2
+s1,s2 = learn(x, t)
+print(s1, s2)
+
+
+# %% [markdown]
+# ### Take4
+# - RM列のデータを2乗した新しい列を追加
+# - LSTAT列のデータを2乗した新しい列を追加
+# - PTRATIO列のデータを2乗した新しい列を追加
+# %%
+x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+t = train_val3[['PRICE']]
+x['RM2'] = x['RM'] ** 2
+x['LSTAT2'] = x['LSTAT'] ** 2
+x['PTRATIO2'] = x['PTRATIO'] ** 2
+s1,s2 = learn(x, t)
+print(s1, s2)
+
+# %% [markdown]
+# ### Take5
+# - RM列のデータを2乗した新しい列を追加
+# - LSTAT列のデータを2乗した新しい列を追加
+# - PTRATIO列のデータを2乗した新しい列を追加
+# - 交差作用特徴量を追加
+# %%
+x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+t = train_val3[['PRICE']]
+x['RM2'] = x['RM'] ** 2
+x['LSTAT2'] = x['LSTAT'] ** 2
+x['PTRATIO2'] = x['PTRATIO'] ** 2
+x['RM * LSTAT'] = x['RM'] * x['LSTAT']
+s1,s2 = learn(x, t)
+print(s1, s2)
+
+# %% [markdown]
+# ### OK:最終性能評価（テストデータで評価）
+# %% [markdown]
+# ### Take5
+# - RM列のデータを2乗した新しい列を追加
+# - LSTAT列のデータを2乗した新しい列を追加
+# - PTRATIO列のデータを2乗した新しい列を追加
+# - 交差作用特徴量を追加
+# %%
+sc_model_x2 = StandardScaler()
+sc_model_x2.fit(x)
+sc_x = sc_model_x2.transform(x)
+
+sc_model_y2 = StandardScaler()
+sc_model_y2.fit(t)
+sc_y = sc_model_y2.transform(t)
+model = LinearRegression()
+model.fit(sc_x, sc_y)
+
+# %%
+test2 = test.fillna(train_val.mean())
+x_test = test2.loc[:, ['RM', 'LSTAT', 'PTRATIO']]
+y_test = test2[['PRICE']]
+
+x_test['RM2'] = x_test['RM'] ** 2
+x_test['LSTAT2'] = x_test['LSTAT'] ** 2
+x_test['PTRATIO2'] = x_test['PTRATIO'] ** 2
+
+x_test['RM * LSTAT'] = x_test['RM'] * x_test['LSTAT']
+
+sc_x_test = sc_model_x2.transform(x_test)
+sc_y_test = sc_model_y2.transform(y_test)
+
+# %%
+model.score(sc_x_test, sc_y_test)
+
+# %%
+import pickle
+with open(path + '/data/boston.pkl', mode='wb') as fp:
+    pickle.dump(model, fp)
+with open(path + '/data/boston_scx.pkl', mode='wb') as fp:
+    pickle.dump(sc_model_x2, fp)
+with open(path + '/data/boston_scy.pkl', mode='wb') as fp:
+    pickle.dump(sc_model_y2, fp)
 
 # %%
 doctest.testmod(verbose=True)
