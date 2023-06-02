@@ -47,3 +47,21 @@ model Survived {
   Ticket      String?
   Cabin       String?
 }
+
+model Boston {
+  ID      Int     @id @default(autoincrement())
+  CRIME   String?
+  ZN      Float?
+  INDUS   Float?
+  CHAS    Int?
+  NOX     Float?
+  RM      Float?
+  AGE     Float?
+  DIS     Float?
+  RAD     Int?
+  TAX     Int?
+  PTRATIO Float?
+  B       Float?
+  LSTAT   Float?
+  PRICE   Float?
+}

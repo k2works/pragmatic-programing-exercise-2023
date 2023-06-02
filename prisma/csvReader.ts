@@ -1,4 +1,4 @@
-import { Iris, Cinema, Survived } from "@prisma/client";
+import { Iris, Cinema, Survived, Boston } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 
@@ -82,5 +82,52 @@ export const surviveds: Survived[] = fs
       Fare: fare ? parseFloat(fare) : null,
       Cabin: cabin,
       Embarked: embarked,
+    };
+  });
+
+const idSequence = (function* () {
+  let i = 0;
+  while (true) {
+    yield i++;
+  }
+})();
+export const bostons: Boston[] = fs
+  .readFileSync(filePath("Boston.csv"), encodeing)
+  .trim()
+  .split("\n")
+  .slice(1)
+  .map((line) => {
+    const [
+      CRIME,
+      ZN,
+      INDUS,
+      CHAS,
+      NOX,
+      RM,
+      AGE,
+      DIS,
+      RAD,
+      TAX,
+      PTRATIO,
+      B,
+      LSTAT,
+      PRICE,
+    ] = line.split(",");
+    return {
+      ID: idSequence.next().value,
+      CRIME: CRIME ? CRIME : null,
+      ZN: ZN ? parseFloat(ZN) : null,
+      INDUS: INDUS ? parseFloat(INDUS) : null,
+      CHAS: CHAS ? parseFloat(CHAS) : null,
+      NOX: NOX ? parseFloat(NOX) : null,
+      RM: RM ? parseFloat(RM) : null,
+      AGE: AGE ? parseFloat(AGE) : null,
+      DIS: DIS ? parseFloat(DIS) : null,
+      RAD: RAD ? parseFloat(RAD) : null,
+      TAX: TAX ? parseFloat(TAX) : null,
+      PTRATIO: PTRATIO ? parseFloat(PTRATIO) : null,
+      B: B ? parseFloat(B) : null,
+      LSTAT: LSTAT ? parseFloat(LSTAT) : null,
+      PRICE: PRICE ? parseFloat(PRICE) : null,
     };
   });

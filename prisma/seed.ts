@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import { cinemas, irises, surviveds } from "./csvReader";
+import { bostons, cinemas, irises, surviveds } from "./csvReader";
 
 async function main() {
   for (const iris of irises) {
@@ -55,7 +55,30 @@ async function main() {
     });
   }
 
-
+  for (const boston of bostons) {
+    console.log(boston)
+    await prisma.boston.upsert({
+      where: { ID: boston.ID },
+      update: {},
+      create: {
+        ID: boston.ID,
+        CRIME: boston.CRIME,
+        ZN: boston.ZN,
+        INDUS: boston.INDUS,
+        CHAS: boston.CHAS,
+        NOX: boston.NOX,
+        RM: boston.RM,
+        AGE: boston.AGE,
+        DIS: boston.DIS,
+        RAD: boston.RAD,
+        TAX: boston.TAX,
+        PTRATIO: boston.PTRATIO,
+        B: boston.B,
+        LSTAT: boston.LSTAT,
+        PRICE: boston.PRICE,
+      },
+    });
+  }
 }
 
 main()
