@@ -698,8 +698,8 @@ crime.show()
 
 
     very_low    50
-    high        25
     low         25
+    high        25
     Name: CRIME, dtype: int64
 
 
@@ -709,7 +709,7 @@ crime.show()
 crime.plot()
 
 ## %% [markdown]
-# ### 種類カテゴリの数値変換
+# ### CRIMEカテゴリの数値変換
 ```
 
 
@@ -1048,6 +1048,104 @@ dv.df_all('PRICE')
     
 
 
+
+```python
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+for c in df.columns:
+    plt.figure()
+    if c == 'ID' or c == 'PRICE':
+        continue
+    sns.boxenplot(x=c, y='PRICE', data=df)
+```
+
+
+    <Figure size 640x480 with 0 Axes>
+
+
+
+    
+![png](chap08_files/chap08_26_1.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_2.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_3.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_4.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_5.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_6.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_7.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_8.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_9.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_10.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_11.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_12.png)
+    
+
+
+
+    
+![png](chap08_files/chap08_26_13.png)
+    
+
+
+
+    <Figure size 640x480 with 0 Axes>
+
+
  ## データの前処理
 
  ### 欠損地処理（行削除・全体代表値埋め、グループ代表値埋め）
@@ -1097,6 +1195,6 @@ unittest.main(argv=[''], verbosity=2, exit=False)
 
 
 
-    <unittest.main.TestProgram at 0x1ae3c7a1d00>
+    <unittest.main.TestProgram at 0x235845b73a0>
 
 

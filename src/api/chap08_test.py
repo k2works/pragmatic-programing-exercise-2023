@@ -89,7 +89,7 @@ crime.show()
 crime.plot()
 
 ## %% [markdown]
-# ### 種類カテゴリの数値変換
+# ### CRIMEカテゴリの数値変換
 
 # %%
 categorical_cols = ['CRIME']
@@ -110,6 +110,16 @@ df_dummy
 # %%
 dv = DataVisualization(df)
 dv.df_all('PRICE')
+
+# %%
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+for c in df.columns:
+    plt.figure()
+    if c == 'ID' or c == 'PRICE':
+        continue
+    sns.boxenplot(x=c, y='PRICE', data=df)
 
 
 # %% [markdown]
