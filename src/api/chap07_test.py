@@ -13,8 +13,8 @@ from domain import CSVRepository, SQLRepository, CategoricalData, DataVisualizat
 import pandas as pd
 
 path = os.path.dirname(os.path.abspath(__file__))
-repo = SQLRepository(table='Survived')
-# repo = CSVRepository(file=path + '/data/Survived.csv')
+#repo = SQLRepository(table='Survived')
+repo = CSVRepository(file=path + '/data/Survived.csv')
 
 # %% [markdown]
 # ## データの内容
