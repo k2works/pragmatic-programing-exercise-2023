@@ -1,4 +1,4 @@
- # 回帰2:客船沈没事故での生存予測
+ # 分類2:客船沈没事故での生存予測
 
 
 ```python
@@ -13,8 +13,8 @@ from domain import CSVRepository, SQLRepository, CategoricalData, DataVisualizat
 import pandas as pd
 
 path = os.path.dirname(os.path.abspath(__file__))
-repo = SQLRepository(table='Survived')
-# repo = CSVRepository(file=path + '/data/Survived.csv')
+#repo = SQLRepository(table='Survived')
+repo = CSVRepository(file=path + '/data/Survived.csv')
 ```
 
  ## データの内容
@@ -60,60 +60,60 @@ df.head(3)
     <tr style="text-align: right;">
       <th></th>
       <th>PassengerId</th>
-      <th>Pclass</th>
-      <th>Age</th>
-      <th>Parch</th>
-      <th>Fare</th>
-      <th>Embarked</th>
       <th>Survived</th>
+      <th>Pclass</th>
       <th>Sex</th>
+      <th>Age</th>
       <th>SibSp</th>
+      <th>Parch</th>
       <th>Ticket</th>
+      <th>Fare</th>
       <th>Cabin</th>
+      <th>Embarked</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
       <td>1</td>
+      <td>0</td>
       <td>3</td>
-      <td>22.0</td>
-      <td>0</td>
-      <td>7.2500</td>
-      <td>S</td>
-      <td>0</td>
       <td>male</td>
+      <td>22.0</td>
       <td>1</td>
+      <td>0</td>
       <td>A/5 21171</td>
-      <td></td>
+      <td>7.2500</td>
+      <td>NaN</td>
+      <td>S</td>
     </tr>
     <tr>
       <th>1</th>
       <td>2</td>
       <td>1</td>
-      <td>38.0</td>
-      <td>0</td>
-      <td>71.2833</td>
-      <td>C</td>
       <td>1</td>
       <td>female</td>
+      <td>38.0</td>
       <td>1</td>
+      <td>0</td>
       <td>PC 17599</td>
+      <td>71.2833</td>
       <td>C85</td>
+      <td>C</td>
     </tr>
     <tr>
       <th>2</th>
       <td>3</td>
+      <td>1</td>
       <td>3</td>
+      <td>female</td>
       <td>26.0</td>
       <td>0</td>
-      <td>7.9250</td>
-      <td>S</td>
-      <td>1</td>
-      <td>female</td>
       <td>0</td>
       <td>STON/O2. 3101282</td>
-      <td></td>
+      <td>7.9250</td>
+      <td>NaN</td>
+      <td>S</td>
     </tr>
   </tbody>
 </table>
@@ -143,16 +143,16 @@ df.info()
      #   Column       Non-Null Count  Dtype  
     ---  ------       --------------  -----  
      0   PassengerId  891 non-null    int64  
-     1   Pclass       891 non-null    int64  
-     2   Age          714 non-null    float64
-     3   Parch        891 non-null    int64  
-     4   Fare         891 non-null    float64
-     5   Embarked     891 non-null    object 
-     6   Survived     891 non-null    int64  
-     7   Sex          891 non-null    object 
-     8   SibSp        891 non-null    int64  
-     9   Ticket       891 non-null    object 
-     10  Cabin        891 non-null    object 
+     1   Survived     891 non-null    int64  
+     2   Pclass       891 non-null    int64  
+     3   Sex          891 non-null    object 
+     4   Age          714 non-null    float64
+     5   SibSp        891 non-null    int64  
+     6   Parch        891 non-null    int64  
+     7   Ticket       891 non-null    object 
+     8   Fare         891 non-null    float64
+     9   Cabin        204 non-null    object 
+     10  Embarked     889 non-null    object 
     dtypes: float64(2), int64(5), object(4)
     memory usage: 76.7+ KB
     
@@ -186,12 +186,12 @@ df.describe()
     <tr style="text-align: right;">
       <th></th>
       <th>PassengerId</th>
+      <th>Survived</th>
       <th>Pclass</th>
       <th>Age</th>
+      <th>SibSp</th>
       <th>Parch</th>
       <th>Fare</th>
-      <th>Survived</th>
-      <th>SibSp</th>
     </tr>
   </thead>
   <tbody>
@@ -199,8 +199,8 @@ df.describe()
       <th>count</th>
       <td>891.000000</td>
       <td>891.000000</td>
-      <td>714.000000</td>
       <td>891.000000</td>
+      <td>714.000000</td>
       <td>891.000000</td>
       <td>891.000000</td>
       <td>891.000000</td>
@@ -208,29 +208,29 @@ df.describe()
     <tr>
       <th>mean</th>
       <td>446.000000</td>
+      <td>0.383838</td>
       <td>2.308642</td>
       <td>29.699118</td>
+      <td>0.523008</td>
       <td>0.381594</td>
       <td>32.204208</td>
-      <td>0.383838</td>
-      <td>0.523008</td>
     </tr>
     <tr>
       <th>std</th>
       <td>257.353842</td>
+      <td>0.486592</td>
       <td>0.836071</td>
       <td>14.526497</td>
+      <td>1.102743</td>
       <td>0.806057</td>
       <td>49.693429</td>
-      <td>0.486592</td>
-      <td>1.102743</td>
     </tr>
     <tr>
       <th>min</th>
       <td>1.000000</td>
+      <td>0.000000</td>
       <td>1.000000</td>
       <td>0.420000</td>
-      <td>0.000000</td>
       <td>0.000000</td>
       <td>0.000000</td>
       <td>0.000000</td>
@@ -238,42 +238,42 @@ df.describe()
     <tr>
       <th>25%</th>
       <td>223.500000</td>
+      <td>0.000000</td>
       <td>2.000000</td>
       <td>20.125000</td>
       <td>0.000000</td>
+      <td>0.000000</td>
       <td>7.910400</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
     </tr>
     <tr>
       <th>50%</th>
       <td>446.000000</td>
+      <td>0.000000</td>
       <td>3.000000</td>
       <td>28.000000</td>
       <td>0.000000</td>
+      <td>0.000000</td>
       <td>14.454200</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
     </tr>
     <tr>
       <th>75%</th>
       <td>668.500000</td>
+      <td>1.000000</td>
       <td>3.000000</td>
       <td>38.000000</td>
+      <td>1.000000</td>
       <td>0.000000</td>
       <td>31.000000</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
     </tr>
     <tr>
       <th>max</th>
       <td>891.000000</td>
+      <td>1.000000</td>
       <td>3.000000</td>
       <td>80.000000</td>
+      <td>8.000000</td>
       <td>6.000000</td>
       <td>512.329200</td>
-      <td>1.000000</td>
-      <td>8.000000</td>
     </tr>
   </tbody>
 </table>
@@ -312,171 +312,171 @@ df_conv.corr()
     <tr style="text-align: right;">
       <th></th>
       <th>PassengerId</th>
-      <th>Pclass</th>
-      <th>Age</th>
-      <th>Parch</th>
-      <th>Fare</th>
-      <th>Embarked</th>
       <th>Survived</th>
+      <th>Pclass</th>
       <th>Sex</th>
+      <th>Age</th>
       <th>SibSp</th>
+      <th>Parch</th>
       <th>Ticket</th>
+      <th>Fare</th>
       <th>Cabin</th>
+      <th>Embarked</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>PassengerId</th>
       <td>1.000000</td>
-      <td>-0.035144</td>
-      <td>0.036847</td>
-      <td>-0.001652</td>
-      <td>0.012658</td>
-      <td>0.012985</td>
       <td>-0.005007</td>
-      <td>0.042939</td>
-      <td>-0.057527</td>
-      <td>-0.056554</td>
-      <td>-0.000637</td>
-    </tr>
-    <tr>
-      <th>Pclass</th>
       <td>-0.035144</td>
-      <td>1.000000</td>
-      <td>-0.369226</td>
-      <td>0.018443</td>
-      <td>-0.549500</td>
-      <td>0.173511</td>
-      <td>-0.338481</td>
-      <td>0.131900</td>
-      <td>0.083081</td>
-      <td>0.319869</td>
-      <td>-0.537419</td>
-    </tr>
-    <tr>
-      <th>Age</th>
+      <td>0.042939</td>
       <td>0.036847</td>
-      <td>-0.369226</td>
-      <td>1.000000</td>
-      <td>-0.189119</td>
-      <td>0.096067</td>
-      <td>-0.044830</td>
-      <td>-0.077221</td>
-      <td>0.093254</td>
-      <td>-0.308247</td>
-      <td>-0.075934</td>
-      <td>0.167432</td>
-    </tr>
-    <tr>
-      <th>Parch</th>
+      <td>-0.057527</td>
       <td>-0.001652</td>
-      <td>0.018443</td>
-      <td>-0.189119</td>
-      <td>1.000000</td>
-      <td>0.216225</td>
-      <td>0.043351</td>
-      <td>0.081629</td>
-      <td>-0.245489</td>
-      <td>0.414838</td>
-      <td>0.020003</td>
-      <td>0.033585</td>
-    </tr>
-    <tr>
-      <th>Fare</th>
+      <td>-0.056554</td>
       <td>0.012658</td>
-      <td>-0.549500</td>
-      <td>0.096067</td>
-      <td>0.216225</td>
-      <td>1.000000</td>
-      <td>-0.230365</td>
-      <td>0.257307</td>
-      <td>-0.182333</td>
-      <td>0.159651</td>
-      <td>-0.013885</td>
-      <td>0.310987</td>
-    </tr>
-    <tr>
-      <th>Embarked</th>
-      <td>0.012985</td>
-      <td>0.173511</td>
-      <td>-0.044830</td>
-      <td>0.043351</td>
-      <td>-0.230365</td>
-      <td>1.000000</td>
-      <td>-0.176509</td>
-      <td>0.118492</td>
-      <td>0.071480</td>
-      <td>0.011146</td>
-      <td>-0.070245</td>
+      <td>-0.035077</td>
+      <td>0.013083</td>
     </tr>
     <tr>
       <th>Survived</th>
       <td>-0.005007</td>
-      <td>-0.338481</td>
-      <td>-0.077221</td>
-      <td>0.081629</td>
-      <td>0.257307</td>
-      <td>-0.176509</td>
       <td>1.000000</td>
+      <td>-0.338481</td>
       <td>-0.543351</td>
+      <td>-0.077221</td>
       <td>-0.035322</td>
+      <td>0.081629</td>
       <td>-0.164549</td>
-      <td>0.276235</td>
+      <td>0.257307</td>
+      <td>-0.254888</td>
+      <td>-0.163517</td>
+    </tr>
+    <tr>
+      <th>Pclass</th>
+      <td>-0.035144</td>
+      <td>-0.338481</td>
+      <td>1.000000</td>
+      <td>0.131900</td>
+      <td>-0.369226</td>
+      <td>0.083081</td>
+      <td>0.018443</td>
+      <td>0.319869</td>
+      <td>-0.549500</td>
+      <td>0.684121</td>
+      <td>0.157112</td>
     </tr>
     <tr>
       <th>Sex</th>
       <td>0.042939</td>
-      <td>0.131900</td>
-      <td>0.093254</td>
-      <td>-0.245489</td>
-      <td>-0.182333</td>
-      <td>0.118492</td>
       <td>-0.543351</td>
+      <td>0.131900</td>
       <td>1.000000</td>
+      <td>0.093254</td>
       <td>-0.114631</td>
+      <td>-0.245489</td>
       <td>0.059372</td>
-      <td>-0.137704</td>
+      <td>-0.182333</td>
+      <td>0.096681</td>
+      <td>0.104057</td>
+    </tr>
+    <tr>
+      <th>Age</th>
+      <td>0.036847</td>
+      <td>-0.077221</td>
+      <td>-0.369226</td>
+      <td>0.093254</td>
+      <td>1.000000</td>
+      <td>-0.308247</td>
+      <td>-0.189119</td>
+      <td>-0.075934</td>
+      <td>0.096067</td>
+      <td>-0.252331</td>
+      <td>-0.025252</td>
     </tr>
     <tr>
       <th>SibSp</th>
       <td>-0.057527</td>
-      <td>0.083081</td>
-      <td>-0.308247</td>
-      <td>0.414838</td>
-      <td>0.159651</td>
-      <td>0.071480</td>
       <td>-0.035322</td>
+      <td>0.083081</td>
       <td>-0.114631</td>
+      <td>-0.308247</td>
       <td>1.000000</td>
+      <td>0.414838</td>
       <td>0.079461</td>
-      <td>-0.024829</td>
+      <td>0.159651</td>
+      <td>0.043593</td>
+      <td>0.066654</td>
+    </tr>
+    <tr>
+      <th>Parch</th>
+      <td>-0.001652</td>
+      <td>0.081629</td>
+      <td>0.018443</td>
+      <td>-0.245489</td>
+      <td>-0.189119</td>
+      <td>0.414838</td>
+      <td>1.000000</td>
+      <td>0.020003</td>
+      <td>0.216225</td>
+      <td>-0.028324</td>
+      <td>0.038322</td>
     </tr>
     <tr>
       <th>Ticket</th>
       <td>-0.056554</td>
-      <td>0.319869</td>
-      <td>-0.075934</td>
-      <td>0.020003</td>
-      <td>-0.013885</td>
-      <td>0.011146</td>
       <td>-0.164549</td>
+      <td>0.319869</td>
       <td>0.059372</td>
+      <td>-0.075934</td>
       <td>0.079461</td>
+      <td>0.020003</td>
       <td>1.000000</td>
-      <td>-0.176515</td>
+      <td>-0.013885</td>
+      <td>0.243696</td>
+      <td>-0.006041</td>
+    </tr>
+    <tr>
+      <th>Fare</th>
+      <td>0.012658</td>
+      <td>0.257307</td>
+      <td>-0.549500</td>
+      <td>-0.182333</td>
+      <td>0.096067</td>
+      <td>0.159651</td>
+      <td>0.216225</td>
+      <td>-0.013885</td>
+      <td>1.000000</td>
+      <td>-0.503355</td>
+      <td>-0.221226</td>
     </tr>
     <tr>
       <th>Cabin</th>
-      <td>-0.000637</td>
-      <td>-0.537419</td>
-      <td>0.167432</td>
-      <td>0.033585</td>
-      <td>0.310987</td>
-      <td>-0.070245</td>
-      <td>0.276235</td>
-      <td>-0.137704</td>
-      <td>-0.024829</td>
-      <td>-0.176515</td>
+      <td>-0.035077</td>
+      <td>-0.254888</td>
+      <td>0.684121</td>
+      <td>0.096681</td>
+      <td>-0.252331</td>
+      <td>0.043593</td>
+      <td>-0.028324</td>
+      <td>0.243696</td>
+      <td>-0.503355</td>
+      <td>1.000000</td>
+      <td>0.193205</td>
+    </tr>
+    <tr>
+      <th>Embarked</th>
+      <td>0.013083</td>
+      <td>-0.163517</td>
+      <td>0.157112</td>
+      <td>0.104057</td>
+      <td>-0.025252</td>
+      <td>0.066654</td>
+      <td>0.038322</td>
+      <td>-0.006041</td>
+      <td>-0.221226</td>
+      <td>0.193205</td>
       <td>1.000000</td>
     </tr>
   </tbody>
@@ -495,7 +495,7 @@ df.select_dtypes(include='number').columns
 
 
 
-    Index(['PassengerId', 'Pclass', 'Age', 'Parch', 'Fare', 'Survived', 'SibSp'], dtype='object')
+    Index(['PassengerId', 'Survived', 'Pclass', 'Age', 'SibSp', 'Parch', 'Fare'], dtype='object')
 
 
 
@@ -509,7 +509,7 @@ df.select_dtypes(include='object').columns
 
 
 
-    Index(['Embarked', 'Sex', 'Ticket', 'Cabin'], dtype='object')
+    Index(['Sex', 'Ticket', 'Cabin', 'Embarked'], dtype='object')
 
 
 
@@ -528,10 +528,9 @@ sex.show()
 
 
 
-    Sex
     male      577
     female    314
-    Name: count, dtype: int64
+    Name: Sex, dtype: int64
 
 
 
@@ -543,7 +542,7 @@ sex.plot()
 
 
 
-    <Axes: xlabel='Sex'>
+    <Axes: >
 
 
 
@@ -566,7 +565,7 @@ conv_species.plot()
 
 
 
-    <Axes: xlabel='Sex'>
+    <Axes: >
 
 
 
@@ -591,19 +590,18 @@ ticket.show()
 
 
 
-    Ticket
-    347082      7
-    CA. 2343    7
-    1601        7
-    3101295     6
-    CA 2144     6
-               ..
-    9234        1
-    19988       1
-    2693        1
-    PC 17612    1
-    370376      1
-    Name: count, Length: 681, dtype: int64
+    347082       7
+    1601         7
+    CA. 2343     7
+    3101295      6
+    CA 2144      6
+                ..
+    367655       1
+    113800       1
+    113783       1
+    A/4 45380    1
+    28228        1
+    Name: Ticket, Length: 681, dtype: int64
 
 
 
@@ -615,7 +613,7 @@ ticket.plot()
 
 
 
-    <Axes: xlabel='Ticket'>
+    <Axes: >
 
 
 
@@ -638,7 +636,7 @@ conv_species.plot()
 
 
 
-    <Axes: xlabel='Ticket'>
+    <Axes: >
 
 
 
@@ -663,19 +661,18 @@ cabin.show()
 
 
 
-    Cabin
-                   687
-    C23 C25 C27      4
-    G6               4
-    B96 B98          4
-    C22 C26          3
-                  ... 
-    E34              1
-    C7               1
-    C54              1
-    E36              1
-    C148             1
-    Name: count, Length: 148, dtype: int64
+    G6             4
+    B96 B98        4
+    C23 C25 C27    4
+    C22 C26        3
+    D              3
+                  ..
+    E17            1
+    C49            1
+    D30            1
+    B19            1
+    B41            1
+    Name: Cabin, Length: 147, dtype: int64
 
 
 
@@ -687,7 +684,7 @@ cabin.plot()
 
 
 
-    <Axes: xlabel='Cabin'>
+    <Axes: >
 
 
 
@@ -710,7 +707,7 @@ conv_species.plot()
 
 
 
-    <Axes: xlabel='Cabin'>
+    <Axes: >
 
 
 
@@ -735,12 +732,10 @@ embarked.show()
 
 
 
-    Embarked
     S    644
     C    168
     Q     77
-           2
-    Name: count, dtype: int64
+    Name: Embarked, dtype: int64
 
 
 
@@ -752,7 +747,7 @@ embarked.plot()
 
 
 
-    <Axes: xlabel='Embarked'>
+    <Axes: >
 
 
 
@@ -775,7 +770,7 @@ conv_species.plot()
 
 
 
-    <Axes: xlabel='Embarked'>
+    <Axes: >
 
 
 
@@ -816,14 +811,14 @@ df_dummy
       <th></th>
       <th>PassengerId</th>
       <th>Pclass</th>
-      <th>Age</th>
-      <th>Parch</th>
-      <th>Fare</th>
-      <th>Embarked</th>
       <th>Sex</th>
+      <th>Age</th>
       <th>SibSp</th>
+      <th>Parch</th>
       <th>Ticket</th>
+      <th>Fare</th>
       <th>Cabin</th>
+      <th>Embarked</th>
       <th>Survived_0</th>
       <th>Survived_1</th>
     </tr>
@@ -833,76 +828,76 @@ df_dummy
       <th>0</th>
       <td>1</td>
       <td>3</td>
-      <td>22.0</td>
-      <td>0</td>
-      <td>7.2500</td>
-      <td>S</td>
       <td>male</td>
+      <td>22.0</td>
       <td>1</td>
+      <td>0</td>
       <td>A/5 21171</td>
-      <td></td>
-      <td>True</td>
-      <td>False</td>
+      <td>7.2500</td>
+      <td>NaN</td>
+      <td>S</td>
+      <td>1</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>1</th>
       <td>2</td>
       <td>1</td>
-      <td>38.0</td>
-      <td>0</td>
-      <td>71.2833</td>
-      <td>C</td>
       <td>female</td>
+      <td>38.0</td>
       <td>1</td>
+      <td>0</td>
       <td>PC 17599</td>
+      <td>71.2833</td>
       <td>C85</td>
-      <td>False</td>
-      <td>True</td>
+      <td>C</td>
+      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>2</th>
       <td>3</td>
       <td>3</td>
+      <td>female</td>
       <td>26.0</td>
       <td>0</td>
-      <td>7.9250</td>
-      <td>S</td>
-      <td>female</td>
       <td>0</td>
       <td>STON/O2. 3101282</td>
-      <td></td>
-      <td>False</td>
-      <td>True</td>
+      <td>7.9250</td>
+      <td>NaN</td>
+      <td>S</td>
+      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>3</th>
       <td>4</td>
       <td>1</td>
-      <td>35.0</td>
-      <td>0</td>
-      <td>53.1000</td>
-      <td>S</td>
       <td>female</td>
+      <td>35.0</td>
       <td>1</td>
+      <td>0</td>
       <td>113803</td>
+      <td>53.1000</td>
       <td>C123</td>
-      <td>False</td>
-      <td>True</td>
+      <td>S</td>
+      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>4</th>
       <td>5</td>
       <td>3</td>
+      <td>male</td>
       <td>35.0</td>
       <td>0</td>
-      <td>8.0500</td>
-      <td>S</td>
-      <td>male</td>
       <td>0</td>
       <td>373450</td>
-      <td></td>
-      <td>True</td>
-      <td>False</td>
+      <td>8.0500</td>
+      <td>NaN</td>
+      <td>S</td>
+      <td>1</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>...</th>
@@ -923,76 +918,76 @@ df_dummy
       <th>886</th>
       <td>887</td>
       <td>2</td>
+      <td>male</td>
       <td>27.0</td>
       <td>0</td>
-      <td>13.0000</td>
-      <td>S</td>
-      <td>male</td>
       <td>0</td>
       <td>211536</td>
-      <td></td>
-      <td>True</td>
-      <td>False</td>
+      <td>13.0000</td>
+      <td>NaN</td>
+      <td>S</td>
+      <td>1</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>887</th>
       <td>888</td>
       <td>1</td>
+      <td>female</td>
       <td>19.0</td>
       <td>0</td>
-      <td>30.0000</td>
-      <td>S</td>
-      <td>female</td>
       <td>0</td>
       <td>112053</td>
+      <td>30.0000</td>
       <td>B42</td>
-      <td>False</td>
-      <td>True</td>
+      <td>S</td>
+      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>888</th>
       <td>889</td>
       <td>3</td>
-      <td>NaN</td>
-      <td>2</td>
-      <td>23.4500</td>
-      <td>S</td>
       <td>female</td>
+      <td>NaN</td>
       <td>1</td>
+      <td>2</td>
       <td>W./C. 6607</td>
-      <td></td>
-      <td>True</td>
-      <td>False</td>
+      <td>23.4500</td>
+      <td>NaN</td>
+      <td>S</td>
+      <td>1</td>
+      <td>0</td>
     </tr>
     <tr>
       <th>889</th>
       <td>890</td>
       <td>1</td>
+      <td>male</td>
       <td>26.0</td>
       <td>0</td>
-      <td>30.0000</td>
-      <td>C</td>
-      <td>male</td>
       <td>0</td>
       <td>111369</td>
+      <td>30.0000</td>
       <td>C148</td>
-      <td>False</td>
-      <td>True</td>
+      <td>C</td>
+      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>890</th>
       <td>891</td>
       <td>3</td>
+      <td>male</td>
       <td>32.0</td>
       <td>0</td>
-      <td>7.7500</td>
-      <td>Q</td>
-      <td>male</td>
       <td>0</td>
       <td>370376</td>
-      <td></td>
-      <td>True</td>
-      <td>False</td>
+      <td>7.7500</td>
+      <td>NaN</td>
+      <td>Q</td>
+      <td>1</td>
+      <td>0</td>
     </tr>
   </tbody>
 </table>
@@ -1040,10 +1035,9 @@ df['Survived'].value_counts()
 
 
 
-    Survived
     0    549
     1    342
-    Name: count, dtype: int64
+    Name: Survived, dtype: int64
 
 
 
@@ -1516,6 +1510,6 @@ unittest.main(argv=[''], verbosity=2, exit=False)
 
 
 
-    <unittest.main.TestProgram at 0x7fb935660ac0>
+    <unittest.main.TestProgram at 0x2c7daab4f10>
 
 
