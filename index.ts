@@ -8,6 +8,7 @@ const contents = `
 ### [分類1:アヤメの判別](notebooks/chap05.html)
 ### [回帰1:映画の興行収入の予測](notebooks/chap06.html)
 ### [分類2:客船沈没事故での生存予測](notebooks/chap07.html)
+### [回帰2:住宅の平均価格の予測](notebooks/chap08.html)
 `;
 
 const usecase = `
