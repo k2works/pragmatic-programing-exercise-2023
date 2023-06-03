@@ -14,6 +14,7 @@ import doctest
 import os
 
 from domain import SQLRepository, CSVRepository, convert_categoricals, CategoricalData, DataVisualization
+from domain import learn_with_std as learn
 
 VISUALIZTION = True
 path = os.path.dirname(os.path.abspath(__file__))
@@ -238,30 +239,6 @@ path = os.path.dirname(os.path.abspath(__file__))
 repo = CSVRepository(file=path + '/data/Boston.csv')
 
 # モデルの作成と学習
-
-
-def learn(x, t):
-    x_train, x_val, y_train, y_val = train_test_split(
-        x, t, test_size=0.2, random_state=0)
-    # 訓練データを標準化
-    sc_model_x = StandardScaler()
-    sc_model_y = StandardScaler()
-    sc_model_x.fit(x_train)
-    sc_x_train = sc_model_x.transform(x_train)
-    sc_model_y.fit(y_train)
-    sc_y_train = sc_model_y.transform(y_train)
-    # 学習
-    model = LinearRegression()
-    model.fit(sc_x_train, sc_y_train)
-
-    # 検証データを標準化
-    sc_x_val = sc_model_x.transform(x_val)
-    sc_y_val = sc_model_y.transform(y_val)
-    # 訓練データと検証データの決定係数計算
-    train_score = model.score(sc_x_train, sc_y_train)
-    val_score = model.score(sc_x_val, sc_y_val)
-
-    return train_score, val_score
 
 
 # データの前処理

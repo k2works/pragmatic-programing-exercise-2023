@@ -9,11 +9,11 @@ import unittest
 import doctest
 import os
 
-from domain import CSVRepository, SQLRepository, CategoricalData, DataVisualization, convert_categoricals
+from domain import CSVRepository, SQLRepository, CategoricalData, DataVisualization, convert_categoricals, learn
 import pandas as pd
 
 path = os.path.dirname(os.path.abspath(__file__))
-#repo = SQLRepository(table='Survived')
+# repo = SQLRepository(table='Survived')
 repo = CSVRepository(file=path + '/data/Survived.csv')
 
 # %% [markdown]
@@ -239,18 +239,6 @@ model.fit(x_train, y_train)
 model.score(x_test, y_test)
 
 # %%
-
-
-def learn(x, t, depth=3):
-    x_train, x_test, y_train, y_test = train_test_split(
-        x, t, test_size=0.2, random_state=0)
-    model = tree.DecisionTreeClassifier(
-        max_depth=depth, random_state=0, class_weight='balanced')
-    model.fit(x_train, y_train)
-
-    score = model.score(x_train, y_train)
-    score2 = model.score(x_test, y_test)
-    return round(score, 3), round(score2, 3), model
 
 
 for j in range(1, 15):

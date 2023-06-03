@@ -1,5 +1,10 @@
 import pandas as pd
 import seaborn as sns
+from sklearn import tree
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+
 
 class CSVRepository:
     def __init__(self, file) -> None:
@@ -7,6 +12,7 @@ class CSVRepository:
 
     def get_data(self):
         return pd.read_csv(self.file)
+
 
 class SQLRepository:
     def __init__(self, table) -> None:
@@ -20,8 +26,10 @@ class SQLRepository:
         username = 'root'
         password = 'root'
 
-        engine = create_engine(f'postgresql://{username}:{password}@{host}:{port}/{db}')
+        engine = create_engine(
+            f'postgresql://{username}:{password}@{host}:{port}/{db}')
         return pd.read_sql_table(self.table, engine)
+
 
 class CategoricalData:
     def __init__(self, df, col) -> None:
@@ -43,13 +51,14 @@ class CategoricalData:
         encoder = LabelEncoder()
         return encoder.fit_transform(self.df[self.col])
 
-    def pivot(self, index,value):
+    def pivot(self, index, value):
         """ピボットテーブルによる集計"""
         return self.df.pivot_table(index=index, columns=self.col, values=value, aggfunc='count')
 
     def dummy(self):
         """ダミー変数化"""
         return pd.get_dummies(self.df, columns=[self.col])
+
 
 class DataVisualization:
     def __init__(self, df) -> None:
@@ -78,8 +87,45 @@ class DataVisualization:
         self.df_box()
         self.df_pairplot(hue)
 
+
 def convert_categoricals(df, cols):
     df_conv = df.copy()
     for c in cols:
         df_conv[c] = CategoricalData(df_conv, c).convert()
     return df_conv
+
+
+def learn(x, t, depth=3):
+    x_train, x_test, y_train, y_test = train_test_split(
+        x, t, test_size=0.2, random_state=0)
+    model = tree.DecisionTreeClassifier(
+        max_depth=depth, random_state=0, class_weight='balanced')
+    model.fit(x_train, y_train)
+
+    score = model.score(x_train, y_train)
+    score2 = model.score(x_test, y_test)
+    return round(score, 3), round(score2, 3), model
+
+
+def learn_with_std(x, t):
+    x_train, x_val, y_train, y_val = train_test_split(
+        x, t, test_size=0.2, random_state=0)
+    # 訓練データを標準化
+    sc_model_x = StandardScaler()
+    sc_model_y = StandardScaler()
+    sc_model_x.fit(x_train)
+    sc_x_train = sc_model_x.transform(x_train)
+    sc_model_y.fit(y_train)
+    sc_y_train = sc_model_y.transform(y_train)
+    # 学習
+    model = LinearRegression()
+    model.fit(sc_x_train, sc_y_train)
+
+    # 検証データを標準化
+    sc_x_val = sc_model_x.transform(x_val)
+    sc_y_val = sc_model_y.transform(y_val)
+    # 訓練データと検証データの決定係数計算
+    train_score = model.score(sc_x_train, sc_y_train)
+    val_score = model.score(sc_x_val, sc_y_val)
+
+    return train_score, val_score
