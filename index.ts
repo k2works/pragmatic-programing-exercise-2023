@@ -5,10 +5,10 @@ const app = new App();
 const dev = require('@k2works/full-stack-lab');
 const contents = `
 ## スッキリわかるPythonによる機械学習入門 スッキリわかるシリーズ
-### [分類1:アヤメの判別](notebooks/chap05.html)
-### [回帰1:映画の興行収入の予測](notebooks/chap06.html)
-### [分類2:客船沈没事故での生存予測](notebooks/chap07.html)
-### [回帰2:住宅の平均価格の予測](notebooks/chap08.html)
+### [分類1:アヤメの判別](notebooks/iris.html)
+### [回帰1:映画の興行収入の予測](notebooks/cinema.html)
+### [分類2:客船沈没事故での生存予測](notebooks/survived.html)
+### [回帰2:住宅の平均価格の予測](notebooks/boston.html)
 `;
 
 const usecase = `
