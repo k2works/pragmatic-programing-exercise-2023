@@ -2,14 +2,20 @@
 # # 回帰1:映画の興行収入の予測
 
 # %%
+import pickle
+import pandas as pd
+from sklearn.metrics import mean_absolute_error
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 import unittest
 import doctest
 import os
-from domain import CSVRepository, SQLRepository, CategoricalData, DataVisualization, convert_categoricals
+from domain import CategoricalData, DataVisualization, convert_categoricals
+from repository import CSVRepository, SQLRepository
 
 path = os.path.dirname(os.path.abspath(__file__))
-#repo = SQLRepository(table='Cinema')
-repo = CSVRepository(file= path + '/data/cinema.csv')
+# repo = SQLRepository(table='Cinema')
+repo = CSVRepository(file=path + '/data/cinema.csv')
 
 # %% [markdown]
 # ## データの内容
@@ -74,7 +80,7 @@ original.show()
 # %%
 original.plot()
 
-## %% [markdown]
+# %% [markdown]
 # ### 種類カテゴリの数値変換
 
 # %%
@@ -154,8 +160,8 @@ df3.shape
 # %%
 x = df3[['SNS1', 'SNS2', 'actor', 'original']]
 t = df3['sales']
-from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(
+    x, t, test_size=0.2, random_state=0)
 
 # %% [markdown]
 # ## モデルの作成と学習
@@ -163,7 +169,6 @@ x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_
 # %% [markdown]
 # ### 未学習状態モデルの生成（分類なら決定木、回帰なら線形回帰）
 # %%
-from sklearn.linear_model import LinearRegression
 model = LinearRegression()
 
 # %% [markdown]
@@ -184,7 +189,6 @@ model.score(x_test, y_test)
 
 # %%
 # MAEを求める
-from sklearn.metrics import mean_absolute_error
 
 pred = model.predict(x_test)
 
@@ -203,9 +207,8 @@ model.score(x_test, y_test)
 # - 外れ値データは削除する。
 # %%
 # 前処理
-from domain import CSVRepository, SQLRepository
-#repo = SQLRepository(table='Cinema')
-repo = CSVRepository(file= path + '/data/cinema.csv')
+# repo = SQLRepository(table='Cinema')
+repo = CSVRepository(file=path + '/data/cinema.csv')
 
 df = repo.get_data()
 df2 = df.fillna(df.mean())
@@ -215,16 +218,13 @@ df3 = df2.drop(no, axis=0)
 # モデルの作成と学習
 x = df3[['SNS1', 'SNS2', 'actor', 'original']]
 t = df3['sales']
-from sklearn.model_selection import train_test_split
-x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.2, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(
+    x, t, test_size=0.2, random_state=0)
 
-from sklearn.linear_model import LinearRegression
 model = LinearRegression()
 model.fit(x_train, y_train)
 
 # モデルの評価
-import pandas as pd
-from sklearn.metrics import mean_absolute_error
 
 score = model.score(x_test, y_test)
 print(f'決定係数:{score}')
@@ -239,7 +239,6 @@ print(f'平均絶対誤差: {mae}')
 
 # %%
 # モデルの保存
-import pickle
 with open(path + '/model/cinema.pkl', 'wb') as f:
     pickle.dump(model, f)
 
@@ -247,7 +246,6 @@ with open(path + '/model/cinema.pkl', 'wb') as f:
 # ## 回帰式による影響度の分析
 # %%
 # 係数と切片を確認
-import pandas as pd
 tmp = pd.DataFrame(model.coef_)
 tmp.index = x_train.columns
 print('係数: ')

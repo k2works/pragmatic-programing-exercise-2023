@@ -2,15 +2,20 @@
 # # 分類1:アヤメの判別
 
 # %%
+from sklearn.tree import plot_tree
+import pickle
+from sklearn import tree
+from sklearn.model_selection import train_test_split
 from typing import Any
 import unittest
 import doctest
 import os
-from domain import CSVRepository, SQLRepository, CategoricalData, DataVisualization, convert_categoricals
+from domain import CategoricalData, DataVisualization, convert_categoricals
+from repository import CSVRepository, SQLRepository
 
 path = os.path.dirname(os.path.abspath(__file__))
-#repo = SQLRepository(table='Iris')
-repo = CSVRepository(file= path + '/data/iris.csv')
+# repo = SQLRepository(table='Iris')
+repo = CSVRepository(file=path + '/data/iris.csv')
 
 # %% [markdown]
 # ## データの内容
@@ -81,7 +86,7 @@ species.show()
 # %%
 species.plot()
 
-## %% [markdown]
+# %% [markdown]
 # ### 種類カテゴリの数値変換
 
 # %%
@@ -124,7 +129,7 @@ dv.df_all('species')
 
 # %% [markdown]
 # ### データの読み込み
-repo = CSVRepository(file= path + '/data/iris.csv')
+repo = CSVRepository(file=path + '/data/iris.csv')
 df = repo.get_data()
 df.head(3)
 
@@ -139,23 +144,29 @@ df.isnull().sum()
 # %% [markdown]
 # #### 欠損値の削除
 # %%
+
+
 def df_dropna(df):
-    df_drop = df.dropna(how = 'any', axis = 0)
+    df_drop = df.dropna(how='any', axis=0)
     return df_drop
 
 # %% [markdown]
 # #### 欠損値の代表値埋め
 # %%
+
+
 def df_fillna_mean(df, col):
     mean_value = df[col].mean()
     df_fill = df.fillna(mean_value)
     return df_fill
+
 
 def df_fillna_mean_cols(df, cols):
     df_fill = df.copy()
     for col in cols:
         df_fill = df_fillna_mean(df_fill, col)
     return df_fill
+
 
 # %% [markdown]
 # #### 特徴量と正解データの取り出し
@@ -165,9 +176,9 @@ df = df_fillna_mean_cols(df, xcol)
 x = df[xcol]
 t = df['species']
 
-from sklearn.model_selection import train_test_split
 
-x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.3, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(
+    x, t, test_size=0.3, random_state=0)
 
 # %% [markdown]
 # ### 各手法を必要に応じて実施
@@ -187,7 +198,6 @@ x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.3, random_
 # %% [markdown]
 # #### 決定木モデルを作成する
 # %%
-from sklearn import tree
 model = tree.DecisionTreeClassifier(max_depth=2, random_state=0)
 
 # %% [markdown]
@@ -210,8 +220,6 @@ model.score(x_test, y_test)
 # - がく片の長さ、がく片の幅、花弁の長さ、花弁の幅を特徴量として、アヤメの種類を判別する。
 # - 欠損データは代表値埋めを行う。
 # %%
-from sklearn.model_selection import train_test_split
-from sklearn import tree
 
 df = repo.get_data()
 xcol = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
@@ -220,14 +228,14 @@ df = df_fillna_mean_cols(df, xcol)
 x = df[xcol]
 t = df['species']
 
-x_train, x_test, y_train, y_test = train_test_split(x, t, test_size=0.3, random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(
+    x, t, test_size=0.3, random_state=0)
 
 model = tree.DecisionTreeClassifier(max_depth=2, random_state=0)
 model.fit(x_train, y_train)
 model.score(x_test, y_test)
 
 # %%
-import pickle
 with open(path + '/model/iris.pkl', 'wb') as f:
     pickle.dump(model, f)
 
@@ -256,7 +264,6 @@ model.classes_
 # %% [markdown]
 # ### 決定木の可視化
 # %%
-from sklearn.tree import plot_tree
 
 plot_tree(model, feature_names=xcol, class_names=model.classes_, filled=True)
 

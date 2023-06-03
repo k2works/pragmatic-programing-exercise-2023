@@ -3,14 +3,15 @@
 
 # %%
 import pickle
+import pandas as pd
 from sklearn import tree
 from sklearn.model_selection import train_test_split
 import unittest
 import doctest
 import os
 
-from domain import CSVRepository, SQLRepository, CategoricalData, DataVisualization, convert_categoricals, learn
-import pandas as pd
+from domain import CategoricalData, DataVisualization, convert_categoricals, learn
+from repository import CSVRepository, SQLRepository
 
 path = os.path.dirname(os.path.abspath(__file__))
 # repo = SQLRepository(table='Survived')
