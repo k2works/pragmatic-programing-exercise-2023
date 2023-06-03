@@ -1,4 +1,4 @@
-from src.api.domain import Cinema, Iris
+from src.api.domain import Cinema, Iris, Survived
 
 
 class Service:
@@ -12,3 +12,7 @@ class Service:
     def predict_cinema(self, x):
         cinema = Cinema()
         return cinema.predict(x)
+
+    def predict_survived(self, x):
+        servived = Survived()
+        return servived.predict(x)

@@ -21,6 +21,15 @@ class CinemaModel(BaseModel):
     original: int
 
 
+class SurvivedModel(BaseModel):
+    Pclass: int
+    Age: int
+    SlibSp: int
+    Parch: int
+    Fare: float
+    Sex: int
+
+
 @app.get("/", tags=["Root"])
 async def read_root():
     return {
@@ -29,7 +38,7 @@ async def read_root():
 
 
 @app.post("/iris", tags=["Iris"])
-async def predict(
+async def predict_iris(
     model: IrisModle,
 ):
     x = [[
@@ -43,7 +52,7 @@ async def predict(
 
 
 @app.post("/cinema", tags=["Cinema"])
-async def predict(
+async def predict_cinema(
     model: CinemaModel,
 ):
     x = [[
@@ -54,3 +63,19 @@ async def predict(
     ]]
     resutl = service.predict_cinema(x)
     return resutl[0]
+
+
+@app.post("/survived", tags=["Survived"])
+async def predict_survived(
+    model: SurvivedModel,
+):
+    x = [[
+        model.Pclass,
+        model.Age,
+        model.SlibSp,
+        model.Parch,
+        model.Fare,
+        model.Sex
+    ]]
+    result = service.predict_survived(x)
+    return int(result[0])

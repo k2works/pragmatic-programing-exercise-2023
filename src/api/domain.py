@@ -131,3 +131,15 @@ class Cinema:
 
     def predict(self, x):
         return self.model.predict(x)
+
+
+class Survived:
+    def __init__(self) -> None:
+        self.load()
+
+    def load(self):
+        with open(file=path + '/model/survived.pkl', mode='rb') as f:
+            self.model = pickle.load(f)
+
+    def predict(self, x):
+        return self.model.predict(x)
