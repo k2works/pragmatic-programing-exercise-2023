@@ -2,6 +2,7 @@ const { series, parallel, watch, src, dest } = require("gulp");
 const { default: rimraf } = require("rimraf");
 const browserSync = require('browser-sync').create();
 const shell = require('gulp-shell');
+const exp = require("constants");
 
 const asciidoctor = {
   clean: async (cb) => {
@@ -175,6 +176,17 @@ const jupyter = {
   },
 }
 
+const api = {
+  build: () => {
+    return src("./src/api/**/*.py")
+      .pipe(shell(["pip install -r requirements.txt"]))
+  },
+  server: () => {
+    return src("./src/api")
+      .pipe(shell(["uvicorn src.api.app.application:app --reload"]))
+  }
+}
+
 const jupyterBuildTasks = () => {
   return series(jupyter.clean, jupyter.build, jupyter.docs, jupyter.md);
 }
@@ -200,7 +212,8 @@ exports.default = series(
   series(
     parallel(webpack.server, asciidoctor.server),
     parallel(webpack.watch, asciidoctor.watch, marp.watch),
-    parallel(jest.watch)
+    parallel(jest.watch),
+    parallel(api.server)
   )
 );
 
