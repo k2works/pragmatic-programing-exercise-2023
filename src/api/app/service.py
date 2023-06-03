@@ -1,4 +1,4 @@
-from src.api.domain import Iris
+from src.api.domain import Cinema, Iris
 
 
 class Service:
@@ -6,5 +6,9 @@ class Service:
         pass
 
     def predict_iris(self, x):
-        ml = Iris()
-        return ml.predict(x)
+        iris = Iris()
+        return iris.predict(x)
+
+    def predict_cinema(self, x):
+        cinema = Cinema()
+        return cinema.predict(x)

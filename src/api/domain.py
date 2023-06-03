@@ -119,3 +119,15 @@ class Iris:
 
     def predict(self, x):
         return self.model.predict(x)
+
+
+class Cinema:
+    def __init__(self) -> None:
+        self.load()
+
+    def load(self):
+        with open(file=path + '/model/cinema.pkl', mode='rb') as f:
+            self.model = pickle.load(f)
+
+    def predict(self, x):
+        return self.model.predict(x)
