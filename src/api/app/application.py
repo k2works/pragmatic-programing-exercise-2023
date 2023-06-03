@@ -30,6 +30,12 @@ class SurvivedModel(BaseModel):
     Sex: int
 
 
+class BostonModel(BaseModel):
+    rm: float
+    lstat: float
+    ptratio: float
+
+
 @app.get("/", tags=["Root"])
 async def read_root():
     return {
@@ -79,3 +85,11 @@ async def predict_survived(
     ]]
     result = service.predict_survived(x)
     return int(result[0])
+
+
+@app.post("/boston", tags=["Boston"])
+async def predict_boston(
+    model: BostonModel,
+):
+    result = service.predict_boston(model.rm, model.lstat, model.ptratio)
+    return result[0][0]

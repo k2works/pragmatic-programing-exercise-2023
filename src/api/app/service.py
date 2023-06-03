@@ -1,4 +1,4 @@
-from src.api.domain import Cinema, Iris, Survived
+from src.api.domain import Boston, Cinema, Iris, Survived
 
 
 class Service:
@@ -16,3 +16,7 @@ class Service:
     def predict_survived(self, x):
         servived = Survived()
         return servived.predict(x)
+
+    def predict_boston(self, rm, lstat, ptratio):
+        boston = Boston()
+        return boston.predict(rm, lstat, ptratio)

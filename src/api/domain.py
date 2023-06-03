@@ -143,3 +143,27 @@ class Survived:
 
     def predict(self, x):
         return self.model.predict(x)
+
+
+class Boston:
+    def __init__(self) -> None:
+        self.load()
+
+    def load(self):
+        with open(file=path + '/model/boston.pkl', mode='rb') as f:
+            self.model = pickle.load(f)
+        with open(file=path + '/model/boston_scx.pkl', mode='rb') as f:
+            self.model_scx = pickle.load(f)
+        with open(file=path + '/model/boston_scy.pkl', mode='rb') as f:
+            self.model_scy = pickle.load(f)
+
+    def predict(self, rm, lstat, ptratio):
+        rm2 = rm ** 2
+        lstat2 = lstat ** 2
+        ptratio2 = ptratio ** 2
+        rm_lstat = rm * lstat
+        x_test = [[rm, lstat, ptratio, rm2, lstat2, ptratio2, rm_lstat]]
+        sc_x_test = self.model_scx.transform(x_test)
+        result = self.model.predict(sc_x_test)
+
+        return result
