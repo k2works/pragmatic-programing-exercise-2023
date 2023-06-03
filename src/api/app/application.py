@@ -43,7 +43,7 @@ async def read_root():
     }
 
 
-@app.post("/iris", tags=["Iris"])
+@app.post("/iris", tags=["Iris"], description="分類1:アヤメの判別")
 async def predict_iris(
     model: IrisModle,
 ):
@@ -57,7 +57,7 @@ async def predict_iris(
     return resutl[0]
 
 
-@app.post("/cinema", tags=["Cinema"])
+@app.post("/cinema", tags=["Cinema"], description="回帰1:映画の興行収入の予測")
 async def predict_cinema(
     model: CinemaModel,
 ):
@@ -71,7 +71,7 @@ async def predict_cinema(
     return resutl[0]
 
 
-@app.post("/survived", tags=["Survived"])
+@app.post("/survived", tags=["Survived"], description="分類2:客船沈没事故での生存予測")
 async def predict_survived(
     model: SurvivedModel,
 ):
@@ -87,7 +87,7 @@ async def predict_survived(
     return int(result[0])
 
 
-@app.post("/boston", tags=["Boston"])
+@app.post("/boston", tags=["Boston"], description="回帰2:住宅の平均価格の予測")
 async def predict_boston(
     model: BostonModel,
 ):
