@@ -1,10 +1,15 @@
 import unittest
 
+from domain import Iris
 
-class TestHelloWorld(unittest.TestCase):
 
-    def test_hello_world(self):
-        self.assertEqual("Hello World", "Hello World")
+class TestIris(unittest.TestCase):
+
+    def test_predict(self):
+        iris = Iris()
+        x = [[1.4, 2.3, 4.4, 2.3]]
+        result = iris.predict(x)
+        self.assertEqual(result[0], "Iris-virginica")
 
 
 if __name__ == '__main__':

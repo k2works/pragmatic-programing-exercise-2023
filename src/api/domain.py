@@ -1,9 +1,12 @@
+import pickle
 import pandas as pd
 import seaborn as sns
 from sklearn import tree
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+import os
+path = os.path.dirname(os.path.abspath(__file__))
 
 
 class CategoricalData:
@@ -104,3 +107,15 @@ def learn_with_std(x, t):
     val_score = model.score(sc_x_val, sc_y_val)
 
     return train_score, val_score
+
+
+class Iris:
+    def __init__(self) -> None:
+        self.load()
+
+    def load(self):
+        with open(file=path + '/model/iris.pkl', mode='rb') as f:
+            self.model = pickle.load(f)
+
+    def predict(self, x):
+        return self.model.predict(x)

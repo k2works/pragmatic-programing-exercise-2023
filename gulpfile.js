@@ -182,7 +182,7 @@ const api = {
       .pipe(shell(["pip install -r requirements.txt"]))
   },
   server: () => {
-    return src("./src/api")
+    return src("./src/api/**/*.py")
       .pipe(shell(["uvicorn src.api.app.application:app --reload"]))
   }
 }

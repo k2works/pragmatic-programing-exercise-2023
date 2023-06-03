@@ -2,6 +2,7 @@
 # # 分類1:アヤメの判別
 
 # %%
+from domain import Iris
 from sklearn.tree import plot_tree
 import pickle
 from sklearn import tree
