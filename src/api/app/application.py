@@ -3,7 +3,12 @@ from pydantic import BaseModel
 
 from src.api.app.service import Service
 
-app = FastAPI()
+app = FastAPI(
+    title="スッキリわかるPythonによる機械学習入門 API",
+    description="スッキリわかるPythonによる機械学習入門の機械学習モデルをAPI化したものです",
+    version="0.1.0",
+    openapi_url="/api/v1/openapi.json",
+)
 service = Service()
 
 

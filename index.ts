@@ -11,8 +11,8 @@ const contents = `
 ### [分類2:客船沈没事故での生存予測](notebooks/survived.html)
 ### [回帰2:住宅の平均価格の予測](notebooks/boston.html)
 
-### [FastAPI](https://ppe-2023-python-take2-2.herokuapp.com/docs#/)
-### [FastAPI Document](https://ppe-2023-python-take2-2.herokuapp.com/redoc/)
+### [スッキリわかるPythonによる機械学習入門 API](https://ppe-2023-python-take2-2.herokuapp.com/docs#/)
+### [スッキリわかるPythonによる機械学習入門 API Document](https://ppe-2023-python-take2-2.herokuapp.com/redoc/)
 `;
 
 const usecase = `
