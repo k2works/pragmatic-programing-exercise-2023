@@ -374,11 +374,11 @@ sc_y_test = sc_model_y2.transform(y_test)
 model.score(sc_x_test, sc_y_test)
 
 # %%
-with open(path + '/data/boston.pkl', mode='wb') as fp:
+with open(path + '/model/boston.pkl', mode='wb') as fp:
     pickle.dump(model, fp)
-with open(path + '/data/boston_scx.pkl', mode='wb') as fp:
+with open(path + '/model/boston_scx.pkl', mode='wb') as fp:
     pickle.dump(sc_model_x2, fp)
-with open(path + '/data/boston_scy.pkl', mode='wb') as fp:
+with open(path + '/model/boston_scy.pkl', mode='wb') as fp:
     pickle.dump(sc_model_y2, fp)
 
 # %%

@@ -401,7 +401,7 @@ print(f'テストデータの精度:{s2}')
 
 # %%
 # モデルの保存
-with open(path + '/data/survived.pkl', 'wb') as f:
+with open(path + '/model/survived.pkl', 'wb') as f:
     pickle.dump(model, f)
 
 # %% [markdown]
