@@ -2,15 +2,22 @@
 # # 回帰2:住宅の平均価格の予測
 
 # %%
+import pickle
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 import unittest
 import doctest
 import os
 
-from domain import SQLRepository,CSVRepository, convert_categoricals, CategoricalData, DataVisualization
+from domain import SQLRepository, CSVRepository, convert_categoricals, CategoricalData, DataVisualization
 
 VISUALIZTION = True
 path = os.path.dirname(os.path.abspath(__file__))
-#repo = SQLRepository(table='Boston')
+# repo = SQLRepository(table='Boston')
 repo = CSVRepository(file=path + '/data/Boston.csv')
 # %% [markdown]
 # ## データの内容
@@ -61,7 +68,7 @@ df.describe()
 # ### データの特徴量の相関確認
 
 # %%
-categorical_cols = ['PRICE']
+categorical_cols = ['CRIME']
 df_conv = convert_categoricals(df, categorical_cols)
 df_conv.corr()
 
@@ -89,7 +96,7 @@ crime.show()
 # %%
 crime.plot()
 
-## %% [markdown]
+# %% [markdown]
 # ### CRIMEカテゴリの数値変換
 
 # %%
@@ -114,8 +121,6 @@ if VISUALIZTION:
     dv.df_all('PRICE')
 
 # %%
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 if VISUALIZTION:
     for c in df.columns:
@@ -132,21 +137,22 @@ df = repo.get_data()
 df.head(3)
 
 # %%
-import pandas as pd
 crime = pd.get_dummies(df['CRIME'], drop_first=True)
 df2 = pd.concat([df, crime], axis=1)
 df2 = df2.drop('CRIME', axis=1)
 df2.head(3)
 
 # %%
-from sklearn.model_selection import train_test_split
 train_val, test = train_test_split(df2, test_size=0.2, random_state=123)
 
 # %% [markdown]
 # ### 欠損値処理（行削除・全体代表値埋め、グループ代表値埋め）
 # %%
 train_val_mean = train_val.mean()
-train_val2 =  train_val.fillna(train_val_mean)
+train_val2 = train_val.fillna(train_val_mean)
+
+train_val2['low'] = train_val2['low'].astype(int)
+train_val2['very_low'] = train_val2['very_low'].astype(int)
 
 colname = train_val2.columns
 for name in colname:
@@ -162,8 +168,10 @@ for name in colname:
 # - 標準化
 
 # %%
-out_line1 = train_val2[(train_val2['RM'] < 6) & (train_val2['PRICE'] > 40)].index
-out_line2 = train_val2[(train_val2['PTRATIO'] > 18) & (train_val2['PRICE'] > 40)].index
+out_line1 = train_val2[(train_val2['RM'] < 6) &
+                       (train_val2['PRICE'] > 40)].index
+out_line2 = train_val2[(train_val2['PTRATIO'] > 18) &
+                       (train_val2['PRICE'] > 40)].index
 print(out_line1, out_line2)
 # %%
 train_val3 = train_val2.drop(out_line1)
@@ -181,10 +189,10 @@ col = ['RM', 'LSTAT', 'PTRATIO']
 x = train_val4[col]
 t = train_val4[['PRICE']]
 
-x_train, x_val, y_train, y_val = train_test_split(x, t, test_size=0.2, random_state=0)
+x_train, x_val, y_train, y_val = train_test_split(
+    x, t, test_size=0.2, random_state=0)
 
 # %%
-from sklearn.preprocessing import StandardScaler
 
 sc_model_x = StandardScaler()
 sc_model_x.fit(x_train)
@@ -201,7 +209,6 @@ sc_y = sc_model_y.transform(y_train)
 # %% [markdown]
 # ### 未学習状態モデルの生成（分類なら決定木、回帰なら線形回帰）
 # %%
-from sklearn.linear_model import LinearRegression
 model = LinearRegression()
 
 
@@ -225,17 +232,17 @@ model.score(sc_x_val, sc_y_val)
 # %% [markdown]
 # ### Take1
 # %%
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
-from domain import SQLRepository,CSVRepository, convert_categoricals, CategoricalData, DataVisualization
 
 path = os.path.dirname(os.path.abspath(__file__))
-#repo = SQLRepository(table='Boston')
+# repo = SQLRepository(table='Boston')
 repo = CSVRepository(file=path + '/data/Boston.csv')
 
 # モデルの作成と学習
-def learn(x,t):
-    x_train, x_val, y_train, y_val = train_test_split(x, t, test_size=0.2, random_state=0)
+
+
+def learn(x, t):
+    x_train, x_val, y_train, y_val = train_test_split(
+        x, t, test_size=0.2, random_state=0)
     # 訓練データを標準化
     sc_model_x = StandardScaler()
     sc_model_y = StandardScaler()
@@ -260,19 +267,19 @@ def learn(x,t):
 # データの前処理
 df = repo.get_data()
 
-import pandas as pd
 crime = pd.get_dummies(df['CRIME'], drop_first=True)
 df2 = pd.concat([df, crime], axis=1)
 df2 = df2.drop('CRIME', axis=1)
 
-from sklearn.model_selection import train_test_split
 train_val, test = train_test_split(df2, test_size=0.2, random_state=0)
 
 train_val_mean = train_val.mean()
-train_val2 =  train_val.fillna(train_val_mean)
+train_val2 = train_val.fillna(train_val_mean)
 
-out_line1 = train_val2[(train_val2['RM'] < 6) & (train_val2['PRICE'] > 40)].index
-out_line2 = train_val2[(train_val2['PTRATIO'] > 18) & (train_val2['PRICE'] > 40)].index
+out_line1 = train_val2[(train_val2['RM'] < 6) &
+                       (train_val2['PRICE'] > 40)].index
+out_line2 = train_val2[(train_val2['PTRATIO'] > 18) &
+                       (train_val2['PRICE'] > 40)].index
 train_val3 = train_val2.drop([76], axis=0)
 
 col = ['INDUS', 'NOX', 'RM', 'PTRATIO', 'LSTAT', 'PRICE']
@@ -284,29 +291,29 @@ abs_cor = train_cor.map(abs)
 abs_cor.sort_values(ascending=False)
 
 # モデルの評価とチューニング
-x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+x = train_val3.loc[:, ['RM', 'LSTAT', 'PTRATIO']]
 t = train_val3[['PRICE']]
 
-s1,s2 = learn(x, t)
+s1, s2 = learn(x, t)
 print(s1, s2)
 
 # %% [markdown]
 # ### Take1
 # - 特徴量にINDUS列を追加
 # %%
-x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO', 'INDUS']]
+x = train_val3.loc[:, ['RM', 'LSTAT', 'PTRATIO', 'INDUS']]
 t = train_val3[['PRICE']]
-s1,s2 = learn(x, t)
+s1, s2 = learn(x, t)
 print(s1, s2)
 
 # %% [markdown]
 # ### Take2
 # - RM列のデータを2乗した新しい列を追加
 # %%
-x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+x = train_val3.loc[:, ['RM', 'LSTAT', 'PTRATIO']]
 t = train_val3[['PRICE']]
 x['RM2'] = x['RM'] ** 2
-s1,s2 = learn(x, t)
+s1, s2 = learn(x, t)
 print(s1, s2)
 
 # %% [markdown]
@@ -314,11 +321,11 @@ print(s1, s2)
 # - RM列のデータを2乗した新しい列を追加
 # - LSTAT列のデータを2乗した新しい列を追加
 # %%
-x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+x = train_val3.loc[:, ['RM', 'LSTAT', 'PTRATIO']]
 t = train_val3[['PRICE']]
 x['RM2'] = x['RM'] ** 2
 x['LSTAT2'] = x['LSTAT'] ** 2
-s1,s2 = learn(x, t)
+s1, s2 = learn(x, t)
 print(s1, s2)
 
 
@@ -328,12 +335,12 @@ print(s1, s2)
 # - LSTAT列のデータを2乗した新しい列を追加
 # - PTRATIO列のデータを2乗した新しい列を追加
 # %%
-x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+x = train_val3.loc[:, ['RM', 'LSTAT', 'PTRATIO']]
 t = train_val3[['PRICE']]
 x['RM2'] = x['RM'] ** 2
 x['LSTAT2'] = x['LSTAT'] ** 2
 x['PTRATIO2'] = x['PTRATIO'] ** 2
-s1,s2 = learn(x, t)
+s1, s2 = learn(x, t)
 print(s1, s2)
 
 # %% [markdown]
@@ -343,13 +350,13 @@ print(s1, s2)
 # - PTRATIO列のデータを2乗した新しい列を追加
 # - 交差作用特徴量を追加
 # %%
-x = train_val3.loc[ : ,['RM', 'LSTAT', 'PTRATIO']]
+x = train_val3.loc[:, ['RM', 'LSTAT', 'PTRATIO']]
 t = train_val3[['PRICE']]
 x['RM2'] = x['RM'] ** 2
 x['LSTAT2'] = x['LSTAT'] ** 2
 x['PTRATIO2'] = x['PTRATIO'] ** 2
 x['RM * LSTAT'] = x['RM'] * x['LSTAT']
-s1,s2 = learn(x, t)
+s1, s2 = learn(x, t)
 print(s1, s2)
 
 # %% [markdown]
@@ -389,7 +396,6 @@ sc_y_test = sc_model_y2.transform(y_test)
 model.score(sc_x_test, sc_y_test)
 
 # %%
-import pickle
 with open(path + '/data/boston.pkl', mode='wb') as fp:
     pickle.dump(model, fp)
 with open(path + '/data/boston_scx.pkl', mode='wb') as fp:
