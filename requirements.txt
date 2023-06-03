@@ -4,3 +4,5 @@ pandas
 sqlalchemy==1.4.46
 psycopg2-binary
 seaborn
+fastapi 
+uvicorn
