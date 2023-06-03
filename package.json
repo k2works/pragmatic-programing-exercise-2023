@@ -16,7 +16,7 @@
     "watch": "npx gulp watch",
     "deploy": "vercel",
     "deploy:local": "vercel dev",
-    "deploy:heroku": "git push heroku wip/episode/00:master ",
+    "deploy:heroku": "git push heroku python/take2-2:maste",
     "heroku-postbuild": "webpack --config ./webpack.config.js --progress",
     "db:migrate": "npm run db:dev:migrate && npm run db:test:migrate",
     "db:dev:migrate": "dotenv -e .env.dev -- prisma migrate dev",
