@@ -14,7 +14,7 @@ import doctest
 import os
 
 from domain import convert_categoricals, CategoricalData, DataVisualization
-from repository import CSVRepository, SQLRepository
+from app.repository import CSVRepository, SQLRepository
 from domain import learn_with_std as learn
 
 VISUALIZTION = True

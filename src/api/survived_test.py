@@ -11,7 +11,7 @@ import doctest
 import os
 
 from domain import CategoricalData, DataVisualization, convert_categoricals, learn
-from repository import CSVRepository, SQLRepository
+from app.repository import CSVRepository, SQLRepository
 
 path = os.path.dirname(os.path.abspath(__file__))
 # repo = SQLRepository(table='Survived')
