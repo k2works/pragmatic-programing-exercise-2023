@@ -1,6 +1,10 @@
 # %% [markdown]
 # # 検索
 # %%
+import hashlib
+from enum import Enum
+import copy
+from typing import Any, Sequence
 import unittest
 import doctest
 
@@ -159,41 +163,39 @@ def ssearch_for(a: Sequence, key: Any) -> int:
 # ### 番兵法
 
 # %% [markdown]
-# ## ２分探索
-
+# #### List3-3 線形探索（番兵法）
 # %% [markdown]
-# ### ２分探索
+# ```python
+# def seq_search(seq: Sequence, key: Any) -> int:
+#     a = copy.deepcopy(seq)
+#     a.append(key)
+#
+#     i = 0
+#     while True:
+#         if a[i] == key:
+#             break
+#         i += 1
+#     return -1 if i == len(seq) else i
+#
+#
+# if __name__ == '__main__':
+#     num = int(input('要素数；'))
+#     x = [None] * num
+#
+#     for i in range(num):
+#         x[i] = int(input(f'x[{i}]: '))
+#
+#     ky = int(input('探す値：'))
+#
+#     idx = seq_search(x, ky)
+#
+#     if idx == -1:
+#         print('その値の要素は存在しません。')
+#     else:
+#         print(f'その値はx[{idx}]にあります。')
+# ```
 
-# %% [markdown]
-# ### 計算量
-
-# %% [markdown]
-# ## ハッシュ法
-
-# %% [markdown]
-# ### ソート済み配列の操作
-
-# %% [markdown]
-# ### ハッシュ法
-
-# %% [markdown]
-# ### 衝突
-
-# %% [markdown]
-# ### チェイン法
-
-# %% [markdown]
-# ### オープンアドレス法
-
-
-# 探索アルゴリズム
-
-
-# 線形探索
-
-
-# 線形探索（番兵法）
-
+# %%
 class TestSseachSentinel(unittest.TestCase):
     def test_sseach_sentinel(self):
         self.assertEqual(ssearch_sentinel([6, 4, 3, 2, 1, 2, 8], 2), 3)
@@ -214,9 +216,60 @@ def ssearch_sentinel(seq: Sequence, key: Any) -> int:
         i += 1
     return -1 if i == len(seq) else i
 
-# ２分探索
 
+# %% [markdown]
+# ## ２分探索
 
+# %% [markdown]
+# ### ２分探索
+# %% [markdown]
+# #### List3-4 ２分探索
+# %% [markdown]
+# ```python
+# def bin_search(a: Sequence, key: Any) -> int:
+#     pl = 0
+#     pr = len(a) - 1
+#
+#     while True:
+#         pc = (pl + pr) // 2
+#         if a[pc] == key:
+#             return pc
+#         elif a[pc] < key:
+#             pl = pc + 1
+#         else:
+#             pr = pc - 1
+#         if pl > pr:
+#             break
+#     return -1
+#
+#
+# if __name__ == '__main__':
+#     num = int(input('要素数：'))
+#     x = [None] * num
+#
+#     print('昇順に入力してください')
+#
+#     x[0] = int(input('x[0]: '))
+#
+#     for i in range(1, num):
+#         while True:
+#             x[i] = int(input(f'x[{i}]: '))
+#             if x[i] >= x[i - 1]:
+#                 break
+#
+#     key = int(input('探す値：'))
+#     idx = bin_search(x, key)
+#     if idx == -1:
+#         print('その値の要素は存在しません。')
+#     else:
+#         print(f'その値はx[{idx}]にあります。')
+# ```
+
+# %% [markdown]
+# ### 計算量
+# %% [markdown]
+# #### List3C-3 2分探索の途中経過の表示
+# %%
 class TestBseach(unittest.TestCase):
     def test_bseach(self):
         self.assertEqual(bseach([1, 2, 3, 5, 7, 8, 9], 5), 3)
@@ -284,57 +337,29 @@ def bseach_verbose(a: Sequence, key: Any) -> int:
 
 bseach_verbose([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 8)
 
-# ハッシュ法
 
+# %% [markdown]
+# ## ハッシュ法
 
-class TestChainedHash(unittest.TestCase):
-    def setUp(self):
-        self.hash = ChainedHash(13)
-        self.hash.add(1, '赤尾')
-        self.hash.add(5, '武田')
-        self.hash.add(10, '小野')
-        self.hash.add(12, '鈴木')
-        self.hash.add(14, '神崎')
+# %% [markdown]
+# ### ソート済み配列の操作
 
-    def test_seach(self):
-        self.assertEqual(self.hash.seach(1), '赤尾')
-        self.assertEqual(self.hash.seach(14), '神崎')
-        self.assertEqual(self.hash.seach(100), None)
+# %% [markdown]
+# ### ハッシュ法
 
-    def test_add(self):
-        self.hash.add(100, '山田')
-        self.assertEqual(self.hash.seach(100), '山田')
+# %% [markdown]
+# ### 衝突
 
-    def test_remove(self):
-        self.hash.add(100, '山田')
-        self.hash.remove(100)
-        self.assertEqual(self.hash.seach(100), None)
-
-    def test_dump(self):
-        expected = """\
-0
-1   -> 14 (神崎)   -> 1 (赤尾)
-2
-3
-4
-5   -> 5 (武田)
-6
-7
-8
-9
-10   -> 10 (小野)
-11
-12   -> 12 (鈴木)
-"""
-        actual = self.hash.dump()
-        self.assertEqual(self.hash.dump(), expected)
+# %% [markdown]
+# ### チェイン法
+# %%
 
 
 class Node:
     """ハッシュを構成するノード
     """
 
-    def __init__(self, key: Any, value: Any, next: Node) -> None:
+    def __init__(self, key: Any, value: Any, next: Any) -> None:
         self.key = key
         self.value = value
         self.next = next
@@ -411,6 +436,54 @@ class ChainedHash:
                 p = p.next
             result += '\n'
         return result
+
+
+class TestChainedHash(unittest.TestCase):
+    def setUp(self):
+        self.hash = ChainedHash(13)
+        self.hash.add(1, '赤尾')
+        self.hash.add(5, '武田')
+        self.hash.add(10, '小野')
+        self.hash.add(12, '鈴木')
+        self.hash.add(14, '神崎')
+
+    def test_seach(self):
+        self.assertEqual(self.hash.seach(1), '赤尾')
+        self.assertEqual(self.hash.seach(14), '神崎')
+        self.assertEqual(self.hash.seach(100), None)
+
+    def test_add(self):
+        self.hash.add(100, '山田')
+        self.assertEqual(self.hash.seach(100), '山田')
+
+    def test_remove(self):
+        self.hash.add(100, '山田')
+        self.hash.remove(100)
+        self.assertEqual(self.hash.seach(100), None)
+
+    def test_dump(self):
+        expected = """\
+0
+1   -> 14 (神崎)   -> 1 (赤尾)
+2
+3
+4
+5   -> 5 (武田)
+6
+7
+8
+9
+10   -> 10 (小野)
+11
+12   -> 12 (鈴木)
+"""
+        actual = self.hash.dump()
+        self.assertEqual(self.hash.dump(), expected)
+
+
+# %% [markdown]
+# ### オープンアドレス法
+# %%
 
 
 class TestOpenHash(unittest.TestCase):
