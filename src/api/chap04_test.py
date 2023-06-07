@@ -1,9 +1,74 @@
+# %% [markdown]
+# # スタックとキュー
+# %%
 from collections import deque
 from typing import Any
 import unittest
 import doctest
 
-# 固定長スタッククラス
+# %% [markdown]
+# ## スタック
+
+# %% [markdown]
+# ### スタックとは
+
+# %% [markdown]
+# ### スタックの実現
+
+# %% [markdown]
+# #### List4-1 固定長スタッククラス
+# ```python
+# from enum import Enum
+#
+# Menu = Enum('Menu', ['プッシュ', 'ポップ', 'ピーク', '探索', 'ダンプ', '終了'])
+#
+#
+# def select_menu() -> Menu:
+#     s = [f'({m.value}){m.name}' for m in Menu]
+#     while True:
+#         print(*s, sep='  ', end='')
+#         n = int(input(' : '))
+#         if 1 <= n <= len(Menu):
+#             return Menu(n)
+#
+#
+# s = FixedStack(64)
+#
+# while True:
+#     print(f'現在のデータ数：{len(n)} / {n.capacity}')
+#     menu = select_menu()
+#
+#     if menu == Menu.プッシュ:
+#         x = int(input('データ：'))
+#         try:
+#             s.push(x)
+#         except FixedStack.Full:
+#             print('スタックが満杯です。')
+#     elif menu == Menu.ポップ:
+#         try:
+#             x = s.pop()
+#             print(f'ポップしたデータは{x}です。')
+#         except FixedStack.Empty:
+#             print('スタックが空です。')
+#     elif menu == Menu.ピーク:
+#         try:
+#             x = s.peek()
+#             print(f'ピークしたデータは{x}です。')
+#         except FixedStack.Empty:
+#             print('スタックが空です。')
+#     elif menu == Menu.探索:
+#         x = int(input('値：'))
+#         if x in s:
+#             print(f'{s.count(x)}個含まれて、先頭の位置は{s.find(x)}です。')
+#         else:
+#             print('その値は含まれていません。')
+#     elif menu == Menu.ダンプ:
+#         s.dump()
+#     else:
+#         break
+# ```
+
+# %%
 
 
 class TestFixedStack(unittest.TestCase):
@@ -131,7 +196,8 @@ class FixedStack:
         else:
             return self.stk[:self.ptr]
 
-# 固定長スタッククラス（collection.dequeを利用)
+# %% [markdown]
+# #### List4C-1 固定長スタッククラス（collection.dequeを利用)
 
 
 class TestStack(unittest.TestCase):
@@ -215,6 +281,19 @@ class Stack:
 
     def dump(self) -> Any:
         return list(self.__stk)
+
+
+# %% [markdown]
+# ## キュー
+
+# %% [markdown]
+# ### キューとは
+
+# %% [markdown]
+# ### 単純な配列によるキューの実現
+
+# %% [markdown]
+# ### リングバッファによるキューの実現
 
 # 固定長キュークラスFixedQueueの利用例
 
