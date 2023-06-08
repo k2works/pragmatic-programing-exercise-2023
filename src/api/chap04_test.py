@@ -295,9 +295,9 @@ class Stack:
 # %% [markdown]
 # ### リングバッファによるキューの実現
 
-# 固定長キュークラスFixedQueueの利用例
-
-
+# %% [markdown]
+# #### List4-4 固定長キュークラスFixedQueueの利用例
+# %%
 class TestFixedQueue(unittest.TestCase):
     def test_enque(self):
         q = FixedQueue(64)
@@ -351,6 +351,15 @@ class TestFixedQueue(unittest.TestCase):
 
 
 class FixedQueue:
+    """
+    >>> que = FixedQueue(5)
+    >>> que.enque(1)
+    >>> que.enque(2)
+    >>> que.enque(3)
+    >>> que.deque()
+    >>> que.dump()
+    [1, 2, 3, None, None]
+    """
     class Empty(Exception):
         pass
 
