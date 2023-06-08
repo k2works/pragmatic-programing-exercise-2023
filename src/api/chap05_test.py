@@ -1,8 +1,56 @@
-# Doctest
+# %% [markdown]
+# # 再帰的アルゴリズム
+# %%
 from collections import deque
 from typing import Any
 import unittest
 import doctest
+
+
+# %% [markdown]
+# ## 再帰の基本
+
+# %% [markdown]
+# ### 再帰とは
+
+# %% [markdown]
+# ### 階上値
+
+# %% [markdown]
+# ### ユークリッドの互除法
+
+# %% [markdown]
+# ## 再帰アルゴリズムの解析
+
+# %% [markdown]
+# ### 再帰アルゴリズムの解析
+
+# %% [markdown]
+# ### 再帰アルゴリズムの非再帰表現
+
+# %% [markdown]
+# ## ハノイの塔
+
+# %% [markdown]
+# ### ハノイの塔
+
+# %% [markdown]
+# ## 8王妃問題
+
+# %% [markdown]
+# ### 8王妃問題とは
+
+# %% [markdown]
+# ### 王妃の配置
+
+# %% [markdown]
+# ### 分岐操作
+
+# %% [markdown]
+# ### 限定操作と分岐限定法
+
+# %% [markdown]
+# ### 8王妃問題を解くプログラム
 
 
 class Stack:

@@ -11,6 +11,7 @@ const contents = `
 ### 第2章 [データ構造と配列](./notebooks/chap02.html)
 ### 第3章 [探索](./notebooks/chap03.html)
 ### 第4章 [スタックとキュー](./notebooks/chap04.html)
+### 第5章 [８王妃問題](./notebooks/chap05.html)
 
 `;
 
