@@ -14,10 +14,48 @@ import doctest
 # ### 再帰とは
 
 # %% [markdown]
-# ### 階上値
+# ### 階乗値
+
+# %% [markdown]
+# #### List5-1 非負の整数の階乗値を求める
+# %%
+class TestFactorial(unittest.TestCase):
+    def test_3の階乗は6(self):
+        self.assertEqual(factorial(3), 6)
+
+
+def factorial(n: int) -> int:
+    """非負の整数nの階乗を再帰的に求める
+    >>> factorial(3)
+    6
+    """
+    if n > 0:
+        return n * factorial(n - 1)
+    else:
+        return 1
+
 
 # %% [markdown]
 # ### ユークリッドの互除法
+
+# %% [markdown]
+# #### List5-2 2つの整数値の最大公約数を求める
+# %%j
+class TestGcd(unittest.TestCase):
+    def test_22と8の最大公約数は2(self):
+        self.assertEqual(gcd(22, 8), 2)
+
+
+def gcd(x: int, y: int) -> int:
+    """整数値xとyの最大公約数を求めて返却
+    >>> gcd(22, 8)
+    2
+    """
+    if y == 0:
+        return x
+    else:
+        return gcd(y, x % y)
+
 
 # %% [markdown]
 # ## 再帰アルゴリズムの解析
@@ -26,31 +64,62 @@ import doctest
 # ### 再帰アルゴリズムの解析
 
 # %% [markdown]
+# #### List5-3 真に再帰的な関数
+# %%
+
+class TestRecur(unittest.TestCase):
+    def test_実行結果を配列で返す(self):
+        self.assertEqual(recure(4, []), [1, 2, 3, 1, 4, 1, 2])
+
+
+def recure(n: int, list: list) -> list:
+    """真に再帰的な関数recure
+    >>> recure(4, [])
+    [1, 2, 3, 1, 4, 1, 2]
+    """
+    if n > 0:
+        recure(n - 1, list)
+        list.append(n)
+        recure(n - 2, list)
+
+    return list
+
+# %% [markdown]
 # ### 再帰アルゴリズムの非再帰表現
 
 # %% [markdown]
-# ## ハノイの塔
+# #### 末尾再帰の除去
+
 
 # %% [markdown]
-# ### ハノイの塔
+# #### List5-4 再帰を除去した関数recur
+# %%
+class TestRecur(unittest.TestCase):
+    def test_末尾再帰を除去した実行結果を配列で返す(self):
+        self.assertEqual(recure2(4, []), [1, 2, 3, 1, 4, 1, 2])
+
+    def test_スタックを用いて末尾再帰を除去した実行結果を配列で返す(self):
+        self.assertEqual(recure3(4, []), [1, 2, 3, 1, 4, 1, 2])
+
+
+def recure2(n: int, list: list) -> list:
+    """末尾再帰を除去した関数recure
+    >>> recure2(4, [])
+    [1, 2, 3, 1, 4, 1, 2]
+    """
+    while n > 0:
+        recure2(n - 1, list)
+        list.append(n)
+        n = n - 2
+
+    return list
 
 # %% [markdown]
-# ## 8王妃問題
+# #### 再帰の除去
 
 # %% [markdown]
-# ### 8王妃問題とは
-
-# %% [markdown]
-# ### 王妃の配置
-
-# %% [markdown]
-# ### 分岐操作
-
-# %% [markdown]
-# ### 限定操作と分岐限定法
-
-# %% [markdown]
-# ### 8王妃問題を解くプログラム
+# #### List5-5 再帰を除去した関数recur
+# %%
 
 
 class Stack:
@@ -91,80 +160,10 @@ class Stack:
     def dump(self) -> Any:
         return list(self.__stk)
 
-# 非負の整数の階乗値を求める
-
-
-class TestFactorial(unittest.TestCase):
-    def test_3の階乗は6(self):
-        self.assertEqual(factorial(3), 6)
-
-
-def factorial(n: int) -> int:
-    """非負の整数nの階乗を再帰的に求める
-    >>> factorial(3)
-    6
-    """
-    if n > 0:
-        return n * factorial(n - 1)
-    else:
-        return 1
-
-# ユークリッドの互除法によって最大公約数を求める
-
-
-class TestGcd(unittest.TestCase):
-    def test_22と8の最大公約数は2(self):
-        self.assertEqual(gcd(22, 8), 2)
-
-
-def gcd(x: int, y: int) -> int:
-    """整数値xとyの最大公約数を求めて返却
-    >>> gcd(22, 8)
-    2
-    """
-    if y == 0:
-        return x
-    else:
-        return gcd(y, x % y)
-
-# 真に再帰的な関数
-
 
 class TestRecur(unittest.TestCase):
-    def test_実行結果を配列で返す(self):
-        self.assertEqual(recure(4, []), [1, 2, 3, 1, 4, 1, 2])
-
-    def test_末尾再帰を除去した実行結果を配列で返す(self):
-        self.assertEqual(recure2(4, []), [1, 2, 3, 1, 4, 1, 2])
-
     def test_スタックを用いて末尾再帰を除去した実行結果を配列で返す(self):
         self.assertEqual(recure3(4, []), [1, 2, 3, 1, 4, 1, 2])
-
-
-def recure(n: int, list: list) -> list:
-    """真に再帰的な関数recure
-    >>> recure(4, [])
-    [1, 2, 3, 1, 4, 1, 2]
-    """
-    if n > 0:
-        recure(n - 1, list)
-        list.append(n)
-        recure(n - 2, list)
-
-    return list
-
-
-def recure2(n: int, list: list) -> list:
-    """末尾再帰を除去した関数recure
-    >>> recure2(4, [])
-    [1, 2, 3, 1, 4, 1, 2]
-    """
-    while n > 0:
-        recure(n - 1, list)
-        list.append(n)
-        n = n - 2
-
-    return list
 
 
 def recure3(n: int, list: list) -> list:
@@ -188,8 +187,16 @@ def recure3(n: int, list: list) -> list:
 
     return list
 
-# ハノイの等
 
+# %% [markdown]
+# ## ハノイの塔
+
+# %% [markdown]
+# ### ハノイの塔
+
+# %% [markdown]
+# #### List5-6 ハノイの塔
+# %%
 
 class TestMove(unittest.TestCase):
     def test_円盤3枚(self):
@@ -220,6 +227,31 @@ def move(no: int, x: int, y: int, result: list) -> list:
         move(no - 1, 6 - x - y, y, result)
 
     return result
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
+
+
+# %% [markdown]
+# ## 8王妃問題
+
+# %% [markdown]
+# ### 8王妃問題とは
+
+# %% [markdown]
+# ### 王妃の配置
+
+# %% [markdown]
+# ### 分岐操作
+
+# %% [markdown]
+# ### 限定操作と分岐限定法
+
+# %% [markdown]
+# ### 8王妃問題を解くプログラム
+
 
 # 8王妃問題
 
@@ -308,7 +340,3 @@ class EightQueen:
                     self.set3(i + 1)
                     self.__flag_a[j] = self.__flag_b[i +
                                                      j] = self.__flag_c[i - j + 7] = False
-
-
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
