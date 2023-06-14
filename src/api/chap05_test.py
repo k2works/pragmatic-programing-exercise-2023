@@ -229,11 +229,6 @@ def move(no: int, x: int, y: int, result: list) -> list:
     return result
 
 
-# %%
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-
-
 # %% [markdown]
 # ## 8王妃問題
 
@@ -246,34 +241,98 @@ doctest.testmod(verbose=True)
 # %% [markdown]
 # ### 分岐操作
 
-# %% [markdown]
-# ### 限定操作と分岐限定法
-
-# %% [markdown]
-# ### 8王妃問題を解くプログラム
-
-
-# 8王妃問題
-
-
+# %%  [markdown]
+# #### List5-7 各列に１個の王妃を配置する組合わせを再帰的に列挙
+# %%
 class TestEightQueen(unittest.TestCase):
     def test_各列に1個の王妃を配置する組み合わせを再帰的に列挙(self):
         eight_queen = EightQueen()
         eight_queen.set(0)
         self.assertEqual(len(eight_queen.result), 16777216)
 
+
+class EightQueen:
+    def __init__(self):
+        self.result = []
+        self.__pos = [0] * 8
+
+    def put(self) -> None:
+        """盤面（各列の王妃の位置）を出力
+        """
+        row = []
+        for i in range(8):
+            row.append(self.__pos[i])
+        self.result.append(row)
+
+    def set(self, i: int) -> None:
+        """i列目に王妃を配置
+        """
+        for j in range(8):
+            self.__pos[i] = j
+            if i == 7:
+                self.put()
+            else:
+                self.set(i + 1)
+
+
+# %% [markdown]
+# ### 限定操作と分岐限定法
+
+# %% [markdown]
+# #### List5-8 各行・各列に１個の王妃を配置する組合せを再帰的に列挙
+# %%
+class TestEightQueen2(unittest.TestCase):
     def test_各行各列に1個の王妃を配置する組合せを再帰的に列挙(self):
-        eight_queen = EightQueen()
-        eight_queen.set2(0)
+        eight_queen = EightQueen2()
+        eight_queen.set(0)
         self.assertEqual(len(eight_queen.result), 40320)
 
+
+class EightQueen2:
+    def __init__(self):
+        self.result = []
+        self.__pos = [0] * 8
+        self.__flag = [False] * 8
+        self.__flag_a = [False] * 8
+        self.__flag_b = [False] * 15
+        self.__flag_c = [False] * 15
+
+    def put(self) -> None:
+        """盤面（各列の王妃の位置）を出力
+        """
+        row = []
+        for i in range(8):
+            row.append(self.__pos[i])
+        self.result.append(row)
+
+    def set(self, i: int) -> None:
+        """i列目の適切な位置に王妃を配置
+        """
+        for j in range(8):
+            if not self.__flag[j]:
+                self.__pos[i] = j
+                if i == 7:
+                    self.put()
+                else:
+                    self.__flag[j] = True
+                    self.set(i + 1)
+                    self.__flag[j] = False
+
+
+# %% [markdown]
+# ### 8王妃問題を解くプログラム
+
+# %% [markdown]
+# #### List5-9 8王妃問題
+# %%G
+class TestEightQueen3(unittest.TestCase):
     def test_8王妃問題を解くプログラム(self):
-        eight_queen = EightQueen()
-        eight_queen.set3(0)
+        eight_queen = EightQueen3()
+        eight_queen.set(0)
         self.assertEqual(len(eight_queen.result), 92)
 
 
-class EightQueen:
+class EightQueen3:
     def __init__(self):
         self.result = []
         self.__pos = [0] * 8
@@ -301,29 +360,6 @@ class EightQueen:
         print()
 
     def set(self, i: int) -> None:
-        """i列目に王妃を配置
-        """
-        for j in range(8):
-            self.__pos[i] = j
-            if i == 7:
-                self.put()
-            else:
-                self.set(i + 1)
-
-    def set2(self, i: int) -> None:
-        """i列目の適切な位置に王妃を配置
-        """
-        for j in range(8):
-            if not self.__flag[j]:
-                self.__pos[i] = j
-                if i == 7:
-                    self.put()
-                else:
-                    self.__flag[j] = True
-                    self.set2(i + 1)
-                    self.__flag[j] = False
-
-    def set3(self, i: int) -> None:
         """i列目の適切な位置に王妃を配置
         """
         for j in range(8):
@@ -337,6 +373,11 @@ class EightQueen:
                 else:
                     self.__flag_a[j] = self.__flag_b[i +
                                                      j] = self.__flag_c[i - j + 7] = True
-                    self.set3(i + 1)
+                    self.set(i + 1)
                     self.__flag_a[j] = self.__flag_b[i +
                                                      j] = self.__flag_c[i - j + 7] = False
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
