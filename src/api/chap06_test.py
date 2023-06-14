@@ -1,16 +1,105 @@
 # %% [markdown]
 # # ソート
 # %%
-import bisect
 from collections import deque
-from typing import Any, MutableSequence, Sequence
+from typing import Any, Sequence, MutableSequence
 import unittest
 import doctest
 
 from chap04_test import Stack
 
 # %% [markdown]
+# ## ソートとは
+
+# %% [markdown]
+# ### ソートとは
+
+# %% [markdown]
+# ## 単純交換ソート（バブルソート）
+
+# %% [markdown]
+# ### 単純交換ソート（バブルソート）
+
+# %% [markdown]
+# ### シューカーソート（双方向バブルソート）
+
+# %% [markdown]
+# ## 単純選択ソート
+
+# %% [markdown]
+# ### 単純選択ソート
+
+# %% [markdown]
 # ## 単純挿入ソート
+
+# %% [markdown]
+# ### 単純挿入ソート
+
+# %% [markdown]
+# ## シェルソート
+
+# %% [markdown]
+# ### 単純挿入ソートの特徴
+
+# %% [markdown]
+# ### シェルソート
+
+# %% [markdown]
+# ## クイックソート
+
+# %% [markdown]
+# ### クイックソートの概略
+
+# %% [markdown]
+# ### 分割手順
+
+# %% [markdown]
+# ### クイックソート
+
+# %% [markdown]
+# ### 非再帰的クイックソート
+
+# %% [markdown]
+# ### 枢軸の選択
+
+# %% [markdown]
+# ### 時間計算量
+
+# %% [markdown]
+# ## マージソート
+
+# %% [markdown]
+# ### ソートすみ配列のマージ
+
+# %% [markdown]
+# ### マージソート
+
+# %% [markdown]
+# ## ヒープソート
+
+# %% [markdown]
+# ### ヒープ
+
+# %% [markdown]
+# ### ヒープソート
+
+# %% [markdown]
+# ### 根を削除したヒープの再構築
+
+# %% [markdown]
+# ### ヒープソートの拡張
+
+# %% [markdown]
+# ### 配列のヒープ
+
+# %% [markdown]
+# ### ヒープソートの時間計算量
+
+# %% [markdown]
+# ## 度数ソート
+
+# %% [markdown]
+# ### 度数ソート
 
 
 class TestBubleSort(unittest.TestCase):
