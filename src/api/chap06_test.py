@@ -17,6 +17,67 @@ from chap04_test import Stack
 # %% [markdown]
 # ## 単純交換ソート（バブルソート）
 
+# %%  [markdown]
+# #### List6-1 単純交換ソート
+# %
+
+
+class TestBubleSort1(unittest.TestCase):
+    def test_buble_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        bubble_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def bubble_sort(a: MutableSequence) -> None:
+    """単純交換ソート(バブルソート)"""
+    n = len(a)
+    for i in range(n - 1):
+        for j in range(n - 1, i, -1):
+            if a[j - 1] > a[j]:
+                a[j - 1], a[j] = a[j], a[j - 1]
+
+# %% [markdown]
+# #### List6-2 単純交換ソート（ソート過程を表示）
+# %%
+
+
+class TestBubleSort1VerBose(unittest.TestCase):
+    def test_buble_sort_verbose(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        bubble_sort_verbose(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def bubble_sort_verbose(a: MutableSequence) -> None:
+    """単純交換ソート（ソート過程を表示)"""
+    ccnt = 0  # 比較回数
+    scnt = 0  # 交換回数
+    n = len(a)
+    for i in range(n - 1):
+        print(f'パス{i + 1}')
+        for j in range(n - 1, i, -1):
+            for m in range(0, n - 1):
+                print(f'{a[m]:2}' + ('  ' if m != j - 1 else
+                                     ' +' if a[j - 1] > a[j] else ' -'),
+                      end='')
+                print(f'{a[n - 1]:2}')
+                ccnt += 1
+                if a[j - 1] > a[j]:
+                    scnt += 1
+                    a[j - 1], a[j] = a[j], a[j - 1]
+            for m in range(0, n-1):
+                print(f'{a[m]:2}', end='  ')
+            print(f'{a[n - 1]:2}')
+        print(f'比較は{ccnt}回でした。')
+        print(f'比較は{scnt}回でした。')
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
+
+
 # %% [markdown]
 # ### 単純交換ソート（バブルソート）
 
