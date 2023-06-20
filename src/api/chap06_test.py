@@ -1,6 +1,7 @@
 # %% [markdown]
 # # ソート
 # %%
+import bisect
 from collections import deque
 from typing import Any, Sequence, MutableSequence
 import unittest
@@ -125,6 +126,8 @@ def bubble_sort3(a: MutableSequence) -> None:
 
 
 # %% [markdown]
+# ### シューカーソート（双方向バブルソート）
+# %% [markdown]
 # #### List6-5 シェーカーソート（双方向バブルソート）
 # %%
 class TestShakerSort(unittest.TestCase):
@@ -153,14 +156,6 @@ def shaker_sort(a: MutableSequence) -> None:
             right = last
 
 
-# %%
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-
-
-# %% [markdown]
-# ### シューカーソート（双方向バブルソート）
-
 # %% [markdown]
 # ## 単純選択ソート
 
@@ -168,10 +163,116 @@ doctest.testmod(verbose=True)
 # ### 単純選択ソート
 
 # %% [markdown]
+# #### List6-6 単純選択ソート
+# %%
+class TestSelectSort(unittest.TestCase):
+    def test_select_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        selection_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def selection_sort(a: MutableSequence) -> None:
+    """単純選択ソート"""
+    n = len(a)
+    for i in range(n - 1):
+        min = i        # 未ソート部分から最小要素の添字
+        for j in range(i + 1, n):
+            if a[j] < a[min]:
+                min = j
+        a[i], a[min] = a[min], a[i]  # 未ソート部分の先頭要素と最小要素を交換
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
+
+
+# %% [markdown]
 # ## 単純挿入ソート
 
 # %% [markdown]
 # ### 単純挿入ソート
+
+# %% [markdown]
+# #### List6-7 単純挿入ソート
+# %%
+
+class TestInsertSort(unittest.TestCase):
+    def test_insertion_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        insertion_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def insertion_sort(a: MutableSequence) -> None:
+    """単純挿入ソート"""
+    n = len(a)
+    for i in range(1, n):
+        j = i
+        tmp = a[i]
+        while j > 0 and a[j - 1] > tmp:
+            a[j] = a[j - 1]
+            j -= 1
+        a[j] = tmp
+
+
+# %% [markdown]
+# #### ListC6-1 2分挿入ソート
+# %%
+class TestBinaryInsertionSort(unittest.TestCase):
+    def test_binary_insertion_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        binary_insertion_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def binary_insertion_sort(a: MutableSequence) -> None:
+    """２分挿入ソート"""
+    n = len(a)
+    for i in range(1, n):
+        key = a[i]
+        pl = 0       # 探索範囲の先頭要素の添字
+        pr = i - 1   # 探索範囲の末尾要素の添字
+
+        while True:
+            pc = (pl + pr) // 2  # 探索範囲の中央要素の添字
+            if a[pc] == key:    # 探索成功
+                break
+            elif a[pc] < key:
+                pl = pc + 1
+            else:
+                pr = pc - 1
+            if pl > pr:
+                break
+        # 挿入すべき位置の添字
+        pd = pc + 1 if pl <= pr else pr + 1
+        for j in range(i, pd, -1):
+            a[j] = a[j - 1]
+        a[pd] = key
+
+
+# %% [markdown]
+# #### ListC6-2 ２分挿入ソート（bisect.insortを利用）
+# %%
+
+class TestBinaryInsertionSort2(unittest.TestCase):
+    def test_binary_insertion2(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        binary_insertion_sort2(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def binary_insertion_sort2(a: MutableSequence) -> None:
+    """２分挿入ソート（bisect.insortを利用）"""
+    for i in range(1, len(a)):
+        bisect.insort(a, a.pop(i), 0, i)
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
+
 
 # %% [markdown]
 # ## シェルソート
@@ -243,81 +344,6 @@ doctest.testmod(verbose=True)
 # %% [markdown]
 # ## 単純選択ソート
 
-
-class TestSelectSort(unittest.TestCase):
-    def test_select_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        selection_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_insertion_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        insertion_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_binary_insertion_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        binary_insertion_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_binary_insertion2(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        binary_insertion_sort2(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-
-def selection_sort(a: MutableSequence) -> None:
-    """単純選択ソート"""
-    n = len(a)
-    for i in range(n - 1):
-        min = i        # 未ソート部分から最小要素の添字
-        for j in range(i + 1, n):
-            if a[j] < a[min]:
-                min = j
-        a[i], a[min] = a[min], a[i]  # 未ソート部分の先頭要素と最小要素を交換
-
-
-def insertion_sort(a: MutableSequence) -> None:
-    """単純挿入ソート"""
-    n = len(a)
-    for i in range(1, n):
-        j = i
-        tmp = a[i]
-        while j > 0 and a[j - 1] > tmp:
-            a[j] = a[j - 1]
-            j -= 1
-        a[j] = tmp
-
-
-def binary_insertion_sort(a: MutableSequence) -> None:
-    """２分挿入ソート"""
-    n = len(a)
-    for i in range(1, n):
-        key = a[i]
-        pl = 0       # 探索範囲の先頭要素の添字
-        pr = i - 1   # 探索範囲の末尾要素の添字
-
-        while True:
-            pc = (pl + pr) // 2  # 探索範囲の中央要素の添字
-            if a[pc] == key:    # 探索成功
-                break
-            elif a[pc] < key:
-                pl = pc + 1
-            else:
-                pr = pc - 1
-            if pl > pr:
-                break
-        # 挿入すべき位置の添字
-        pd = pc + 1 if pl <= pr else pr + 1
-        for j in range(i, pd, -1):
-            a[j] = a[j - 1]
-        a[pd] = key
-
-
-def binary_insertion_sort2(a: MutableSequence) -> None:
-    """２分挿入ソート（bisect.insortを利用）"""
-    for i in range(1, len(a)):
-        bisect.insort(a, a.pop(i), 0, i)
 
 # %% [markdown]
 # ## シェルソート
