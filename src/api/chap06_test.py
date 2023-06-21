@@ -269,11 +269,6 @@ def binary_insertion_sort2(a: MutableSequence) -> None:
         bisect.insort(a, a.pop(i), 0, i)
 
 
-# %%
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-
-
 # %% [markdown]
 # ## シェルソート
 
@@ -282,6 +277,58 @@ doctest.testmod(verbose=True)
 
 # %% [markdown]
 # ### シェルソート
+
+# %% [markdown]
+# #### List6-8 シェルソート
+# %
+class TestShellSort(unittest.TestCase):
+    def test_shell_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        shell_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def shell_sort(a: MutableSequence) -> None:
+    """シェルソート"""
+    n = len(a)
+    h = n // 2
+    while h > 0:
+        for i in range(h, n):
+            j = i - h
+            tmp = a[i]
+            while j >= 0 and a[j] > tmp:
+                a[j + h] = a[j]
+                j -= h
+            a[j + h] = tmp
+        h //= 2
+
+
+# %% [markdown]
+# #### List6-9 シェーカーソート（第2版: h = ..., 40, 13, 4, 1)
+# %%
+class TestShakerSort2(unittest.TestCase):
+    def test_shaker_sort2(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        shaker_sort2(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def shaker_sort2(a: MutableSequence) -> None:
+    """シェルソート（第２版）"""
+    n = len(a)
+    h = 1
+    while (h < n // 9):
+        h = h * 3 + 1
+    while h > 0:
+        for i in range(h, n):
+            j = i - h
+            tmp = a[i]
+            while j >= 0 and a[j] > tmp:
+                a[j + h] = a[j]
+                j -= h
+            a[j + h] = tmp
+        h //= 3
+
 
 # %% [markdown]
 # ## クイックソート
@@ -293,7 +340,83 @@ doctest.testmod(verbose=True)
 # ### 分割手順
 
 # %% [markdown]
+# #### List6-10 配列の分割
+# %%
+def partition(a: MutableSequence) -> None:
+    """配列を分割して表示"""
+    n = len(a)
+    pl = 0           # 左カーソル
+    pr = n - 1       # 右カーソル
+    x = a[n // 2]    # 枢軸（中央の要素）
+
+    while pl <= pr:
+        while a[pl] < x:
+            pl += 1
+        while a[pr] > x:
+            pr -= 1
+        if pl <= pr:
+            a[pl], a[pr] = a[pr], a[pl]
+            pl += 1
+            pr -= 1
+
+    print(f'枢軸の値は{x}です。')
+
+    print('枢軸以下のグループ')
+    print(*a[0:pl])  # a[0]～a[pl - 1]
+
+    if pl > pr + 1:
+        print('枢軸と等しいグループ')
+        print(*a[pr + 1:pl])
+
+    print('枢軸以上のグループ')
+    print(*a[pr + 1:n])  # a[pr + 1]～a[n - 1]
+
+
+# %% [markdown]
 # ### クイックソート
+
+# %% [markdown]
+# #### List6-11 クイックソート
+# %%
+class TestQuickSort(unittest.TestCase):
+    def test_quick_sort(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        partition(a)
+        quick_sort(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
+
+
+def qsort(a: MutableSequence, left: int, right: int) -> None:
+    """a[left]～a[right]をクイックソート"""
+    pl = left                   # 左カーソル
+    pr = right                  # 右カーソル
+    x = a[(left + right) // 2]  # 枢軸（中央の要素）
+
+    while pl <= pr:
+        while a[pl] < x:
+            pl += 1
+        while a[pr] > x:
+            pr -= 1
+        if pl <= pr:
+            a[pl], a[pr] = a[pr], a[pl]
+            pl += 1
+            pr -= 1
+
+    if left < pr:
+        qsort(a, left, pr)
+    if pl < right:
+        qsort(a, pl, right)
+
+
+def quick_sort(a: MutableSequence) -> None:
+    """クイックソート"""
+    qsort(a, 0, len(a) - 1)
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
+
 
 # %% [markdown]
 # ### 非再帰的クイックソート
@@ -348,27 +471,6 @@ doctest.testmod(verbose=True)
 # %% [markdown]
 # ## シェルソート
 
-
-class TestShellSort(unittest.TestCase):
-    def test_shell_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        shell_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-
-def shell_sort(a: MutableSequence) -> None:
-    """シェルソート"""
-    n = len(a)
-    h = n // 2
-    while h > 0:
-        for i in range(h, n):
-            j = i - h
-            tmp = a[i]
-            while j >= 0 and a[j] > tmp:
-                a[j + h] = a[j]
-                j -= h
-            a[j + h] = tmp
-        h //= 2
 
 # %% [markdown]
 # ## クイックソート
