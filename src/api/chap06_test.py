@@ -413,147 +413,17 @@ def quick_sort(a: MutableSequence) -> None:
     qsort(a, 0, len(a) - 1)
 
 
-# %%
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-
-
 # %% [markdown]
 # ### 非再帰的クイックソート
 
 # %% [markdown]
-# ### 枢軸の選択
-
-# %% [markdown]
-# ### 時間計算量
-
-# %% [markdown]
-# ## マージソート
-
-# %% [markdown]
-# ### ソートすみ配列のマージ
-
-# %% [markdown]
-# ### マージソート
-
-# %% [markdown]
-# ## ヒープソート
-
-# %% [markdown]
-# ### ヒープ
-
-# %% [markdown]
-# ### ヒープソート
-
-# %% [markdown]
-# ### 根を削除したヒープの再構築
-
-# %% [markdown]
-# ### ヒープソートの拡張
-
-# %% [markdown]
-# ### 配列のヒープ
-
-# %% [markdown]
-# ### ヒープソートの時間計算量
-
-# %% [markdown]
-# ## 度数ソート
-
-# %% [markdown]
-# ### 度数ソート
-
-
-# %% [markdown]
-# ## 単純選択ソート
-
-
-# %% [markdown]
-# ## シェルソート
-
-
-# %% [markdown]
-# ## クイックソート
-
-
+# #### List6-12 クイックソート（非再帰版）
+# %%
 class TestQuickSort(unittest.TestCase):
-    def test_quick_sort(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        partition(a)
-        quick_sort(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
     def test_quick_sort_stack(self):
         a = [6, 4, 3, 7, 1, 9, 8]
         quick_sort_stack(a)
         self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_quick_sort2(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        quick_sort2(a)
-        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
-
-    def test_sorted(self):
-        a = [6, 4, 3, 7, 1, 9, 8]
-        self.assertEqual(sorted(a), [1, 3, 4, 6, 7, 8, 9])
-        self.assertEqual(sorted(a, reverse=True), [9, 8, 7, 6, 4, 3, 1])
-
-
-def partition(a: MutableSequence) -> None:
-    """配列を分割して表示"""
-    n = len(a)
-    pl = 0           # 左カーソル
-    pr = n - 1       # 右カーソル
-    x = a[n // 2]    # 枢軸（中央の要素）
-
-    while pl <= pr:
-        while a[pl] < x:
-            pl += 1
-        while a[pr] > x:
-            pr -= 1
-        if pl <= pr:
-            a[pl], a[pr] = a[pr], a[pl]
-            pl += 1
-            pr -= 1
-
-    print(f'枢軸の値は{x}です。')
-
-    print('枢軸以下のグループ')
-    print(*a[0:pl])  # a[0]～a[pl - 1]
-
-    if pl > pr + 1:
-        print('枢軸と等しいグループ')
-        print(*a[pr + 1:pl])
-
-    print('枢軸以上のグループ')
-    print(*a[pr + 1:n])  # a[pr + 1]～a[n - 1]
-
-
-def qsort(a: MutableSequence, left: int, right: int) -> None:
-    """a[left]～a[right]をクイックソート"""
-    pl = left                   # 左カーソル
-    pr = right                  # 右カーソル
-    x = a[(left + right) // 2]  # 枢軸（中央の要素）
-
-    while pl <= pr:
-        while a[pl] < x:
-            pl += 1
-        while a[pr] > x:
-            pr -= 1
-        if pl <= pr:
-            a[pl], a[pr] = a[pr], a[pl]
-            pl += 1
-            pr -= 1
-
-    if left < pr:
-        qsort(a, left, pr)
-    if pl < right:
-        qsort(a, pl, right)
-
-
-def quick_sort(a: MutableSequence) -> None:
-    """クイックソート"""
-    qsort(a, 0, len(a) - 1)
 
 
 def qsort_stack(a: MutableSequence, left: int, right: int) -> None:
@@ -585,6 +455,22 @@ def qsort_stack(a: MutableSequence, left: int, right: int) -> None:
 def quick_sort_stack(a: MutableSequence) -> None:
     """クイックソート(非再帰版))"""
     qsort_stack(a, 0, len(a) - 1)
+
+
+# %% [markdown]
+# ### 枢軸の選択
+
+# %% [markdown]
+# ### 時間計算量
+
+# %% [markdown]
+# #### List6-13 クイックソート（第2版）
+# %%
+class TestQuickSort(unittest.TestCase):
+    def test_quick_sort2(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        quick_sort2(a)
+        self.assertEqual(a, [1, 3, 4, 6, 7, 8, 9])
 
 
 def sort3(a: MutableSequence, idx1: int, idx2: int, idx3: int):
@@ -640,6 +526,70 @@ def qsort2(a: MutableSequence, left: int, right: int) -> None:
 def quick_sort2(a: MutableSequence) -> None:
     """クイックソート"""
     qsort2(a, 0, len(a) - 1)
+
+
+# %% [markdown]
+# #### Column 6-4 sorted関数によるソート
+# %%
+class TestQuickSort(unittest.TestCase):
+    def test_sorted(self):
+        a = [6, 4, 3, 7, 1, 9, 8]
+        self.assertEqual(sorted(a), [1, 3, 4, 6, 7, 8, 9])
+        self.assertEqual(sorted(a, reverse=True), [9, 8, 7, 6, 4, 3, 1])
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
+
+
+# %% [markdown]
+# ## マージソート
+
+# %% [markdown]
+# ### ソートすみ配列のマージ
+
+# %% [markdown]
+# ### マージソート
+
+# %% [markdown]
+# ## ヒープソート
+
+# %% [markdown]
+# ### ヒープ
+
+# %% [markdown]
+# ### ヒープソート
+
+# %% [markdown]
+# ### 根を削除したヒープの再構築
+
+# %% [markdown]
+# ### ヒープソートの拡張
+
+# %% [markdown]
+# ### 配列のヒープ
+
+# %% [markdown]
+# ### ヒープソートの時間計算量
+
+# %% [markdown]
+# ## 度数ソート
+
+# %% [markdown]
+# ### 度数ソート
+
+
+# %% [markdown]
+# ## 単純選択ソート
+
+
+# %% [markdown]
+# ## シェルソート
+
+
+# %% [markdown]
+# ## クイックソート
 
 
 # %% [markdown]
