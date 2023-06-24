@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  theme    = "forest"
+  output   = "../public/docs/ERD.svg"
+}
+
+model Iris {
+  id           Int     @id @default(autoincrement())
+  sepal_length Float?
+  sepal_width  Float?
+  petal_length Float?
+  petal_width  Float?
+  species      String?
+}
+
+model Cinema {
+  cinema_id Int  @id @default(autoincrement())
+  SNS1      Int?
+  SNS2      Int?
+  actor     Int?
+  original  Int?
+  sales     Int?
+}
+
+model Survived {
+  PassengerId Int     @id @default(autoincrement())
+  Pclass      Int?
+  Age         Float?
+  Parch       Int?
+  Fare        Float?
+  Embarked    String?
+  Survived    Int?
+  Sex         String?
+  SibSp       Int?
+  Ticket      String?
+  Cabin       String?
+}
+
+model Boston {
+  ID      Int     @id @default(autoincrement())
+  CRIME   String?
+  ZN      Float?
+  INDUS   Float?
+  CHAS    Int?
+  NOX     Float?
+  RM      Float?
+  AGE     Float?
+  DIS     Float?
+  RAD     Int?
+  TAX     Int?
+  PTRATIO Float?
+  B       Float?
+  LSTAT   Float?
+  PRICE   Float?
+}

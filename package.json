@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "start": "npx gulp",
     "build": "npx gulp build",
@@ -13,8 +16,19 @@
     "watch": "npx gulp watch",
     "deploy": "vercel",
     "deploy:local": "vercel dev",
-    "deploy:heroku": "git push heroku wip/episode/00:master ",
-    "heroku-postbuild": "webpack --config ./webpack.config.js --progress"
+    "deploy:heroku": "git push heroku python/take2-2:maste",
+    "heroku-postbuild": "webpack --config ./webpack.config.js --progress",
+    "db:migrate": "npm run db:dev:migrate && npm run db:test:migrate",
+    "db:dev:migrate": "dotenv -e .env.dev -- prisma migrate dev",
+    "db:test:migrate": "dotenv -e .env.test -- prisma migrate dev",
+    "db:seed": "npm run db:dev:seed && npm run db:test:seed",
+    "db:dev:seed": "dotenv -e .env.dev -- prisma db seed",
+    "db:test:seed": "dotenv -e .env.test -- prisma db seed",
+    "db:show": "dotenv -e .env.dev -- prisma studio",
+    "db:migrate:create-only": "prisma migrate dev --create-only",
+    "db:psql": "psql -h localhost -p 5432 -U root -d test",
+    "db:schemaspy:mysql": "docker-compose run --rm schemaspy_mysql",
+    "db:schemaspy:postresal": "docker-compose run --rm schemaspy_postgresql"
   },
   "repository": {
     "type": "git",
@@ -36,7 +50,7 @@
     "@k2works/full-stack-lab": "^1.5.0",
     "@marp-team/marp-cli": "^2.4.0",
     "@types/jest": "^29.5.0",
-    "@types/node": "^18.15.11",
+    "@types/node": "^18.16.16",
     "asciidoctor": "^2.2.6",
     "asciidoctor-kroki": "^0.17.0",
     "babel-loader": "^9.1.2",
@@ -50,12 +64,14 @@
     "jest": "^29.5.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.6",
+    "prisma": "^4.14.1",
+    "prisma-erd-generator": "^1.6.0",
     "rimraf": "^4.4.0",
     "style-loader": "^3.3.2",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.2",
+    "typescript": "^5.0.4",
     "webpack": "^5.76.2",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.13.1"
@@ -68,6 +84,9 @@
     "testMatch": [
       "**/**/*.test.js",
       "**/**/*.test.ts"
+    ],
+    "roots": [
+      "src"
     ]
   },
   "dependencies": {

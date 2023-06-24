@@ -1,0 +1,21 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "postgresql",
+      "database": "test",
+      "username": "root",
+      "password": "root"
+    }
+  ],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8"
+  },
+  "python.formatting.provider": "none",
+  "python.testing.pytestArgs": ["src"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
+}

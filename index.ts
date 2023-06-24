@@ -4,9 +4,15 @@ const app = new App();
 
 const dev = require('@k2works/full-stack-lab');
 const contents = `
-## 機能名
-## 仕様
-## TODOリスト
+## スッキリわかるPythonによる機械学習入門 スッキリわかるシリーズ
+
+### [分類1:アヤメの判別](notebooks/iris.html)
+### [回帰1:映画の興行収入の予測](notebooks/cinema.html)
+### [分類2:客船沈没事故での生存予測](notebooks/survived.html)
+### [回帰2:住宅の平均価格の予測](notebooks/boston.html)
+
+### [スッキリわかるPythonによる機械学習入門 API](https://ppe-2023-python-take2-2.herokuapp.com/docs#/)
+### [スッキリわかるPythonによる機械学習入門 API Document](https://ppe-2023-python-take2-2.herokuapp.com/redoc/)
 `;
 
 const usecase = `
@@ -189,5 +195,5 @@ e01 |o..o{ e03
 @enduml
 `;
 
-const mode = "APP"; // "UI" or "API" or "DOC"
+const mode = "DOC"; // "UI" or "API" or "DOC"
 dev.default({ contents, ui, uiModel, uiInteraction, usecase, uml, erd, mode });

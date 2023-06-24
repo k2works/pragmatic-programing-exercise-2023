@@ -1,1 +1,1 @@
-web: npx http-server -p $PORT
+web: uvicorn src.api.app.application:app  --host=0.0.0.0 --port=${PORT:-5000}
