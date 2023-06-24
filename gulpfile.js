@@ -159,7 +159,7 @@ const prettier = {
 const jupyter = {
   build: () => {
     return src("./src/**/*.ipynb")
-      .pipe(shell(["pip install -r requirements.txt"]))
+      .pipe(shell(["pip3 install -r requirements.txt"]))
   },
   docs: () => {
     return src("./src/**/*.ipynb")
