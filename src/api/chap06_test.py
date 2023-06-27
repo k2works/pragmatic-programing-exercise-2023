@@ -538,62 +538,18 @@ class TestQuickSort(unittest.TestCase):
         self.assertEqual(sorted(a, reverse=True), [9, 8, 7, 6, 4, 3, 1])
 
 
-# %%
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-
-
 # %% [markdown]
 # ## マージソート
 
 # %% [markdown]
 # ### ソートすみ配列のマージ
-
 # %% [markdown]
 # ### マージソート
 
 # %% [markdown]
-# ## ヒープソート
-
-# %% [markdown]
-# ### ヒープ
-
-# %% [markdown]
-# ### ヒープソート
-
-# %% [markdown]
-# ### 根を削除したヒープの再構築
-
-# %% [markdown]
-# ### ヒープソートの拡張
-
-# %% [markdown]
-# ### 配列のヒープ
-
-# %% [markdown]
-# ### ヒープソートの時間計算量
-
-# %% [markdown]
-# ## 度数ソート
-
-# %% [markdown]
-# ### 度数ソート
-
-
-# %% [markdown]
-# ## 単純選択ソート
-
-
-# %% [markdown]
-# ## シェルソート
-
-
-# %% [markdown]
-# ## クイックソート
-
-
-# %% [markdown]
-# ## マージソート
+# #### List6-15 マージソート
+# %%
+# %%
 buff = ""
 
 
@@ -676,6 +632,25 @@ def merge_sort(a: MutableSequence) -> None:
 # %% [markdown]
 # ## ヒープソート
 
+# %% [markdown]
+# ### ヒープ
+
+# %% [markdown]
+# ### ヒープソート
+
+# %% [markdown]
+# ### 根を削除したヒープの再構築
+
+# %% [markdown]
+# ### ヒープソートの拡張
+
+# %% [markdown]
+# ### 配列のヒープ
+
+# %% [markdown]
+# #### List6-16 ヒープソート
+# %%
+
 
 class TestHeapSort(unittest.TestCase):
     def test_heap_sort(self):
@@ -710,10 +685,20 @@ def heap_sort(a: MutableSequence) -> None:
         a[0], a[i] = a[i], a[0]     # 最大要素と未ソート部末尾要素を交換
         down_heap(a, 0, i - 1)      # a[0]～a[i-1]をヒープ化
 
+
+# %% [markdown]
+# ### ヒープソートの時間計算量
+
 # %% [markdown]
 # ## 度数ソート
 
+# %% [markdown]
+# ### 度数ソート
 
+
+# %% [markdown]
+# #### List6-17 度数ソート
+# %%
 class TestCountingSort(unittest.TestCase):
     def test_counting_sort(self):
         x = [22, 5, 11, 32, 120, 68, 70]
@@ -746,7 +731,6 @@ def counting_sort(a: MutableSequence) -> None:
     fsort(a, max(a))
 
 
+# %%
 unittest.main(argv=[''], verbosity=2, exit=False)
 doctest.testmod(verbose=True)
-
-# %%
