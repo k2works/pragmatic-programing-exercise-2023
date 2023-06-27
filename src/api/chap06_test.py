@@ -183,11 +183,6 @@ def selection_sort(a: MutableSequence) -> None:
         a[i], a[min] = a[min], a[i]  # 未ソート部分の先頭要素と最小要素を交換
 
 
-# %%
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-
-
 # %% [markdown]
 # ## 単純挿入ソート
 
