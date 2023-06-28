@@ -1,7 +1,7 @@
 # %% [markdown]
 # # 文字列検索
 # %%
-from typing import Any, Sequence, MutableSequence
+from typing import Any, MutableSequence, Sequence
 import unittest
 import doctest
 
@@ -12,33 +12,12 @@ import doctest
 # %% [markdown]
 # ### 文字列探索
 
-# %%
+# %% [markdown]
 # ### 力まかせ法（単純法）
 
 # %% [markdown]
-# ## KMP法
-
-# %% [markdown]
-# ### KMP法
-
-# %% [markdown]
-# ## Boyer-Moore法
-
-# %% [markdown]
-# ### Boyer-Moore法
-
-# %% [markdown]
-# # 文字列検索
+# #### List 7-1 力まかせ法による文字列探索
 # %%
-from typing import Any, MutableSequence, Sequence
-import unittest
-import doctest
-
-
-# %% [markdown]
-# ## 力まかせ法
-# %%
-
 class TestBf(unittest.TestCase):
     def test_bf_match(self):
         self.assertEqual(bf_match("ABC", "ABC"), 0)
@@ -63,6 +42,12 @@ def bf_match(txt: str, pat: str) -> int:
 
 # %% [markdown]
 # ## KMP法
+
+# %% [markdown]
+# ### KMP法
+
+# %% [markdown]
+# #### List 7-2 KMP法による文字列探索
 # %%
 
 
@@ -107,6 +92,12 @@ def kmp_match(txt: str, pat: str) -> int:
 
 # %% [markdown]
 # ## Boyer-Moore法
+
+# %% [markdown]
+# ### Boyer-Moore法
+
+# %% [markdown]
+# #### List 7-3 Boyer-Moore法による文字列探索(対象は0-255の文字）
 # %%
 
 
@@ -141,6 +132,6 @@ def bm_match(txt: str, pat: str) -> int:
     return -1
 
 
+# %%
 unittest.main(argv=[''], verbosity=2, exit=False)
 doctest.testmod(verbose=True)
-# %%
