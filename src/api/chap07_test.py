@@ -1,3 +1,31 @@
+# %% [markdown]
+# # 文字列検索
+# %%
+from typing import Any, Sequence, MutableSequence
+import unittest
+import doctest
+
+
+# %% [markdown]
+# ## 力まかせ法
+
+# %% [markdown]
+# ### 文字列探索
+
+# %%
+# ### 力まかせ法（単純法）
+
+# %% [markdown]
+# ## KMP法
+
+# %% [markdown]
+# ### KMP法
+
+# %% [markdown]
+# ## Boyer-Moore法
+
+# %% [markdown]
+# ### Boyer-Moore法
 
 # %% [markdown]
 # # 文字列検索
