@@ -13,7 +13,8 @@ const contents = `
 ### 第4章 [スタックとキュー](./notebooks/chap04.html)
 ### 第5章 [８王妃問題](./notebooks/chap05.html)
 ### 第6章 [ソート](./notebooks/chap06.html)
-### 第7章 [文字悦探索](./notebooks/chap07.html)
+### 第7章 [文字列探索](./notebooks/chap07.html)
+### 第8章 [線形リスト](./notebooks/chap08.html)
 
 `;
 
