@@ -1,4 +1,3 @@
-
 # %% [markdown]
 # # 線形リスト
 # %%
@@ -6,6 +5,61 @@ from __future__ import annotations
 from typing import Any, MutableSequence, Sequence
 import unittest
 import doctest
+
+# %% [markdown]
+# ## 線形リストとは
+
+# %% [markdown]
+# ### 線形リスト
+
+# %% [markdown]
+# ### 線形リストの実現
+
+# %% [markdown]
+# ## 線形リスト
+
+# %% [markdown]
+# ### ポインタによる線形リスト
+
+# %% [markdown]
+# ### 線形リストを利用するプログラム
+
+# %% [markdown]
+# ## カーソルによる線形リスト
+
+# %% [markdown]
+# ### カーソルによる線形リスト
+
+
+# %% [markdown]
+# ### 配列内の空き要素
+
+# %% [markdown]
+# ### フリーリスト
+
+# %% [markdown]
+# ## 循環・重連結リスト
+
+# %% [markdown]
+# ### 循環リスト
+
+# %% [markdown]
+# ### 重連結リスト
+
+# %% [markdown]
+# ## 連結リストの実現
+
+# %% [markdown]
+# ### 連結リストを利用するプログラム
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
+
+# %% [markdown]
+# # 線形リスト
+# %%
 
 
 # %% [markdown]
@@ -847,8 +901,3 @@ class DoubleLinkedListReverseIterator:
             data = self.current.data
             self.current = self.current.data
             return data
-
-
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-# %%
