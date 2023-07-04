@@ -23,48 +23,8 @@ import doctest
 
 # %% [markdown]
 # ### 線形リストを利用するプログラム
-
-# %% [markdown]
-# ## カーソルによる線形リスト
-
-# %% [markdown]
-# ### カーソルによる線形リスト
-
-
-# %% [markdown]
-# ### 配列内の空き要素
-
-# %% [markdown]
-# ### フリーリスト
-
-# %% [markdown]
-# ## 循環・重連結リスト
-
-# %% [markdown]
-# ### 循環リスト
-
-# %% [markdown]
-# ### 重連結リスト
-
-# %% [markdown]
-# ## 連結リストの実現
-
-# %% [markdown]
-# ### 連結リストを利用するプログラム
-
-
-# %%
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-
-# %% [markdown]
-# # 線形リスト
 # %%
 
-
-# %% [markdown]
-# ## 線形リスト
-# %%
 
 class TestLinkedList(unittest.TestCase):
     def test_linked_list(self):
@@ -302,6 +262,49 @@ class LinkedListIterator:
             data = self.current.data
             self.current = self.current.next
             return data
+
+
+# %% [markdown]
+# ## カーソルによる線形リスト
+
+# %% [markdown]
+# ### カーソルによる線形リスト
+
+
+# %% [markdown]
+# ### 配列内の空き要素
+
+# %% [markdown]
+# ### フリーリスト
+
+# %% [markdown]
+# ## 循環・重連結リスト
+
+# %% [markdown]
+# ### 循環リスト
+
+# %% [markdown]
+# ### 重連結リスト
+
+# %% [markdown]
+# ## 連結リストの実現
+
+# %% [markdown]
+# ### 連結リストを利用するプログラム
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
+
+# %% [markdown]
+# # 線形リスト
+# %%
+
+
+# %% [markdown]
+# ## 線形リスト
+# %%
 
 # %% [markdown]
 # ## カーソルによる線形リスト
