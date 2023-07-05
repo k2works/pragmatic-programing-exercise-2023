@@ -269,48 +269,7 @@ class LinkedListIterator:
 
 # %% [markdown]
 # ### カーソルによる線形リスト
-
-
-# %% [markdown]
-# ### 配列内の空き要素
-
-# %% [markdown]
-# ### フリーリスト
-
-# %% [markdown]
-# ## 循環・重連結リスト
-
-# %% [markdown]
-# ### 循環リスト
-
-# %% [markdown]
-# ### 重連結リスト
-
-# %% [markdown]
-# ## 連結リストの実現
-
-# %% [markdown]
-# ### 連結リストを利用するプログラム
-
-
 # %%
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-
-# %% [markdown]
-# # 線形リスト
-# %%
-
-
-# %% [markdown]
-# ## 線形リスト
-# %%
-
-# %% [markdown]
-# ## カーソルによる線形リスト
-# %%
-
-
 class TestArrayList(unittest.TestCase):
     def test_線形リストを生成(self):
         array_list = ArrayLinkedList(100)
@@ -618,10 +577,28 @@ class ArrayLinkedListIterator:
             self.current = self.n[self.current].next
             return data
 
+
+# %% [markdown]
+# ### 配列内の空き要素
+
+# %% [markdown]
+# ### フリーリスト
+
 # %% [markdown]
 # ## 循環・重連結リスト
-# %%
 
+# %% [markdown]
+# ### 循環リスト
+
+# %% [markdown]
+# ### 重連結リスト
+
+# %% [markdown]
+# ## 連結リストの実現
+
+# %% [markdown]
+# ### 連結リストを利用するプログラム
+# %%
 
 class TestDoubleLinkedLinst(unittest.TestCase):
     def test_循環重連結リストを生成(self):
@@ -904,3 +881,8 @@ class DoubleLinkedListReverseIterator:
             data = self.current.data
             self.current = self.current.data
             return data
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
