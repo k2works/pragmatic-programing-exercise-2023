@@ -15,6 +15,7 @@ const contents = `
 ### 第6章 [ソート](./notebooks/chap06.html)
 ### 第7章 [文字列探索](./notebooks/chap07.html)
 ### 第8章 [線形リスト](./notebooks/chap08.html)
+### 第9章 [木構造と２分探索木](./notebooks/chap09.html)
 
 `;
 

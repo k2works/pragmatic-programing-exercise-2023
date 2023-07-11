@@ -1,12 +1,45 @@
-
-
 # %% [markdown]
-# # 木構造と２分探索木
+# # 木構造と2分検索木
 # %%
 from __future__ import annotations
 from typing import Any, MutableSequence, Sequence
 import unittest
 import doctest
+
+# %% [markdown]
+# ## 木構造
+
+# %% [markdown]
+# ### 木とは
+
+# %% [markdown]
+# ### 順序木と無順序木
+
+# %% [markdown]
+# ### 順序木の探索
+
+# %% [markdown]
+# ## ２分木と２分探索木
+
+# %% [markdown]
+# ### ２分木
+
+# %% [markdown]
+# ### ２分探索木
+
+# %% [markdown]
+# ### ２分探索の実現
+
+# %% [markdown]
+# ### ２分探索木を利用するプログラム
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
+
+# %% [markdown]
+# # 木構造と２分探索木
+# %%
 
 
 # %% [markdown]
@@ -194,8 +227,3 @@ class BinarySearchTree:
         while p.right is not None:
             p = p.right
         return p.key
-
-
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-# %%
