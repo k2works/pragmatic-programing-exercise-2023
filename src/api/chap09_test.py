@@ -32,24 +32,8 @@ import doctest
 
 # %% [markdown]
 # ### ２分探索木を利用するプログラム
+# %
 
-# %%
-unittest.main(argv=[''], verbosity=2, exit=False)
-doctest.testmod(verbose=True)
-
-# %% [markdown]
-# # 木構造と２分探索木
-# %%
-
-
-# %% [markdown]
-# ## 木構造
-# %%
-
-
-# %% [markdown]
-# ## ２分木と２分探索木
-# %%
 
 class TestBst(unittest.TestCase):
     def test_２分探索木を生成(self):
@@ -227,3 +211,8 @@ class BinarySearchTree:
         while p.right is not None:
             p = p.right
         return p.key
+
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
