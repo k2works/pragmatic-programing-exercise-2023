@@ -5,9 +5,16 @@ const app = new App();
 import render from "@k2works/full-stack-lab";
 
 const contents = `
-## 機能名
-## 仕様
-## TODOリスト
+## 第1部 統計学を始めよう
+## 第2部 PythonとJupyter Notebookの基本
+## 第3部 記述統計
+## 第4部 確率と確率分布の基本
+## 第5部 推測統計
+## 第6部 統計的仮説検定
+## 第7部 統計モデルの基本
+## 第8部 正規線形モデル
+## 第9部 一般化線形モデル
+## 第10部 統計学と機械学習
 `;
 
 const usecase = `
@@ -190,5 +197,5 @@ e01 |o..o{ e03
 @enduml
 `;
 
-const mode = "APP"; // "UI" or "API" or "DOC"
+const mode = "DOC"; // "UI" or "API" or "DOC"
 render({ contents, ui, uiModel, uiInteraction, usecase, uml, erd, mode });
