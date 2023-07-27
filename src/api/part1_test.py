@@ -33,6 +33,9 @@ import doctest
 
 # %% [markdown]
 # ### 標本を数式で表記する
+# $$
+# {x_i}^{n}_{i=1} = { x_1, x_2, \ldots, x_n }
+# $$
 
 # %% [markdown]
 # ### なぜ数式で表記するのか
@@ -42,12 +45,18 @@ import doctest
 
 # %% [markdown]
 # ### 標本平均を数式で表記する
+# $$
+# \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
+# $$
 
 # %% [markdown]
 # ### 掛け算とΠ記号
 
 # %% [markdown]
-# ## さまざまな集計の方法を学ぶのか
+# ## 度数分布
+
+# %% [markdown]
+# ### さまざまな集計の方法を学ぶのか
 
 # %% [markdown]
 # ### 度数・度数分布
@@ -57,9 +66,40 @@ import doctest
 
 # %% [markdown]
 # ### 分析の準備
+# %%
+import numpy as np
+import pandas as pd
+path = os.path.dirname(os.path.abspath(__file__))
+
 
 # %% [markdown]
 # ### 度数分布
+
+# %% [markdown]
+# #### カテゴリーデータの度数分布
+# %%
+category_data = pd.read_csv(path + '/data/3-3-1-fish-species.csv')
+print(category_data)
+category_data.species.value_counts()
+
+# %% [markdown]
+# #### 数量データの度数分布
+# %%
+numeric_data = pd.read_csv(path + '/data/3-3-2-fish-length.csv')
+print(numeric_data)
+
+numeric_data.length.value_counts(bins=3)
+
+np.arange(0, 6, 1)
+freq = numeric_data.length.value_counts(
+    bins=np.arange(0, 6, 1), sort=False)
+freq
+
+# %% [markdown]
+# #### numpyの関数を使う
+# %%
+np.histogram(numeric_data.length, bins=3)
+np.histogram(numeric_data.length, bins=np.arange(0, 6, 1))
 
 # %% [markdown]
 # ### 相対度数分布・累積度数分布
