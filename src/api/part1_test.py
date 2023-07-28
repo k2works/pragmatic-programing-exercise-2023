@@ -1,6 +1,8 @@
 # %% [markdown]
 # # 記述統計
 # %%
+import seaborn as sns
+from matplotlib import pyplot as plt
 import unittest
 import doctest
 
@@ -106,18 +108,73 @@ np.histogram(numeric_data.length, bins=np.arange(0, 6, 1))
 
 # %% [markdown]
 # ### 相対度数分布・累積度数分布
+# %%
+rel_freq = freq / sum(freq)
+rel_freq
+
+numeric_data.length.value_counts(
+    bins=np.arange(0, 6, 1), sort=False, normalize=True)
+
+np.histogram(numeric_data.length, bins=np.arange(0, 6, 1), density=True)
+
+# %% [markdown]
+# #### 累積度数分布
+# %%
+freq.cumsum()
+
+freq_np = np.histogram(numeric_data.length, bins=np.arange(0, 6, 1))[0]
+np.cumsum(freq_np)
+
+# %% [markdown]
+# #### 累積早退度数分布
+# %%
+rel_freq.cumsum()
 
 # %% [markdown]
 # ### ヒストグラム
 
 # %% [markdown]
+# #### グラフ描画とmatplotlib-seaborn
+# %%
+# グラフを描画するライブラリ
+sns.set()
+
+# %% [markdown]
+# #### ヒストグラム
+# %%
+sns.histplot(x='length', data=numeric_data,
+             color='gray', bins=np.arange(0, 6, 1))
+
+sns.histplot(x='length', data=numeric_data,
+             color='gray', bins=np.arange(0, 6, 1), stat='density')
+
+# %% [markdown]
 # ### 階級の幅が異なるヒストグラム
+# %%
+np.histogram(numeric_data.length, bins=[0, 1, 2, 5], density=True)
+sns.histplot(x='length', data=numeric_data,
+             color='gray', bins=[0, 1, 2, 5], stat='density')
 
 # %% [markdown]
 # ### カーネル密度推定
 
 # %% [markdown]
 # ### カーネル密度推定
+
+# %% [markdown]
+# #### 基本的な実装
+# %%
+sns.kdeplot(data=numeric_data.length, fill=True, color='gray')
+
+# %% [markdown]
+# #### バンド幅の変更
+# %%
+sns.kdeplot(data=numeric_data.length, color='black', label='default')
+sns.kdeplot(data=numeric_data.length, bw_adjust=0.4,
+            linestyle='dashed', label='bw_adjust=0.2')
+sns.kdeplot(data=numeric_data.length, color='black',
+            bw_adjust=2, linestyle='dotted', label='bw_adjust=2')
+plt.legend()  # 凡例
 
 # %% [markdown]
 # ## １変量データの統計量
