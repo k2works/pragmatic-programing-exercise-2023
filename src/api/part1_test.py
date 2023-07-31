@@ -1,10 +1,15 @@
 # %% [markdown]
 # # 記述統計
 # %%
-import seaborn as sns
-from matplotlib import pyplot as plt
-import unittest
+# %
 import doctest
+import unittest
+from matplotlib import pyplot as plt
+import seaborn as sns
+from scipy import stats
+import pandas as pd
+import numpy as np
+path = os.path.dirname(os.path.abspath(__file__))
 
 # %% [markdown]
 # ## データの分離
@@ -68,11 +73,6 @@ import doctest
 
 # %% [markdown]
 # ### 分析の準備
-# %%
-import numpy as np
-import pandas as pd
-path = os.path.dirname(os.path.abspath(__file__))
-
 
 # %% [markdown]
 # ### 度数分布
@@ -186,16 +186,77 @@ plt.legend()  # 凡例
 # ### 分析の対象となるデータの用意
 
 # %% [markdown]
+# #### numpyアレイで用意
+# %%
+fish_length = np.array([2, 3, 3, 4, 4, 4, 4, 5, 5, 6])
+fish_length
+
+# %% [markdown]
+# #### CSVファイルから読み込む
+# %%
+fish_length_df = pd.read_csv(path + '/data/3-4-1-fish-length.csv')
+print(fish_length_df)
+
+# %% [markdown]
+# #### データフレームとアレイの返還
+# %%
+fish_length_df.length.to_numpy() == fish_length
+
+
+# %% [markdown]
 # ### サンプライズ
+# %%
+len(fish_length)
+len(fish_length_df)
 
 # %% [markdown]
 # ### 合計値
 
 # %% [markdown]
+# #### 基本的な計算方法
+# %%
+np.sum(fish_length)
+
+np.sum(fish_length_df)
+
+# %% [markdown]
+# #### その他の計算方法
+# %%
+fish_length.sum()
+
+fish_length_df.sum()
+
+# %% [markdown]
 # ### 標本平均
+# $$
+# \bar{x} = \frac{1}{n}\sum_{i=1}^{n}x_i
+# $$
+
+# %% [markdown]
+# #### 計算方法の確認
+# %%
+n = len(fish_length)
+n
+
+sum_vlaue = np.sum(fish_length)
+sum_vlaue
+
+x_bar = sum_vlaue / n
+x_bar
+
+# %% [markdown]
+# #### 関数を使った効率的な実装
+# %%
+np.mean(fish_length)
 
 # %% [markdown]
 # ### 標本分散
+
+# %% [markdown]
+# #### 分散の定義
+# $$
+# \sigma^2 = \frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^2
+# $$
 
 # %% [markdown]
 # ### 不偏分散
