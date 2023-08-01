@@ -259,22 +259,107 @@ np.mean(fish_length)
 # $$
 
 # %% [markdown]
-# ### 不偏分散
+# ### 標本分散
+
+# %% [markdown]
+# #### 計算方法の確認
+# %%
+s2 = np.sum((fish_length - x_bar)**2) / n
+s2
+
+# %% [markdown]
+# #### 実装コードの解読
+# %%
+fish_length
+fish_length - x_bar
+(fish_length - x_bar)**2
+np.sum((fish_length - x_bar)**2)
+
+# %% [markdown]
+# #### 関数を使った効率的な実装
+# %%
+np.var(fish_length, ddof=0)
 
 # %% [markdown]
 # ### 不偏分散
+# $$
+# \sigma^2 = \frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})^2
+# $$
+
+# %% [markdown]
+# ### 不偏分散
+
+# %% [markdown]
+# #### 計算方法の確認
+# %%
+u2 = np.sum((fish_length - x_bar)**2) / (n - 1)
+u2
+round(u2, 3)
+
+# %% [markdown]
+# #### 関数を使った効率的な実装
+# %%
+round(np.var(fish_length, ddof=1), 3)
+
+# %% [markdown]
+# #### ライブラリの違いに注意
+# %%
+np.var(fish_length_df)
+fish_length_df.var()
+fish_length_df.var(ddof=0)
+
+# %% [markdown]
+# ### 標準偏差
+# $$
+# \sigma = \sqrt{\sigma^2}
+# = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^2}
+# $$
 
 # %% [markdown]
 # ### 標準偏差
 
 # %% [markdown]
-# ### 標準偏差
+# #### 計算方法の確認
+# %%
+s = np.sqrt(s2)
+round(s, 3)
+
+# %% [markdown]
+# #### 関数を使った効率的な実装
+# %%
+round(np.std(fish_length, ddof=0), 3)
+
+# %% [markdown]
+# ### 変動係数
+# $$
+# CV = \frac{\sigma}{\bar{x}}
+# $$
 
 # %% [markdown]
 # ### 変動係数
 
 # %% [markdown]
-# ### 変動係数
+# #### 計算方法の確認
+# %%
+cv = s / x_bar
+round(cv, 3)
+
+# %% [markdown]
+# #### 関数を使った効率的な実装
+# %%
+round(stats.variation(fish_length), 3)
+round(stats.variation(fish_length, ddof=1), 3)
+
+# %% [markdown]
+# #### 変動係数を使う注意点
+# %%
+winter = np.array([1, 1, 1, 2, 2, 2])
+summar = np.array([29, 29, 29, 30, 30, 30])
+print('冬の気温の標準偏差：', np.std(winter, ddof=0))
+print('夏の気温の標準偏差：', np.std(summar, ddof=0))
+
+print('冬の気温の変動係数：', stats.variation(winter))
+print('夏の気温の変動係数：', stats.variation(summar))
 
 # %% [markdown]
 # ### 標準化
