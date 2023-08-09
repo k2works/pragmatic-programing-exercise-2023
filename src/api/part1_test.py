@@ -363,9 +363,26 @@ print('夏の気温の変動係数：', stats.variation(summar))
 
 # %% [markdown]
 # ### 標準化
+# $$
+# z_i = \frac{x_i - \bar{x}}{s}
+# $$
+
 
 # %% [markdown]
 # ### 標準化
+
+# %% [markdown]
+# #### 計算方法の確認
+# %%
+z = (fish_length - x_bar) / s
+np.round(z, 3)
+np.mean(z)
+np.std(z, ddof=0)
+
+# %% [markdown]
+# #### 関数を使った効率的な実装
+# %%
+np.round(stats.zscore(fish_length, ddof=0), 3)
 
 # %% [markdown]
 # ### 最小値・最大値・中央値・四分位点
@@ -375,18 +392,49 @@ print('夏の気温の変動係数：', stats.variation(summar))
 
 # %% [markdown]
 # ### 最小値・最大値
+# %%
+np.amin(fish_length)
+np.amax(fish_length)
 
 # %% [markdown]
 # ### 中央値
 
 # %% [markdown]
+# #### 中央値の実装
+# %%
+np.median(fish_length)
+
+# %% [markdown]
+# #### 平均値と中央値の違い
+# %%
+fish_length_2 = np.array([2, 3, 3, 4, 4, 4, 4, 5, 5, 100])
+print('平均値：', np.mean(fish_length_2))
+print('中央値：', np.median(fish_length_2))
+
+# %% [markdown]
 # ### 四分位点
+# %%
+print('第1四分位点:', np.quantile(fish_length, q=0.25))
+print('第2四分位点:', np.quantile(fish_length, q=0.75))
+fish_length_3 = np.arange(0, 101, 1)
+fish_length_3
+
+print('第1四分位点:', np.quantile(fish_length_3, q=0.25))
+print('第2四分位点:', np.quantile(fish_length_3, q=0.75))
+print('中央値:', np.median(fish_length_3))
+print('50%点:', np.quantile(fish_length_3, q=0.5))
 
 # %% [markdown]
 # ### 最頻値
+# %%
+fish_length
+stats.mode(fish_length)
+stats.mode(np.array([1, 1, 1, 1, 2, 3, 3, 3]))
 
 # %% [markdown]
 # ### pandasのdescribe関数の利用
+# %%
+print(fish_length_df.describe())
 
 # %% [markdown]
 # ## 多変量データの統計量
