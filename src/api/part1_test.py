@@ -444,15 +444,90 @@ print(fish_length_df.describe())
 
 # %% [markdown]
 # ### 分析の対象となるデータの用意
+# %%
+cov_data = pd.read_csv(path + '/data/3-5-1-cov.csv')
+print(cov_data)
 
 # %% [markdown]
 # ### 共分散
 
 # %% [markdown]
+# #### 共分散の数式を用いた表現
+# $$
+# Cov_(x,y) = \frac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})
+# $$
+
+# %% [markdown]
 # ### 分散共分散行列
+# $$
+# \begin{pmatrix}
+#     \sigma_{x}^2 & Cov_(x,y) \\
+#     Cov_(x,y) & \sigma_{y}^2
+# \end{pmatrix}
+# $$
+
+# %% [markdown]
+# ### 共分散
+# %%
+# データ取り出し
+x = cov_data['x']
+y = cov_data['y']
+
+# サンプルサイズ
+n = len(cov_data)
+
+# 標本平均
+x_bar = np.mean(x)
+y_bar = np.mean(y)
+
+cov = sum((x - x_bar) * (y - y_bar)) / n
+round(cov, 3)
+
+# %% [markdown]
+# ### 分散共分散行列
+# %%
+s2_x = np.var(x, ddof=0)
+s2_y = np.var(y, ddof=0)
+
+print('分散s2_x:', round(s2_x, 3))
+print('分散s2_y:', round(s2_y, 3))
+
+np.cov(x, y, ddof=0)
 
 # %% [markdown]
 # ### ピアソンの積率相関係数
+# $$
+# r = \frac{Cov_(x,y)}{\sqrt{\sigma_{x}^2}\sqrt{\sigma_{y}^2}}
+# $$
+
+# %% [markdown]
+# ### 相関行列
+# ２変数の場合
+# $$
+# \begin{pmatrix}
+#     1 & r \\
+#     r & 1
+# \end{pmatrix}
+# $$
+# ３変数の場合
+# $$
+# \begin{pmatrix}
+#     1 & r_{xy} & r_{xz} \\
+#     r_{xy} & 1 & r_{yz} \\
+#     r_{xz} & r_{yz} & 1
+# \end{pmatrix}
+# $$
+
+# %% [markdown]
+# ### ピアソンの積率相関係数
+# %%
+rho = cov / np.sqrt(s2_x * s2_y)
+round(rho, 3)
+
+# %% [markdown]
+# ### 関数を使った効率的な実装
+# %%
+np.corrcoef(x, y)
 
 # %% [markdown]
 # ### 相関行列が役に立たないとき
@@ -462,6 +537,30 @@ print(fish_length_df.describe())
 
 # %% [markdown]
 # ### クロス集計表
+# %%
+disease = pd.read_csv(path + '/data/3-5-2-cross.csv')
+print(disease.head())
+
+cross_1 = pd.crosstab(
+    disease['sunlight'],
+    disease['disease']
+)
+print(cross_1)
+
+# %% [markdown]
+# ### 数量が記録されている事例
+# %%
+shoes = pd.read_csv(path + '/data/3-5-3-cross2.csv')
+print(shoes)
+
+cross_2 = pd.pivot_table(
+    data=shoes,
+    values='sales',
+    aggfunc='sum',
+    index='store',
+    columns='color'
+)
+print(cross_2)
 
 # %% [markdown]
 # ## 層別分析
