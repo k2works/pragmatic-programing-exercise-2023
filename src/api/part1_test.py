@@ -579,18 +579,63 @@ print(cross_2)
 
 # %% [markdown]
 # ### 分析の準備
+# %%
+sns.set()
 
 # %% [markdown]
 # ### 分析対象となるデータの用意
+# %%
+fish_multi = pd.read_csv(path + '/data/3-6-1-fish_multi.csv')
+print(fish_multi.head())
+
+len(fish_multi)
+
+fish_multi['species'].value_counts()
+
+np.mean(fish_multi['length'])
 
 # %% [markdown]
 # ### グループ別の統計量の計算
 
 # %% [markdown]
+# #### グループ別の平均値
+# %%
+group = fish_multi.groupby('species')
+print(group.mean())
+
+# %% [markdown]
+# #### グループ別の要約統計量
+# %%
+print(group.describe())
+
+# %% [markdown]
+# #### pandas以外の関数を使う
+# %%
+print(group.agg(stats.mode))
+
+# %% [markdown]
 # ### ペンギンデータの読み込み
 
 # %% [markdown]
+# #### データの読み込み
+penguins = sns.load_dataset('penguins')
+print(penguins.head(n=2))
+
+# %% [markdown]
+# #### データのチェック
+# %%
+penguins['species'].value_counts()
+
+penguins.query('island == "Torgersen"')['species'].value_counts()
+
+# %% [markdown]
 # ### ペンギンデータの層別分析
+# %%
+group_penguins = penguins.groupby(['species', 'sex'])
+print(group_penguins.mean(numeric_only=True)['body_mass_g'])
+
+group_penguins = penguins.groupby(['species', 'island', 'sex'])
+print(group_penguins.mean(numeric_only=True)['body_mass_g'])
 
 # %% [markdown]
 # ### 欠損値の扱いに注意
