@@ -641,10 +641,39 @@ print(group_penguins.mean(numeric_only=True)['body_mass_g'])
 # ### 欠損値の扱いに注意
 
 # %% [markdown]
+# #### 欠測値
+# %%
+print(penguins[['species', 'body_mass_g']].head(n=4))
+
+# %% [markdown]
+# #### 欠損値に対する挙動
+# %%
+group_sp = penguins.groupby(['species'])
+print(group_sp.count()['body_mass_g'])
+
+round(group_sp.sum()['body_mass_g'].Adelie / 151, 3)
+
+round(group_sp.mean(numeric_only=True)['body_mass_g'].Adelie, 3)
+
+# %% [markdown]
 # ### 単純なヒストグラム
+# %%
+bins = np.arange(2, 11, 1)
+bins
+
+sns.histplot(x='length',  # x軸
+             data=fish_multi,  # データ
+             bins=bins,  # bins
+             color='gray')  # 色の指定（グレースケール）
 
 # %% [markdown]
 # ### グループ別のヒストグラム
+# %%
+sns.histplot(x='length',  # x軸
+             hue='species',  # 色分けの対象
+             data=fish_multi,  # データ
+             bins=bins,  # bins
+             palette='gray')  # 色の指定（グレースケール）
 
 # %% [markdown]
 # ## グラフの活用
