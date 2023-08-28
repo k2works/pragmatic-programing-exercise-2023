@@ -680,15 +680,44 @@ sns.histplot(x='length',  # x軸
 
 # %% [markdown]
 # ### 分析の準備
+# %%
+sns.set()
 
 # %% [markdown]
 # ### matplotlib・seaborn
 
 # %% [markdown]
+# #### seabornによるグラフの書き方
+# sns.関数名(
+#    x='x軸の変数名',
+#    y='y軸の変数名',
+#    data='データフレーム名',
+#    その他引数
+# )
+
+
+# %% [markdown]
 # ### 分析対象となるデータの読み込み
+# %%
+cov_ata = pd.read_csv(path + '/data/3-5-1-cov.csv')
+print(cov_data.head(3))
+
+lineplot_df = pd.read_csv(path + '/data/3-7-1-lineplot-data.csv')
+print(lineplot_df.head(3))
+
+# %% [markdown]
+# #### 数量データとカテゴリーデータが混ざったデータ
+# %%
+fish_mult = pd.read_csv(path + '/data/3-6-1-fish_multi.csv')
+print(fish_multi.head(3))
+
+penguins = sns.load_dataset('penguins')
+print(penguins.head(3))
 
 # %% [markdown]
 # ### 散布図
+# %%
+sns.scatterplot(x='x', y='y', data=cov_data, color='black')
 
 # %% [markdown]
 # ### グラフの装飾と保存
