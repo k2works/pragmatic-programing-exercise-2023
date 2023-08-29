@@ -2,6 +2,7 @@
 # # 記述統計
 # %%
 # %
+from matplotlib import rcParams
 import doctest
 import unittest
 from matplotlib import pyplot as plt
@@ -723,25 +724,71 @@ sns.scatterplot(x='x', y='y', data=cov_data, color='black')
 # ### グラフの装飾と保存
 
 # %% [markdown]
+# #### 日本語を利用する準備
+# %%
+# グラフの日本語表記
+rcParams['font.family'] = 'sans-serif'
+rcParams['font.sans-serif'] = 'Meiryo'
+
+# %% [markdown]
+# #### グラフの装飾と保存
+# %%
+# 散布図
+sns.scatterplot(x='x', y='y', data=cov_data, color='black')
+# 装飾
+plt.title('seabornによる散布図', fontsize=20)  # タイトル
+plt.xlabel('xの値', fontsize=14)  # x軸ラベル
+plt.ylabel('yの値', fontsize=14)  # y軸ラベル
+# グラフの保存
+plt.savefig(path + '/img/3-7-1-scatterplot.png')
+
+
+# %% [markdown]
 # ### 折れ線グラフ
+# %%
+sns.lineplot(x='x', y='y', data=lineplot_df, color='black')
 
 # %% [markdown]
 # ### 棒グラフ
+# %%
+sns.barplot(x='species', y='length', data=fish_multi, color='gray')
 
 # %% [markdown]
 # ### 箱ひげ図
+# %%
+sns.boxplot(x='species', y='length', data=fish_multi, color='gray')
+print(fish_multi.groupby('species').describe())
 
 # %% [markdown]
 # ### バイオリンプロット
+# %%
+sns.violinplot(x='species', y='length', data=fish_multi, color='gray')
 
 # %% [markdown]
 # ### axis-leve関数とfigure-leve関数
+# %%
+sns.relplot(kind='scatter', x='x', y='y', data=cov_data, color='black')
 
 # %% [markdown]
 # ### 種類・性別のバイオリンプロット
+# %%
+# 描画オブジェクトを生成
+fig, ax = plt.subplots(figsize=(8, 4))
+# バイオリンプロットの描画
+sns.violinplot(x='species', y='body_mass_g', hue='sex',
+               data=penguins, pallette='gray', ax=ax)
+
+# %% [markdown]
+# ### 種別・性別のバイオリンプロット
+# %%
+sns.catplot(kind='violin', x='species', y='body_mass_g', hue='sex',
+            col='island', data=penguins, palette='gray', height=4, aspect=0.7)
+
 
 # %% [markdown]
 # ### ペアプロット
+# %%
+sns.pairplot(hue='species', data=penguins, palette='gray')
 
 # %%
 unittest.main(argv=[''], verbosity=2, exit=False)
