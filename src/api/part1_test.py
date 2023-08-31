@@ -2,6 +2,7 @@
 # # 記述統計
 # %%
 # %
+import os
 from matplotlib import rcParams
 import doctest
 import unittest
