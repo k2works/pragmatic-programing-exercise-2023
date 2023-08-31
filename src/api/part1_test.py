@@ -2,15 +2,17 @@
 # # 記述統計
 # %%
 # %
-import os
-from matplotlib import rcParams
-import doctest
-import unittest
-from matplotlib import pyplot as plt
-import seaborn as sns
-from scipy import stats
-import pandas as pd
 import numpy as np
+import pandas as pd
+from scipy import stats
+import seaborn as sns
+from matplotlib import pyplot as plt
+import unittest
+import doctest
+from matplotlib import rcParams
+import os
+import warnings
+warnings.simplefilter('ignore', FutureWarning)
 path = os.path.dirname(os.path.abspath(__file__))
 
 # %% [markdown]
@@ -741,7 +743,7 @@ plt.title('seabornによる散布図', fontsize=20)  # タイトル
 plt.xlabel('xの値', fontsize=14)  # x軸ラベル
 plt.ylabel('yの値', fontsize=14)  # y軸ラベル
 # グラフの保存
-plt.savefig(path + '/img/3-7-1-scatterplot.png')
+# plt.savefig(path + '/img/3-7-1-scatterplot.png')
 
 
 # %% [markdown]

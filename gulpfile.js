@@ -161,7 +161,7 @@ const jupyter = {
       .pipe(shell(["pip install -r requirements.txt"]))
   },
   docs: () => {
-    return src("./src/**/*.ipynb")
+    return src("./src/api/notebooks/*.ipynb")
       .pipe(shell(["jupyter nbconvert --to html <%= file.path %> --output-dir ./public/notebooks"]))
   }
 }
