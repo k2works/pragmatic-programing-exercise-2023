@@ -8,7 +8,7 @@ const contents = `
 ## 第1部 統計学を始めよう
 ## 第2部 PythonとJupyter Notebookの基本
 ## [第3部 記述統計](./notebooks/part1.html)
-## 第4部 確率と確率分布の基本
+## [第4部 確率と確率分布の基本](./notebooks/part2.html)
 ## 第5部 推測統計
 ## 第6部 統計的仮説検定
 ## 第7部 統計モデルの基本
