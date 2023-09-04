@@ -157,6 +157,12 @@ path = os.path.dirname(os.path.abspath(__file__))
 # ### 確率変数・実現値
 
 # %% [markdown]
+# #### 定義
+# $$
+# P(X = xi)
+# $$
+
+# %% [markdown]
 # ### 離散型の確率変数・連続型の確率変数
 
 # %% [markdown]
@@ -166,16 +172,91 @@ path = os.path.dirname(os.path.abspath(__file__))
 # ### 確率密度関数
 
 # %% [markdown]
+# ### 確率質量関数
+
+# %% [markdown]
+# ### 一様分布（離散型）
+
+# %% [markdown]
+# #### 一様分布の直感的な説明
+
+# %% [markdown]
+# #### 一様分布の確率密度関数
+# $$
+# U(X|n) = \frac{1}{n}
+# $$
+
+# %% [markdown]
+# ### 確率密度
+
+# %% [markdown]
+# #### なぜ確率密度が必要か
+
+# %% [markdown]
+# #### 確率密度の定義
+
+# %% [markdown]
+# ### 確率密度関数
+
+# %% [markdown]
+# #### 確率密度関数の定義
+# $$
+# P(a \leq X \leq b) = \int_{a}^{b} f(x)dx
+# $$
+
+# %% [markdown]
+# #### 確率密度関数の性質
+# $$
+# f(x) \geq 0
+# $$
+# $$
+# \int_{-\infty}^{\infty} f(x)dx = 1
+# $$
+
+# %% [markdown]
 # ### 確率の合計と確率密度の積分の関係
 
 # %% [markdown]
+# #### 離散型の確率分布における計算
+# $$
+# P(1 < X < 3) = \sum_{i=2}^{3} f(x_i)
+# $$
+
+# %% [markdown]
+# #### 連続型の確率分布における計算
+# $$
+# P(1 < X < 3) = \int_{1}^{3} f(x)dx
+# $$
+
+# %% [markdown]
+# #### 積分と面積の関係
+# $$
+# \int_{a}^{b} f(x)dx = 面積
+# $$
+# $$
+# \lim_{\Delta x \to \infty} \sum_{i=1}^{n} f(x_i) \Delta x = \int_{a}^{b} f(x)dx
+# $$
+
+# %% [markdown]
 # ### 一様分布（連続型）
+# $$
+# U(X|a, b) = \frac{1}{b - a}
+# $$
 
 # %% [markdown]
 # ### 累積分布関数
 
 # %% [markdown]
 # ### 一様分布の累積分布関数
+# $$
+# F(x) = \int_{-\infty}^{x} f(x)dx
+# $$
+# $$
+# F(x) = \int_{-\infty}^{x} \frac{1}{b - a}dx
+# $$
+# $$
+# F(x) = \frac{x - a}{b - a}
+# $$
 
 # %% [markdown]
 # ### パーセント点
@@ -184,22 +265,108 @@ path = os.path.dirname(os.path.abspath(__file__))
 # ### 期待値
 
 # %% [markdown]
+# #### 期待値の直感的な説明
+
+# %% [markdown]
+# #### 離散型の確率変数の期待値
+# $$
+# E(X) = \sum_{i=1}^{n} x_i f(x_i)
+# $$
+
+# %% [markdown]
+# #### 連続型の確率変数の期待値
+# $$
+# E(X) = \int_{-\infty}^{\infty} x f(x)dx
+# $$
+
+# %% [markdown]
+# #### 期待値と平均値の関係
+# $$
+# E(X) = \mu
+# $$
+
+# %% [markdown]
+# #### 予測値としての期待値
+
+
+# %% [markdown]
 # ### 確率変数の分散
+
+# %% [markdown]
+# #### 分散の直感的な説明
+
+# %% [markdown]
+# #### 確率変数の分散
+# $$
+# V(X) = E((X - \mu)^2)
+# $$
+
+# %% [markdown]
+# #### 離散型の確率変数における分散
+# $$
+# V(X) = \sum_{i=1}^{n} (x_i - \mu)^2 f(x_i)
+# $$
+
+# %% [markdown]
+# #### 連続型の確率変数における分散
+# $$
+# V(X) = \int_{-\infty}^{\infty} (x - \mu)^2 f(x)dx
+# $$
 
 # %% [markdown]
 # ### 一様分布の期待値と分散
 
 # %% [markdown]
+# #### 離散型の一様分布の期待値と分散
+# $$
+# E(X) = \sum_{i=1}^{n} x_i f(x_i) = \frac{1}{n} \sum_{i=1}^{n} x_i = \frac{1}{n}\sum_{i=1}^{n} x_i
+# $$
+# $$
+# V(X) = \sum_{i=1}^{n} (x_i - \mu)^2 f(x_i) = \frac{1}{n} \sum_{i=1}^{n} (x_i - \mu)^2 = \frac{1}{n}\sum_{i=1}^{n} (x_i - \mu)^2
+# $$
+
+# %% [markdown]
+# #### 連続型の一様分布の期待値
+# $$
+# E(X) = \int_{-\infty}^{\infty} x f(x)dx = \int_{a}^{b} x \frac{1}{b - a}dx = \frac{1}{b - a} \int_{a}^{b} xdx = \frac{1}{b - a} \left[ \frac{x^2}{2} \right]_{a}^{b} = \frac{1}{b - a} \left( \frac{b^2}{2} - \frac{a^2}{2} \right) = \frac{b^2 - a^2}{2(b - a)} = \frac{b + a}{2}
+# $$
+
+
+# %% [markdown]
 # ### 多次元確率分布
 
 # %% [markdown]
+# ### 同時確率分布
+
+# %% [markdown]
+# #### 同時確率分布の定義
+# $$
+# P(X = x_i, Y = y_j) = f(x_i, y_j)
+# $$
+
+# %% [markdown]
+# #### 同時確率分布の性質
+# $$
+# \sum_{i=1}^{m}\sum_{j=1}^{n} f(x_i, y_j) = 1
+# $$
+
+# %% [markdown]
 # ### 周辺化・周辺分布
+# $$
+# P(X = x_i) = \sum_{j=1}^{n} f(x_i, y_j)
+# $$
 
 # %% [markdown]
 # ### 条件付き確率分布
+# $$
+# P(X = x_i | Y = y_j) = \frac{P(X = x_i, Y = y_j)}{P(Y = y_j)} = \frac{f(x_i, y_j)}{f_Y(y_j)}
+# $$
 
 # %% [markdown]
 # ### 確率変数の独立
+# $$
+# P(X = x_i, Y = y_j) = P(X = x_i)P(Y = y_j)
+# $$
 
 # %% [markdown]
 # ### 2次元確率分布の例
@@ -208,7 +375,31 @@ path = os.path.dirname(os.path.abspath(__file__))
 # ### 確率変数の共分散・相関係数
 
 # %% [markdown]
+# #### 確率変数の共分散
+# $$
+# Cov(X, Y) = E((X - \mu_X)(Y - \mu_Y))
+# $$
+
+# %% [markdown]
+# #### 確率変数の相関係数
+# $$
+# \rho(X, Y) = \frac{Cov(X, Y)}{\sqrt{V(X)}\sqrt{V(Y)}}
+# $$
+
+# %% [markdown]
 # ### 独立同一分布
+
+# %% [markdown]
+# #### 独立同一分布の定義
+
+# %% [markdown]
+# #### 独立同一分布に従う確率変数列の同時確率分布
+# $$
+# P(X_1 = x_1, X_2 = x_2, \cdots, X_n = x_n) = \prod_{i=1}^{n} P(X_i = x_i)
+# $$
+
+# %% [markdown]
+# #### 独立同一分布とみなせない事例
 
 # %% [markdown]
 # ## 二項分布
