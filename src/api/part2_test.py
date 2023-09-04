@@ -112,10 +112,40 @@ path = os.path.dirname(os.path.abspath(__file__))
 # ### 確率の加法定理
 
 # %% [markdown]
+# #### 定義
+# $$
+# P(A \cup B) = P(A) + P(B)
+# $$
+# $$
+# P(A \cup B) = P(A) + P(B) - P(A \cap B)
+# $$
+
+# %% [markdown]
+# #### サイコロ投げの例
+# $$
+# P(A \cup B) = P(A) + P(B) - P(A \cap B) = \frac{3}{6} + \frac{2}{6} - \frac{1}{6} = \frac{2}{3}
+# $$
+
+# %% [markdown]
 # ### 条件付き確率
 
 # %% [markdown]
+# #### 定義
+# $$
+# P(A|B) = \frac{P(A \cap B)}{P(B)}
+# $$
+
+# %% [markdown]
+# #### サイコロ投げの例
+# $$
+# P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{\frac{1}{6}}{\frac{2}{6}} = \frac{1}{2}
+# $$
+
+# %% [markdown]
 # ### 確率の乗法定理
+# $$
+# P(A \cap B) = P(A|B)P(B)
+# $$
 
 # %% [markdown]
 # ### 独立
