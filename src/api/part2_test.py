@@ -418,15 +418,93 @@ path = os.path.dirname(os.path.abspath(__file__))
 
 # %% [markdown]
 # ### 分布の準備
+# %%
+sns.set()
+
+rcParams['font.family'] = 'sans-serif'
+rcParams['font.sans-serif'] = 'Meiryo'
 
 # %% [markdown]
 # ### くじを1枚引くシミュレーション
 
 # %% [markdown]
+# #### くじを用意する
+# %%
+lotlery = np.array([1, 1, 0, 0, 0, 0, 0, 0, 0, 0])
+lotlery
+sum(lotlery) / len(lotlery)
+
+# %% [markdown]
+# #### くじを1枚引く
+# %%
+np.random.choice(lotlery, size=1, replace=True)
+
+print(np.random.choice(lotlery, size=1, replace=True))
+print(np.random.choice(lotlery, size=1, replace=True))
+print(np.random.choice(lotlery, size=1, replace=True))
+
+# %% [markdown]
 # ### くじを10枚引くシミュレーション
 
 # %% [markdown]
+# #### くじを10枚引く
+# %%
+print(np.random.choice(lotlery, size=10, replace=True))
+print(np.random.choice(lotlery, size=10, replace=True))
+print(np.random.choice(lotlery, size=10, replace=True))
+
+# %% [markdown]
+# #### 乱数の種を設定する
+# %%
+np.random.seed(1)
+print(np.random.choice(lotlery, size=10, replace=True))
+np.random.seed(1)
+print(np.random.choice(lotlery, size=10, replace=True))
+np.random.seed(1)
+print(np.random.choice(lotlery, size=10, replace=True))
+
+# %% [markdown]
+# #### 繰り返し実行の結果の確認
+# %%
+np.random.seed(1)
+print(np.random.choice(lotlery, size=10, replace=True))
+print(np.random.choice(lotlery, size=10, replace=True))
+print(np.random.choice(lotlery, size=10, replace=True))
+
+# %% [markdown]
+# #### 当たり枚数の集計
+# %%
+np.random.seed(1)
+sample_1 = np.random.choice(lotlery, size=10, replace=True)
+print('くじ引きの結果：', sample_1)
+print('当たり枚数：', sum(sample_1))
+
+
+# %% [markdown]
 # ### くじを10枚引く試行を10000回繰り返す
+
+# %% [markdown]
+# #### シミュレーションの実行
+# %%
+# 試行回数
+n_trial = 10000
+# 結果を格納する入れ物
+binomial_result_array = np.zeros(n_trial)
+
+np.random.seed(1)
+for i in range(n_trial):
+    sample = np.random.choice(lotlery, size=10, replace=True)
+    binomial_result_array[i] = sum(sample)
+
+binomial_result_array[0:10]
+
+# %% [markdown]
+# #### シミュレーション結果のヒストグラム
+# %%
+np.histogram(binomial_result_array, bins=np.arange(0, 11, 1), density=True)
+
+sns.histplot(binomial_result_array, bins=np.arange(
+    0, 11, 1), stat='probability')
 
 # %% [markdown]
 # ### 二項分布
