@@ -510,13 +510,80 @@ sns.histplot(binomial_result_array, bins=np.arange(
 # ### 二項分布
 
 # %% [markdown]
+# #### 二項分布の確率質量関数
+# $$
+# B(x|n, \mu) = {}_n C_x \mu^x (1 - \mu)^{n - x}
+# $$
+
+# %% [markdown]
+# #### 二項分布の確率質量関数の解釈
+
+# %% [markdown]
 # ### 二項分布
+
+# %% [markdown]
+# #### 二項分布の確率質量関数
+# %%
+round(stats.binom.pmf(k=1, n=2, p=0.5), 3)
+round(stats.binom.pmf(k=0, n=10, p=0.2), 3)
+
+# %% [markdown]
+# #### 二項分布の確率質量関数のグラフ
+# %%
+# 成功回数
+n_success = np.arange(0, 11, 1)
+# 確率
+probs = stats.binom.pmf(k=n_success, n=10, p=0.2)
+
+# データフレームにまとめる
+probs_df = pd.DataFrame({
+    'n_success': n_success,
+    'probs': probs
+})
+print(probs_df)
+
+# ヒストグラム（シミュレーション結果）
+sns.histplot(binomial_result_array,
+             bins=np.arange(0, 11, 1),
+             stat='desity', color='gray')
+
+# 折れ線グラフ（二項分布の確率質量関数）
+plt.lineplot(x=n_success, y=probs, data=probs_df, color='black')
 
 # %% [markdown]
 # ### 二項分布に従う乱数の生成
 
 # %% [markdown]
+# #### 二項分布に従う乱数の生成
+# %%
+np.random.seed(1)
+stats.binom.rvs(n=10, p=0.2, size=5)
+
+# %% [markdown]
 # ### 二項分布の期待値と分散
+
+# %% [markdown]
+# #### 二項分布の期待値の実装
+# %%
+n = 10
+p = 0.2
+x_bar = np.mean(binomial_result_array)
+print('乱数の平均     :', round(x_bar, 3))
+print('理論的な理論値  :', n * p)
+
+# %% [markdown]
+# #### 二項分布の分散の実装
+# %%
+stats.binom.mean(n=10, p=0.2)
+
+# %% [markdown]
+# #### 二項分布の分散の実装
+# %%
+u2 = np.var(binomial_result_array, ddof=1)
+print('乱数の分散     :', round(u2, 3))
+print('理論的な分散    :', n * p * (1 - p))
+
+stats.binom.var(n=10, p=0.2)
 
 # %% [markdown]
 # ### 二項分布の累積分布関数
