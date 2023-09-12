@@ -545,10 +545,10 @@ print(probs_df)
 # ヒストグラム（シミュレーション結果）
 sns.histplot(binomial_result_array,
              bins=np.arange(0, 11, 1),
-             stat='desity', color='gray')
+             stat='density', color='gray')
 
 # 折れ線グラフ（二項分布の確率質量関数）
-plt.lineplot(x=n_success, y=probs, data=probs_df, color='black')
+sns.lineplot(x=n_success, y=probs, data=probs_df, color='black')
 
 # %% [markdown]
 # ### 二項分布に従う乱数の生成
@@ -589,7 +589,43 @@ stats.binom.var(n=10, p=0.2)
 # ### 二項分布の累積分布関数
 
 # %% [markdown]
+# #### 二項分布の累積分布関数の実装
+# %%
+round(stats.binom.cdf(k=2, n=10, p=0.2), 3)
+
+# %% [markdown]
+# #### 確率質量関数と累積分布関数の比較
+# %%
+print('確率質量関数:', round(stats.binom.pmf(k=0, n=10, p=0.2), 3))
+print('累積分布関数:', round(stats.binom.cdf(k=0, n=10, p=0.2), 3))
+
+print('確率質量関数:', round(stats.binom.pmf(k=1, n=10, p=0.2), 3))
+print('累積分布関数:', round(stats.binom.cdf(k=1, n=10, p=0.2), 3))
+
+pmf_0 = stats.binom.pmf(k=0, n=10, p=0.2)
+pmf_1 = stats.binom.pmf(k=1, n=10, p=0.2)
+round(pmf_0 + pmf_1, 3)
+
+pmf_0 = stats.binom.pmf(k=0, n=10, p=0.2)
+pmf_1 = stats.binom.pmf(k=1, n=10, p=0.2)
+round(pmf_0 + pmf_1, 3)
+
+# %% [markdown]
 # ### 二項分布のパーセント点
+# %%
+# 成功確率p=0.2, ベルヌーイ試行の回数n=10
+print('10%点:', stats.binom.ppf(q=0.1, n=10, p=0.2))
+print('20%点:', stats.binom.ppf(q=0.2, n=10, p=0.2))
+print('50%点:', stats.binom.ppf(q=0.5, n=10, p=0.2))
+print('80%点:', stats.binom.ppf(q=0.8, n=10, p=0.2))
+print('95%点:', stats.binom.ppf(q=0.95, n=10, p=0.2))
+
+
+# %% [markdown]
+# ### 二項分布の上側確率
+# %%
+round(1 - stats.binom.cdf(k=4, n=10, p=0.2), 3)
+round(stats.binom.sf(k=4, n=10, p=0.2), 3)
 
 # %% [markdown]
 # ### 二項分布のパーセント点
