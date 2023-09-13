@@ -683,7 +683,7 @@ density_df = pd.DataFrame({
     'density': density
 })
 
-print(df.head(3))
+print(density_df.head(3))
 
 sns.lineplot(x='x', y='density', data=density_df, color='black')
 
