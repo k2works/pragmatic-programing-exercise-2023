@@ -637,16 +637,105 @@ round(stats.binom.sf(k=4, n=10, p=0.2), 3)
 # ## 正規分布
 
 # %% [markdown]
-# ### 分析の準備
+# #### 分析の準備
+# %%
+sns.set()
+rcParams['font.family'] = 'sans-serif'
+rcParams['font.sans-serif'] = 'Meiryo'
 
 # %% [markdown]
 # ### 正規分布
 
 # %% [markdown]
+# #### 正規分布の概要
+
+# %% [markdown]
+# #### 正規分布の確率密度関数
+# $$
+# N(x|\mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)
+# $$
+
+# %% [markdown]
 # ### 正規分布の確率密度関数
 
 # %% [markdown]
+# #### 正規分布の確率密度関数
+# %%
+round(stats.norm.pdf(loc=4, scale=1, x=3), 3)
+
+# %% [markdown]
+# #### インスタンスを生成してから実行する
+# %%
+norm_dist = stats.norm(loc=4, scale=1)
+round(norm_dist.pdf(x=3), 3)
+
+# %% [markdown]
+# #### 確率密度関数のグラフ
+# %%
+# 確率変数
+x = np.arange(start=0, stop=8, step=0.1)
+# 確率密度
+density = stats.norm.pdf(x=x, loc=4, scale=1)
+
+# データフレームにまとめる
+density_df = pd.DataFrame({
+    'x': x,
+    'density': density
+})
+
+print(df.head(3))
+
+sns.lineplot(x='x', y='density', data=density_df, color='black')
+
+# %% [markdown]
+# #### さまざまな正規分布
+
+# %% [markdown]
 # ### 正規分布の成り立ち
+
+# %% [markdown]
+# ### 誤差の累積シミュレーション
+
+# %% [markdown]
+# #### 誤差のシミュレーションの考え方
+# %%
+# ノイズが加算される回数
+n_noise = 10000
+# 中心位置
+location = 4
+# 小さな誤差
+noise = np.array([-0.01, 0.01])
+
+np.random.seed(5)
+location + np.sum(np.random.choice(noise, size=n_noise, replace=True))
+
+# %% [markdown]
+# #### シミュレーションを５万回繰り返す
+# %%
+# 試行回数
+n_trial = 50000
+# ノイズの累積として得られた観測値
+observation_result = np.zeros(n_trial)
+
+# locationに誤差をn_noise個ランダムに加える施行をn_trial回行う
+np.random.seed(1)
+for i in range(0, n_trial):
+    observation_result[i] = location + \
+        np.sum(np.random.choice(noise, size=n_noise, replace=True))
+
+# %% [markdown]
+# #### シミュレーション結果の確認
+# %%
+x_bar = np.mean(observation_result)
+u2 = np.var(observation_result, ddof=1)
+print('平均:', round(x_bar, 1))
+print('分散:', round(u2, 1))
+
+# 誤差の累積シミュレーション結果のヒストグラム
+sns.histplot(observation_result, bins=20, stat='density', color='gray')
+
+# 平均4,分散1の正規分布の確率密度関数の折れ線グラフ
+sns.lineplot(x=x, y=density, data=density_df, color='black')
 
 # %% [markdown]
 # ### 中心極限定理
@@ -656,12 +745,26 @@ round(stats.binom.sf(k=4, n=10, p=0.2), 3)
 
 # %% [markdown]
 # ### 正規分布に従う乱数の生成
+# %%
+np.random.seed(1)
+simulated_sample = stats.norm.rvs(loc=4, scale=1, size=8)
+simulated_sample
 
 # %% [markdown]
 # ### 正規分布の累積分布関数
+# %%
+round(stats.norm.cdf(loc=4, scale=1, x=3), 3)
+
+round(stats.norm.cdf(loc=4, scale=1, x=4), 3)
 
 # %% [markdown]
 # ### 正規分布のパーセント点
+# %%
+round(stats.norm.ppf(loc=4, scale=1, q=0.025), 3)
+
+round(stats.norm.ppf(loc=4, scale=1, q=0.5), 3)
 
 # %% [markdown]
 # ### 正規分布の上側確率
+# %%
+round(stats.norm.sf(loc=4, scale=1, x=3), 3)
