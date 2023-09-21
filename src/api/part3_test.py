@@ -79,6 +79,94 @@ path = os.path.dirname(os.path.abspath(__file__))
 # ### 仮定を置くｎということの是非
 
 # %% [markdown]
+# ## 母集団からの標本平均シミュレーション
+
+# %% [markdown]
+# ### 分析の準備
+
+# %% [markdown]
+# ### データが得られるプロセス
+
+# %% [markdown]
+# ### 5尾の魚しかいない湖からの標本抽出
+# %%
+fish_5 = np.array([2, 3, 4, 5, 6])
+fish_5
+
+# 乱数の種
+np.random.seed(1)
+
+# 標本抽出
+sample_1 = np.random.choice(fish_5, size=3, replace=False)
+sample_1
+round(np.mean(sample_1), 3)
+
+# %% [markdown]
+# ### もっとたくさんの魚がいる湖からの標本抽出
+
+# %% [markdown]
+# #### データの読み込み
+# %%
+fish_100000 = pd.read_csv(
+    path + '/data/5-2-1-fish_length_100000.csv')['length']
+# 先頭行の取得
+fish_100000.head(3)
+
+# %% [markdown]
+# #### 標本抽出
+# %%
+# 乱数の種
+np.random.seed(2)
+# 標本抽出
+sample_2 = np.random.choice(fish_100000, size=500, replace=False)
+round(np.mean(sample_2), 3)
+sns.histplot(sample_2, bins=10, color='black')
+
+# %% [markdown]
+# ### 母集団分布の可視化
+# %%
+print('平均    :', round(np.mean(fish_100000), 3))
+print('分散    :', round(np.var(fish_100000), 3))
+print('標準偏差:', round(np.std(fish_100000), 3))
+
+sns.histplot(fish_100000, color='gray')
+
+# %% [markdown]
+# ### 母集団分布と正規分布の確率密度関数
+# %%
+# 確率変数
+x = np.arange(start=1, stop=8.1, step=0.1)
+# 確率密度
+density = stats.norm.pdf(x=x, loc=4, scale=0.8)
+
+# データフレームにまとめる
+density_df = pd.DataFrame({'x': x, 'density': density})
+
+# 先頭行の取得
+print(density_df.head(3))
+
+# 母集団のヒストグラム
+sns.histplot(fish_100000, stat='density', color='gray')
+# 折れ線グラフ（正規分布の確率密度関数）
+sns.lineplot(x=x, y=density, data=density_df, color='black', linewidth=2.0)
+
+# %% [markdown]
+# ### データが得られるプロセスの抽象化
+# %%
+# 乱数の種
+np.random.seed(1)
+# 正規分布に従う乱数の生成
+sample_norm = stats.norm.rvs(loc=4, scale=0.8, size=10)
+sample_norm
+round(np.mean(sample_norm), 3)
+
+# %% [markdown]
+# ### 議論の補足
+
+# %% [markdown]
+# ### 母集団分布を正規分布とみなして良いのか
+
+# %% [markdown]
 # ## 母分散の推定
 
 # %% [markdown]
