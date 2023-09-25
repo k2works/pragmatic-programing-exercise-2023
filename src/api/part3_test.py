@@ -270,6 +270,21 @@ print(group.agg([np.std, np.mean]).round(3))
 
 # %% [markdown]
 # ### サンプルサイズを大きくしたときの標本平均
+# %%
+size_array = np.arange(start=10, stop=100100, step=100)
+size_array
+sample_mean_array_size = np.zeros(len(size_array))
+np.random.seed(1)
+for i in range(0, len(size_array)):
+    sample_loop = population.rvs(size=size_array[i])
+    sample_mean_array_size[i] = np.mean(sample_loop)
+size_mean_df = pd.DataFrame({
+    'sample_size': size_array,
+    'sample_mean': sample_mean_array_size,
+})
+print(size_mean_df.head(3))
+sns.lineplot(x='sample_size', y='sample_mean',
+             data=size_mean_df, color='black')
 
 # %% [markdown]
 # ### 一致制・一致推定量
