@@ -180,15 +180,32 @@ round(np.mean(sample_norm), 3)
 
 # %% [markdown]
 # ### 母集団の用意
+# %%
+population = stats.norm(loc=4, scale=0.8)
 
 # %% [markdown]
 # ### 標本平均を計算する
+# %%
+np.random.seed(2)
+sample = population.rvs(size=10)
+sample
+round(np.mean(sample), 3)
 
 # %% [markdown]
 # ### 標本平均を何度も計算する
+# %%
+sample_mean_array = np.zeros(10000)
+np.random.seed(1)
+for i in range(0, 10000):
+    sample_loop = population.rvs(size=10)
+    sample_mean_array[i] = np.mean(sample_loop)
+
+sample_mean_array
 
 # %% [markdown]
 # ### 標本平均の平均値
+# %%
+round(np.mean(sample_mean_array), 3)
 
 # %% [markdown]
 # ### 不偏性・不偏推定量
@@ -198,9 +215,52 @@ round(np.mean(sample_norm), 3)
 
 # %% [markdown]
 # ### 標本平均を何度も計算する関数を作る
+# %%
+
+
+def calc_sample_mean(size, n_trial):
+    sample_mean_array = np.zeros(n_trial)
+    for i in range(0, n_trial):
+        sample_loop = population.rvs(size=size)
+        sample_mean_array[i] = np.mean(sample_loop)
+    return (sample_mean_array)
+
+
+np.random.seed(1)
+round(np.mean(calc_sample_mean(size=10, n_trial=10000)), 3)
 
 # %% [markdown]
 # ### サンプルサイズ別の、標本平均の分布
+# %%
+np.random.seed(1)
+# サンプルサイズ10
+size_10 = calc_sample_mean(size=10, n_trial=10000)
+size_10_df = pd.DataFrame({
+    'sample_mean': size_10,
+    'sample_size': np.tile('size 10', 10000)
+})
+# サンプルサイズ20
+size_20 = calc_sample_mean(size=20, n_trial=10000)
+size_20_df = pd.DataFrame({
+    'sample_mean': size_20,
+    'sample_size': np.tile('size 20', 10000)
+})
+# サンプルサイズ30
+size_30 = calc_sample_mean(size=30, n_trial=10000)
+size_30_df = pd.DataFrame({
+    'sample_mean': size_30,
+    'sample_size': np.tile('size 30', 10000)
+})
+# 結合
+sim_result = pd.concat(
+    [size_10_df, size_20_df, size_30_df])
+# 結果の表示
+print(sim_result.head(3))
+
+sns.violinplot(x='sample_size', y='sample_mean', data=sim_result, color='gray')
+
+group = sim_result.groupby('sample_size')
+print(group.agg([np.std, np.mean]).round(3))
 
 # %% [markdown]
 # ### 標本平均の標準偏差の計算
