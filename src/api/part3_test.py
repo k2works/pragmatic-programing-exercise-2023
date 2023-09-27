@@ -303,24 +303,72 @@ sns.lineplot(x='sample_size', y='sample_mean',
 
 # %% [markdown]
 # ### 母分散の用意
+# %%
+population = stats.norm(loc=4, scale=0.8)
 
 # %% [markdown]
 # ### 母分散の推定量としての標本分散・不偏分散
 
 # %% [markdown]
 # ### 標本分散と不偏分散を計算する
+# %%
+np.random.seed(2)
+sample = population.rvs(size=10)
+sample
+print('標本分散:', round(np.var(sample, ddof=0), 3))
+print('不偏分散:', round(np.var(sample, ddof=1), 3))
 
 # %% [markdown]
 # ### 標本分散の平均値
+# %%
+sample_var_array = np.zeros(10000)
+
+np.random.seed(1)
+for i in range(0, 10000):
+    sample = population.rvs(size=10)
+    sample_var_array[i] = np.var(sample, ddof=0)
+
+round(np.mean(sample_var_array), 3)
 
 # %% [markdown]
 # ### 不偏分散の平均値
+# %%
+# 「不偏分散」を格納する入れ物
+unbias_var_array = np.zeros(10000)
+# 「データを10個選んで不偏分散を求める」試行を10000回繰り返す
+np.random.seed(1)
+for i in range(0, 10000):
+    sample = population.rvs(size=10)
+    unbias_var_array[i] = np.var(sample, ddof=1)
+# ｎ不偏分散をの平均値
+round(np.mean(unbias_var_array), 3)
 
 # %% [markdown]
 # ### 母分散の不偏推定量としての不偏分散
 
 # %% [markdown]
 # ### サンプルサイズを大きくしたときの不偏分散
+# %%
+size_array = np.arange(start=10, stop=100100, step=100)
+size_array
+
+unbias_var_array_size = np.zeros(len(size_array))
+
+np.random.seed(1)
+for i in range(0, len(size_array)):
+    sample = population.rvs(size=size_array[i])
+    unbias_var_array_size[i] = np.var(sample, ddof=1)
+
+size_var_df = pd.DataFrame({
+    'sample_size': size_array,
+    'unbias_var': unbias_var_array_size,
+})
+
+print(size_var_df.head(3))
+
+sns.lineplot(x='sample_size', y='unbias_var',
+             data=size_var_df, color='black')
+
 
 # %% [markdown]
 # ## 正規母集団から派生した確率分布
@@ -339,27 +387,210 @@ sns.lineplot(x='sample_size', y='sample_mean',
 
 # %% [markdown]
 # ### シミュレーションの準備
+# %%
+mu = 4
+sigma = 0.8
+population = stats.norm(loc=mu, scale=sigma)
+
+# サンプルサイズ
+n = 5
+# 標本抽出
+np.random.seed(1)
+sample = population.rvs(size=n)
+sample
 
 # %% [markdown]
 # ### χ２分布
+
+# %% [markdown]
+# #### Pythonにおける扱い
+# %%
+round(stats.chi2.pdf(x=2, df=n-1), 3)
+round(stats.chi2.cdf(x=2, df=n-1), 3)
+round(stats.chi2.ppf(q=0.5, df=n-1), 3)
+
+# %% [markdown]
+# #### シミュレーション
+# %%
+# サンプルサイズ
+n = 5
+# 乱数の種
+np.random.seed(1)
+# x2値を格納する入れ物
+chi2_value_array = np.zeros(10000)
+# シミュレーションの実行
+for i in range(0, 10000):
+    sample = population.rvs(size=n)
+    u2 = np.var(sample, ddof=1)  # 不偏分散
+    chi2 = (n - 1) * u2 / sigma**2  # χ２値
+    chi2_value_array[i] = chi2
+
+# 確率変数
+x = np.arange(start=0, stop=20.1, step=0.1)
+# x2分布の確率密度
+chi2_distribution = stats.chi2.pdf(x=x, df=n-1)
+# データフレームにまとめる
+chi2_df = pd.DataFrame({
+    'x': x,
+    'chi2_distribution': chi2_distribution
+})
+print(chi2_df.head(3))
+
+# ヒストグラム
+sns.histplot(chi2_value_array, color='gray', stat='density')
+# x2分布
+sns.lineplot(x=x, y=chi2_distribution,
+             data=chi2_df, color='black',
+             label='x2分布')
 
 # %% [markdown]
 # ### 標本平均が従う確率分布
 
 # %% [markdown]
 # ### 標本平均の標準化
+# %%
+# サンプルサイズ
+n = 3
+# 乱数の種
+np.random.seed(1)
+# z値を格納する入れ物
+z_value_array = np.zeros(10000)
+# シミュレーションの実行
+for i in range(0, 10000):
+    sample = population.rvs(size=n)
+    x_bar = np.mean(sample)  # 標本平均
+    bar_sigma = sigma / np.sqrt(n)  # 標本平均の標準誤差
+    z_value_array[i] = (x_bar - mu) / bar_sigma  # z値
+
+# 確率変数
+x = np.arange(start=-6, stop=6.1, step=0.1)
+# 標準正規分布の確率密度
+z_distribution = stats.norm.pdf(x=x, loc=0, scale=1)
+# データフレームにまとめる
+z_df = pd.DataFrame({
+    'x': x,
+    'z_distribution': z_distribution
+})
+print(z_df.head(3))
+# 確率変数
+x = np.arange(start=-6, stop=6.1, step=0.1)
+# 標準正規分布の確率密度
+z_distribution = stats.norm.pdf(x=x, loc=0, scale=1)
+# データフレームにまとめる
+z_df = pd.DataFrame({
+    'x': x,
+    'z_distribution': z_distribution
+})
+print(z_df.head(3))
+
+# z値ヒストグラム
+sns.histplot(z_value_array, color='gray', stat='density')
+# 標準正規分布
+sns.lineplot(x=x, y=z_distribution,
+             data=z_df, color='black',
+             label='標準正規分布')
+# X軸の範囲
+plt.xlim([-6, 6])
+
+
+# %% [markdown]
+# ### t値
+# $$
+# t=\frac{\bar{x}-\mu}{\frac{s}{\sqrt{n}}}
 
 # %% [markdown]
 # ### t分布
 
 # %% [markdown]
-# ### t分布
+# #### Pythonにおける扱い
+
+# %% [markdown]
+# #### シミュレーション
+# %%
+# 乱数の種
+np.random.seed(1)
+# t値を格納する入れ物
+t_value_array = np.zeros(10000)
+# シミュレーションの実行
+for i in range(0, 10000):
+    sample = population.rvs(size=n)
+    x_bar = np.mean(sample)  # 標本平均
+    u = np.std(sample, ddof=1)  # 標本標準偏差
+    se = u/np.sqrt(n)  # 標準誤差
+    t_value_array[i] = (x_bar - mu) / se  # t値
+# t分布の確率密度
+t_distribution = stats.t.pdf(x=x, df=n-1)
+# データフレームにまとめる
+t_df = pd.DataFrame({
+    'x': x,
+    't_distribution': t_distribution
+})
+print(t_df.head(3))
+
+# t値のヒストグラム
+sns.histplot(t_value_array, color='gray', stat='density')
+# t分布
+sns.lineplot(x=x, y=t_distribution,
+             data=t_df, color='black',
+             label='t分布')
+# 標準正規分布
+sns.lineplot(x=x, y=z_distribution,
+             data=z_df, color='black',
+             linestyle='dashed',
+             label='標準正規分布')
+# X軸の範囲
+plt.xlim([-6, 6])
 
 # %% [markdown]
 # ### F分布
 
 # %% [markdown]
+# #### F分布の定義
+# $$
+# F=\frac{\frac{s_1^2}{\sigma_1^2}}{\frac{s_2^2}{\sigma_2^2}}
+
+# %% [markdown]
 # ### F分布
+
+# %% [markdown]
+# #### Pythonにおける扱い
+
+# %% [markdown]
+# #### シミュレーション
+# %%
+# サンプルサイズ
+m = 5
+n = 10
+# 乱数の種
+np.random.seed(1)
+# F値を格納する入れ物
+f_value_array = np.zeros(10000)
+# シミュレーションの実行
+for i in range(0, 10000):
+    sample_x = population.rvs(size=m)
+    sample_y = population.rvs(size=n)
+    u2_x = np.var(sample_x, ddof=1)  # 不偏分散
+    u2_y = np.var(sample_y, ddof=1)  # 不偏分散
+    f_value_array[i] = u2_x / u2_y  # F値
+# 確率変数
+x = np.arange(start=0, stop=6.1, step=0.1)
+# F分布の確率密度
+f_distribution = stats.f.pdf(x=x, dfn=m-1, dfd=n-1)
+# データフレームにまとめる
+f_df = pd.DataFrame({
+    'x': x,
+    'f_distribution': f_distribution
+})
+print(f_df.head(3))
+
+# F値のヒストグラム
+sns.histplot(f_value_array, color='gray', stat='density')
+# F分布
+sns.lineplot(x=x, y=f_distribution,
+             data=f_df, color='black',
+             label='F分布')
+# X軸の範囲
+plt.xlim([0, 6])
 
 # %% [markdown]
 # ## 区間推定
