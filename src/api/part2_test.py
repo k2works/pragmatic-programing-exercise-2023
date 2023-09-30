@@ -768,3 +768,7 @@ round(stats.norm.ppf(loc=4, scale=1, q=0.5), 3)
 # ### 正規分布の上側確率
 # %%
 round(stats.norm.sf(loc=4, scale=1, x=3), 3)
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)

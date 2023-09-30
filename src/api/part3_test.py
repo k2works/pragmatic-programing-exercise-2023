@@ -721,3 +721,7 @@ lower_sigma = (n - 1) * u2 / chi_975
 
 print('下側信頼限界:', round(lower_sigma, 3))
 print('上側信頼限界:', round(upper_sigma, 3))
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)

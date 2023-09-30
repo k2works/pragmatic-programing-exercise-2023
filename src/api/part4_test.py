@@ -164,3 +164,7 @@ path = os.path.dirname(os.path.abspath(__file__))
 
 # %% [markdown]
 # #### 仮説は正しいか
+
+# %%
+unittest.main(argv=[''], verbosity=2, exit=False)
+doctest.testmod(verbose=True)
