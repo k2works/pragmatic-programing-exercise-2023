@@ -657,23 +657,23 @@ print('上側信頼限界:', round(upper_mu, 3))
 # %% [markdown]
 # #### 効率的な実装
 # %%
-res_1 = stats.t.interval(alpha=0.95, df=df, loc=x_bar, scale=se)
+res_1 = stats.t.interval(confidence=0.95, df=df, loc=x_bar, scale=se)
 np.round(res_1, 3)
 
 # %% [markdown]
 # ### 信頼区間の幅を決める要素
 # %%
 se_2 = (u * 10) / np.sqrt(n)
-res_2 = stats.t.interval(alpha=0.95, df=df, loc=x_bar, scale=se_2)
+res_2 = stats.t.interval(confidence=0.95, df=df, loc=x_bar, scale=se_2)
 np.round(res_2, 3)
 
 n_2 = n * 10
 df_2 = n_2 - 1
 se_3 = u / np.sqrt(n_2)
-res_3 = stats.t.interval(alpha=0.95, df=df_2, loc=x_bar, scale=se_3)
+res_3 = stats.t.interval(confidence=0.95, df=df_2, loc=x_bar, scale=se_3)
 np.round(res_3, 3)
 
-res_4 = stats.t.interval(alpha=0.99, df=df, loc=x_bar, scale=se)
+res_4 = stats.t.interval(confidence=0.99, df=df, loc=x_bar, scale=se)
 np.round(res_4, 3)
 
 # %% [markdown]
@@ -693,7 +693,7 @@ for i in range(0, num_trials):
     x_bar = np.mean(sample)  # 標本平均
     u = np.std(sample, ddof=1)  # 標準偏差
     se = u / np.sqrt(len(sample))  # 標準誤差
-    interval = stats.t.interval(alpha=0.95, df=df, loc=x_bar, scale=se)
+    interval = stats.t.interval(confidence=0.95, df=df, loc=x_bar, scale=se)
     # 信頼区間が母平均(4)を含んでいた回数をカウント
     if (interval[0] <= 4 <= interval[1]):
         included_num += 1
