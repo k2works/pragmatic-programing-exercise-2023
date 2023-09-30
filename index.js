@@ -10,7 +10,7 @@ const contents = `
 ## [第3部 記述統計](./notebooks/part1.html)
 ## [第4部 確率と確率分布の基本](./notebooks/part2.html)
 ## [第5部 推測統計](./notebooks/part3.html)
-## 第6部 統計的仮説検定
+## [第6部 統計的仮説検定](./notebooks/part4.html)
 ## 第7部 統計モデルの基本
 ## 第8部 正規線形モデル
 ## 第9部 一般化線形モデル
