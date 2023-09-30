@@ -597,33 +597,127 @@ plt.xlim([0, 6])
 
 # %% [markdown]
 # ### 分析の準備
+# %%
+fish = pd.read_csv(path + '/data/5-6-1-fish_length.csv')['length']
+fish
 
 # %% [markdown]
 # ### 点推定・区間推定
 
 # %% [markdown]
 # ### 点推定
+# %%
+x_bar = np.mean(fish)
+u2 = np.var(fish, ddof=1)
+
+print('標本平均:', round(x_bar, 3))
+print('不偏分散:', round(u2, 3))
 
 # %% [markdown]
 # ### 信頼係数・信頼区間
 
 # %% [markdown]
 # ### 信頼限界
+# $$
+# \bar{x}-t_{\alpha/2}\frac{s}{\sqrt{n}}\leq\mu\leq\bar{x}+t_{\alpha/2}\frac{s}{\sqrt{n}}
+
 
 # %% [markdown]
 # ### 母平均の区間推定
 
 # %% [markdown]
-# ### 母分散の区間推定
+# #### 定義通りの実装
+# %%
+# 統計量の計算
+n = len(fish)  # サンプルサイズ
+df = n - 1     # 自由度
+u = np.std(fish, ddof=1)  # 標準偏差
+se = u / np.sqrt(n)  # 標準誤差
+
+print('サンプルサイズ:', n)
+print('自由度:', df)
+print('標準偏差:', round(u, 3))
+print('標準誤差:', round(se, 3))
+print('標準平均:', round(x_bar, 3))
+
+# 2.5%点と97.5%点
+t_025 = stats.t.ppf(q=0.025, df=df)
+t_975 = stats.t.ppf(q=0.975, df=df)
+
+print('t分布の2.5%点:', round(t_025, 3))
+print('t分布の97.5%点:', round(t_975, 3))
+
+# 母平均の区間推定
+lower_mu = x_bar - t_975 * se
+upper_mu = x_bar - t_025 * se
+
+print('下側信頼限界:', round(lower_mu, 3))
+print('上側信頼限界:', round(upper_mu, 3))
+
+# %% [markdown]
+# #### 効率的な実装
+# %%
+res_1 = stats.t.interval(alpha=0.95, df=df, loc=x_bar, scale=se)
+np.round(res_1, 3)
 
 # %% [markdown]
 # ### 信頼区間の幅を決める要素
+# %%
+se_2 = (u * 10) / np.sqrt(n)
+res_2 = stats.t.interval(alpha=0.95, df=df, loc=x_bar, scale=se_2)
+np.round(res_2, 3)
+
+n_2 = n * 10
+df_2 = n_2 - 1
+se_3 = u / np.sqrt(n_2)
+res_3 = stats.t.interval(alpha=0.95, df=df_2, loc=x_bar, scale=se_3)
+np.round(res_3, 3)
+
+res_4 = stats.t.interval(alpha=0.99, df=df, loc=x_bar, scale=se)
+np.round(res_4, 3)
 
 # %% [markdown]
 # ### 区間推定の結果の解釈
+# %%
+norm_dist = stats.norm(loc=4, scale=0.8)
+num_trials = 20000  # シミュレーションの繰り返し数
+included_num = 0  # 信頼区間が母平均(4)を含んでいた回数
+
+# 「データを10個選んで95%信頼区間を求める」試行を20000回繰り返す
+np.random.seed(1)  # 乱数の種
+for i in range(0, num_trials):
+    # 標本の抽出
+    sample = norm_dist.rvs(size=10)
+    # 信頼区間の計算
+    df = len(sample) - 1  # 自由度
+    x_bar = np.mean(sample)  # 標本平均
+    u = np.std(sample, ddof=1)  # 標準偏差
+    se = u / np.sqrt(len(sample))  # 標準誤差
+    interval = stats.t.interval(alpha=0.95, df=df, loc=x_bar, scale=se)
+    # 信頼区間が母平均(4)を含んでいた回数をカウント
+    if (interval[0] <= 4 <= interval[1]):
+        included_num += 1
+
+included_num / num_trials
 
 # %% [markdown]
 # ### 母分散の区間推定
+# $$
+# \frac{(n-1)s^2}{\chi_{\alpha/2}^2}\leq\sigma^2\leq\frac{(n-1)s^2}{\chi_{1-\alpha/2}^2}
 
 # %% [markdown]
 # ### 母平均の区間推定
+# %%
+# 2.5%点と97.5%点
+chi_025 = stats.chi2.ppf(q=0.025, df=df)
+chi_975 = stats.chi2.ppf(q=0.975, df=df)
+
+print('χ2分布の2.5%点:', round(chi_025, 3))
+print('χ2分布の97.5%点:', round(chi_975, 3))
+
+# 母分散の区間推定
+upper_sigma = (n - 1) * u2 / chi_025
+lower_sigma = (n - 1) * u2 / chi_975
+
+print('下側信頼限界:', round(lower_sigma, 3))
+print('上側信頼限界:', round(upper_sigma, 3))
