@@ -77,19 +77,60 @@ path = os.path.dirname(os.path.abspath(__file__))
 
 # %% [markdown]
 # #### 分析の準備
+# %%
+junk_food = pd.read_csv(f'{path}/data/6-1-1-junk-food-weight.csv')['weight']
+junk_food.head()
 
 # %% [markdown]
 # #### t値の計算
+# %%
+x_bar = np.mean(junk_food)
+round(x_bar, 3)
+
+n = len(junk_food)
+df = n - 1
+df
+
+u = np.std(junk_food, ddof=1)
+se = u / np.sqrt(n)
+round(se, 3)
+
+t_sample = (x_bar - 50) / se
+round(t_sample, 3)
 
 # %% [markdown]
 # #### 棄却域の計算
+# %%
+round(stats.t.ppf(q=0.025, df=df), 3)
 
 # %% [markdown]
 # #### p値の計算
+# %%
+p_value = stats.t.cdf(x=-np.abs(t_sample), df=df) * 2
+round(p_value, 3)
+
+stats.ttest_1samp(junk_food, popmean=50)
 
 # %% [markdown]
 # #### シミュレーションによるp値の計算
+# %%
+n = len(junk_food)
+u = np.std(junk_food, ddof=1)
+t_value_array = np.zeros(50000)
 
+np.random.seed(1)
+norm_dist = stats.norm(loc=50, scale=u)
+for i in range(0, 50000):
+    # 標本の抽出
+    sample = norm_dist.rvs(size=n)
+    # t値の計算
+    sample_mean = np.mean(sample)  # 標本平均
+    sample_std = np.std(sample, ddof=1)  # 標本標準偏差
+    sample_se = sample_std / np.sqrt(n)  # 標本平均の標準誤差
+    t_value_array[i] = (sample_mean - 50) / sample_se  # t値
+
+p_sim = (sum(t_value_array >= t_sample) / 50000) * 2
+round(p_sim, 3)
 # %% [markdown]
 # ### 平均値の差の検定
 
