@@ -142,15 +142,57 @@ round(p_sim, 3)
 
 # %% [markdown]
 # #### 分析の準備
+# %%
+paired_test_data = pd.read_csv(f'{path}/data/6-2-1-paired-t-test.csv')
+print(paired_test_data)
 
 # %% [markdown]
 # #### 対応のあるt検定
+# %%
+# 薬を飲む前と飲んだ後の標本平均
+before = paired_test_data.query('medicine == "before"')['body_temperature']
+after = paired_test_data.query('medicine == "after"')['body_temperature']
+# アレイに変換
+before = np.array(before)
+after = np.array(after)
+# 差を計算
+diff = after - before
+diff
+
+stats.ttest_1samp(diff, popmean=0)
+
+stats.ttest_rel(after, before)
 
 # %% [markdown]
 # #### 対応のないt検定（不等分散）
 
 # %% [markdown]
 # #### 対応のないt検定（等分散）
+# %%
+# 平均値
+x_bar_bef = np.mean(before)
+x_bar_aft = np.mean(after)
+
+# 分散
+u2_bef = np.var(before, ddof=1)
+u2_aft = np.var(after, ddof=1)
+
+# サンプルサイズ
+m = len(before)
+n = len(after)
+
+# t値
+t_value = (x_bar_aft - x_bar_bef) / np.sqrt((u2_bef / m) + (u2_aft / n))
+round(t_value, 3)
+
+df = (u2_bef / m + u2_aft / n)**2 / ((u2_bef / m)
+                                     ** 2 / (m - 1) + (u2_aft / n)**2 / (n - 1))
+round(df, 3)
+
+p_value = stats.t.cdf(-np.abs(t_value), df=df) * 2
+round(p_value, 5)
+
+stats.ttest_ind(after, before, equal_var=False)
 
 # %% [markdown]
 # #### pハッキング
