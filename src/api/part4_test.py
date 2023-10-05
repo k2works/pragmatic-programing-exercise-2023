@@ -208,15 +208,34 @@ stats.ttest_ind(after, before, equal_var=False)
 
 # %% [markdown]
 # #### 期待度数との差を求める
+# $$
+# \chi^2 = \sum_{i=1}^r \sum_{j=1}^c \frac{(O_{ij} - E_{ij})^2}{E_{ij}}
 
 # %% [markdown]
 # #### 分析の準備
 
 # %% [markdown]
 # #### p値の計算
+# %%
+1 - stats.chi2.cdf(x=6.667, df=1)
+
 
 # %% [markdown]
 # #### 分割表の検定
+# %%
+click_data = pd.read_csv(f'{path}/data/6-3-1-click_data.csv')
+print(click_data)
+
+cross = pd.pivot_table(
+    data=click_data,
+    values='freq',
+    aggfunc='sum',
+    index='color',
+    columns='click'
+)
+print(cross)
+
+stats.chi2_contingency(cross, correction=False)
 
 # %% [markdown]
 # ### 検定の結果の解釈
