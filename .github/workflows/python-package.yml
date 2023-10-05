@@ -40,3 +40,4 @@ jobs:
           python ./src/api/part2_test.py
           python ./src/api/part3_test.py
           python ./src/api/part4_test.py
+          python ./src/api/part5_test.py
